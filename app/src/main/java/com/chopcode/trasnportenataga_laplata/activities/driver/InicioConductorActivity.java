@@ -43,7 +43,6 @@ import java.util.Locale;
 
 public class InicioConductorActivity extends AppCompatActivity {
     private static final String TAG = "InicioConductor";
-
     // Views principales
     private RecyclerView rvReservas, rvProximasRutas;
     private TextView tvConductor, tvPlacaVehiculo;
@@ -65,7 +64,6 @@ public class InicioConductorActivity extends AppCompatActivity {
     private ReservasViewModel reservasViewModel;
     private EstadisticasViewModel estadisticasViewModel;
     private RutasViewModel rutasViewModel;
-
     private AuthManager authManager;
     private ReservaAdapter reservaAdapter;
     private RutaAdapter rutaAdapter;
