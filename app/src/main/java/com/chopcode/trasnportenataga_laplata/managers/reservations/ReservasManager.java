@@ -17,11 +17,9 @@ import java.util.List;
 
 public class ReservasManager {
     private static final String TAG = "ReservasManager";
-
     private final DriverReservationService driverReservationService;
     private final UserService userService;
     private NotificationManager notificationManager;
-
     private DatabaseReference reservasRef;
     private ValueEventListener reservasListener;
 
