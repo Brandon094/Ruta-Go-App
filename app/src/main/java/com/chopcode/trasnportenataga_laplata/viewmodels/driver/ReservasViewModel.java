@@ -382,7 +382,7 @@ public class ReservasViewModel extends BaseViewModel {
     /**
      * Método privado para actualizar ingresos en Firebase
      */
-    private void updateIncomeInFirebase(String userId, double ingresos) {
+    /**private void updateIncomeInFirebase(String userId, double ingresos) {
         statisticsManager.updateIncomeInFirebase(userId, ingresos,
                 new DriverStatisticsManager.IncomeUpdateCallback() {
                     @Override
@@ -395,7 +395,7 @@ public class ReservasViewModel extends BaseViewModel {
                         Log.e(TAG, "❌ Error actualizando ingresos en Firebase: " + error);
                     }
                 });
-    }
+    }*/
 
     /**
      * 🔥 NUEVO: Método para actualizar todos los datos
