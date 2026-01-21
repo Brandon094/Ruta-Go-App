@@ -59,13 +59,14 @@ public class ReservasViewModel extends BaseViewModel {
     // Getters
     public LiveData<List<Reserva>> getReservasLiveData() { return reservasLiveData; }
     public LiveData<Integer> getContadorReservasLiveData() { return contadorReservasLiveData; }
-    public LiveData<Reserva> getReservaEnProcesoLiveData() { return reservaEnProcesoLiveData; }
+    /**public LiveData<Reserva> getReservaEnProcesoLiveData() { return reservaEnProcesoLiveData; }*/
     public LiveData<Boolean> getReservaProcesadaLiveData() { return reservaProcesadaLiveData; }
-    public LiveData<com.chopcode.trasnportenataga_laplata.services.reservations.driver.DriverReservationService.SimpleDriverStats>
+    /**public LiveData<com.chopcode.trasnportenataga_laplata.services.reservations.driver
+    .DriverReservationService.SimpleDriverStats>
     getEstadisticasLiveData() { return estadisticasLiveData; }
     public LiveData<Integer> getReservasConfirmadasHoyLiveData() { return reservasConfirmadasHoyLiveData; }
     public LiveData<Integer> getAsientosDisponiblesHoyLiveData() { return asientosDisponiblesHoyLiveData; }
-    public LiveData<Double> getIngresosHoyLiveData() { return ingresosHoyLiveData; }
+    public LiveData<Double> getIngresosHoyLiveData() { return ingresosHoyLiveData; }*/
 
     /**
      * 🔥 NUEVO: Cargar datos completos del conductor
@@ -89,8 +90,8 @@ public class ReservasViewModel extends BaseViewModel {
 
                 // Una vez que tenemos los datos del conductor, cargar sus reservas
                 loadReservations(conductorUID);
-                loadDriverStatistics(conductorUID);
-                loadEstadisticasDiarias(nombre);
+                //loadDriverStatistics(conductorUID);
+                //loadEstadisticasDiarias(nombre);
             }
 
             @Override
@@ -142,7 +143,7 @@ public class ReservasViewModel extends BaseViewModel {
     /**
      * 🔥 NUEVO: Cargar TODAS las reservas del conductor (para estadísticas)
      */
-    public void loadAllDriverReservations(String estadoFiltro) {
+    /**public void loadAllDriverReservations(String estadoFiltro) {
         if (conductorUIDActual == null) {
             Log.w(TAG, "⚠️ No hay conductorUID actual");
             return;
@@ -163,12 +164,12 @@ public class ReservasViewModel extends BaseViewModel {
                         Log.e(TAG, "❌ Error cargando todas las reservas: " + error);
                     }
                 });
-    }
+    }*/
 
     /**
      * 🔥 NUEVO: Cargar estadísticas usando ReservasManager
      */
-    public void loadDriverStatistics(String conductorUID) {
+   /** public void loadDriverStatistics(String conductorUID) {
         if (conductorUID == null || conductorUID.isEmpty()) {
             Log.w(TAG, "⚠️ conductorUID es nulo o vacío");
             return;
@@ -198,7 +199,7 @@ public class ReservasViewModel extends BaseViewModel {
     /**
      * 🔥 ACTUALIZADO: Usar ReservasManager para estadísticas diarias
      */
-    public void loadEstadisticasDiarias(String conductorNombre) {
+    /**public void loadEstadisticasDiarias(String conductorNombre) {
         if (conductorNombre == null || conductorNombre.isEmpty()) {
             Log.w(TAG, "⚠️ conductorNombre es nulo o vacío");
             return;
@@ -230,7 +231,7 @@ public class ReservasViewModel extends BaseViewModel {
                         Log.e(TAG, "❌ Error cargando estadísticas diarias: " + error);
                     }
                 });
-    }
+    }*/
 
     /**
      * 🔥 ACTUALIZADO: Confirmar reserva usando ReservasManager
@@ -402,12 +403,12 @@ public class ReservasViewModel extends BaseViewModel {
     public void refreshAllData() {
         if (conductorUIDActual != null) {
             loadReservations(conductorUIDActual);
-            loadDriverStatistics(conductorUIDActual);
+            //loadDriverStatistics(conductorUIDActual);
         }
 
-        if (conductorNombreActual != null) {
+        /**if (conductorNombreActual != null) {
             loadEstadisticasDiarias(conductorNombreActual);
-        }
+        }*/
     }
 
     /**
@@ -433,7 +434,7 @@ public class ReservasViewModel extends BaseViewModel {
             contadorReservasLiveData.postValue(nuevasReservas.size());
         }
     }
-
+/**
     // Setters para conductor
     public void setConductorNombreActual(String conductorNombreActual) {
         this.conductorNombreActual = conductorNombreActual;
@@ -441,7 +442,7 @@ public class ReservasViewModel extends BaseViewModel {
 
     public void setConductorUIDActual(String conductorUIDActual) {
         this.conductorUIDActual = conductorUIDActual;
-    }
+    }*/
 
     public String getConductorNombreActual() {
         return conductorNombreActual;
