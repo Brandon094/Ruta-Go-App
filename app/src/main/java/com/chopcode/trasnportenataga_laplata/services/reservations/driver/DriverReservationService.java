@@ -41,10 +41,7 @@ public class DriverReservationService {
 
     // 🔥 NUEVO: Clase simple para estadísticas
     public static class SimpleDriverStats {
-        public int totalReservas = 0;
-        public int reservasConfirmadas = 0;
-        public int reservasCanceladas = 0;
-        public int reservasPendientes = 0;
+        public int totalReservas = 0, reservasConfirmadas = 0, reservasCanceladas = 0, reservasPendientes = 0;
         public double ingresosTotales = 0.0;
 
         public SimpleDriverStats() {}
