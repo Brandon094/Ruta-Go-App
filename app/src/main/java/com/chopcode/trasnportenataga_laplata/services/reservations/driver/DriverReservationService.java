@@ -213,9 +213,6 @@ public class DriverReservationService {
     /**
      * 🔥 NUEVO: Método para obtener estadísticas simples del conductor
      */
-    /**
-     * 🔥 NUEVO: Método para obtener estadísticas simples del conductor
-     */
     public void obtenerEstadisticasSimples(String conductorUID, SimpleStatsCallback callback) {
         Log.d(TAG, "📊 Obteniendo estadísticas simples para conductor: " + conductorUID);
 
@@ -265,10 +262,11 @@ public class DriverReservationService {
     /**
      * 🔥 NUEVO: Método para obtener estadísticas diarias usando DriverStatisticsManager
      */
-    public void obtenerEstadisticasDiarias(String conductorNombre, DriverStatisticsManager.StatisticsCallback callback) {
+    /**public void obtenerEstadisticasDiarias(String conductorNombre,
+                                            DriverStatisticsManager.StatisticsCallback callback) {
         Log.d(TAG, "📅 Obteniendo estadísticas diarias para conductor: " + conductorNombre);
         statisticsManager.calculateDailyStatistics(conductorNombre, callback);
-    }
+    }*/
 
     /**
      * Actualiza el estado de una reserva (Confirmar/Cancelar)
