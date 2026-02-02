@@ -233,11 +233,12 @@
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_refresh"
-                        android:tint="@color/primary_500"
-                        android:contentDescription="@string/tooltip_actualizar"/>
+                        android:id="@+id/ic_refresh"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_refresh"
+                    android:tint="@color/primary_500"
+                    android:contentDescription="@string/tooltip_actualizar"/>
                 </LinearLayout>
 
                 <!-- 🎯 SECCIÓN 1: INGRESOS DESTACADOS -->

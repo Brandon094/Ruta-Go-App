@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -184,15 +187,39 @@ public class InicioConductorActivity extends AppCompatActivity {
             goToDriverProfile();
         });
 
-        // Configurar click en encabezado de estadísticas para actualizar
-        View headerEstadisticas = findViewById(R.id.tvTituloEstadisticas);
-        if (headerEstadisticas != null) {
-            headerEstadisticas.setOnClickListener(view -> {
+        // ✅ Configurar ícono de refresh
+        ImageView icRefresh = findViewById(R.id.ic_refresh);
+        if (icRefresh != null) {
+            icRefresh.setOnClickListener(view -> {
                 if (isDataLoaded) {
-                    Log.d(TAG, "🔄 Actualizando estadísticas manualmente");
+                    Log.d(TAG, "🎯 Refresh manual desde ícono");
                     Toast.makeText(this, getString(R.string.actualizando_datos), Toast.LENGTH_SHORT).show();
+
+                    // Animación simple
+                    icRefresh.animate()
+                            .rotationBy(720f)                    // 2 vueltas
+                            .setDuration(2000)                   // 2 segundos
+                            .setInterpolator(new OvershootInterpolator(1.0f)) // Efecto rebote
+                            .withEndAction(() -> {
+                                // Pequeño rebote final
+                                icRefresh.animate()
+                                        .rotationBy(15f)
+                                        .setDuration(200)
+                                        .setInterpolator(new OvershootInterpolator())
+                                        .withEndAction(() -> icRefresh.setRotation(0f))
+                                        .start();
+                            })
+                            .start();
+
+                    // Recargar datos
                     reloadAllData();
                 }
+            });
+
+            // Tooltip opcional
+            icRefresh.setOnLongClickListener(v -> {
+                Toast.makeText(this, "Actualizar datos", Toast.LENGTH_SHORT).show();
+                return true;
             });
         }
 
@@ -473,16 +500,16 @@ public class InicioConductorActivity extends AppCompatActivity {
 
         // Valores por defecto usando strings
         tvReservasConfirmadas.setText(getString(R.string.contador_reservas, 0));
-        tvAsientosDisponibles.setText("26"); // Valor por defecto
+        tvAsientosDisponibles.setText("N/A"); // Valor por defecto
         tvTotalIngresos.setText(getString(R.string.formato_moneda, "0"));
         tvContadorReservas.setText(getString(R.string.contador_reservas, 0));
         tvContadorRutas.setText(getString(R.string.contador_rutas, 0));
 
         // Datos por defecto para cada ruta individual
         if (tvReservasRuta != null) tvReservasRuta.setText(getString(R.string.contador_reservas, 0));
-        if (tvAsientosRuta != null) tvAsientosRuta.setText("13"); // Valor por defecto
+        if (tvAsientosRuta != null) tvAsientosRuta.setText("N/A"); // Valor por defecto
         if (tvReservasRuta2 != null) tvReservasRuta2.setText(getString(R.string.contador_reservas, 0));
-        if (tvAsientosRuta2 != null) tvAsientosRuta2.setText("13"); // Valor por defecto
+        if (tvAsientosRuta2 != null) tvAsientosRuta2.setText("N/A"); // Valor por defecto
 
         // Actualizar tiempo de actualización
         actualizarTiempoActualizacion();
