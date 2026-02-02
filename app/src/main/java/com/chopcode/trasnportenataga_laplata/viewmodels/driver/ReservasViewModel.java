@@ -1,7 +1,6 @@
 package com.chopcode.trasnportenataga_laplata.viewmodels.driver;
 
 import com.chopcode.trasnportenataga_laplata.managers.reservations.ReservasManager;
-import com.chopcode.trasnportenataga_laplata.managers.statistics.DriverStatisticsManager;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
 import android.content.Context;
 import android.util.Log;
