@@ -64,13 +64,13 @@ public class ReservasViewModel extends BaseViewModel {
         return reservasLiveData;
     }
 
-    public LiveData<Integer> getContadorReservasLiveData() {
+    /**public LiveData<Integer> getContadorReservasLiveData() {
         return contadorReservasLiveData;
-    }
+    }*/
 
-    public LiveData<Boolean> getReservaProcesadaLiveData() {
+/**    public LiveData<Boolean> getReservaProcesadaLiveData() {
         return reservaProcesadaLiveData;
-    }
+    }*/
 
     /**
      * 🔥 OPTIMIZADO: Cargar datos completos del conductor
