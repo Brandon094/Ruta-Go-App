@@ -238,8 +238,8 @@ public class InicioConductorActivity extends AppCompatActivity {
                 // Establecer conductor en EstadisticasViewModel
                 estadisticasViewModel.setConductorActual(nombre);
 
-                // Calcular estadísticas iniciales
-                //estadisticasViewModel.calculateStatistics(nombre);
+                // Refrescar estdisticas al cargar conductor
+                estadisticasViewModel.refreshStatistics();
 
                 isDataLoaded = true;
             }
