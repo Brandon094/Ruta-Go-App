@@ -374,4 +374,5 @@
     <string name="_3">3</string>
     <string name="_0">0</string>
     <string name="_26">26</string>
+    <string name="error_carga_datos">¡Error al intentar cargar los datos!</string>
 </resources>
