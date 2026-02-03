@@ -144,7 +144,7 @@ public class ReservasViewModel extends BaseViewModel {
                 conductorNombreLiveData.postValue(nombre);
                 horariosAsignadosLiveData.postValue(horariosAsignadosActual);
 
-                // Cargar reservas pendientes
+                // Cargar reservas pendientes usando el NUEVO método
                 cargarReservasPendientes();
 
                 // Configurar listener en tiempo real
@@ -165,7 +165,7 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Carga las reservas pendientes del conductor
+     * Carga las reservas pendientes del conductor usando el NUEVO método unificado
      */
     public void cargarReservasPendientes() {
         if (conductorNombreActual == null || conductorNombreActual.isEmpty()) {
@@ -176,13 +176,13 @@ public class ReservasViewModel extends BaseViewModel {
         Log.d(TAG, "🔍 Cargando reservas pendientes para: " + conductorNombreActual);
         setLoading(true);
 
-        // Usar el nuevo método unificado con el wrapper de compatibilidad
-        driverReservationService.cargarReservasConductor(
+        // ✅ USAR EL NUEVO MÉTODO UNIFICADO: cargarReservasPendientes()
+        driverReservationService.cargarReservasPendientes(
                 conductorNombreActual,
                 horariosAsignadosActual != null ? horariosAsignadosActual : new ArrayList<>(),
-                new DriverReservationService.DriverReservationsCallback() {
+                new DriverReservationService.ReservationsCallback() {
                     @Override
-                    public void onDriverReservationsLoaded(List<Reserva> reservas) {
+                    public void onReservationsLoaded(List<Reserva> reservas) {
                         Log.d(TAG, "✅ " + reservas.size() + " reservas pendientes cargadas");
 
                         reservasPendientesLiveData.postValue(reservas);
@@ -276,7 +276,7 @@ public class ReservasViewModel extends BaseViewModel {
                     }
             );
         } else {
-            // Cancelar sin liberar asiento (fallback)
+            // Cancelar con liberar asiento (fallback)
             driverReservationService.actualizarEstadoReserva(
                     reserva.getIdReserva(),
                     "Cancelada",
