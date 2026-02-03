@@ -14,23 +14,26 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ViewModel exclusivo para la pantalla principal del conductor.
+ * Solo maneja reservas pendientes "Por confirmar" para confirmar o cancelar.
+ */
 public class ReservasViewModel extends BaseViewModel {
 
     // Servicios
     private final DriverReservationService driverReservationService;
     private final UserService userService;
 
-    // LiveData para reservas
-    private final MutableLiveData<List<Reserva>> reservasLiveData = new MutableLiveData<>();
+    // LiveData para reservas pendientes
+    private final MutableLiveData<List<Reserva>> reservasPendientesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> contadorReservasLiveData = new MutableLiveData<>();
 
-    // LiveData para estado de reserva procesada
+    // LiveData para operaciones de confirmación/cancelación
     private final MutableLiveData<Reserva> reservaEnProcesoLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> reservaProcesadaLiveData = new MutableLiveData<>();
 
-    // LiveData para datos del conductor
+    // LiveData para datos del conductor (solo lo necesario para reservas pendientes)
     private final MutableLiveData<String> conductorNombreLiveData = new MutableLiveData<>();
-    private final MutableLiveData<String> conductorUIDLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> horariosAsignadosLiveData = new MutableLiveData<>();
 
     // Variables para el conductor actual
@@ -38,22 +41,11 @@ public class ReservasViewModel extends BaseViewModel {
     private String conductorUIDActual;
     private List<String> horariosAsignadosActual;
 
-    // Variables para control de listeners
+    // Control de listeners y estado
     private boolean isRealTimeListenerSetup = false;
     private boolean isLoadingData = false;
     private DatabaseReference reservasRef;
     private ValueEventListener reservasListener;
-
-    // Interfaces callback internas
-    public interface ReservationsCallback {
-        void onReservationsLoaded(List<Reserva> reservas);
-        void onError(String error);
-    }
-
-    public interface UpdateCallback {
-        void onSuccess();
-        void onError(String error);
-    }
 
     public ReservasViewModel() {
         this.driverReservationService = new DriverReservationService();
@@ -62,12 +54,11 @@ public class ReservasViewModel extends BaseViewModel {
         // Valores iniciales
         this.contadorReservasLiveData.setValue(0);
         this.reservaProcesadaLiveData.setValue(false);
-        this.reservasLiveData.setValue(new ArrayList<>());
+        this.reservasPendientesLiveData.setValue(new ArrayList<>());
         this.conductorNombreLiveData.setValue(null);
-        this.conductorUIDLiveData.setValue(null);
         this.horariosAsignadosLiveData.setValue(new ArrayList<>());
 
-        Log.d(TAG, "✅ ReservasViewModel inicializado con servicios directos");
+        Log.d(TAG, "✅ ReservasViewModel para pantalla principal inicializado");
     }
 
     public void initialize(Context context) {
@@ -76,40 +67,54 @@ public class ReservasViewModel extends BaseViewModel {
 
     // ============ GETTERS PARA LIVEDATA ============
 
-    public LiveData<String> getConductorNombreLiveData() {
-        return conductorNombreLiveData;
+    /**
+     * Obtiene la lista de reservas pendientes para confirmar/cancelar
+     */
+    public LiveData<List<Reserva>> getReservasPendientesLiveData() {
+        return reservasPendientesLiveData;
     }
 
-    public LiveData<String> getConductorUIDLiveData() {
-        return conductorUIDLiveData;
-    }
-
-    public LiveData<List<String>> getHorariosAsignadosLiveData() {
-        return horariosAsignadosLiveData;
-    }
-
-    public LiveData<List<Reserva>> getReservasLiveData() {
-        return reservasLiveData;
-    }
-
+    /**
+     * Obtiene el contador de reservas pendientes
+     */
     public LiveData<Integer> getContadorReservasLiveData() {
         return contadorReservasLiveData;
     }
 
-    public LiveData<Boolean> getReservaProcesadaLiveData() {
-        return reservaProcesadaLiveData;
+    /**
+     * Obtiene el nombre del conductor para mostrar en la UI
+     */
+    public LiveData<String> getConductorNombreLiveData() {
+        return conductorNombreLiveData;
     }
 
+    /**
+     * Obtiene los horarios asignados al conductor
+     */
+    public LiveData<List<String>> getHorariosAsignadosLiveData() {
+        return horariosAsignadosLiveData;
+    }
+
+    /**
+     * Obtiene la reserva que está siendo procesada (confirmar/cancelar)
+     */
     public LiveData<Reserva> getReservaEnProcesoLiveData() {
         return reservaEnProcesoLiveData;
+    }
+
+    /**
+     * Indica si una reserva fue procesada exitosamente
+     */
+    public LiveData<Boolean> getReservaProcesadaLiveData() {
+        return reservaProcesadaLiveData;
     }
 
     // ============ MÉTODOS PRINCIPALES ============
 
     /**
-     * Carga datos completos del conductor desde UserService
+     * Inicializa el ViewModel con los datos del conductor y carga las reservas pendientes
      */
-    public void loadDriverData(String conductorUID) {
+    public void inicializarConductor(String conductorUID) {
         if (conductorUID == null || conductorUID.isEmpty()) {
             Log.e(TAG, "❌ conductorUID es nulo o vacío");
             setError("ID del conductor no válido");
@@ -121,14 +126,13 @@ public class ReservasViewModel extends BaseViewModel {
             return;
         }
 
-        Log.d(TAG, "👤 Cargando datos del conductor UID: " + conductorUID);
+        Log.d(TAG, "👤 Inicializando para conductor UID: " + conductorUID);
         setLoading(true);
         isLoadingData = true;
 
         this.conductorUIDActual = conductorUID;
-        conductorUIDLiveData.postValue(conductorUID);
 
-        // Usar UserService directamente
+        // Cargar datos básicos del conductor
         userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
             @Override
             public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horarios) {
@@ -141,12 +145,10 @@ public class ReservasViewModel extends BaseViewModel {
                 horariosAsignadosLiveData.postValue(horariosAsignadosActual);
 
                 // Cargar reservas pendientes
-                loadReservasPendientes();
+                cargarReservasPendientes();
 
-                // Configurar listener en tiempo real si no está configurado
-                if (!isRealTimeListenerSetup) {
-                    setupRealTimeListener();
-                }
+                // Configurar listener en tiempo real
+                configurarListenerTiempoReal();
 
                 isLoadingData = false;
                 setLoading(false);
@@ -155,7 +157,7 @@ public class ReservasViewModel extends BaseViewModel {
             @Override
             public void onError(String error) {
                 Log.e(TAG, "❌ Error cargando datos del conductor: " + error);
-                setError("Error cargando datos del conductor: " + error);
+                setError("Error cargando datos del conductor");
                 setLoading(false);
                 isLoadingData = false;
             }
@@ -163,9 +165,9 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Carga reservas pendientes usando DriverReservationService directamente
+     * Carga las reservas pendientes del conductor
      */
-    public void loadReservasPendientes() {
+    public void cargarReservasPendientes() {
         if (conductorNombreActual == null || conductorNombreActual.isEmpty()) {
             Log.w(TAG, "⚠️ conductorNombreActual es nulo o vacío");
             return;
@@ -174,6 +176,7 @@ public class ReservasViewModel extends BaseViewModel {
         Log.d(TAG, "🔍 Cargando reservas pendientes para: " + conductorNombreActual);
         setLoading(true);
 
+        // Usar el nuevo método unificado con el wrapper de compatibilidad
         driverReservationService.cargarReservasConductor(
                 conductorNombreActual,
                 horariosAsignadosActual != null ? horariosAsignadosActual : new ArrayList<>(),
@@ -182,18 +185,17 @@ public class ReservasViewModel extends BaseViewModel {
                     public void onDriverReservationsLoaded(List<Reserva> reservas) {
                         Log.d(TAG, "✅ " + reservas.size() + " reservas pendientes cargadas");
 
-                        // Ya vienen filtradas como "Por confirmar" del servicio
-                        reservasLiveData.postValue(reservas);
+                        reservasPendientesLiveData.postValue(reservas);
                         contadorReservasLiveData.postValue(reservas.size());
 
                         setLoading(false);
-                        registrarEventoAnalitico("reservas_pendientes_cargadas", conductorNombreActual, reservas.size());
+                        registrarEventoAnalitico("reservas_pendientes_cargadas", reservas.size());
                     }
 
                     @Override
                     public void onError(String error) {
                         Log.e(TAG, "❌ Error cargando reservas pendientes: " + error);
-                        setError("Error cargando reservas: " + error);
+                        setError("Error cargando reservas");
                         setLoading(false);
                     }
                 }
@@ -201,19 +203,128 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Configurar listener en tiempo real para nuevas reservas
+     * Confirma una reserva pendiente
      */
-    public void setupRealTimeListener() {
+    public void confirmarReserva(Reserva reserva) {
+        if (reserva == null || reserva.getIdReserva() == null) {
+            Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
+            setError("Reserva no válida");
+            return;
+        }
+
+        Log.d(TAG, "✅ Confirmando reserva: " + reserva.getIdReserva());
+        reservaEnProcesoLiveData.postValue(reserva);
+        reservaProcesadaLiveData.postValue(false);
+
+        driverReservationService.actualizarEstadoReserva(
+                reserva.getIdReserva(),
+                "Confirmada",
+                new DriverReservationService.ReservationUpdateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, "✅ Reserva confirmada exitosamente");
+                        eliminarReservaDeLista(reserva);
+                        reservaProcesadaLiveData.postValue(true);
+                        registrarEventoAnalitico("reserva_confirmada", 1);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(TAG, "❌ Error confirmando reserva: " + error);
+                        setError("Error confirmando reserva");
+                        reservaProcesadaLiveData.postValue(false);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Cancela una reserva pendiente
+     */
+    public void cancelarReserva(Reserva reserva) {
+        if (reserva == null || reserva.getIdReserva() == null) {
+            Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
+            setError("Reserva no válida");
+            return;
+        }
+
+        Log.d(TAG, "❌ Cancelando reserva: " + reserva.getIdReserva());
+        reservaEnProcesoLiveData.postValue(reserva);
+        reservaProcesadaLiveData.postValue(false);
+
+        // Verificar si tenemos información para liberar el asiento
+        if (reserva.getHorarioId() != null && reserva.getPuestoReservado() > 0) {
+            driverReservationService.cancelarReservaConLiberacion(
+                    reserva.getIdReserva(),
+                    reserva.getHorarioId(),
+                    reserva.getPuestoReservado(),
+                    new DriverReservationService.ReservationUpdateCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "✅ Reserva cancelada y asiento liberado");
+                            eliminarReservaDeLista(reserva);
+                            reservaProcesadaLiveData.postValue(true);
+                            registrarEventoAnalitico("reserva_cancelada", 1);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.e(TAG, "❌ Error cancelando reserva: " + error);
+                            setError("Error cancelando reserva");
+                            reservaProcesadaLiveData.postValue(false);
+                        }
+                    }
+            );
+        } else {
+            // Cancelar sin liberar asiento (fallback)
+            driverReservationService.actualizarEstadoReserva(
+                    reserva.getIdReserva(),
+                    "Cancelada",
+                    new DriverReservationService.ReservationUpdateCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "✅ Reserva cancelada (sin liberar asiento)");
+                            eliminarReservaDeLista(reserva);
+                            reservaProcesadaLiveData.postValue(true);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.e(TAG, "❌ Error cancelando reserva: " + error);
+                            setError("Error cancelando reserva");
+                            reservaProcesadaLiveData.postValue(false);
+                        }
+                    }
+            );
+        }
+    }
+
+    /**
+     * Refresca las reservas pendientes
+     */
+    public void refrescarReservas() {
+        Log.d(TAG, "🔄 Refrescando reservas pendientes");
+        if (conductorNombreActual != null) {
+            cargarReservasPendientes();
+        }
+    }
+
+    // ============ LISTENER EN TIEMPO REAL ============
+
+    /**
+     * Configura el listener en tiempo real para nuevas reservas
+     */
+    private void configurarListenerTiempoReal() {
         if (conductorNombreActual == null || conductorNombreActual.isEmpty() || isRealTimeListenerSetup) {
-            Log.w(TAG, "⚠️ No hay conductor actual o ya está configurado el listener");
+            Log.w(TAG, "⚠️ No se puede configurar listener: " +
+                    (conductorNombreActual == null ? "sin conductor" : "ya configurado"));
             return;
         }
 
         Log.d(TAG, "🎧 Configurando listener en tiempo real para: " + conductorNombreActual);
 
         try {
-            // Limpiar listener anterior si existe
-            cleanupRealTimeListener();
+            limpiarListenerTiempoReal();
 
             reservasRef = com.chopcode.trasnportenataga_laplata.config.MyApp.getDatabaseReference("reservas");
 
@@ -223,7 +334,7 @@ public class ReservasViewModel extends BaseViewModel {
                     Log.d(TAG, "🔄 Datos cambiados en tiempo real");
 
                     List<Reserva> nuevasReservas = new ArrayList<>();
-                    List<Reserva> reservasActuales = reservasLiveData.getValue();
+                    List<Reserva> reservasActuales = reservasPendientesLiveData.getValue();
                     if (reservasActuales == null) {
                         reservasActuales = new ArrayList<>();
                     }
@@ -237,7 +348,7 @@ public class ReservasViewModel extends BaseViewModel {
 
                                 reserva.setIdReserva(snapshot.getKey());
 
-                                // Verificar si la reserva ya existe en la lista actual
+                                // Verificar si ya existe en la lista
                                 boolean existe = false;
                                 for (Reserva existente : reservasActuales) {
                                     if (existente.getIdReserva() != null &&
@@ -264,12 +375,12 @@ public class ReservasViewModel extends BaseViewModel {
                     if (!nuevasReservas.isEmpty()) {
                         Log.d(TAG, "🎯 " + nuevasReservas.size() + " nuevas reservas en tiempo real");
 
-                        // Agregar nuevas reservas a la lista actual
+                        // Agregar nuevas reservas a la lista
                         reservasActuales.addAll(nuevasReservas);
-                        reservasLiveData.postValue(reservasActuales);
+                        reservasPendientesLiveData.postValue(reservasActuales);
                         contadorReservasLiveData.postValue(reservasActuales.size());
 
-                        registrarEventoAnalitico("reservas_tiempo_real", conductorNombreActual, nuevasReservas.size());
+                        registrarEventoAnalitico("nuevas_reservas_tiempo_real", nuevasReservas.size());
                     }
                 }
 
@@ -292,202 +403,53 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Confirmar reserva usando DriverReservationService
+     * Pausa las actualizaciones en tiempo real
      */
-    public void confirmReservation(Reserva reserva) {
-        if (reserva == null || reserva.getIdReserva() == null) {
-            Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
-            setError("Reserva no válida");
-            return;
-        }
-
-        Log.d(TAG, "✅ Confirmando reserva: " + reserva.getIdReserva());
-        reservaEnProcesoLiveData.postValue(reserva);
-        reservaProcesadaLiveData.postValue(false);
-
-        driverReservationService.actualizarEstadoReserva(
-                reserva.getIdReserva(),
-                "Confirmada",
-                new DriverReservationService.ReservationUpdateCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "✅ Reserva confirmada exitosamente");
-                        handleReservaProcesada(reserva);
-                        reservaProcesadaLiveData.postValue(true);
-                        registrarEventoAnalitico("reserva_confirmada", conductorNombreActual, 1);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e(TAG, "❌ Error confirmando reserva: " + error);
-                        setError("Error confirmando reserva: " + error);
-                        reservaProcesadaLiveData.postValue(false);
-                    }
-                }
-        );
-    }
-
-    /**
-     * Cancelar reserva usando DriverReservationService
-     */
-    public void cancelReservation(Reserva reserva) {
-        if (reserva == null || reserva.getIdReserva() == null) {
-            Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
-            setError("Reserva no válida");
-            return;
-        }
-
-        Log.d(TAG, "❌ Cancelando reserva: " + reserva.getIdReserva());
-        reservaEnProcesoLiveData.postValue(reserva);
-        reservaProcesadaLiveData.postValue(false);
-
-        // Verificar si podemos liberar el asiento
-        if (reserva.getHorarioId() != null && reserva.getPuestoReservado() > 0) {
-            driverReservationService.cancelarReservaConLiberacion(
-                    reserva.getIdReserva(),
-                    reserva.getHorarioId(),
-                    reserva.getPuestoReservado(),
-                    new DriverReservationService.ReservationUpdateCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "✅ Reserva cancelada y asiento liberado exitosamente");
-                            handleReservaProcesada(reserva);
-                            reservaProcesadaLiveData.postValue(true);
-                            registrarEventoAnalitico("reserva_cancelada", conductorNombreActual, 1);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.e(TAG, "❌ Error cancelando reserva: " + error);
-                            setError("Error cancelando reserva: " + error);
-                            reservaProcesadaLiveData.postValue(false);
-                        }
-                    }
-            );
-        } else {
-            // Cancelar sin liberar asiento (fallback)
-            driverReservationService.actualizarEstadoReserva(
-                    reserva.getIdReserva(),
-                    "Cancelada",
-                    new DriverReservationService.ReservationUpdateCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "✅ Reserva cancelada (sin liberar asiento)");
-                            handleReservaProcesada(reserva);
-                            reservaProcesadaLiveData.postValue(true);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.e(TAG, "❌ Error cancelando reserva: " + error);
-                            setError("Error cancelando reserva: " + error);
-                            reservaProcesadaLiveData.postValue(false);
-                        }
-                    }
-            );
-        }
-    }
-
-    /**
-     * Cargar historial completo de reservas
-     */
-    public void loadHistorialCompleto() {
-        if (conductorUIDActual == null || conductorUIDActual.isEmpty()) {
-            Log.w(TAG, "⚠️ conductorUIDActual es nulo o vacío");
-            return;
-        }
-
-        Log.d(TAG, "📚 Cargando historial completo para: " + conductorUIDActual);
-        setLoading(true);
-
-        driverReservationService.cargarReservasConductorPorUID(
-                conductorUIDActual,
-                "TODAS", // Todas las reservas sin filtrar por estado
-                new DriverReservationService.DriverReservationsByUIDCallback() {
-                    @Override
-                    public void onReservationsLoaded(List<Reserva> reservas) {
-                        Log.d(TAG, "✅ " + reservas.size() + " reservas en historial");
-                        // Para historial, mostrar todas sin filtrar
-                        reservasLiveData.postValue(reservas);
-                        contadorReservasLiveData.postValue(reservas.size());
-                        setLoading(false);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e(TAG, "❌ Error cargando historial: " + error);
-                        setError("Error cargando historial: " + error);
-                        setLoading(false);
-                    }
-                }
-        );
-    }
-
-    /**
-     * Obtener estadísticas básicas del conductor
-     */
-    public void obtenerEstadisticasBasicas(DriverReservationService.SimpleStatsCallback callback) {
-        if (conductorUIDActual == null || conductorUIDActual.isEmpty()) {
-            Log.w(TAG, "⚠️ conductorUIDActual es nulo o vacío");
-            callback.onError("Conductor no identificado");
-            return;
-        }
-
-        Log.d(TAG, "📊 Obteniendo estadísticas básicas para: " + conductorUIDActual);
-
-        driverReservationService.obtenerEstadisticasSimples(
-                conductorUIDActual,
-                new DriverReservationService.SimpleStatsCallback() {
-                    @Override
-                    public void onStatsLoaded(DriverReservationService.SimpleDriverStats stats) {
-                        Log.d(TAG, "✅ Estadísticas cargadas: " + stats);
-                        callback.onStatsLoaded(stats);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e(TAG, "❌ Error obteniendo estadísticas: " + error);
-                        callback.onError(error);
-                    }
-                }
-        );
-    }
-
-    // ============ MÉTODOS AUXILIARES ============
-
-    /**
-     * Refrescar todos los datos
-     */
-    public void refreshAllData() {
-        Log.d(TAG, "🔄 Refrescando todos los datos");
-        if (conductorUIDActual != null) {
-            loadReservasPendientes();
-        }
-    }
-
-    /**
-     * Pausar actualizaciones en tiempo real
-     */
-    public void pauseRealTimeUpdates() {
+    public void pausarActualizacionesTiempoReal() {
         Log.d(TAG, "⏸️ Pausando actualizaciones en tiempo real");
-        cleanupRealTimeListener();
+        limpiarListenerTiempoReal();
         isRealTimeListenerSetup = false;
     }
 
     /**
-     * Reanudar actualizaciones en tiempo real
+     * Reanuda las actualizaciones en tiempo real
      */
-    public void resumeRealTimeUpdates() {
+    public void reanudarActualizacionesTiempoReal() {
         if (conductorNombreActual != null && !isRealTimeListenerSetup) {
             Log.d(TAG, "▶️ Reanudando actualizaciones en tiempo real");
-            setupRealTimeListener();
+            configurarListenerTiempoReal();
+        }
+    }
+
+    // ============ MÉTODOS AUXILIARES PRIVADOS ============
+
+    /**
+     * Elimina una reserva procesada de la lista
+     */
+    private void eliminarReservaDeLista(Reserva reserva) {
+        if (reserva == null) {
+            Log.w(TAG, "⚠️ Reserva es nula en eliminarReservaDeLista");
+            return;
+        }
+
+        List<Reserva> reservasActuales = reservasPendientesLiveData.getValue();
+        if (reservasActuales != null) {
+            List<Reserva> nuevasReservas = new ArrayList<>();
+            for (Reserva r : reservasActuales) {
+                if (r != null && r.getIdReserva() != null &&
+                        !r.getIdReserva().equals(reserva.getIdReserva())) {
+                    nuevasReservas.add(r);
+                }
+            }
+            reservasPendientesLiveData.postValue(nuevasReservas);
+            contadorReservasLiveData.postValue(nuevasReservas.size());
         }
     }
 
     /**
-     * Limpiar listener en tiempo real
+     * Limpia el listener en tiempo real
      */
-    private void cleanupRealTimeListener() {
+    private void limpiarListenerTiempoReal() {
         if (reservasRef != null && reservasListener != null) {
             reservasRef.removeEventListener(reservasListener);
             Log.d(TAG, "✅ Listener de Firebase removido");
@@ -497,36 +459,17 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Manejar reserva procesada (eliminar de la lista)
+     * Registra eventos analíticos
      */
-    private void handleReservaProcesada(Reserva reserva) {
-        if (reserva == null) {
-            Log.w(TAG, "⚠️ Reserva es nula en handleReservaProcesada");
-            return;
-        }
-
-        List<Reserva> reservasActuales = reservasLiveData.getValue();
-        if (reservasActuales != null) {
-            List<Reserva> nuevasReservas = new ArrayList<>();
-            for (Reserva r : reservasActuales) {
-                if (r != null && r.getIdReserva() != null &&
-                        !r.getIdReserva().equals(reserva.getIdReserva())) {
-                    nuevasReservas.add(r);
-                }
-            }
-            reservasLiveData.postValue(nuevasReservas);
-            contadorReservasLiveData.postValue(nuevasReservas.size());
-        }
+    private void registrarEventoAnalitico(String evento, int cantidad) {
+        // Implementar con Firebase Analytics si es necesario
+        Log.d(TAG, "📊 Evento: " + evento + " - Cantidad: " + cantidad);
     }
 
     // ============ GETTERS PARA DATOS ACTUALES ============
 
     public String getConductorNombreActual() {
         return conductorNombreActual;
-    }
-
-    public String getConductorUIDActual() {
-        return conductorUIDActual;
     }
 
     public List<String> getHorariosAsignadosActual() {
@@ -541,20 +484,12 @@ public class ReservasViewModel extends BaseViewModel {
         Log.d(TAG, "🧹 Limpiando ReservasViewModel");
 
         // Limpiar listeners
-        pauseRealTimeUpdates();
+        pausarActualizacionesTiempoReal();
 
         // Limpiar referencias
         conductorNombreActual = null;
         conductorUIDActual = null;
         horariosAsignadosActual = null;
         isLoadingData = false;
-    }
-
-    // ============ MÉTODO DE REGISTRO DE EVENTOS ============
-
-    private void registrarEventoAnalitico(String evento, String conductor, int cantidad) {
-        // Método para registrar eventos analíticos
-        // Puedes implementar Firebase Analytics, Crashlytics, etc.
-        Log.d(TAG, "📊 Evento analítico: " + evento + " - Conductor: " + conductor + " - Cantidad: " + cantidad);
     }
 }
