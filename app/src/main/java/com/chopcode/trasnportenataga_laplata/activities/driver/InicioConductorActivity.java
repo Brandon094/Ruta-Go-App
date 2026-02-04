@@ -275,7 +275,7 @@ public class InicioConductorActivity extends AppCompatActivity {
 
                 // ✅ ACTUALIZAR ESTADÍSTICAS CUANDO HAY NUEVAS RESERVAS
                 if (!listaRutas.isEmpty()) {
-                    estadisticasViewModel.calculateRouteStatistics(listaRutas, listaReservas);
+                    estadisticasViewModel.calculateRouteStatistics();
                 }
             } else {
                 tvContadorReservas.setText(getString(R.string.contador_reservas, 0));
@@ -332,7 +332,7 @@ public class InicioConductorActivity extends AppCompatActivity {
 
                 // ✅ ACTUALIZAR ESTADÍSTICAS POR RUTA
                 if (!listaReservas.isEmpty()) {
-                    estadisticasViewModel.calculateRouteStatistics(rutas, listaReservas);
+                    estadisticasViewModel.calculateRouteStatistics();
                 }
 
                 // Actualizar tiempo de actualización
