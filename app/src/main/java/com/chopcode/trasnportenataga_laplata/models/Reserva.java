@@ -23,6 +23,7 @@ public class Reserva {
         this.horarioId = horarioId;
         this.puestoReservado = puestoReservado;
         this.conductor = conductor;
+        this.conductorId = conductorId;
         this.vehiculoId = vehiculoId;
         this.precio = precio;
         this.origen = origen;
