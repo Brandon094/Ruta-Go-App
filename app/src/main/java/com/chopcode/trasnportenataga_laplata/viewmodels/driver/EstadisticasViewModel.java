@@ -1,9 +1,7 @@
 // EstadisticasViewModel.java
 package com.chopcode.trasnportenataga_laplata.viewmodels.driver;
 
-import com.chopcode.trasnportenataga_laplata.managers.statistics.DriverStatisticsManager;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
-import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.services.reservations.driver.DriverReservationService;
 
 import android.util.Log;
@@ -45,9 +43,6 @@ public class EstadisticasViewModel extends BaseViewModel {
     // =========================================================================
     // CONSTANTES Y VARIABLES DE INSTANCIA
     // =========================================================================
-
-    /** Manager para cálculos estadísticos complejos (legacy/compatibilidad) */
-    private final DriverStatisticsManager statisticsManager;
 
     /** Servicio directo para operaciones de reservas (optimizado) */
     private final DriverReservationService driverReservationService;
@@ -110,7 +105,6 @@ public class EstadisticasViewModel extends BaseViewModel {
      * Inicializa todos los componentes y establece valores por defecto.
      */
     public EstadisticasViewModel() {
-        this.statisticsManager = new DriverStatisticsManager();
         this.driverReservationService = new DriverReservationService();
 
         // Establecer valores iniciales para evitar null en la UI
