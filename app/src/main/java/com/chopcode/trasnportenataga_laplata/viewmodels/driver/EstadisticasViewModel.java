@@ -40,6 +40,10 @@ import java.util.concurrent.Executors;
  */
 public class EstadisticasViewModel extends BaseViewModel {
 
+    // CONSTANTES DE CAPACIDAD
+    private static final int MAX_ASIENTOS_POR_RUTA = 13;
+    private static final int MAX_ASIENTOS_TOTALES = 26;
+
     // =========================================================================
     // CONSTANTES Y VARIABLES DE INSTANCIA
     // =========================================================================
@@ -113,6 +117,15 @@ public class EstadisticasViewModel extends BaseViewModel {
         ingresosLiveData.setValue(0.0);
         reservasRuta1LiveData.setValue(0); asientosRuta1LiveData.setValue(0);
         reservasRuta2LiveData.setValue(0); asientosRuta2LiveData.setValue(0);
+
+        // INICIALIZAR TODOS LOS LiveData
+        nombreRuta1LiveData.setValue("Nataga → La Plata");
+        reservasRuta1LiveData.setValue(0);
+        asientosRuta1LiveData.setValue(MAX_ASIENTOS_POR_RUTA); // 13 asientos disponibles
+
+        nombreRuta2LiveData.setValue("La Plata → Nataga");
+        reservasRuta2LiveData.setValue(0);
+        asientosRuta2LiveData.setValue(MAX_ASIENTOS_POR_RUTA); // 13 asientos disponibles
     }
 
     // =========================================================================
@@ -276,7 +289,7 @@ public class EstadisticasViewModel extends BaseViewModel {
 
                         // 2. Calcular asientos disponibles HOY (26 asientos totales)
                         int asientosOcupadosHoy = reservasConfirmadasHoyCount + reservasPendientesHoyCount;
-                        int asientosDisponiblesHoy = Math.max(0, 26 - asientosOcupadosHoy);
+                        int asientosDisponiblesHoy = Math.max(0, MAX_ASIENTOS_TOTALES - asientosOcupadosHoy);
                         asientosDisponiblesLiveData.postValue(asientosDisponiblesHoy);
 
                         // 3. ¡IMPORTANTE! Procesar análisis por ruta usando listas YA FILTRADAS (solo hoy)
@@ -479,40 +492,68 @@ public class EstadisticasViewModel extends BaseViewModel {
             return;
         }
 
-        int rutaIndex = 0;
+        // Variables para identificar rutas encontradas
+        boolean encontradaRuta1 = false;
+        boolean encontradaRuta2 = false;
+
         for (Map.Entry<String, Integer> entry : reservasPorRuta.entrySet()) {
             String rutaId = entry.getKey();
             int reservasEnRuta = entry.getValue();
             int asientosOcupadosEnRuta = asientosOcupadosPorRuta.getOrDefault(rutaId, 0);
-            int asientosDisponiblesEnRuta = Math.max(0, 13 - asientosOcupadosEnRuta);
+            int asientosDisponiblesEnRuta = Math.max(0, MAX_ASIENTOS_POR_RUTA - asientosOcupadosEnRuta);
             String nombreRuta = nombresRutas.get(rutaId);
 
-            Log.d(TAG, "   Ruta " + (rutaIndex + 1) + ": " + nombreRuta +
-                    " - Confirmadas: " + reservasEnRuta +
-                    " - Disponibles: " + asientosDisponiblesEnRuta);
-
-            if (rutaIndex == 0) {
-                nombreRuta1LiveData.postValue(nombreRuta != null ? nombreRuta : "Nataga → La Plata");
-                reservasRuta1LiveData.postValue(reservasEnRuta);
-                asientosRuta1LiveData.postValue(asientosDisponiblesEnRuta);
-            } else if (rutaIndex == 1) {
-                nombreRuta2LiveData.postValue(nombreRuta != null ? nombreRuta : "La Plata → Nataga");
-                reservasRuta2LiveData.postValue(reservasEnRuta);
-                asientosRuta2LiveData.postValue(asientosDisponiblesEnRuta);
+            if (nombreRuta == null) {
+                continue;
             }
 
-            rutaIndex++;
-            if (rutaIndex >= 2) break; // Solo mostrar máximo 2 rutas
+            Log.d(TAG, "   Analizando ruta: " + nombreRuta);
+
+            // IDENTIFICACIÓN POR CONTENIDO - VERSIÓN CON Y SIN TILDES
+            // RUTA 1: Nataga → La Plata (ida)
+            if (nombreRuta.contains("Nataga → La Plata") ||
+                    nombreRuta.contains("Nataga -> La Plata") ||
+                    nombreRuta.contains("Natagá → La Plata") ||  // CON TILDE
+                    nombreRuta.contains("Natagá -> La Plata")) { // CON TILDE
+
+                Log.d(TAG, "   ✅ Asignando a RUTA 1 (ida): " + nombreRuta);
+                nombreRuta1LiveData.postValue(nombreRuta);
+                reservasRuta1LiveData.postValue(reservasEnRuta);
+                asientosRuta1LiveData.postValue(asientosDisponiblesEnRuta);
+                encontradaRuta1 = true;
+
+            }
+            // RUTA 2: La Plata → Nataga (regreso)
+            else if (nombreRuta.contains("La Plata → Nataga") ||
+                    nombreRuta.contains("La Plata -> Nataga") ||
+                    nombreRuta.contains("La Plata → Natagá") ||  // CON TILDE
+                    nombreRuta.contains("La Plata -> Natagá")) { // CON TILDE
+
+                Log.d(TAG, "   ✅ Asignando a RUTA 2 (regreso): " + nombreRuta);
+                nombreRuta2LiveData.postValue(nombreRuta);
+                reservasRuta2LiveData.postValue(reservasEnRuta);
+                asientosRuta2LiveData.postValue(asientosDisponiblesEnRuta);
+                encontradaRuta2 = true;
+
+            } else {
+                Log.w(TAG, "   ⚠️ Ruta no reconocida (posible formato diferente): " + nombreRuta);
+                Log.w(TAG, "      Buscando: 'Nataga'/'Natagá' → 'La Plata' o 'La Plata' → 'Nataga'/'Natagá'");
+            }
         }
 
-        // Si hay menos de 2 rutas, establecer valores por defecto
-        if (rutaIndex < 1) {
-            setDefaultRouteValues();
-        } else if (rutaIndex < 2) {
-            // Solo hay una ruta, establecer valores por defecto para la segunda
+        // ESTABLECER VALORES POR DEFECTO SOLO PARA RUTAS NO ENCONTRADAS
+        if (!encontradaRuta1) {
+            Log.d(TAG, "   ℹ️ No se encontró Ruta 1, estableciendo valores por defecto");
+            nombreRuta1LiveData.postValue("Nataga → La Plata");
+            reservasRuta1LiveData.postValue(0);
+            asientosRuta1LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
+        }
+
+        if (!encontradaRuta2) {
+            Log.d(TAG, "   ℹ️ No se encontró Ruta 2, estableciendo valores por defecto");
             nombreRuta2LiveData.postValue("La Plata → Nataga");
             reservasRuta2LiveData.postValue(0);
-            asientosRuta2LiveData.postValue(0); // Asientos disponibles máximos
+            asientosRuta2LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
         }
     }
 
@@ -524,10 +565,10 @@ public class EstadisticasViewModel extends BaseViewModel {
         Log.d(TAG, "⚙️ Estableciendo valores por defecto para rutas");
         nombreRuta1LiveData.postValue("N/A → N/A");
         reservasRuta1LiveData.postValue(0);
-        asientosRuta1LiveData.postValue(0);
+        asientosRuta1LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
         nombreRuta2LiveData.postValue("N/A → N/A");
         reservasRuta2LiveData.postValue(0);
-        asientosRuta2LiveData.postValue(0);
+        asientosRuta2LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
     }
 
     // =========================================================================
