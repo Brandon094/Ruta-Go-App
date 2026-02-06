@@ -1,5 +1,5 @@
 // BaseViewModel.java
-package com.chopcode.trasnportenataga_laplata.viewmodels.driver;
+package com.chopcode.trasnportenataga_laplata.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
