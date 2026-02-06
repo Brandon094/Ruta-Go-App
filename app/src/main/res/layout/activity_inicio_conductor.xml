@@ -71,20 +71,49 @@
                         android:layout_marginStart="12dp"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/tvConductor"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tvPlacaVehiculo"
-                            style="@style/TextAppearance.MaterialComponents.Body2"
-                            android:layout_width="match_parent"
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_co_present"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvConductor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                android:text="@string/cargando"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textColor="@color/text_tertiary"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_license"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvPlacaVehiculo"
+                                style="@style/TextAppearance.MaterialComponents.Body2"
+                                android:text="@string/cargando"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_tertiary"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -120,15 +149,28 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvReservasActivas"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/reservas_activas"
-                            android:textColor="@color/primary_text"
-                            android:textStyle="bold"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_report"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvReservasActivas"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/reservas_activas"
+                                android:textColor="@color/primary_text"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvSubtituloReservas"
@@ -212,16 +254,27 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvTituloEstadisticas"
-                            style="@style/TextAppearance.MaterialComponents.Headline6"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/resumen_dia"
-                            android:textColor="@color/primary_text"
-                            android:textStyle="bold"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="horizontal">
 
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_stast"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:id="@+id/tvTituloEstadisticas"
+                                style="@style/TextAppearance.MaterialComponents.Headline6"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/resumen_dia"
+                                android:textColor="@color/primary_text"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
                         <TextView
                             android:id="@+id/tvSubtituloEstadisticas"
                             style="@style/TextAppearance.MaterialComponents.Caption"
@@ -247,15 +300,26 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="24dp">
-
-                    <TextView
-                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/ingresos_del_dia"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_cash"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ingresos_del_dia"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp"/>
+                    </LinearLayout>
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
@@ -314,7 +378,7 @@
 
                             <!-- Valor de ingresos -->
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
@@ -329,8 +393,8 @@
                                     android:textColor="@color/warning_700"
                                     android:textStyle="bold"
                                     android:textAlignment="textEnd"/>
-
-                                <TextView
+                                <!-- Actualmente no se usa el vs ayer -->
+                               <!-- <TextView
                                     android:id="@+id/tvTendenciaIngresos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -340,7 +404,7 @@
                                     android:layout_marginTop="4dp"
                                     android:drawablePadding="4dp"
                                     app:drawableStartCompat="@drawable/ic_trending_up"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone"/> -->
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -352,15 +416,26 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="24dp">
-
-                    <TextView
-                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/desempeno_general"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_stast"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/desempeno_general"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp"/>
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -510,14 +585,26 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginBottom="24dp">
-
-                    <TextView
-                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/desglose_ruta"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp"/>
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_info"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/desglose_ruta"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp"/>
+                    </LinearLayout>
 
                     <!-- INFORMACIÓN DE CONTEXTO -->
                     <TextView
@@ -731,8 +818,7 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_arrow_back"
                                 android:tint="@color/secondary_600"
-                                android:layout_marginEnd="8dp"
-                                android:rotation="180"/>
+                                android:layout_marginEnd="8dp" />
 
                             <TextView
                                 android:id="@+id/tvNombreRutaHeader2"
@@ -972,16 +1058,27 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvProximaRuta"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/proximas_rutas"
-                            android:textColor="@color/primary_text"
-                            android:textStyle="bold"/>
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="horizontal">
 
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_route"
+                                android:layout_marginEnd="8dp"/>
+                            <TextView
+                                android:id="@+id/tvProximaRuta"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/proximas_rutas"
+                                android:textColor="@color/primary_text"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
                         <TextView
                             android:id="@+id/tvSubtituloRutas"
                             style="@style/TextAppearance.MaterialComponents.Caption"
@@ -1052,7 +1149,7 @@
                 android:text="@string/perfil_conductor"
                 android:textAllCaps="false"
                 app:cornerRadius="26dp"
-                app:icon="@drawable/ic_driver"
+                app:icon="@drawable/ic_co_present"
                 app:iconGravity="textStart"
                 app:iconTint="@color/primary_color"
                 app:strokeColor="@color/primary_color"
