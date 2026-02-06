@@ -1,12 +1,11 @@
 package com.chopcode.trasnportenataga_laplata.viewmodels.driver;
 
-import android.content.Context;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
 import com.chopcode.trasnportenataga_laplata.services.reservations.driver.DriverReservationService;
-import com.chopcode.trasnportenataga_laplata.services.user.UserService;
+import com.chopcode.trasnportenataga_laplata.viewmodels.BaseViewModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,14 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ViewModel exclusivo para la pantalla principal del conductor.
- * Solo maneja reservas pendientes "Por confirmar" para confirmar o cancelar.
+ * ViewModel exclusivo para manejar reservas pendientes del conductor.
+ * Responsabilidad única: gestionar reservas "Por confirmar" para confirmar o cancelar.
  */
 public class ReservasViewModel extends BaseViewModel {
 
     // Servicios
     private final DriverReservationService driverReservationService;
-    private final UserService userService;
 
     // LiveData para reservas pendientes
     private final MutableLiveData<List<Reserva>> reservasPendientesLiveData = new MutableLiveData<>();
@@ -32,37 +30,24 @@ public class ReservasViewModel extends BaseViewModel {
     private final MutableLiveData<Reserva> reservaEnProcesoLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> reservaProcesadaLiveData = new MutableLiveData<>();
 
-    // LiveData para datos del conductor (solo lo necesario para reservas pendientes)
-    private final MutableLiveData<String> conductorNombreLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<String>> horariosAsignadosLiveData = new MutableLiveData<>();
-
-    // Variables para el conductor actual
+    // Variables para el conductor actual (solo lo necesario para reservas)
     private String conductorNombreActual;
-    private String conductorUIDActual;
-    private List<String> horariosAsignadosActual;
+    private List<String> horariosAsignadosActual; // Ahora se reciben desde PerfilViewModel
 
     // Control de listeners y estado
     private boolean isRealTimeListenerSetup = false;
-    private boolean isLoadingData = false;
     private DatabaseReference reservasRef;
     private ValueEventListener reservasListener;
 
     public ReservasViewModel() {
         this.driverReservationService = new DriverReservationService();
-        this.userService = new UserService();
 
         // Valores iniciales
         this.contadorReservasLiveData.setValue(0);
         this.reservaProcesadaLiveData.setValue(false);
         this.reservasPendientesLiveData.setValue(new ArrayList<>());
-        this.conductorNombreLiveData.setValue(null);
-        this.horariosAsignadosLiveData.setValue(new ArrayList<>());
 
-        Log.d(TAG, "✅ ReservasViewModel para pantalla principal inicializado");
-    }
-
-    public void initialize(Context context) {
-        Log.d(TAG, "✅ ReservasViewModel inicializado con context");
+        Log.d(TAG, "✅ ReservasViewModel simplificado inicializado");
     }
 
     // ============ GETTERS PARA LIVEDATA ============
@@ -82,20 +67,6 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Obtiene el nombre del conductor para mostrar en la UI
-     */
-    public LiveData<String> getConductorNombreLiveData() {
-        return conductorNombreLiveData;
-    }
-
-    /**
-     * Obtiene los horarios asignados al conductor
-     */
-    public LiveData<List<String>> getHorariosAsignadosLiveData() {
-        return horariosAsignadosLiveData;
-    }
-
-    /**
      * Obtiene la reserva que está siendo procesada (confirmar/cancelar)
      */
     public LiveData<Reserva> getReservaEnProcesoLiveData() {
@@ -112,60 +83,38 @@ public class ReservasViewModel extends BaseViewModel {
     // ============ MÉTODOS PRINCIPALES ============
 
     /**
-     * Inicializa el ViewModel con los datos del conductor y carga las reservas pendientes
+     * Inicializa el ViewModel con solo el nombre del conductor
+     * (Los horarios ahora vienen del PerfilViewModel y se pasan por separado)
      */
-    public void inicializarConductor(String conductorUID) {
-        if (conductorUID == null || conductorUID.isEmpty()) {
-            Log.e(TAG, "❌ conductorUID es nulo o vacío");
-            setError("ID del conductor no válido");
+    public void inicializarConNombreConductor(String nombreConductor) {
+        if (nombreConductor == null || nombreConductor.isEmpty()) {
+            Log.e(TAG, "❌ Nombre del conductor es nulo o vacío");
+            setError("Nombre del conductor no válido");
             return;
         }
 
-        if (isLoadingData) {
-            Log.d(TAG, "⚠️ Ya se está cargando datos, ignorando solicitud duplicada");
-            return;
-        }
+        Log.d(TAG, "👤 Inicializando reservas para: " + nombreConductor);
+        this.conductorNombreActual = nombreConductor;
 
-        Log.d(TAG, "👤 Inicializando para conductor UID: " + conductorUID);
-        setLoading(true);
-        isLoadingData = true;
+        // Cargar reservas pendientes
+        cargarReservasPendientes();
 
-        this.conductorUIDActual = conductorUID;
+        // Configurar listener en tiempo real
+        configurarListenerTiempoReal();
 
-        // Cargar datos básicos del conductor
-        userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
-            @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horarios) {
-                Log.d(TAG, "✅ Datos del conductor cargados: " + nombre);
-                conductorNombreActual = nombre;
-                horariosAsignadosActual = horarios != null ? horarios : new ArrayList<>();
-
-                // Actualizar LiveData
-                conductorNombreLiveData.postValue(nombre);
-                horariosAsignadosLiveData.postValue(horariosAsignadosActual);
-
-                // Cargar reservas pendientes usando el NUEVO método
-                cargarReservasPendientes();
-
-                // Configurar listener en tiempo real
-                configurarListenerTiempoReal();
-
-                isLoadingData = false;
-                setLoading(false);
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, "❌ Error cargando datos del conductor: " + error);
-                setError("Error cargando datos del conductor");
-                setLoading(false);
-                isLoadingData = false;
-            }
-        });
+        registrarEventoAnalitico("reservas_inicializadas", nombreConductor, 0);
     }
 
     /**
-     * Carga las reservas pendientes del conductor usando el NUEVO método unificado
+     * Establece los horarios asignados (vienen del PerfilViewModel)
+     */
+    public void setHorariosAsignados(List<String> horarios) {
+        this.horariosAsignadosActual = horarios != null ? new ArrayList<>(horarios) : new ArrayList<>();
+        Log.d(TAG, "🕐 Horarios asignados establecidos: " + horariosAsignadosActual.size());
+    }
+
+    /**
+     * Carga las reservas pendientes del conductor usando solo el nombre
      */
     public void cargarReservasPendientes() {
         if (conductorNombreActual == null || conductorNombreActual.isEmpty()) {
@@ -176,30 +125,59 @@ public class ReservasViewModel extends BaseViewModel {
         Log.d(TAG, "🔍 Cargando reservas pendientes para: " + conductorNombreActual);
         setLoading(true);
 
-        // ✅ USAR EL NUEVO MÉTODO UNIFICADO: cargarReservasPendientes()
-        driverReservationService.cargarReservasPendientes(
-                conductorNombreActual,
-                horariosAsignadosActual != null ? horariosAsignadosActual : new ArrayList<>(),
-                new DriverReservationService.ReservationsCallback() {
-                    @Override
-                    public void onReservationsLoaded(List<Reserva> reservas) {
-                        Log.d(TAG, "✅ " + reservas.size() + " reservas pendientes cargadas");
+        // Usar el método que solo necesita el nombre del conductor
+        // Si el servicio necesita horarios, se los pasamos si están disponibles
+        if (horariosAsignadosActual != null && !horariosAsignadosActual.isEmpty()) {
+            driverReservationService.cargarReservasPendientes(
+                    conductorNombreActual,
+                    horariosAsignadosActual,
+                    new DriverReservationService.ReservationsCallback() {
+                        @Override
+                        public void onReservationsLoaded(List<Reserva> reservas) {
+                            procesarReservasCargadas(reservas);
+                        }
 
-                        reservasPendientesLiveData.postValue(reservas);
-                        contadorReservasLiveData.postValue(reservas.size());
-
-                        setLoading(false);
-                        registrarEventoAnalitico("reservas_pendientes_cargadas", reservas.size());
+                        @Override
+                        public void onError(String error) {
+                            manejarErrorCargaReservas(error);
+                        }
                     }
+            );
+        }
+    }
 
-                    @Override
-                    public void onError(String error) {
-                        Log.e(TAG, "❌ Error cargando reservas pendientes: " + error);
-                        setError("Error cargando reservas");
-                        setLoading(false);
-                    }
-                }
-        );
+    /**
+     * Procesa las reservas cargadas exitosamente
+     */
+    private void procesarReservasCargadas(List<Reserva> reservas) {
+        Log.d(TAG, "✅ " + reservas.size() + " reservas pendientes cargadas");
+
+        // Filtrar por estado "Por confirmar" (si el servicio no lo hace)
+        List<Reserva> reservasFiltradas = new ArrayList<>();
+        for (Reserva reserva : reservas) {
+            if ("Por confirmar".equals(reserva.getEstadoReserva())) {
+                reservasFiltradas.add(reserva);
+            }
+        }
+
+        reservasPendientesLiveData.postValue(reservasFiltradas);
+        contadorReservasLiveData.postValue(reservasFiltradas.size());
+
+        setLoading(false);
+
+        // Registrar evento analítico usando método heredado de BaseViewModel
+        registrarEventoAnalitico("reservas_cargadas", conductorNombreActual, reservasFiltradas.size());
+    }
+
+    /**
+     * Maneja errores al cargar reservas
+     */
+    private void manejarErrorCargaReservas(String error) {
+        Log.e(TAG, "❌ Error cargando reservas pendientes: " + error);
+        setError("Error cargando reservas: " + error);
+        setLoading(false);
+
+        registrarEventoAnalitico("error_carga_reservas", conductorNombreActual, 0);
     }
 
     /**
@@ -225,13 +203,15 @@ public class ReservasViewModel extends BaseViewModel {
                         Log.d(TAG, "✅ Reserva confirmada exitosamente");
                         eliminarReservaDeLista(reserva);
                         reservaProcesadaLiveData.postValue(true);
-                        registrarEventoAnalitico("reserva_confirmada", 1);
+
+                        // Registrar evento analítico
+                        registrarEventoAnalitico("reserva_confirmada", conductorNombreActual, 1);
                     }
 
                     @Override
                     public void onError(String error) {
                         Log.e(TAG, "❌ Error confirmando reserva: " + error);
-                        setError("Error confirmando reserva");
+                        setError("Error confirmando reserva: " + error);
                         reservaProcesadaLiveData.postValue(false);
                     }
                 }
@@ -247,6 +227,11 @@ public class ReservasViewModel extends BaseViewModel {
             setError("Reserva no válida");
             return;
         }
+
+        Log.d(TAG, "🔍 INFORMACIÓN DE RESERVA PARA CANCELAR:");
+        Log.d(TAG, "   - HorarioId: " + reserva.getHorarioId());
+        Log.d(TAG, "   - Asiento: " + reserva.getPuestoReservado());
+        Log.d(TAG, "   - Reserva ID: " + reserva.getIdReserva());
 
         Log.d(TAG, "❌ Cancelando reserva: " + reserva.getIdReserva());
         reservaEnProcesoLiveData.postValue(reserva);
@@ -264,19 +249,20 @@ public class ReservasViewModel extends BaseViewModel {
                             Log.d(TAG, "✅ Reserva cancelada y asiento liberado");
                             eliminarReservaDeLista(reserva);
                             reservaProcesadaLiveData.postValue(true);
-                            registrarEventoAnalitico("reserva_cancelada", 1);
+
+                            registrarEventoAnalitico("reserva_cancelada", conductorNombreActual, 1);
                         }
 
                         @Override
                         public void onError(String error) {
                             Log.e(TAG, "❌ Error cancelando reserva: " + error);
-                            setError("Error cancelando reserva");
+                            setError("Error cancelando reserva: " + error);
                             reservaProcesadaLiveData.postValue(false);
                         }
                     }
             );
         } else {
-            // Cancelar con liberar asiento (fallback)
+            // Cancelar sin liberar asiento (fallback)
             driverReservationService.actualizarEstadoReserva(
                     reserva.getIdReserva(),
                     "Cancelada",
@@ -291,7 +277,7 @@ public class ReservasViewModel extends BaseViewModel {
                         @Override
                         public void onError(String error) {
                             Log.e(TAG, "❌ Error cancelando reserva: " + error);
-                            setError("Error cancelando reserva");
+                            setError("Error cancelando reserva: " + error);
                             reservaProcesadaLiveData.postValue(false);
                         }
                     }
@@ -306,6 +292,9 @@ public class ReservasViewModel extends BaseViewModel {
         Log.d(TAG, "🔄 Refrescando reservas pendientes");
         if (conductorNombreActual != null) {
             cargarReservasPendientes();
+        } else {
+            Log.w(TAG, "⚠️ No se puede refrescar: conductorNombreActual es nulo");
+            setError("No se ha inicializado el conductor");
         }
     }
 
@@ -359,7 +348,7 @@ public class ReservasViewModel extends BaseViewModel {
                                 }
 
                                 if (!existe) {
-                                    // Verificar si pertenece a horarios asignados
+                                    // Verificar si pertenece a horarios asignados (si tenemos)
                                     if (horariosAsignadosActual == null || horariosAsignadosActual.isEmpty() ||
                                             (reserva.getHorarioId() != null &&
                                                     horariosAsignadosActual.contains(reserva.getHorarioId()))) {
@@ -380,7 +369,7 @@ public class ReservasViewModel extends BaseViewModel {
                         reservasPendientesLiveData.postValue(reservasActuales);
                         contadorReservasLiveData.postValue(reservasActuales.size());
 
-                        registrarEventoAnalitico("nuevas_reservas_tiempo_real", nuevasReservas.size());
+                        registrarEventoAnalitico("nuevas_reservas_tiempo_real", conductorNombreActual, nuevasReservas.size());
                     }
                 }
 
@@ -388,7 +377,7 @@ public class ReservasViewModel extends BaseViewModel {
                 public void onCancelled(DatabaseError databaseError) {
                     Log.e(TAG, "❌ Error en listener tiempo real: " + databaseError.getMessage());
                     isRealTimeListenerSetup = false; // Permitir reintentar
-                    setError("Error en conexión en tiempo real");
+                    setError("Error en conexión en tiempo real: " + databaseError.getMessage());
                 }
             };
 
@@ -399,6 +388,7 @@ public class ReservasViewModel extends BaseViewModel {
         } catch (Exception e) {
             Log.e(TAG, "❌ Error configurando listener: " + e.getMessage());
             isRealTimeListenerSetup = false;
+            setError("Error configurando listener: " + e.getMessage());
         }
     }
 
@@ -443,6 +433,8 @@ public class ReservasViewModel extends BaseViewModel {
             }
             reservasPendientesLiveData.postValue(nuevasReservas);
             contadorReservasLiveData.postValue(nuevasReservas.size());
+
+            Log.d(TAG, "🗑️ Reserva eliminada de la lista. Restantes: " + nuevasReservas.size());
         }
     }
 
@@ -458,14 +450,6 @@ public class ReservasViewModel extends BaseViewModel {
         reservasListener = null;
     }
 
-    /**
-     * Registra eventos analíticos
-     */
-    private void registrarEventoAnalitico(String evento, int cantidad) {
-        // Implementar con Firebase Analytics si es necesario
-        Log.d(TAG, "📊 Evento: " + evento + " - Cantidad: " + cantidad);
-    }
-
     // ============ GETTERS PARA DATOS ACTUALES ============
 
     public String getConductorNombreActual() {
@@ -473,7 +457,24 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     public List<String> getHorariosAsignadosActual() {
-        return horariosAsignadosActual;
+        return horariosAsignadosActual != null ?
+                new ArrayList<>(horariosAsignadosActual) : new ArrayList<>();
+    }
+
+    /**
+     * Verifica si hay reservas pendientes
+     */
+    public boolean tieneReservasPendientes() {
+        List<Reserva> reservas = reservasPendientesLiveData.getValue();
+        return reservas != null && !reservas.isEmpty();
+    }
+
+    /**
+     * Obtiene el número de reservas pendientes
+     */
+    public int getNumeroReservasPendientes() {
+        List<Reserva> reservas = reservasPendientesLiveData.getValue();
+        return reservas != null ? reservas.size() : 0;
     }
 
     // ============ LIMPIEZA ============
@@ -488,8 +489,6 @@ public class ReservasViewModel extends BaseViewModel {
 
         // Limpiar referencias
         conductorNombreActual = null;
-        conductorUIDActual = null;
         horariosAsignadosActual = null;
-        isLoadingData = false;
     }
 }
