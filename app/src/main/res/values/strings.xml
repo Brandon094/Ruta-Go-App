@@ -118,15 +118,15 @@
     <string name="reservas_pendientes_confirmacion">Reservas pendientes de confirmación</string>
 
     <!-- Estadísticas mejoradas -->
-    <string name="resumen_dia">📊 Resumen del Día</string>
+    <string name="resumen_dia">Resumen del Día</string>
     <string name="estadisticas_tiempo_real">Estadísticas en tiempo real</string>
-    <string name="ingresos_del_dia">💰 Ingresos del Día</string>
+    <string name="ingresos_del_dia">Ingresos del Día</string>
     <string name="ingresos_totales_label">Ingresos Totales</string>
     <string name="acumulado_desde_inicio">Acumulado desde el inicio del día</string>
     <string name="vs_ayer">%s vs ayer</string>
 
     <!-- Desempeño general -->
-    <string name="desempeno_general">📈 Desempeño General</string>
+    <string name="desempeno_general">Desempeño General</string>
     <string name="confirmadas">Confirmadas</string>
     <string name="disponibilidad">Disponibilidad</string>
     <string name="reservas_confirmadas_label">Reservas Confirmadas</string>
@@ -135,7 +135,7 @@
     <string name="ocupacion_porcentaje">%d asientos totales\n • Ocupación: %d%%</string>
 
     <!-- Desglose por ruta -->
-    <string name="desglose_ruta">🛣️ Desglose por Ruta</string>
+    <string name="desglose_ruta">Desglose por Ruta</string>
     <string name="estadisticas_especificas">Estadísticas específicas para cada itinerario programado</string>
     <string name="ruta_ida">Ruta de Ida</string>
     <string name="ruta_regreso">Ruta de Regreso</string>
