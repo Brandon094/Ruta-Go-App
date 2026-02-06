@@ -1,4 +1,4 @@
-// InicioConductor.java (Versión final corregida)
+// InicioConductor.java (Versión actualizada con PerfilViewModel)
 package com.chopcode.trasnportenataga_laplata.activities.driver;
 
 import android.content.Intent;
@@ -26,6 +26,7 @@ import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
 import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.EstadisticasViewModel;
+import com.chopcode.trasnportenataga_laplata.viewmodels.driver.PerfilViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.RutasViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.ReservasViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -68,6 +69,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private TextView tvContadorReservas, tvContadorRutas;
 
     // ViewModels INDIVIDUALES
+    private PerfilViewModel perfilViewModel;
     private ReservasViewModel reservasViewModel;
     private EstadisticasViewModel estadisticasViewModel;
     private RutasViewModel rutasViewModel;
@@ -88,6 +90,7 @@ public class InicioConductorActivity extends AppCompatActivity {
         timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
         // ✅ INICIALIZAR VIEWMODELS INDIVIDUALMENTE
+        perfilViewModel = new ViewModelProvider(this).get(PerfilViewModel.class); // CORREGIDO
         reservasViewModel = new ViewModelProvider(this).get(ReservasViewModel.class);
         estadisticasViewModel = new ViewModelProvider(this).get(EstadisticasViewModel.class);
         rutasViewModel = new ViewModelProvider(this).get(RutasViewModel.class);
@@ -229,24 +232,38 @@ public class InicioConductorActivity extends AppCompatActivity {
     private void setupObservers() {
         Log.d(TAG, "👀 Configurando observadores...");
 
-        // ✅ OBSERVAR DATOS DEL CONDUCTOR
-        reservasViewModel.getConductorNombreLiveData().observe(this, nombre -> {
+        // ✅ OBSERVAR DATOS DEL CONDUCTOR DESDE PERFILVIEWMODEL
+        perfilViewModel.getConductorNombreLiveData().observe(this, nombre -> {
             if (nombre != null && !nombre.isEmpty()) {
                 tvConductor.setText(nombre);
                 Log.d(TAG, "✅ Nombre del conductor actualizado: " + nombre);
 
+                // Pasar nombre a ReservasViewModel
+                reservasViewModel.inicializarConNombreConductor(nombre);
+
                 // Establecer conductor en EstadisticasViewModel
                 estadisticasViewModel.setConductorActual(nombre);
-
-                // Refrescar estadísticas al cargar conductor
                 estadisticasViewModel.refreshStatistics();
 
                 isDataLoaded = true;
+            } else {
+                tvConductor.setText("Cargando...");
+                Log.w(TAG, "⚠️ Nombre del conductor es nulo o vacío");
             }
         });
 
-        // Observar horarios asignados
-        reservasViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
+        perfilViewModel.getPlacaVehiculoLiveData().observe(this, placa -> {
+            if (placa != null && !placa.isEmpty()){
+                tvPlacaVehiculo.setText("Placa: " + placa);
+                Log.d(TAG, "🚗 Placa actualizada: " + placa);
+            } else {
+                tvPlacaVehiculo.setText("Placa no asignada");
+                Log.w(TAG, "⚠️ Placa del vehículo no disponible");
+            }
+        });
+
+        // ✅ OBSERVAR HORARIOS DESDE PERFILVIEWMODEL Y PASAR A RUTASVIEWMODEL
+        perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
             if (horarios != null && !horarios.isEmpty()) {
                 Log.d(TAG, "✅ Horarios asignados obtenidos: " + horarios.size());
                 // Cargar rutas basadas en horarios
@@ -257,7 +274,26 @@ public class InicioConductorActivity extends AppCompatActivity {
             }
         });
 
-        // Observar reservas pendientes
+        // Observar estado de carga desde PerfilViewModel
+        perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
+            if (isLoading != null) {
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+                Log.d(TAG, isLoading ? "⏳ Cargando perfil..." : "✅ Perfil cargado");
+            }
+        });
+
+        // Observar errores desde PerfilViewModel
+        perfilViewModel.getErrorLiveData().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                Log.e(TAG, "❌ Error en perfil: " + error);
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // ✅ ELIMINADO: Observador duplicado de horarios desde ReservasViewModel
+        // Ya no necesitamos esto porque ahora viene de PerfilViewModel
+
+        // Observar reservas pendientes desde ReservasViewModel
         reservasViewModel.getReservasPendientesLiveData().observe(this, reservas -> {
             if (reservas != null) {
                 listaReservas.clear();
@@ -292,27 +328,24 @@ public class InicioConductorActivity extends AppCompatActivity {
             }
         });
 
-        // Observar estado de carga
+        // Observar estado de carga desde ReservasViewModel
         reservasViewModel.getLoadingLiveData().observe(this, isLoading -> {
             if (isLoading != null) {
-                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                if (!isLoading) {
-                    isDataLoaded = true;
-                }
-                Log.d(TAG, isLoading ? "⏳ Cargando datos..." : "✅ Carga completada");
+                // Usar solo un ProgressBar, ya tenemos el de PerfilViewModel
+                Log.d(TAG, isLoading ? "⏳ Cargando reservas..." : "✅ Reservas cargadas");
             }
         });
 
-        // Observar errores
+        // Observar errores desde ReservasViewModel
         reservasViewModel.getErrorLiveData().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
-                Log.e(TAG, "❌ Error observado: " + error);
+                Log.e(TAG, "❌ Error en reservas: " + error);
                 Toast.makeText(InicioConductorActivity.this,
-                        getString(R.string.error_carga_datos), Toast.LENGTH_SHORT).show();
+                        "Error en reservas: " + error, Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Observar rutas
+        // Observar rutas desde RutasViewModel
         rutasViewModel.getRutasLiveData().observe(this, rutas -> {
             Log.d(TAG, "🔄 Rutas actualizadas: " + (rutas != null ? rutas.size() : 0));
 
@@ -343,7 +376,7 @@ public class InicioConductorActivity extends AppCompatActivity {
             }
         });
 
-        // Observar estadísticas generales
+        // Observar estadísticas generales desde EstadisticasViewModel
         estadisticasViewModel.getReservasConfirmadasLiveData().observe(this, count -> {
             if (count != null) {
                 tvReservasConfirmadas.setText(String.valueOf(count));
@@ -449,17 +482,18 @@ public class InicioConductorActivity extends AppCompatActivity {
 
         Log.d(TAG, "👤 UserId del conductor: " + userId);
 
-        // ✅ USAR ReservasViewModel PARA CARGAR TODOS LOS DATOS
-        reservasViewModel.inicializarConductor(userId);
+        // ✅ USAR PERFILVIEWMODEL PARA CARGAR DATOS COMPLETOS
+        perfilViewModel.cargarDatosCompletos(userId);
     }
-
-    /** ❌ ELIMINADO: loadAssignedRoutes() - Ahora se maneja desde ReservasViewModel */
 
     /** Metodo para recargar todos los datos de reservas y rutas */
     private void reloadAllData() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if (userId != null && !userId.isEmpty()) {
             Log.d(TAG, "🔄 Recargando todos los datos para: " + userId);
+
+            // Recargar perfil completo desde PerfilViewModel
+            perfilViewModel.refrescarDatos();
 
             // Recargar reservas desde ReservasViewModel
             reservasViewModel.refrescarReservas();
@@ -663,6 +697,9 @@ public class InicioConductorActivity extends AppCompatActivity {
 
         // Pausar listeners en tiempo real
         reservasViewModel.pausarActualizacionesTiempoReal();
+
+        // Limpiar datos del perfil
+        perfilViewModel.limpiarDatos();
 
         isDataLoaded = false;
 
