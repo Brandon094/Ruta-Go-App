@@ -26,6 +26,12 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
+/**
+ * Actividad principal del dashboard para usuarios.
+ * Muestra la información del usuario, contadores (reservas, canceladas, viajes)
+ * y los horarios organizados en pestañas (Nataga - La Plata).
+ * Utiliza un patrón de Managers para delegar responsabilidades y mantener el código limpio.
+ */
 public class InicioUsuariosActivity extends AppCompatActivity implements
         UserDashboardManager.DashboardListener,
         ScheduleManager.ScheduleListener,
@@ -33,102 +39,144 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
 
     private static final String TAG = "InicioUsuarios";
 
-    // Managers
-    private DashboardAnalyticsHelper analyticsHelper;
-    private UserDashboardManager dashboardManager;
-    private ScheduleManager scheduleManager;
-    private DashboardUIManager uiManager;
+    // ============================================================
+    // Managers (Encapsulan la lógica de negocio y UI)
+    // ============================================================
+    private DashboardAnalyticsHelper analyticsHelper;    // Para logging y analytics
+    private UserDashboardManager dashboardManager;       // Gestiona datos del usuario y contadores
+    private ScheduleManager scheduleManager;             // Gestiona la carga de horarios
+    private DashboardUIManager uiManager;                // Gestiona la interfaz de usuario y sus interacciones
 
-    // UI Elements
-    private TabLayout tabLayout;
-    private ViewPager2 viewPagerHorarios;
-    private HorarioPagerAdapter pagerAdapter;
+    // ============================================================
+    // Elementos de UI
+    // ============================================================
+    private TabLayout tabLayout;                          // Pestañas para cambiar entre horarios
+    private ViewPager2 viewPagerHorarios;                 // Swipe entre pestañas de horarios
+    private HorarioPagerAdapter pagerAdapter;             // Adaptador para el ViewPager
+
+    // ============================================================
+    // Ciclo de vida de la Activity
+    // ============================================================
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Iniciando actividad principal de usuario");
 
-        // Inicializar managers
+        // 1. Inicializar los managers (primero, porque las vistas los necesitarán)
         initializeManagers();
 
+        // 2. Establecer el layout
         setContentView(R.layout.activity_inicio_usuarios);
 
-        // Inicializar vistas
+        // 3. Inicializar y enlazar las vistas con sus IDs
         initializeViews();
 
-        // Configurar UI
+        // 4. Configurar la UI (listeners de botones, toolbar, etc.)
         configureUI();
 
-        // Cargar datos iniciales
+        // 5. Cargar los datos iniciales (usuario y horarios)
         loadInitialData();
     }
 
+    /**
+     * Inicializa todos los managers de la actividad.
+     * Se encargan de la lógica de negocio y comunicación con capas de datos.
+     */
     private void initializeManagers() {
         analyticsHelper = new DashboardAnalyticsHelper();
 
         dashboardManager = new UserDashboardManager(this, analyticsHelper);
-        dashboardManager.setDashboardListener(this);
+        dashboardManager.setDashboardListener(this);  // La actividad escucha los eventos del manager
 
         scheduleManager = new ScheduleManager(analyticsHelper);
-        scheduleManager.setScheduleListener(this);
+        scheduleManager.setScheduleListener(this);    // La actividad escucha los eventos del manager
 
         uiManager = new DashboardUIManager(analyticsHelper);
-        uiManager.setUIActionsListener(this);
+        uiManager.setUIActionsListener(this);         // La actividad escucha los clicks de UI
     }
 
+    /**
+     * Enlaza las variables con las vistas del layout y configura el ViewPager.
+     * Delega al UIManager la referencia de las vistas para que las actualice cuando sea necesario.
+     */
     private void initializeViews() {
         // Toolbar
         MaterialToolbar topAppBar = findViewById(R.id.topAppBar);
 
-        // TextViews
+        // TextViews para mostrar información del usuario y contadores
         TextView tvUserName = findViewById(R.id.tvUserName);
         TextView tvWelcome = findViewById(R.id.tvWelcome);
         TextView tvReservasCount = findViewById(R.id.tvReservasCount);
-        TextView tvViajesCount = findViewById(R.id.tvViajesCount);
+        TextView tvCanceladsaCount = findViewById(R.id.tvCanceladasCount);
+        TextView tvViajesCount = findViewById(R.id.tvTotalCount);
 
-        // Botones
+        // Botones de acción
         MaterialButton btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         MaterialButton btnRefresh = findViewById(R.id.btnRefresh);
 
-        // TabLayout y ViewPager
+        // Pestañas y ViewPager para los horarios
         tabLayout = findViewById(R.id.tabLayout);
         viewPagerHorarios = findViewById(R.id.viewPagerHorarios);
 
-        // Configurar UI Manager
+        // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
-                tvUserName, tvWelcome, tvReservasCount, tvViajesCount,
+                tvUserName, tvWelcome, tvReservasCount, tvCanceladsaCount, tvViajesCount,
                 btnEditarPerfil, btnRefresh
         );
-        uiManager.setupToolbar(topAppBar);
+        uiManager.setupToolbar(topAppBar);  // Configurar toolbar (menú, título, etc.)
 
-        // Inicializar ViewPager
+        // Inicializar el adaptador del ViewPager con las listas de horarios (vacías al inicio)
         pagerAdapter = new HorarioPagerAdapter(
                 this,
-                scheduleManager.getNatagaSchedules(),
-                scheduleManager.getLaPlataSchedules()
+                scheduleManager.getNatagaSchedules(),   // Lista de horarios Nataga
+                scheduleManager.getLaPlataSchedules()    // Lista de horarios La Plata
         );
         viewPagerHorarios.setAdapter(pagerAdapter);
+
+        // Conectar el TabLayout con el ViewPager (para que se sincronicen)
         uiManager.setupTabLayout(tabLayout, viewPagerHorarios);
     }
 
+    /**
+     * Configura los listeners de los elementos de UI (botones, etc.)
+     * El UIManager se encarga de enlazar los clicks con los callbacks de esta actividad.
+     */
     private void configureUI() {
         uiManager.setupButtonListeners();
     }
 
+    /**
+     * Inicia la carga de datos iniciales:
+     * - Datos del usuario (nombre, etc.)
+     * - Contadores (reservas, canceladas, viajes)
+     * - Horarios
+     */
     private void loadInitialData() {
-        dashboardManager.loadUserData();
-        scheduleManager.loadSchedules();
+        dashboardManager.loadUserData();   // Carga usuario y contadores en segundo plano
+        scheduleManager.loadSchedules();   // Carga horarios en segundo plano
     }
 
+    // ============================================================
     // Implementación de UserDashboardManager.DashboardListener
+    // (Eventos relacionados con datos del usuario)
+    // ============================================================
+
+    /**
+     * Callback cuando los datos del usuario se han cargado correctamente.
+     * @param usuario Objeto Usuario con la información actualizada.
+     */
     @Override
     public void onUserDataLoaded(Usuario usuario) {
         runOnUiThread(() -> {
-            uiManager.updateUserInfo(usuario);
+            uiManager.updateUserInfo(usuario);  // Actualiza los TextViews con los datos del usuario
         });
     }
 
+    /**
+     * Callback cuando hay un error al cargar los datos del usuario.
+     * @param error Mensaje de error.
+     */
     @Override
     public void onUserDataError(String error) {
         runOnUiThread(() -> {
@@ -136,37 +184,60 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         });
     }
 
+    /**
+     * Callback cuando los contadores se han cargado correctamente.
+     * @param reservasCount Número de reservas activas.
+     * @param canceladasCount Número de reservas canceladas.
+     * @param viajesCount Número total de viajes realizados.
+     */
     @Override
-    public void onCountersLoaded(int reservasCount, int viajesCount) {
+    public void onCountersLoaded(int reservasCount, int canceladasCount, int viajesCount) {
         runOnUiThread(() -> {
-            uiManager.updateCounters(reservasCount, viajesCount);
+            uiManager.updateCounters(reservasCount, canceladasCount, viajesCount);
 
-            // Mostrar notificación solo si hay cambios importantes
+            // Log informativo si hay reservas activas
             if (reservasCount > 0) {
                 Log.d(TAG, "📊 Contadores actualizados: " + reservasCount + " reservas activas");
             }
         });
     }
 
+    /**
+     * Callback cuando hay un error al cargar los contadores.
+     * @param error Mensaje de error.
+     */
     @Override
     public void onCountersError(String error) {
         runOnUiThread(() -> {
-            uiManager.updateCounters(0, 0);
+            uiManager.updateCounters(0, 0, 0);  // Resetear contadores a cero
             Log.e(TAG, "❌ Error en contadores: " + error);
         });
     }
 
+    // ============================================================
     // Implementación de ScheduleManager.ScheduleListener
+    // (Eventos relacionados con la carga de horarios)
+    // ============================================================
+
+    /**
+     * Callback cuando los horarios se han cargado correctamente.
+     * @param nataga Lista de horarios para la ruta Nataga.
+     * @param laPlata Lista de horarios para la ruta La Plata.
+     */
     @Override
     public void onSchedulesLoaded(List<Horario> nataga, List<Horario> laPlata) {
         runOnUiThread(() -> {
-            pagerAdapter.actualizarDatos(nataga, laPlata);
+            pagerAdapter.actualizarDatos(nataga, laPlata);  // Actualizar el adaptador con los nuevos datos
             Toast.makeText(this,
                     "Horarios actualizados: " + scheduleManager.getTotalSchedules() + " total",
                     Toast.LENGTH_SHORT).show();
         });
     }
 
+    /**
+     * Callback cuando hay un error al cargar los horarios.
+     * @param error Mensaje de error.
+     */
     @Override
     public void onSchedulesError(String error) {
         runOnUiThread(() -> {
@@ -174,7 +245,15 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         });
     }
 
+    // ============================================================
     // Implementación de DashboardUIManager.UIActionsListener
+    // (Eventos de interacción del usuario con la UI)
+    // ============================================================
+
+    /**
+     * Evento cuando el usuario hace click en "Editar Perfil".
+     * Navega a la actividad de edición de perfil si el usuario está logueado.
+     */
     @Override
     public void onEditProfileClicked() {
         if (validateLogin()) {
@@ -183,13 +262,21 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Evento cuando el usuario hace click en "Refresh" (actualizar).
+     * Muestra un mensaje y recarga los datos.
+     */
     @Override
     public void onRefreshClicked() {
         uiManager.showRefreshMessage();
-        dashboardManager.refreshData();
-        scheduleManager.loadSchedules();
+        dashboardManager.refreshData();     // Recargar datos del usuario y contadores
+        scheduleManager.loadSchedules();    // Recargar horarios
     }
 
+    /**
+     * Evento cuando el usuario selecciona la opción de "Perfil" en el menú.
+     * Navega a la actividad de perfil si el usuario está logueado.
+     */
     @Override
     public void onProfileMenuItemClicked() {
         if (validateLogin()) {
@@ -198,22 +285,30 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Valida si el usuario está logueado antes de realizar acciones que lo requieran.
+     * @return true si el usuario está logueado, false en caso contrario.
+     */
     private boolean validateLogin() {
         if (!MyApp.isUserLoggedIn()) {
             Toast.makeText(this, "Debes iniciar sesión", Toast.LENGTH_SHORT).show();
-            // Redirigir a login si es necesario
+            // Aquí se podría redirigir a la pantalla de login si es necesario
             return false;
         }
         return true;
     }
 
+    // ============================================================
+    // Más métodos del ciclo de vida
+    // ============================================================
+
     @Override
     protected void onResume() {
         super.onResume();
-        analyticsHelper.logScreenResume();
+        analyticsHelper.logScreenResume();  // Registrar analytics
 
         if (MyApp.isUserLoggedIn()) {
-            // Los contadores ya están en tiempo real, solo recargar si es necesario
+            // Recargar horarios por si hubo cambios (en tiempo real o al volver de otra actividad)
             scheduleManager.loadSchedules();
 
             // Opcional: forzar una actualización de datos del usuario
@@ -242,10 +337,14 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
 
         // Limpiar recursos para evitar memory leaks
         if (dashboardManager != null) {
-            dashboardManager.cleanup();
+            dashboardManager.cleanup();  // Liberar recursos (ej. listeners de Firebase)
         }
     }
 
+    /**
+     * Método público para obtener el usuario actual desde otras clases.
+     * @return Objeto Usuario actual o null si no está cargado.
+     */
     public Usuario getUsuarioActual() {
         return dashboardManager.getUsuarioActual();
     }
