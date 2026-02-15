@@ -6,6 +6,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +57,14 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     private TabLayout tabLayout;                          // Pestañas para cambiar entre horarios
     private ViewPager2 viewPagerHorarios;                 // Swipe entre pestañas de horarios
     private HorarioPagerAdapter pagerAdapter;             // Adaptador para el ViewPager
+
+    // ============================================================
+    // Variables para la leyenda expandible
+    // ============================================================
+    private RelativeLayout legendHeader;
+    private LinearLayout legendContent;
+    private ImageView legendExpandIcon;
+    private boolean isLegendExpanded = false;
 
     // ============================================================
     // Ciclo de vida de la Activity
@@ -108,8 +120,23 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         TextView tvUserName = findViewById(R.id.tvUserName);
         TextView tvWelcome = findViewById(R.id.tvWelcome);
         TextView tvReservasCount = findViewById(R.id.tvReservasCount);
-        TextView tvCanceladsaCount = findViewById(R.id.tvCanceladasCount);
-        TextView tvViajesCount = findViewById(R.id.tvTotalCount);
+        TextView tvCanceladasCount = findViewById(R.id.tvCanceladasCount);
+        TextView tvTotalCount = findViewById(R.id.tvTotalCount);
+
+        // ============================================================
+        // Obtener referencias para la leyenda expandible
+        // ============================================================
+        legendHeader = findViewById(R.id.legendHeader);
+        legendContent = findViewById(R.id.legendContent);
+        legendExpandIcon = findViewById(R.id.legendExpandIcon);
+
+        // Verificar que las vistas existen (por si acaso)
+        if (legendHeader == null) {
+            Log.e(TAG, "❌ legendHeader no encontrado en el layout");
+        } else {
+            // Configurar el click listener para la leyenda
+            setupLegendToggle();
+        }
 
         // Botones de acción
         MaterialButton btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
@@ -121,7 +148,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
 
         // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
-                tvUserName, tvWelcome, tvReservasCount, tvCanceladsaCount, tvViajesCount,
+                tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount,
                 btnEditarPerfil, btnRefresh
         );
         uiManager.setupToolbar(topAppBar);  // Configurar toolbar (menú, título, etc.)
@@ -145,6 +172,102 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     private void configureUI() {
         uiManager.setupButtonListeners();
     }
+
+    // ============================================================
+    // Métodos para la leyenda expandible
+    // ============================================================
+
+    /**
+     * Configura el toggle para la leyenda
+     */
+    private void setupLegendToggle() {
+        if (legendHeader != null) {
+            legendHeader.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleLegend();
+                }
+            });
+            Log.d(TAG, "✅ Click listener configurado para la leyenda");
+        }
+    }
+
+    /**
+     * Alterna la visibilidad de la leyenda
+     */
+    private void toggleLegend() {
+        isLegendExpanded = !isLegendExpanded;
+
+        if (isLegendExpanded) {
+            expandLegend();
+        } else {
+            collapseLegend();
+        }
+    }
+
+    /**
+     * Expande la leyenda con animación
+     */
+    private void expandLegend() {
+        if (legendContent == null || legendExpandIcon == null) {
+            Log.e(TAG, "❌ No se puede expandir: vistas null");
+            return;
+        }
+
+        // Mostrar el contenido con animación de fade in
+        legendContent.setVisibility(View.VISIBLE);
+        legendContent.animate()
+                .alpha(1.0f)
+                .setDuration(300)
+                .start();
+
+        // Cambiar el icono a "expand_less" (flecha hacia arriba)
+        legendExpandIcon.setImageResource(R.drawable.ic_expand_less);
+
+        Log.d(TAG, "📖 Leyenda expandida");
+    }
+
+    /**
+     * Colapsa la leyenda con animación
+     */
+    private void collapseLegend() {
+        if (legendContent == null || legendExpandIcon == null) {
+            Log.e(TAG, "❌ No se puede colapsar: vistas null");
+            return;
+        }
+
+        // Animación de fade out y luego ocultar
+        legendContent.animate()
+                .alpha(0.0f)
+                .setDuration(200)
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        legendContent.setVisibility(View.GONE);
+                    }
+                })
+                .start();
+
+        // Cambiar el icono a "expand_more" (flecha hacia abajo)
+        legendExpandIcon.setImageResource(R.drawable.ic_expand_more);
+
+        Log.d(TAG, "📕 Leyenda colapsada");
+    }
+
+    /**
+     * Versión simplificada sin animaciones (comentada por si prefieres usarla)
+     */
+    /*
+    private void toggleLegendSimple() {
+        if (legendContent.getVisibility() == View.VISIBLE) {
+            legendContent.setVisibility(View.GONE);
+            legendExpandIcon.setImageResource(R.drawable.ic_expand_more);
+        } else {
+            legendContent.setVisibility(View.VISIBLE);
+            legendExpandIcon.setImageResource(R.drawable.ic_expand_less);
+        }
+    }
+    */
 
     /**
      * Inicia la carga de datos iniciales:
