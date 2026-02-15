@@ -33,7 +33,7 @@ public class DashboardAnalyticsHelper {
         MyApp.logEvent("usuario_cargado_inicio", params);
     }
 
-    public void logCountersLoaded(int reservasCount, int viajesCount) {
+    public void logCountersLoaded(int reservasCount, int canceladasCount, int viajesCount) {
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", MyApp.getCurrentUserId());
         params.put("reservas_activas", reservasCount);

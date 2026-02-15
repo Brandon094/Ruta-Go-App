@@ -19,7 +19,7 @@ public class DashboardUIManager {
     private final DashboardAnalyticsHelper analyticsHelper;
 
     // UI References
-    private TextView tvUserName, tvWelcome, tvReservasCount, tvViajesCount;
+    private TextView tvUserName, tvWelcome, tvReservasCount, tvViajesCount, tvCanceladasCount;
     private MaterialButton btnEditarPerfil, btnRefresh;
 
     // Callbacks
@@ -41,12 +41,13 @@ public class DashboardUIManager {
 
     public void setViewReferences(
             TextView tvUserName, TextView tvWelcome,
-            TextView tvReservasCount, TextView tvViajesCount,
+            TextView tvReservasCount, TextView tvCanceladasCount, TextView tvViajesCount,
             MaterialButton btnEditarPerfil, MaterialButton btnRefresh) {
 
         this.tvUserName = tvUserName;
         this.tvWelcome = tvWelcome;
         this.tvReservasCount = tvReservasCount;
+        this.tvCanceladasCount = tvCanceladasCount;
         this.tvViajesCount = tvViajesCount;
         this.btnEditarPerfil = btnEditarPerfil;
         this.btnRefresh = btnRefresh;
@@ -86,12 +87,13 @@ public class DashboardUIManager {
             tvUserName.setText(usuario.getNombre());
 
             String firstName = usuario.getNombre().split(" ")[0];
-            tvWelcome.setText("¡Bienvenido, " + firstName + "!");
+            tvWelcome.setText("¡Bienvenido!");
         }
     }
 
-    public void updateCounters(int reservasCount, int viajesCount) {
+    public void updateCounters(int reservasCount, int canceladasCount, int viajesCount) {
         tvReservasCount.setText(String.valueOf(reservasCount));
+        tvCanceladasCount.setText(String.valueOf(canceladasCount));
         tvViajesCount.setText(String.valueOf(viajesCount));
     }
 

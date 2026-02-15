@@ -30,7 +30,7 @@ public class UserDashboardManager {
     public interface DashboardListener {
         void onUserDataLoaded(Usuario usuario);
         void onUserDataError(String error);
-        void onCountersLoaded(int reservasCount, int viajesCount);
+        void onCountersLoaded(int reservasCount, int canceladasCount, int viajesCount);
         void onCountersError(String error);
     }
 
@@ -105,14 +105,17 @@ public class UserDashboardManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int reservasCount = contarReservasActivas(snapshot);
+                int canceladasCount = contarReservasCanceladas(snapshot);
                 int viajesCount = contarViajesCompletados(snapshot);
 
                 Log.d(TAG, "🔄 Contadores actualizados en tiempo real: " +
-                        reservasCount + " reservas, " + viajesCount + " viajes");
-                analyticsHelper.logCountersLoaded(reservasCount, viajesCount);
+                        reservasCount + " reservas confirmadas, "+canceladasCount+ "reservas " +
+                        "canceladas" + viajesCount + " total " +
+                        "de viajes");
+                analyticsHelper.logCountersLoaded(reservasCount, canceladasCount, viajesCount);
 
                 if (listener != null) {
-                    listener.onCountersLoaded(reservasCount, viajesCount);
+                    listener.onCountersLoaded(reservasCount, canceladasCount, viajesCount);
                 }
             }
 
@@ -148,7 +151,22 @@ public class UserDashboardManager {
                     dataSnapshot.getValue(com.chopcode.trasnportenataga_laplata.models.Reserva.class);
             if (reserva != null) {
                 String estado = reserva.getEstadoReserva();
-                if (estado != null && (estado.equals("Confirmada") || estado.equals("Por confirmar"))) {
+                if (estado != null && (estado.equals("Confirmada"))) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private int contarReservasCanceladas(DataSnapshot snapshot) {
+        int count = 0;
+        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            com.chopcode.trasnportenataga_laplata.models.Reserva reserva =
+                    dataSnapshot.getValue(com.chopcode.trasnportenataga_laplata.models.Reserva.class);
+            if (reserva != null) {
+                String estado = reserva.getEstadoReserva();
+                if (estado != null && (estado.equals("Cancelada"))) {
                     count++;
                 }
             }
@@ -163,7 +181,7 @@ public class UserDashboardManager {
                     dataSnapshot.getValue(com.chopcode.trasnportenataga_laplata.models.Reserva.class);
             if (reserva != null) {
                 String estado = reserva.getEstadoReserva();
-                if (estado != null && estado.equals("Confirmada")) {
+                if (estado != null && estado.equals("Confirmada") || estado.equals("Cancelada")) {
                     count++;
                 }
             }
