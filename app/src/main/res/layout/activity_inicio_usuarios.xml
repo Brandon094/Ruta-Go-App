@@ -296,24 +296,52 @@
                         android:layout_marginHorizontal="16dp"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Leyenda con iconos representativos -->
+                    <!-- Header de la leyenda (cliclable) -->
+                    <RelativeLayout
+                        android:id="@+id/legendHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="16dp"
+                        android:paddingBottom="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?selectableItemBackground">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Significado de cada contador"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary"
+                                android:gravity="center" />
+
+                            <ImageView
+                                android:id="@+id/legendExpandIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:tint="@color/primary_500" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <!-- Leyenda con iconos representativos (contenido expandible) -->
                     <LinearLayout
+                        android:id="@+id/legendContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
                         android:paddingHorizontal="16dp"
-                        android:paddingBottom="8dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Significado de cada contador"
-                            android:textSize="11sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:gravity="center"
-                            android:layout_marginBottom="12dp" />
+                        android:paddingBottom="16dp"
+                        android:visibility="gone">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -331,7 +359,6 @@
                                 android:gravity="center"
                                 android:padding="4dp">
 
-                                <!-- Icono y título en línea -->
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -376,7 +403,6 @@
                                 android:gravity="center"
                                 android:padding="4dp">
 
-                                <!-- Icono y título en línea -->
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -421,7 +447,6 @@
                                 android:gravity="center"
                                 android:padding="4dp">
 
-                                <!-- Icono y título en línea -->
                                 <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
