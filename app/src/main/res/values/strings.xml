@@ -48,9 +48,11 @@
     <string name="desactivo">Desactivo</string>
 
     <string name="cont_reservas">%d</string>
-    <string name="cont_viajes">%d</string>
+    <string name="cont_canceladas">%d</string>
+    <string name="cont_total">%d</string>
     <string name="reservas">Reservas</string>
-    <string name="viajes">Viajes</string>
+    <string name="canceladas">Canceladas</string>
+    <string name="total">Total</string>
     <string name="horarios_disponibles">Horarios disponibles</string>
     <string name="nueva_reserva">NUEVA
     RESERVA</string>
@@ -259,7 +261,6 @@
     <string name="filtros">Filtros</string>
     <string name="todas">Todas</string>
     <!-- <string name="confirmadas">Confirmadas</string> -->
-    <string name="canceladas">Canceladas</string>
     <string name="hoy">Hoy</string>
     <string name="semana">Esta semana</string>
     <string name="mes">Este mes</string>
@@ -375,4 +376,5 @@
     <string name="_0">0</string>
     <string name="_26">26</string>
     <string name="error_carga_datos">¡Error al intentar cargar los datos!</string>
+    <string name="estad_sticas_r_pidas">Estadísticas rápidas</string>
 </resources>
