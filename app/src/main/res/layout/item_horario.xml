@@ -147,14 +147,11 @@
         <!-- Botón de acción -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnReservar"
+            style="@style/FabStyle.Mini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
-            app:fabSize="mini"
-            app:tint="@color/text_on_primary"
-            app:backgroundTint="@color/primary_500"
-            app:elevation="1dp"
-            app:rippleColor="@color/primary_700" />
+            app:fabSize="mini" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

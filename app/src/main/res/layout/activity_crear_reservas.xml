@@ -858,38 +858,29 @@
                 app:layout_constraintTop_toBottomOf="@id/selectedSeatCardView"
                 app:layout_constraintWidth_percent="0.9">
 
-                <!-- Botón Cancelar -->
+                <!-- Botón Cancelar (Secondary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonCancelar"
+                    style="@style/AppButton.Secondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:text="@string/cancelar"
-                    android:padding="16dp"
-                    app:cornerRadius="12dp"
                     app:icon="@drawable/ic_cancel"
-                    app:iconGravity="textStart"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="@color/primary_500"
-                    app:strokeWidth="1dp"
-                    app:rippleColor="@color/ripple_color" />
+                    app:iconGravity="textStart" />
 
-                <!-- Botón Confirmar Reserva -->
+                <!-- Botón Confirmar Reserva (Primary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonConfirmar"
+                    style="@style/AppButton.Primary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     android:text="@string/confirmarReserva"
-                    android:padding="16dp"
-                    app:cornerRadius="12dp"
                     app:icon="@drawable/ic_check"
-                    app:iconGravity="textStart"
-                    style="@style/Widget.MaterialComponents.Button"
-                    app:backgroundTint="@color/primary_500"
-                    app:rippleColor="@color/ripple_primary" />
+                    app:iconGravity="textStart" />
 
             </LinearLayout>
 

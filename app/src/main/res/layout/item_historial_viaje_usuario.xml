@@ -179,36 +179,36 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Botón para ver detalles completos -->
+            <!-- Botón para ver detalles completos (Text) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVerDetalles"
+                style="@style/AppButton.Text.XSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Ver Detalles"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_marginEnd="4dp" />
+                android:layout_marginEnd="4dp"
+                android:text="Ver Detalles" />
 
-            <!-- Botón para calificar (solo si el viaje fue confirmado) -->
+            <!-- Botón para calificar (Secondary - Outline) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalificar"
+                style="@style/AppButton.Secondary.XSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Calificar"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_marginStart="4dp"
+                android:text="Calificar"
                 android:visibility="gone" />
 
-            <!-- Botón para repetir reserva -->
+            <!-- Botón para repetir reserva (Secondary - Outline) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRepetir"
+                style="@style/AppButton.Secondary.XSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Repetir"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_marginStart="4dp" />
+                android:layout_marginStart="4dp"
+                android:text="Repetir" />
 
         </LinearLayout>
 

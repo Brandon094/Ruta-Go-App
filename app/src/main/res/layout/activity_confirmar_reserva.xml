@@ -801,38 +801,30 @@
                 android:orientation="vertical"
                 android:layout_marginBottom="32dp">
 
-                <!-- Botón Confirmar mejorado -->
+                <!-- Botón Confirmar mejorado (Primary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnConfirmar"
+                    style="@style/AppButton.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:text="@string/confirmarReserva"
-                    android:textSize="16sp"
                     android:paddingVertical="18dp"
-                    app:cornerRadius="16dp"
                     app:icon="@drawable/ic_check"
                     app:iconSize="20dp"
-                    app:iconPadding="8dp"
-                    android:layout_marginBottom="12dp"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:backgroundTint="@color/primary_500"
-                    android:textColor="@color/white"
-                    app:rippleColor="@color/ripple_primary" />
+                    app:iconPadding="8dp" />
 
-                <!-- Botón Cancelar mejorado -->
+                <!-- Botón Cancelar mejorado (Secondary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancelar"
+                    style="@style/AppButton.Secondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/cancelar"
-                    android:textSize="16sp"
                     android:paddingVertical="16dp"
-                    app:cornerRadius="16dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="@color/outline"
-                    app:strokeWidth="1dp"
-                    android:textColor="@color/text_primary"
-                    app:rippleColor="@color/ripple_color" />
+                    app:icon="@drawable/ic_cancel"
+                app:iconSize="20dp"
+                app:iconPadding="8dp" />
             </LinearLayout>
 
             <!-- INFORMACIÓN ADICIONAL MEJORADA -->

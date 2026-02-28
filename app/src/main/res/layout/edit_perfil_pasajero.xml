@@ -13,7 +13,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="240dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/header_gradient"
             android:gravity="center"
             android:orientation="vertical"
@@ -288,41 +288,35 @@
                     android:orientation="horizontal"
                     android:layout_marginBottom="8dp">
 
+                    <!-- Botón Cancelar (Secondary.Small) -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCancelar"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="@style/AppButton.Secondary.Small"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
+                        android:textSize="10dp"
                         android:text="Cancelar"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
-                        app:cornerRadius="16dp"
                         app:icon="@drawable/ic_arrow_back"
                         app:iconSize="18dp"
                         app:iconGravity="textStart"
-                        app:iconTint="@color/text_secondary"
-                        app:strokeColor="@color/text_secondary"
-                        app:strokeWidth="1dp"
                         app:iconPadding="6dp" />
 
+                    <!-- Botón Guardar Cambios (Primary.Small) -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnGuardarCambios"
+                        style="@style/AppButton.Primary.Small"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
+                        android:textSize="10dp"
                         android:text="Guardar"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_on_primary"
-                        app:cornerRadius="16dp"
                         app:icon="@drawable/ic_check"
                         app:iconSize="18dp"
                         app:iconGravity="textStart"
-                        app:iconTint="@color/text_on_primary"
-                        app:iconPadding="6dp"
-                        android:backgroundTint="@color/primary_500" />
+                        app:iconPadding="6dp" />
 
                 </LinearLayout>
 

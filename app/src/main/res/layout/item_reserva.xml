@@ -99,26 +99,29 @@
             android:orientation="horizontal"
             android:gravity="end">
 
+            <!-- Botón Cancelar (Error - Outline) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelar"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/AppButton.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="Cancelar"
-                android:textColor="@color/error"
                 app:strokeColor="@color/error"
                 app:strokeWidth="1dp"
-                app:cornerRadius="8dp"
-                android:layout_marginEnd="8dp"/>
+                android:textColor="@color/error"
+                app:iconTint="@color/error" />
 
+            <!-- Botón Confirmar (Success - Filled) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnConfirmar"
+                style="@style/AppButton.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Confirmar"
                 android:backgroundTint="@color/success"
                 android:textColor="@color/text_on_primary"
-                app:cornerRadius="8dp"/>
+                app:iconTint="@color/text_on_primary" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -132,13 +132,12 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDetalles"
+                style="@style/AppButton.Secondary.XSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:text="Detalles"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:textSize="12sp" />
+                android:text="Detalles" />
 
         </LinearLayout>
 

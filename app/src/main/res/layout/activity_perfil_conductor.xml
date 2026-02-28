@@ -439,23 +439,23 @@
                 <androidx.gridlayout.widget.GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:columnCount="2"
-                    app:rowCount="2"
+                    app:columnCount="4"
+                    app:rowCount="1"
                     app:alignmentMode="alignMargins"
                     app:columnOrderPreserved="false"
-                    android:padding="8dp">
+                    android:padding="4dp">
 
                     <!-- Botón Editar Perfil -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardEditarPerfil"
                         android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="4dp"
+                        android:layout_height="90dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
                         app:cardBackgroundColor="@color/primary_500"
                         app:layout_columnWeight="1"
                         app:layout_rowWeight="1"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:foreground="?android:attr/selectableItemBackground"
                         app:layout_column="0"
                         app:layout_row="0">
@@ -465,21 +465,21 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="16dp">
+                            android:padding="8dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:src="@drawable/ic_edit"
                                 android:tint="@color/text_on_primary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="4dp"
                                 android:text="Editar"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:gravity="center" />
 
@@ -487,16 +487,16 @@
                     </com.google.android.material.card.MaterialCardView>
 
                     <!-- Botón Historial Viajes -->
-                    <!-- <com.google.android.material.card.MaterialCardView
+                    <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardHistorialViajes"
                         android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="4dp"
+                        android:layout_height="90dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
                         app:cardBackgroundColor="@color/secondary_500"
                         app:layout_columnWeight="1"
                         app:layout_rowWeight="1"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:foreground="?android:attr/selectableItemBackground"
                         app:layout_column="1"
                         app:layout_row="0">
@@ -506,62 +506,62 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="16dp">
+                            android:padding="8dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:src="@drawable/ic_stast"
                                 android:tint="@color/text_on_primary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Historial de reservas"
+                                android:layout_marginTop="4dp"
+                                android:text="Historial"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:gravity="center" />
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
-           -->
-                    <!-- Botón Disponibilidad -->
+
+                    <!-- Botón Inicio -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardInicio"
                         android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="4dp"
+                        android:layout_height="90dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
                         app:cardBackgroundColor="@color/success"
                         app:layout_columnWeight="1"
                         app:layout_rowWeight="1"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:foreground="?android:attr/selectableItemBackground"
-                        app:layout_column="0"
-                        app:layout_row="1">
+                        app:layout_column="2"
+                        app:layout_row="0">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="16dp">
+                            android:padding="8dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:src="@drawable/ic_home"
                                 android:tint="@color/text_on_primary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="4dp"
                                 android:text="Inicio"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:gravity="center" />
 
@@ -572,37 +572,37 @@
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardCerrarSesion"
                         android:layout_width="0dp"
-                        android:layout_height="100dp"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="4dp"
+                        android:layout_height="90dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
                         app:cardBackgroundColor="@color/error"
                         app:layout_columnWeight="1"
                         app:layout_rowWeight="1"
-                        android:layout_margin="8dp"
+                        android:layout_margin="4dp"
                         android:foreground="?android:attr/selectableItemBackground"
-                        app:layout_column="1"
-                        app:layout_row="1">
+                        app:layout_column="3"
+                        app:layout_row="0">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="16dp">
+                            android:padding="8dp">
 
                             <ImageView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:src="@drawable/ic_logout"
                                 android:tint="@color/text_on_primary" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="4dp"
                                 android:text="Salir"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:gravity="center" />
 
@@ -610,7 +610,6 @@
                     </com.google.android.material.card.MaterialCardView>
 
                 </androidx.gridlayout.widget.GridLayout>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

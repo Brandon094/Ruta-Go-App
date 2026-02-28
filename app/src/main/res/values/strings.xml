@@ -366,6 +366,25 @@
     <string name="tooltip_exportar">Exportar historial</string>
     <string name="descripcion_filtros">Aplicar filtros para refinar la búsqueda</string>
 
+    <!-- Títulos de sección -->
+    <string name="seccion_seguridad">Seguridad de la cuenta</string>
+
+    <!-- Textos de ayuda -->
+    <string name="requisitos_contrasena">Mínimo 8 caracteres, 1 número y 1 letra</string>
+
+    <!-- Checkbox -->
+    <string name="acepto_terminos">Acepto los Términos y Condiciones</string>
+
+    <!-- Botón mejorado -->
+    <string name="crear_mi_cuenta">Crear mi cuenta</string>
+
+    <!-- Mensajes de error (preparados para futuro) -->
+    <string name="error_nombre">Nombre inválido</string>
+    <string name="error_correo">Correo electrónico inválido</string>
+    <string name="error_telefono">Teléfono inválido</string>
+    <string name="error_contrasena">La contraseña no cumple los requisitos</string>
+    <string name="error_confirmacion">Las contraseñas no coinciden</string>
+
     <!-- ==================== -->
     <!-- API KEYS -->
     <!-- ==================== -->

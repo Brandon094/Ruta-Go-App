@@ -68,7 +68,7 @@
 
                     <TextView
                         android:id="@+id/tvUserName"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/cargando"
                         android:textColor="@color/text_on_primary"
@@ -531,15 +531,11 @@
                 <!-- Convertir este boton en un solo icono sin texto -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRefresh"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/AppButton.Text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
-                    android:textColor="@color/primary_500"
                     app:icon="@drawable/ic_refresh"
-                    app:iconGravity="textStart"
-                    app:iconSize="16dp"
-                    app:iconTint="@color/primary_500" />
+                    app:iconGravity="textStart" />
             </LinearLayout>
 
             <!-- Pestañas para las rutas -->
@@ -549,7 +545,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 app:tabBackground="@drawable/tab_selector_light"
-                app:tabTextColor="@color/text_secondary"
+                app:tabTextColor="@color/text_primary"
                 app:tabSelectedTextColor="@color/text_on_primary"
                 app:tabIndicatorColor="@color/primary_500"
                 app:tabIndicatorHeight="3dp"
@@ -609,16 +605,11 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnEditarPerfil"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/AppButton.Secondary.XSmall"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:text="@string/editar_rapido"
-                        android:textSize="12sp"
-                        android:textColor="@color/primary_500"
                         app:icon="@drawable/ic_edit"
-                        app:iconGravity="textEnd"
-                        app:iconSize="14dp"
-                        app:iconTint="@color/primary_500" />
+                        app:iconGravity="textEnd" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

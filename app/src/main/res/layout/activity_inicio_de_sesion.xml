@@ -147,17 +147,14 @@
             <!-- Boton ingresar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonIngresar"
-                app:icon="@drawable/ic_login"
-                app:iconGravity="textStart"
+                style="@style/AppButton.Primary"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/ingresar"
-                android:textSize="16sp"
-                app:backgroundTint="@color/primary_500"
-                android:textColor="@color/text_on_primary"
                 app:cornerRadius="12dp"
-                app:rippleColor="@color/ripple_primary"/>
+                app:icon="@drawable/ic_login"
+                app:iconGravity="textStart" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -196,25 +193,18 @@
     <!-- Botón ingresar con Google -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogleSignIn"
+        style="@style/AppButton.Secondary"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/ingresarGoogle"
-        android:textSize="16sp"
-        app:cornerRadius="12dp"
         app:icon="@drawable/ic_google_logo"
         app:iconTint="@null"
         app:iconGravity="textStart"
         app:iconPadding="8dp"
-        app:strokeColor="@color/outline"
-        app:strokeWidth="1dp"
-        android:backgroundTint="@color/surface_1"
-        android:textColor="@color/text_primary"
-        app:rippleColor="@color/ripple_color"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintTop_toBottomOf="@+id/separatorLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Texto de "No tienes cuenta?" y Registrarse -->
     <LinearLayout

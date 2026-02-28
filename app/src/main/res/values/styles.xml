@@ -1,6 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ==================== -->
+    <!-- SISTEMA BASE DE BOTONES - ESTILOS UNIFICADOS -->
+    <!-- ==================== -->
+
+    <!--
+        ESTILO BASE - TODOS LOS BOTONES HEREDAN DE AQUÍ
+        Modifica esto y todos los botones se actualizarán
+    -->
+    <style name="AppButtonBase" parent="Widget.MaterialComponents.Button">
+        <!-- TAMAÑOS BASE -->
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minHeight">48dp</item>
+
+        <!-- TIPOGRAFÍA BASE -->
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:fontFamily">sans-serif</item>
+
+        <!-- FORMA BASE (esquinas redondeadas) -->
+        <item name="cornerRadius">24dp</item>
+
+        <!-- SOMBRAS Y ELEVACIÓN -->
+        <item name="elevation">2dp</item>
+
+        <!-- ÍCONOS (configuración base) -->
+        <item name="iconPadding">8dp</item>
+        <item name="iconSize">20dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- VARIANTES PRINCIPALES -->
+    <!-- ==================== -->
+
+    <!-- 1. BOTÓN PRIMARIO (relleno con color primario) -->
+    <style name="AppButton.Primary" parent="Widget.MaterialComponents.Button">
+        <!-- TAMAÑOS -->
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">24dp</item>
+
+        <!-- COLORES - VALORES FIJOS -->
+        <item name="backgroundTint">@color/primary_500</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+        <item name="rippleColor">@color/primary_300</item>
+
+        <!-- ELEVACIÓN -->
+        <item name="elevation">4dp</item>
+
+        <!-- ÍCONOS -->
+        <item name="iconPadding">8dp</item>
+        <item name="iconSize">20dp</item>
+    </style>
+
+    <!-- 2. BOTÓN SECUNDARIO (outline/borde) -->
+    <style name="AppButton.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <!-- TAMAÑOS -->
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">24dp</item>
+
+        <!-- COLORES - VALORES FIJOS (los selectores ya usan colores fijos) -->
+        <item name="strokeColor">@color/secondary_stroke_selector</item>
+        <item name="strokeWidth">1.5dp</item>
+        <item name="android:textColor">@color/secondary_text_selector</item>
+        <item name="iconTint">@color/secondary_text_selector</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="rippleColor">@color/primary_100</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- 3. BOTÓN TEXTO (solo texto, sin fondo) -->
+    <style name="AppButton.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <!-- TAMAÑOS -->
+        <item name="android:layout_height">48dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">24dp</item>
+
+        <!-- COLORES - VALORES FIJOS -->
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="iconTint">@color/primary_500</item>
+        <item name="rippleColor">@color/primary_100</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- ESTILOS DE TEXTO (TAMAÑOS) -->
+    <!-- ==================== -->
+
+    <!-- Text.XSmall -->
+    <style name="AppButton.Text.XSmall" parent="AppButton.Text">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconSize">16dp</item>
+        <item name="iconPadding">4dp</item>
+    </style>
+
+    <!-- Text.Small -->
+    <style name="AppButton.Text.Small" parent="AppButton.Text">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+
+    <!-- 4. BOTÓN SUAVE (fondo muy suave) -->
+    <style name="AppButton.Soft" parent="AppButtonBase">
+        <!-- COLORES - VALORES FIJOS -->
+        <item name="backgroundTint">@color/primary_50</item>
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="iconTint">@color/primary_500</item>
+        <item name="rippleColor">@color/primary_100</item>
+        <item name="elevation">1dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- VARIANTES DE TAMAÑO -->
+    <!-- ==================== -->
+
+    <!-- TAMAÑO PEQUEÑO -->
+    <style name="AppButton.Small">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+
+    <!-- TAMAÑO EXTRA PEQUEÑO -->
+    <style name="AppButton.XSmall">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconSize">16dp</item>
+        <item name="iconPadding">4dp</item>
+    </style>
+
+    <!-- TAMAÑO GRANDE -->
+    <style name="AppButton.Large">
+        <item name="android:layout_height">56dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="iconPadding">10dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- COMBINACIONES COMUNES (tamaño + variante) -->
+    <!-- ==================== -->
+
+    <style name="AppButton.Primary.Small" parent="AppButton.Primary">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+
+    <style name="AppButton.Primary.XSmall" parent="AppButton.Primary">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconSize">16dp</item>
+        <item name="iconPadding">4dp</item>
+    </style>
+
+    <style name="AppButton.Secondary.Small" parent="AppButton.Secondary">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+
+    <style name="AppButton.Secondary.XSmall" parent="AppButton.Secondary">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconSize">16dp</item>
+        <item name="iconPadding">4dp</item>
+    </style>
+
+    <style name="AppButton.Soft.Small" parent="AppButton.Soft">
+        <item name="android:layout_height">36dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- STYLE PARA FAB - CON VALORES FIJOS (CORREGIDO) -->
+    <!-- ==================== -->
+    <style name="FabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/primary_500</item>
+        <item name="tint">@color/white</item>
+        <item name="rippleColor">@color/primary_300</item>
+        <item name="elevation">6dp</item>
+        <item name="hoveredFocusedTranslationZ">8dp</item>
+        <item name="pressedTranslationZ">10dp</item>
+        <item name="fabSize">normal</item>
+        <item name="borderWidth">0dp</item>
+        <item name="useCompatPadding">true</item>
+    </style>
+
+    <!-- Versión mini del FAB -->
+    <style name="FabStyle.Mini" parent="FabStyle">
+        <item name="fabSize">mini</item>
+    </style>
+
+    <!-- ==================== -->
     <!-- STYLES PARA BOTONES DE ASIENTOS MEJORADOS -->
     <!-- ==================== -->
 
@@ -17,27 +248,18 @@
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
         <item name="iconSize">24dp</item>
-        <item name="iconTint">@null</item> <!-- Importante: deshabilitar tint del icono -->
+        <item name="iconTint">@null</item>
 
-        <!-- Colores base -->
+        <!-- Colores base - VALORES FIJOS -->
         <item name="backgroundTint">@color/white</item>
         <item name="strokeColor">@color/outline</item>
         <item name="strokeWidth">1.5dp</item>
-
-        <!-- Efectos y estados -->
         <item name="rippleColor">@color/ripple_success</item>
-        <item name="android:stateListAnimator">@animator/asiento_button_state_animator</item>
-
-        <!-- Elevación sutil -->
         <item name="elevation">1dp</item>
-        <item name="android:outlineAmbientShadowColor">@color/shadow</item>
-        <item name="android:outlineSpotShadowColor">@color/shadow</item>
     </style>
 
     <!-- Estilo para asiento disponible -->
-    <style name="AsientoButtonStyle.Disponible">
-        <!-- Hereda todo de AsientoButtonStyle -->
-    </style>
+    <style name="AsientoButtonStyle.Disponible" />
 
     <!-- Estilo para asiento seleccionado -->
     <style name="AsientoButtonStyle.Seleccionado" parent="AsientoButtonStyle">
@@ -50,8 +272,8 @@
 
     <!-- Estilo para asiento ocupado -->
     <style name="AsientoButtonStyle.Ocupado" parent="AsientoButtonStyle">
-        <item name="strokeColor">@color/neutral_400</item>
-        <item name="backgroundTint">@color/neutral_100</item>
+        <item name="strokeColor">@color/status_cancelled</item>
+        <item name="backgroundTint">@color/error_300</item>
         <item name="rippleColor">@color/ripple_color</item>
         <item name="android:enabled">false</item>
     </style>
@@ -64,7 +286,7 @@
     </style>
 
     <!-- ==================== -->
-    <!-- STYLES PARA FILTROS CHIP (MD2) - MODE ADAPTIVE -->
+    <!-- STYLES PARA FILTROS CHIP - CON VALORES FIJOS -->
     <!-- ==================== -->
     <style name="FilterChip" parent="Widget.MaterialComponents.Chip.Filter">
         <item name="chipMinTouchTargetSize">0dp</item>
@@ -72,12 +294,11 @@
         <item name="chipEndPadding">12dp</item>
         <item name="chipMinHeight">32dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-
+        <item name="android:textColor">@color/text_primary</item>
         <item name="checkedIcon">@null</item>
         <item name="checkedIconVisible">false</item>
         <item name="chipStrokeWidth">1dp</item>
-        <item name="chipStrokeColor">?attr/colorOutline</item>
+        <item name="chipStrokeColor">@color/outline</item>
     </style>
 
     <style name="FilterChipSelected" parent="FilterChip">
@@ -86,45 +307,32 @@
     </style>
 
     <!-- ==================== -->
-    <!-- STYLES PARA BOTONES (MD2) - MODE ADAPTIVE -->
+    <!-- STYLES PARA BOTONES PEQUEÑOS - CON VALORES FIJOS -->
     <!-- ==================== -->
     <style name="ButtonOutlineSmall" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_height">32dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="strokeColor">?attr/colorPrimary</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="strokeColor">@color/primary_500</item>
+        <item name="android:textColor">@color/primary_500</item>
         <item name="backgroundTint">@android:color/transparent</item>
     </style>
 
     <style name="ButtonFilledSmall" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_height">32dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:paddingHorizontal">12dp</item>
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="backgroundTint">@color/primary_500</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <!-- ==================== -->
-    <!-- STYLES PARA FAB (MD2) - MODE ADAPTIVE -->
-    <!-- ==================== -->
-    <style name="FabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="tint">?attr/colorOnPrimary</item>
-        <item name="elevation">6dp</item>
-        <item name="rippleColor">?attr/colorPrimaryContainer</item>
-        <item name="hoveredFocusedTranslationZ">8dp</item>
-    </style>
-
-    <!-- ==================== -->
-    <!-- STYLES PARA CARDS DE RESERVA - MODE ADAPTIVE -->
+    <!-- STYLES PARA CARDS DE RESERVA - CON VALORES FIJOS -->
     <!-- ==================== -->
     <style name="ReservaCardStyle" parent="CardView">
         <item name="cardCornerRadius">12dp</item>
         <item name="cardElevation">2dp</item>
         <item name="cardUseCompatPadding">true</item>
-        <item name="cardBackgroundColor">?attr/colorSurface</item>
-        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="strokeColor">@color/outline</item>
         <item name="strokeWidth">1dp</item>
     </style>
 
@@ -134,33 +342,33 @@
     </style>
 
     <!-- ==================== -->
-    <!-- STYLES PARA TEXTOS - MODE ADAPTIVE -->
+    <!-- STYLES PARA TEXTOS - CON VALORES FIJOS -->
     <!-- ==================== -->
     <style name="TextTitleLarge">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="TextTitleMedium">
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="TextBodyMedium">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
     <style name="TextBodySmall">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
 
     <style name="TextCaption">
         <item name="android:textSize">11sp</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:letterSpacing">0.02</item>
     </style>
 
@@ -171,41 +379,38 @@
         <item name="android:background">@drawable/bg_estado_confirmado</item>
         <item name="android:textColor">@color/status_confirmed</item>
         <item name="android:textSize">10sp</item>
-        <item name="android:paddingHorizontal">8dp</item>
-        <item name="android:paddingVertical">2dp</item>
     </style>
 
     <style name="StatusBadgePending">
         <item name="android:background">@drawable/bg_estado_pendiente</item>
         <item name="android:textColor">@color/status_pending</item>
         <item name="android:textSize">10sp</item>
-        <item name="android:paddingHorizontal">8dp</item>
-        <item name="android:paddingVertical">2dp</item>
     </style>
 
     <style name="StatusBadgeCancelled">
         <item name="android:background">@drawable/bg_estado_cancelado</item>
         <item name="android:textColor">@color/status_cancelled</item>
         <item name="android:textSize">10sp</item>
-        <item name="android:paddingHorizontal">8dp</item>
-        <item name="android:paddingVertical">2dp</item>
     </style>
 
     <!-- ==================== -->
-    <!-- STYLES PARA DIVIDERS -->
+    <!-- STYLES PARA DIVIDERS - CON VALORES FIJOS -->
     <!-- ==================== -->
     <style name="DividerHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">?attr/colorOutline</item>
+        <item name="android:background">@color/outline</item>
     </style>
 
     <style name="DividerVertical">
         <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">?attr/colorOutline</item>
+        <item name="android:background">@color/outline</item>
     </style>
 
+    <!-- ==================== -->
+    <!-- SHAPE APPEARANCE OVERLAYS -->
+    <!-- ==================== -->
     <style name="ShapeAppearanceOverlay.CardTopRounded" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">12dp</item>
@@ -220,5 +425,12 @@
         <item name="cornerSizeTopRight">0dp</item>
         <item name="cornerSizeBottomLeft">12dp</item>
         <item name="cornerSizeBottomRight">12dp</item>
+    </style>
+
+    <!-- ==================== -->
+    <!-- ESTILO POR DEFECTO (para compatibilidad) -->
+    <!-- ==================== -->
+    <style name="AppButton" parent="AppButton.Primary">
+        <!-- Este es solo un alias para evitar errores -->
     </style>
 </resources>

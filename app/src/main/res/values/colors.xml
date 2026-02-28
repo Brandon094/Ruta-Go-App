@@ -3,6 +3,7 @@
     <!-- ==================== -->
     <!-- COLORES BASE MEJORADOS -->
     <!-- ==================== -->
+    <color name="helper_gray">#99000000</color> <!-- 60% opacidad -->
 
     <!-- AZUL PRINCIPAL - Más profesional y accesible -->
     <color name="primary_50">#E8F2FF</color>
