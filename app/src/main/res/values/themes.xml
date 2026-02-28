@@ -64,12 +64,26 @@
         <!-- No necesitas repetir los colores, ya vienen del tema padre -->
     </style>
 
-    <!-- Tema para Splash Screen - CORREGIDO: AHORA HEREDA DEL TEMA PRINCIPAL -->
+    <!-- Tema para Splash Screen - CORREGIDO -->
     <style name="Theme.TrasnporteNatagaLaPlata.Splash" parent="Theme.TrasnporteNatagaLaPlata">
-        <item name="android:windowBackground">@color/primary_500</item> <!-- #2B87FF -->
+        <!-- Importante: eliminar ActionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Background con tu drawable -->
+        <item name="android:windowBackground">@drawable/splash_background</item>
+
+        <!-- Fullscreen - oculta todo -->
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Barra de estado del mismo color -->
+        <item name="android:statusBarColor">@color/primary_500</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Forzar a que NO muestre título de la app -->
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowTitleSize">0dp</item>
     </style>
 
     <!-- El resto de tus estilos (ButtonStyle, CardViewStyle, etc.) se mantienen IGUAL -->

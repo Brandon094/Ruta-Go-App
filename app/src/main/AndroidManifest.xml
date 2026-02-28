@@ -11,13 +11,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <!-- 🔹 PERMISOS DE SEGURIDAD PARA FCM (AGREGADO) -->
-    <!-- Define un permiso único para tu app que solo ella puede usar -->
+    <!-- 🔹 PERMISOS DE SEGURIDAD PARA FCM -->
     <permission
         android:name="com.chopcode.trasnportenataga_laplata.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
-
-    <!-- Tu app debe declarar que usa ese permiso -->
     <uses-permission android:name="com.chopcode.trasnportenataga_laplata.permission.C2D_MESSAGE" />
 
     <application
@@ -32,39 +29,48 @@
         android:theme="@style/Theme.TrasnporteNatagaLaPlata"
         tools:targetApi="31">
 
-        <!-- 🔹 CONFIGURACIÓN ESPECIAL PARA XIAOMI (AGREGADO) -->
-        <!-- Canal de notificaciones por defecto (Android 8.0+) -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="high_priority_channel" />
-
-        <!-- Para optimizar notificaciones en dispositivos Xiaomi -->
-        <meta-data
-            android:name="com.xiaomi.mipush.sdk_register"
-            android:value="true" />
-
-        <!-- 🔹 ACTIVIDAD PRINCIPAL - Punto de entrada de la aplicación -->
+        <!-- 🔹 SPLASH ACTIVITY - PUNTO DE ENTRADA PRINCIPAL (NUEVO) -->
         <activity
-            android:name=".activities.common.InicioDeSesionActivity"
+            android:name=".activities.common.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar">
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.Splash"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- 🔹 SERVICIO DE NOTIFICACIONES FCM - Maneja mensajes en primer plano -->
+        <activity
+            android:name=".activities.common.InicioDeSesionActivity"
+            android:exported="false"
+        android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <!-- 🔹 SERVICIO DE NOTIFICACIONES FCM -->
         <service
             android:name=".services.notifications.NotificationService"
             android:exported="false"
-            android:permission="com.google.android.c2dm.permission.SEND"> <!-- AGREGADO -->
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <!-- 🔹 ACTIVIDADES DE LA APLICACIÓN -->
+        <!-- 🔹 CONFIGURACIÓN DE NOTIFICACIONES -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_priority_channel" />
+        <meta-data
+            android:name="com.xiaomi.mipush.sdk_register"
+            android:value="true" />
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="true" />
+
+        <!-- 🔹 RESTO DE ACTIVIDADES (sin cambios) -->
         <activity
             android:name=".activities.passenger.reservation.confirmReservation.ConfirmarReservaActivity"
             android:exported="false"
@@ -121,14 +127,6 @@
             android:name=".activities.common.RegistroUsuariosActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <!-- 🔹 METADATOS PARA FCM -->
-        <meta-data
-            android:name="firebase_messaging_auto_init_enabled"
-            android:value="true" />
-        <meta-data
-            android:name="firebase_analytics_collection_enabled"
-            android:value="true" />
 
     </application>
 
