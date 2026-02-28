@@ -99,7 +99,7 @@
     <string name="pago_efectivo_desc">Paga directamente al conductor</string>
     <string name="pago_transferencia_desc">Pago anticipado</string>
     <string name="info_pago_efectivo">Paga en efectivo al conductor al momento del viaje. Asegúrate de tener el cambio exacto.</string>
-    <string name="info_importante">📋 Información importante</string>
+    <string name="info_importante">Información importante</string>
     <string name="info_confirmacion_reserva">• Tu asiento estará reservado por 15 minutos\n• Llega 10 minutos antes de la salida\n• El conductor puede contactarte para confirmar\n• Cancela con al menos 1 hora de anticipación</string>
 
     <!-- SEATS -->
