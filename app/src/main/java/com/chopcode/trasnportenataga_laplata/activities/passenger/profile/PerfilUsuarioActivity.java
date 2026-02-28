@@ -229,23 +229,17 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         // ✅ Registrar evento de diálogo
         registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
                 .setTitle("Cerrar Sesión")
                 .setMessage("¿Estás seguro de que quieres cerrar sesión?")
                 .setPositiveButton("Sí", (dialog, which) -> {
                     Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
-
-                    // ✅ Registrar evento de confirmación
                     registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
-
                     cerrarSesion();
                 })
                 .setNegativeButton("Cancelar", (dialog, which) -> {
                     Log.d(TAG, "❌ Usuario canceló cierre de sesión");
-
-                    // ✅ Registrar evento de cancelación
                     registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
-
                     dialog.dismiss();
                 })
                 .setIcon(R.drawable.ic_logout)

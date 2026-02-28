@@ -95,6 +95,35 @@
     </style>
 
     <!-- ==================== -->
+    <!-- ESTILOS PARA DIÁLOGOS - CON MÁRGENES CORREGIDOS -->
+    <!-- ==================== -->
+
+    <style name="AppDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <!-- Botones directamente -->
+        <item name="buttonBarPositiveButtonStyle">@style/AppButton.Primary</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AppButton.Secondary</item>
+
+        <!-- Tipografía -->
+        <item name="materialAlertDialogTitleTextStyle">@style/TextTitleMedium</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/TextBodyMedium</item>
+
+        <!-- Esquinas redondeadas -->
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Dialog.Rounded</item>
+
+        <!-- Fondo -->
+        <item name="android:background">@color/surface</item>
+        <item name="android:windowBackground">@color/surface</item>
+
+        <!-- Padding del diálogo -->
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Dialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <!-- ==================== -->
     <!-- ESTILOS DE TEXTO (TAMAÑOS) -->
     <!-- ==================== -->
 
