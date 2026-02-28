@@ -5,6 +5,9 @@
     <!-- ==================== -->
     <color name="helper_gray">#99000000</color> <!-- 60% opacidad -->
 
+    <color name="snackbar_primary">@color/primary_500</color> <!-- El gris oscuro que tenías antes
+     -->
+
     <!-- AZUL PRINCIPAL - Más profesional y accesible -->
     <color name="primary_50">#E8F2FF</color>
     <color name="primary_100">#C5DFFF</color>

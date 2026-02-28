@@ -250,6 +250,91 @@ public class IniciarService {
     }
 
     /**
+     * ✅ TRADUCIR ERRORES DE FIREBASE A MENSAJES AMIGABLES - VERSIÓN CORREGIDA
+     * @param error El mensaje de error original
+     * @param correo El correo ingresado por el usuario (para verificar formato)
+     * @return Mensaje de error traducido
+     */
+    public static String traducirErrorFirebase(String error, String correo) {
+        if (error == null) return "Error desconocido";
+
+        String errorLower = error.toLowerCase();
+
+        Log.d(TAG, "🔍 Traduciendo error: " + errorLower);
+
+        // ERROR DE CONEXIÓN
+        if (errorLower.contains("connection reset") ||
+                errorLower.contains("network error") ||
+                errorLower.contains("timeout") ||
+                errorLower.contains("failed to connect") ||
+                errorLower.contains("unable to connect") ||
+                errorLower.contains("internal error")) {
+            return "Error de conexión. Verifica tu internet";
+        }
+
+        // CASO ESPECIAL: El mismo error para credenciales incorrectas
+        else if (errorLower.contains("auth credential is incorrect") ||
+                errorLower.contains("malformed or has expired")) {
+
+            // Verificar si el correo tiene formato válido
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                return "Correo electrónico inválido";
+            }
+
+            // Si el correo es válido, asumimos que es error de contraseña
+            // Pero Firebase no diferencia, así que mostramos un mensaje genérico
+            return "Credenciales incorrectas";
+        }
+
+        // ERROR DE CONTRASEÑA (otros casos)
+        else if (errorLower.contains("password is invalid") ||
+                errorLower.contains("wrong password") ||
+                errorLower.contains("invalid password") ||
+                errorLower.contains("password incorrect")) {
+            return "Contraseña incorrecta";
+        }
+
+        // USUARIO NO EXISTE
+        else if (errorLower.contains("no user record") ||
+                errorLower.contains("no record found") ||
+                errorLower.contains("user not found") ||
+                errorLower.contains("no such user")) {
+            return "Correo no registrado";
+        }
+
+        // DEMASIADOS INTENTOS
+        else if (errorLower.contains("too many requests") ||
+                errorLower.contains("too many attempts")) {
+            return "Demasiados intentos. Espera unos minutos";
+        }
+
+        // USUARIO DESHABILITADO
+        else if (errorLower.contains("user disabled")) {
+            return "Cuenta deshabilitada. Contacta soporte";
+        }
+
+        // EMAIL INVÁLIDO
+        else if (errorLower.contains("invalid email") ||
+                errorLower.contains("malformed email")) {
+            return "Correo electrónico inválido";
+        }
+
+        // EMAIL YA EN USO
+        else if (errorLower.contains("email already in use") ||
+                errorLower.contains("email already exists")) {
+            return "Este correo ya está registrado";
+        }
+
+        // ERROR GENÉRICO
+        else {
+            if (errorLower.contains("internal error")) {
+                return "Error interno del servidor. Intenta de nuevo";
+            }
+            return error;
+        }
+    }
+
+    /**
      * Inicia sesión usando correo y contraseña.
      */
     public void iniciarSesionCorreo(String correo, String password, @NonNull LoginCallback callback) {
@@ -262,7 +347,6 @@ public class IniciarService {
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
                             Log.d(TAG, "👤 Usuario Firebase obtenido: " + user.getUid());
-                            // 🔎 Detectar tipo de usuario después del login exitoso
                             detectarTipoUsuario(user, new TipoUsuarioCallback() {
                                 @Override
                                 public void onTipoDetectado(String tipo) {
@@ -273,17 +357,19 @@ public class IniciarService {
                                 @Override
                                 public void onError(String error) {
                                     Log.e(TAG, "❌ Error detectando tipo de usuario: " + error);
-                                    callback.onLoginFailure("Usuario no encontrado: " + error);
+                                    // ✅ MEJORADO: Usar error traducido
+                                    callback.onLoginFailure("Error al verificar usuario: " + error);
                                 }
                             });
                         } else {
                             Log.e(TAG, "❌ Usuario Firebase es null después de login exitoso");
-                            callback.onLoginFailure("No se pudo obtener el usuario después del login");
+                            callback.onLoginFailure("Error al obtener datos del usuario");
                         }
                     } else {
                         String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
                         Log.e(TAG, "❌ Error en autenticación con email: " + errorMsg);
-                        callback.onLoginFailure(errorMsg);
+                        // ✅ MEJORADO: Traducir el error antes de enviarlo
+                        callback.onLoginFailure(traducirErrorFirebase(errorMsg, correo));
                     }
                 });
     }
@@ -305,12 +391,19 @@ public class IniciarService {
                         Log.d(TAG, "✅ Intent sender iniciado - REQ_ONE_TAP: " + REQ_ONE_TAP);
                     } catch (IntentSender.SendIntentException e) {
                         Log.e(TAG, "❌ Error en IntentSender: " + e.getMessage(), e);
-                        callback.onLoginFailure(e.getMessage());
+                        // ✅ MEJORADO: Error más amigable
+                        callback.onLoginFailure("Error al iniciar Google Sign-In. Intenta de nuevo.");
                     }
                 })
                 .addOnFailureListener(activity, e -> {
                     Log.e(TAG, "❌ Error en Google Sign-In request: " + e.getMessage(), e);
-                    callback.onLoginFailure(e.getMessage());
+                    // ✅ MEJORADO: Detectar tipo de error
+                    String errorMsg = e.getMessage();
+                    if (errorMsg != null && errorMsg.contains("16")) {
+                        callback.onLoginFailure("Google Play Services no está disponible");
+                    } else {
+                        callback.onLoginFailure("Error al conectar con Google. Verifica tu conexión.");
+                    }
                 });
     }
 
@@ -323,11 +416,6 @@ public class IniciarService {
             SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
             String idToken = credential.getGoogleIdToken();
 
-            Log.d(TAG, "📋 Credencial Google obtenida:");
-            Log.d(TAG, "   - ID: " + credential.getId());
-            Log.d(TAG, "   - Email: " + credential.getId());
-            Log.d(TAG, "   - Display Name: " + credential.getDisplayName());
-
             if (idToken != null) {
                 Log.d(TAG, "✅ Token Google obtenido - autenticando con Firebase");
                 AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
@@ -339,7 +427,6 @@ public class IniciarService {
                                 if (user != null) {
                                     Log.d(TAG, "👤 Usuario Google autenticado: " + user.getUid());
 
-                                    // 🔎 Detectar si es conductor o pasajero
                                     detectarTipoUsuario(user, new TipoUsuarioCallback() {
                                         @Override
                                         public void onTipoDetectado(String tipo) {
@@ -350,9 +437,7 @@ public class IniciarService {
                                         @Override
                                         public void onError(String error) {
                                             Log.w(TAG, "⚠️ Usuario Google no encontrado en BD - registrando como pasajero");
-                                            Log.w(TAG, "   - Error: " + error);
 
-                                            // No existe en ningún nodo, lo registramos como pasajero por defecto
                                             registroService.guardarUsuarioSiNoExiste(user, new RegistroService.RegistroCallback() {
                                                 @Override
                                                 public void onSuccess() {
@@ -363,31 +448,38 @@ public class IniciarService {
                                                 @Override
                                                 public void onFailure(String error) {
                                                     Log.e(TAG, "❌ Error registrando usuario Google: " + error);
-                                                    callback.onLoginFailure("Autenticado, pero fallo registro: " + error);
+                                                    // ✅ MEJORADO: Error más específico
+                                                    callback.onLoginFailure("Autenticación exitosa pero no se pudo completar el registro");
                                                 }
                                             });
                                         }
                                     });
                                 } else {
                                     Log.e(TAG, "❌ Usuario Firebase es null después de Google Sign-In");
-                                    callback.onLoginFailure("No se pudo obtener el usuario de Firebase.");
+                                    callback.onLoginFailure("Error al obtener datos del usuario");
                                 }
                             } else {
                                 String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
                                 Log.e(TAG, "❌ Error en autenticación Firebase con Google: " + errorMsg);
-                                callback.onLoginFailure(errorMsg);
+                                // ✅ MEJORADO: Traducir error
+                                callback.onLoginFailure(traducirErrorFirebase(errorMsg, null));
                             }
                         });
             } else {
                 Log.e(TAG, "❌ Token Google es null");
-                callback.onLoginFailure("No se obtuvo token de Google");
+                callback.onLoginFailure("No se pudo obtener la información de Google");
             }
         } catch (ApiException e) {
             Log.e(TAG, "❌ ApiException en Google Sign-In: " + e.getMessage(), e);
-            callback.onLoginFailure(e.getMessage());
+            // ✅ MEJORADO: Mensajes específicos para códigos de error comunes
+            if (e.getStatusCode() == 12501) {
+                callback.onLoginFailure("Inicio de sesión cancelado por el usuario");
+            } else {
+                callback.onLoginFailure("Error en la autenticación con Google");
+            }
         } catch (Exception e) {
             Log.e(TAG, "❌ Error inesperado en Google Sign-In: " + e.getMessage(), e);
-            callback.onLoginFailure("Error inesperado: " + e.getMessage());
+            callback.onLoginFailure("Error inesperado. Intenta de nuevo.");
         }
     }
 }

@@ -123,6 +123,13 @@
         <item name="cornerSize">24dp</item>
     </style>
 
+    <!-- Estilo personalizado para Snackbar -->
+    <style name="AppSnackbarStyle" parent="@style/Widget.MaterialComponents.Snackbar">
+        <item name="android:background">@drawable/snackbar_background</item>
+        <item name="android:maxWidth">400dp</item>
+        <item name="android:layout_margin">24dp</item>
+    </style>
+
     <!-- ==================== -->
     <!-- ESTILOS DE TEXTO (TAMAÑOS) -->
     <!-- ==================== -->

@@ -1,8 +1,10 @@
 package com.chopcode.trasnportenataga_laplata.activities.common;
 
 import static com.chopcode.trasnportenataga_laplata.managers.permissions.PermissionManager.requestNotificationPermission;
+import static com.chopcode.trasnportenataga_laplata.services.auth.IniciarService.traducirErrorFirebase;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -14,8 +16,13 @@ import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +34,7 @@ import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.notificactions.NotificationManager;
 import com.chopcode.trasnportenataga_laplata.managers.permissions.PermissionManager;
 import com.chopcode.trasnportenataga_laplata.services.auth.IniciarService;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +51,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     private Button btnGoogleSignIn;
     private IniciarService iniciarService;
     private TextView buttonRegistro, olvidasteContraseña;
+    private View overlay;
 
     // ✅ Constantes para SharedPreferences
     private static final String PREFS_NAME = "UserPrefs";
@@ -62,6 +71,9 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         // Solicitar permiso de notificaciones
         requestNotificationPermission(this);
+
+        // Inicializar overlay
+        overlay = findViewById(R.id.overlay);
 
         // Inicializar Firebase - SOLO Realtime Database
         rtdb = MyApp.getDatabaseReference(""); // Referencia raiz a la base de datos
@@ -87,6 +99,40 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         verificarSesionExistente();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
+    }
+
+    /**
+     * ✅ MOSTRAR OVERLAY (FONDO OSCURO)
+     */
+    private void mostrarOverlay() {
+        if (overlay != null) {
+            overlay.setVisibility(View.VISIBLE);
+            overlay.setAlpha(0f);
+            overlay.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                        // Evitar clicks en el contenido mientras está el overlay
+                        overlay.setClickable(true);
+                    })
+                    .start();
+        }
+    }
+
+    /**
+     * ✅ OCULTAR OVERLAY
+     */
+    private void ocultarOverlay() {
+        if (overlay != null) {
+            overlay.animate()
+                    .alpha(0f)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                        overlay.setVisibility(View.GONE);
+                        overlay.setClickable(false);
+                    })
+                    .start();
+        }
     }
 
     /**
@@ -183,7 +229,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * Configura el login con email y contraseña
+     * Configura el login con email y contraseña - VERSIÓN MEJORADA CON UX PROFESIONAL
      */
     private void setupEmailLogin() {
         Log.d(TAG, "🔧 Configurando login con email...");
@@ -195,28 +241,32 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             Log.d(TAG, "📧 Intentando login con email: " + correo);
             Log.d(TAG, "🔐 Longitud de contraseña: " + password.length());
 
-            if (correo.isEmpty() || password.isEmpty()) {
-                Log.w(TAG, "⚠️ Campos vacíos - mostrando toast");
-                Toast.makeText(InicioDeSesionActivity.this, "Ingresa correo y contraseña", Toast.LENGTH_SHORT).show();
+            // ✅ 1. VALIDACIÓN CON FEEDBACK VISUAL INMEDIATO
+            if (!validarCamposLogin(correo, password)) {
                 return;
             }
 
-            // ✅ MEJORADO: Deshabilitar botón durante el login
+            // ✅ 2. DESHABILITAR BOTÓN Y MOSTRAR PROGRESO
             buttonIngresar.setEnabled(false);
             buttonIngresar.setText("Iniciando sesión...");
+
+            // ✅ 3. MOSTRAR INDICADOR DE PROGRESO (OPCIONAL PERO RECOMENDADO)
+            mostrarProgreso(true);
 
             Log.d(TAG, "🔄 Llamando a iniciarSesionCorreo...");
             iniciarService.iniciarSesionCorreo(correo, password, new IniciarService.LoginCallback() {
                 @Override
-                public void onLoginSuccess(String tipoUsuario) { // ✅ tipoUsuario YA VIENE DEL SERVICIO
+                public void onLoginSuccess(String tipoUsuario) {
                     Log.d(TAG, "✅ Login exitoso con email. Tipo recibido: " + tipoUsuario);
 
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (user != null) {
                         Log.d(TAG, "👤 Usuario Firebase obtenido: " + user.getUid());
 
-                        // ✅ CORREGIDO: Usar el tipoUsuario que YA VIENE del servicio
                         guardarUsuarioEnPrefs(user.getUid(), tipoUsuario);
+
+                        // ✅ OCULTAR PROGRESO ANTES DE REDIRIGIR
+                        mostrarProgreso(false);
 
                         if (tipoUsuario.equals("conductor")) {
                             Log.d(TAG, "🚗 Redirigiendo a InicioConductor");
@@ -227,21 +277,333 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                         }
                     } else {
                         Log.e(TAG, "❌ Usuario Firebase es null después de login exitoso");
-                        buttonIngresar.setEnabled(true);
-                        buttonIngresar.setText("Ingresar");
+                        restaurarBotonLogin();
+                        mostrarErrorDialog("Error de sesión",
+                                "No se pudo obtener la información del usuario. Por favor, intenta de nuevo.");
                     }
                 }
 
                 @Override
                 public void onLoginFailure(String error) {
                     Log.e(TAG, "❌ Error en login con email: " + error);
-                    // ✅ REHABILITAR BOTÓN EN CASO DE ERROR
-                    buttonIngresar.setEnabled(true);
-                    buttonIngresar.setText("Ingresar");
-                    Toast.makeText(InicioDeSesionActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+
+                    // ✅ RESTAURAR BOTÓN Y OCULTAR PROGRESO
+                    restaurarBotonLogin();
+
+                    // ✅ MOSTRAR ERROR DE FORMA INTELIGENTE SEGÚN EL TIPO
+                    manejarErrorLogin(error, correo);
                 }
             });
         });
+    }
+
+    /**
+     * ✅ VALIDACIÓN MEJORADA CON FEEDBACK VISUAL
+     */
+    private boolean validarCamposLogin(String correo, String password) {
+        boolean esValido = true;
+
+        // ✅ CORREGIDO: Usar los IDs correctos del layout
+        TextInputLayout layoutCorreo = findViewById(R.id.emailInputLayout);
+        TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
+
+        // Limpiar errores anteriores
+        layoutCorreo.setError(null);
+        layoutPassword.setError(null);
+
+        if (correo.isEmpty()) {
+            layoutCorreo.setError("El correo es requerido");
+            esValido = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            layoutCorreo.setError("Ingresa un correo válido");
+            esValido = false;
+        }
+
+        if (password.isEmpty()) {
+            layoutPassword.setError("La contraseña es requerida");
+            esValido = false;
+        } else if (password.length() < 6) {
+            layoutPassword.setError("La contraseña debe tener al menos 6 caracteres");
+            esValido = false;
+        }
+
+        return esValido;
+    }
+
+    /**
+     * ✅ RESTAURAR BOTÓN DE LOGIN
+     */
+    private void restaurarBotonLogin() {
+        buttonIngresar.setEnabled(true);
+        buttonIngresar.setText("Ingresar");
+        mostrarProgreso(false);
+    }
+
+    /**
+     * ✅ MOSTRAR/OCULTAR PROGRESO
+     */
+    private void mostrarProgreso(boolean mostrar) {
+        // Puedes implementar un ProgressBar en tu layout
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        if (progressBar != null) {
+            progressBar.setVisibility(mostrar ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /**
+     * ✅ MANEJAR ERRORES DE LOGIN DE FORMA INTELIGENTE
+     */
+    private void manejarErrorLogin(String error, String correo) {
+        String errorTraducido = error; // Ya viene traducido del Service
+        String errorLower = error.toLowerCase();
+
+        Log.d(TAG, "🔍 Manejando error - Traducido: " + errorTraducido);
+
+        TextInputLayout layoutCorreo = findViewById(R.id.emailInputLayout);
+        TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
+
+        // Error de conexión
+        if (errorTraducido.contains("Error de conexión")) {
+            mostrarErrorDialog("Error de conexión",
+                    "No se pudo conectar con el servidor. Verifica tu conexión a internet.");
+        }
+
+        // Credenciales incorrectas (caso especial)
+        else if (errorTraducido.equals("Credenciales incorrectas")) {
+            Log.d(TAG, "📌 Detectado: Credenciales incorrectas");
+
+            // Verificar si el correo tiene formato válido
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                layoutCorreo.setError("Correo electrónico inválido");
+                animarCampoError(editTextUsuario);
+            } else {
+                // Asumimos que es error de contraseña
+                layoutPassword.setError("Contraseña incorrecta");
+                animarCampoError(editTextPassword);
+
+                mostrarSnackbarConAccion(
+                        "¿Olvidaste tu contraseña?",
+                        "Recuperar",
+                        v -> iniciarRecuperacionContrasena(correo)
+                );
+            }
+        }
+
+        // Error de contraseña específico
+        else if (errorTraducido.contains("Contraseña incorrecta")) {
+            Log.d(TAG, "📌 Detectado: Error de contraseña");
+            layoutPassword.setError("Contraseña incorrecta");
+            animarCampoError(editTextPassword);
+
+            mostrarSnackbarConAccion(
+                    "¿Olvidaste tu contraseña?",
+                    "Recuperar",
+                    v -> iniciarRecuperacionContrasena(correo)
+            );
+        }
+
+        // Correo no registrado
+        else if (errorTraducido.contains("Correo no registrado")) {
+            Log.d(TAG, "📌 Detectado: Usuario no registrado");
+            layoutCorreo.setError("Correo no registrado");
+            animarCampoError(editTextUsuario);
+
+            mostrarSnackbarConAccion(
+                    "¿No tienes cuenta? Regístrate gratis",
+                    "Registrar",
+                    v -> irARegistro()
+            );
+        }
+
+        // Email inválido
+        else if (errorTraducido.contains("Correo electrónico inválido")) {
+            Log.d(TAG, "📌 Detectado: Email inválido");
+            layoutCorreo.setError("Correo electrónico inválido");
+            animarCampoError(editTextUsuario);
+        }
+
+        // Otros errores
+        else {
+            mostrarSnackbarCentrado(errorTraducido, true); // 👈 Usar Snackbar animado
+        }
+    }
+
+    /**
+     * ✅ ANIMAR CAMPO CON ERROR
+     */
+    private void animarCampoError(View view) {
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        view.startAnimation(shake);
+    }
+
+    /**
+     * ✅ MOSTRAR SNACKBAR CON ACCIÓN - CON FONDO OSCURO
+     */
+    private void mostrarSnackbarConAccion(String mensaje, String accion, View.OnClickListener listener) {
+        mostrarOverlay(); // Mostrar fondo oscuro
+
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                mensaje,
+                5000
+        );
+
+        snackbar.setAction(accion, v -> {
+            listener.onClick(v);
+            ocultarOverlay();
+        });
+
+        snackbar.setActionTextColor(getResources().getColor(R.color.surface));
+
+        // Configurar callback para cuando el Snackbar se cierra automáticamente
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                ocultarOverlay();
+            }
+        });
+
+        View snackbarView = snackbar.getView();
+        snackbarView.setBackgroundColor(getResources().getColor(R.color.snackbar_primary));
+
+        // Centrar texto
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (textView != null) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setGravity(android.view.Gravity.CENTER);
+            textView.setTextSize(16);
+            textView.setMaxLines(5);
+            textView.setTextColor(getResources().getColor(android.R.color.white));
+        }
+
+        // Centrar Snackbar
+        if (snackbarView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+            params.gravity = android.view.Gravity.CENTER;
+            params.width = getResources().getDimensionPixelSize(R.dimen.snackbar_max_width);
+            params.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+
+            int margin = getResources().getDimensionPixelSize(R.dimen.snackbar_margin);
+            params.setMargins(margin, margin, margin, margin);
+            snackbarView.setLayoutParams(params);
+        }
+
+        // Animación del Snackbar
+        snackbarView.setAlpha(0f);
+        snackbarView.setScaleX(0.8f);
+        snackbarView.setScaleY(0.8f);
+
+        snackbarView.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(300)
+                .start();
+
+        snackbar.show();
+    }
+
+    /**
+     * ✅ MOSTRAR SNACKBAR CENTRADO - CON FONDO OSCURO
+     */
+    private void mostrarSnackbarCentrado(String mensaje, boolean esError) {
+        mostrarOverlay(); // Mostrar fondo oscuro
+
+        int duracion = esError ? 3000 : 5000;
+        String texto = esError ? "❌ " + mensaje : mensaje;
+
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content),
+                texto,
+                duracion
+        );
+
+        // Configurar callback para ocultar overlay
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                ocultarOverlay();
+            }
+        });
+
+        View snackbarView = snackbar.getView();
+
+        // Color según tipo
+        if (esError) {
+            snackbarView.setBackgroundColor(getResources().getColor(R.color.error_500));
+        } else {
+            snackbarView.setBackgroundColor(getResources().getColor(R.color.primary_500));
+        }
+
+        // Centrar texto
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        if (textView != null) {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setGravity(android.view.Gravity.CENTER);
+            textView.setTextColor(getResources().getColor(android.R.color.white));
+            textView.setMaxLines(5);
+        }
+
+        // Centrar Snackbar
+        if (snackbarView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
+            params.gravity = android.view.Gravity.CENTER;
+            params.width = getResources().getDimensionPixelSize(R.dimen.snackbar_max_width);
+
+            int margin = getResources().getDimensionPixelSize(R.dimen.snackbar_margin);
+            params.setMargins(margin, margin, margin, margin);
+            snackbarView.setLayoutParams(params);
+        }
+
+        // Animación
+        snackbarView.setScaleX(0.8f);
+        snackbarView.setScaleY(0.8f);
+        snackbarView.setAlpha(0f);
+
+        snackbarView.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(300)
+                .start();
+
+        snackbar.show();
+    }
+
+    /**
+     * ✅ MOSTRAR DIALOG DE ERROR
+     */
+    private void mostrarErrorDialog(String titulo, String mensaje) {
+        new AlertDialog.Builder(this)
+                .setTitle(titulo)
+                .setMessage(mensaje)
+                .setPositiveButton("Entendido", null)
+                .setIcon(R.drawable.ic_cancel)
+                .show();
+    }
+
+    /**
+     * ✅ INICIAR RECUPERACIÓN DE CONTRASEÑA
+     */
+    private void iniciarRecuperacionContrasena(String email) {
+        // Aquí implementarías el envío de email de recuperación
+        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mostrarSnackbarCentrado("📧 Se envió un email de recuperación a " + email, false);
+                    } else {
+                        mostrarSnackbarCentrado("Error al enviar email de recuperación", true);
+                    }
+                });
+    }
+
+    /**
+     * ✅ IR A REGISTRO
+     */
+    private void irARegistro() {
+        startActivity(new Intent(this, RegistroUsuariosActivity.class));
     }
 
     /**
@@ -279,7 +641,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 public void onLoginFailure(String error) {
                     Log.e(TAG, "❌ Error en login con Google: " + error);
                     btnGoogleSignIn.setEnabled(true);
-                    Toast.makeText(InicioDeSesionActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                    mostrarSnackbarCentrado("Error: " + error, true); // 👈 Snackbar animado
                 }
             });
         });
@@ -336,7 +698,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 public void onLoginFailure(String error) {
                     Log.e(TAG, "❌ Error en Google Sign-In (ActivityResult): " + error);
                     btnGoogleSignIn.setEnabled(true);
-                    Toast.makeText(InicioDeSesionActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+                    mostrarSnackbarCentrado("Error: " + error, true); // 👈 Snackbar animado
                 }
             });
         } else {
