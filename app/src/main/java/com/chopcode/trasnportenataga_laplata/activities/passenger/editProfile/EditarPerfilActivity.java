@@ -248,8 +248,9 @@ public class EditarPerfilActivity extends AppCompatActivity {
                     Log.d(TAG, "✅ TextViews de datos actuales actualizados");
 
                     // Poblar los campos editables con los valores actuales
-                    etNombre.setText(nombreActual.equals("No disponible") ? "" : nombreActual);
-                    etTelefono.setText(telefonoActual.equals("No disponible") ? "" : telefonoActual);
+                   /** etNombre.setText(nombreActual.equals("No disponible") ? "" : nombreActual);
+                    etTelefono.setText(telefonoActual.equals("No disponible") ? "" :
+                    telefonoActual);*/
                     etCorreo.setText(correoActual);
 
                     Log.d(TAG, "✅ Campos editables poblados con datos actuales");
