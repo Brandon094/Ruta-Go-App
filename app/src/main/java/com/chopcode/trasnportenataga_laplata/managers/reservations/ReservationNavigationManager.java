@@ -3,6 +3,7 @@ package com.chopcode.trasnportenataga_laplata.managers.reservations;
 import android.app.AlertDialog;
 import android.content.Context;
 
+import com.chopcode.trasnportenataga_laplata.R;
 import com.chopcode.trasnportenataga_laplata.managers.analytics.ReservationAnalyticsHelper;
 import com.chopcode.trasnportenataga_laplata.managers.seats.SeatManager;
 
@@ -55,7 +56,7 @@ public class ReservationNavigationManager {
         params.put("asiento", seatManager.getAsientoSeleccionado());
         analyticsHelper.logEvent("dialogo_cancelar_asiento", params);
 
-        new AlertDialog.Builder(context)
+        new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AppDialogTheme)
                 .setTitle("Cancelar selección")
                 .setMessage("¿Estás seguro de que quieres cancelar la selección de asiento?")
                 .setPositiveButton("Sí", (dialog, which) -> {
@@ -70,6 +71,7 @@ public class ReservationNavigationManager {
                         callback.onCancelNavigation();
                     }
                 })
+                .setIcon(R.drawable.ic_cancel)
                 .show();
     }
 

@@ -3,6 +3,7 @@ package com.chopcode.trasnportenataga_laplata.managers.reservations.confirmation
 import android.app.AlertDialog;
 import android.content.Context;
 
+import com.chopcode.trasnportenataga_laplata.R;
 import com.chopcode.trasnportenataga_laplata.managers.analytics.ReservationAnalyticsHelper;
 
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class ConfirmationDialogManager {
     public void showCancellationDialog(DialogCallback callback) {
         analyticsHelper.logCancellationDialogShown();
 
-        new AlertDialog.Builder(context)
+        new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AppDialogTheme)
                 .setTitle("Cancelar reserva")
                 .setMessage("¿Estás seguro de que quieres cancelar la reserva?")
                 .setPositiveButton("Sí", (dialog, which) -> {
@@ -43,6 +44,7 @@ public class ConfirmationDialogManager {
                         callback.onNegativeAction();
                     }
                 })
+                .setIcon(R.drawable.ic_cancel)
                 .show();
     }
 }
