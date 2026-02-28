@@ -47,7 +47,7 @@ public class ConfirmationUIManager {
             TextView tvTiempoEstimado, TextView tvPrecio, TextView tvAsiento,
             TextView tvUsuario, TextView tvTelefonoP, TextView tvConductor,
             TextView tvTelefonoC, TextView tvPlaca,
-            MaterialCardView cardEfectivo, MaterialCardView cardTransferencia) {
+            MaterialCardView cardEfectivo /**, MaterialCardView cardTransferencia*/) {
 
         this.tvOrigen = tvOrigen;
         this.tvDestino = tvDestino;
@@ -62,16 +62,16 @@ public class ConfirmationUIManager {
         this.tvTelefonoC = tvTelefonoC;
         this.tvPlaca = tvPlaca;
         this.cardEfectivo = cardEfectivo;
-        this.cardTransferencia = cardTransferencia;
+       //this.cardTransferencia = cardTransferencia;
         this.fabAyuda = fabAyuda;
 
         // Obtener referencias a los ImageView de check
         if (cardEfectivo != null) {
             this.checkIconEfectivo = cardEfectivo.findViewById(R.id.checkIconEfectivo);
         }
-        if (cardTransferencia != null) {
+        /**if (cardTransferencia != null) {
             this.checkIconTransferencia = cardTransferencia.findViewById(R.id.checkIconTransferencia);
-        }
+        }*/
     }
 
     public void setConfirmationListener(ConfirmationListener listener) {

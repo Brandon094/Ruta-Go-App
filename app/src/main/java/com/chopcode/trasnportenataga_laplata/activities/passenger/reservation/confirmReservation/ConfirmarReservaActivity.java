@@ -113,14 +113,14 @@ public class ConfirmarReservaActivity extends AppCompatActivity implements
 
         // IMPORTANTE: IDs CORRECTOS después de la corrección
         MaterialCardView cardEfectivo = findViewById(R.id.cardEfectivo);
-        MaterialCardView cardTransferencia = findViewById(R.id.cardTransferencia);
+        //MaterialCardView cardTransferencia = findViewById(R.id.cardTransferencia);
 
         // Configurar UIManager con las nuevas vistas
         uiManager.setNewViewReferences(
                 tvOrigen, tvDestino, tvFecha, tvHora, tvTiempoEstimado,
                 tvPrecio, tvAsiento, tvUsuario, tvTelefonoP,
                 tvConductor, tvTelefonoC, tvPlaca,
-                cardEfectivo, cardTransferencia
+                cardEfectivo /**, cardTransferencia*/
         );
 
         uiManager.setConfirmationListener(this);

@@ -696,7 +696,7 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.card.MaterialCardView
+                    <!-- <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardTransferencia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -761,7 +761,7 @@
                                 android:tint="@color/primary_600"
                                 android:visibility="gone" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView> -->
 
                     <!-- Información adicional de pago -->
                     <LinearLayout
@@ -836,15 +836,27 @@
                 android:background="@drawable/bg_info_card"
                 android:backgroundTint="@color/surface_1"
                 app:cornerRadius="12dp">
-
-                <TextView
+                <!-- ===== SECCIÓN INFORMACIÓN IMPORTANTE ===== -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/info_importante"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="12dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_info"
+                        android:tint="@color/info_600"
+                        android:layout_marginEnd="12dp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/info_importante"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
