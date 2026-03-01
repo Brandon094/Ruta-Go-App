@@ -255,7 +255,8 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
 
             Map<String, Object> userData = new HashMap<>();
             userData.put("nombre", nombre);
-            userData.put("correo", correo);
+            userData.put("email", correo);
+            userData.put("id", userId);
             userData.put("telefono", telefono);
             userData.put("fechaRegistro", System.currentTimeMillis());
             userData.put("rol", "usuario"); // Rol por defecto

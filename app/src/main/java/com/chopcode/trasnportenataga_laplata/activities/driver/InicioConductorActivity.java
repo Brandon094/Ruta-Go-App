@@ -161,6 +161,48 @@ public class InicioConductorActivity extends AppCompatActivity {
         actualizarTiempoActualizacion();
     }
 
+    /**
+     * Versión con la misma firma que en PerfilConductor (parámetros count opcionales)
+     */
+    private void mostrarDialogoConfirmacion() {
+        Log.d(TAG, "💬 Mostrando diálogo de confirmación de cierre de sesión");
+        registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setTitle("Cerrar Sesión")
+                .setMessage("¿Estás seguro de que quieres cerrar sesión?")
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
+                    registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
+
+                    cleanupResources();
+                    authManager.signOut(this);
+                    Toast.makeText(this, getString(R.string.sesion_cerrada_exito), Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    Log.d(TAG, "❌ Usuario canceló cierre de sesión");
+                    registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
+                    dialog.dismiss();
+                })
+                .setIcon(R.drawable.ic_logout)
+                .show();
+    }
+
+    /**
+     * Registrar evento analítico con la misma firma que en PerfilConductor
+     */
+    private void registrarEventoAnalitico(String evento, Integer count, Integer count2) {
+        try {
+            // Adapta esto según tu implementación de MyApp
+            Log.d(TAG, "📊 Evento analítico: " + evento +
+                    (count != null ? " count=" + count : "") +
+                    (count2 != null ? " count2=" + count2 : ""));
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error registrando evento: " + e.getMessage());
+        }
+    }
+
     /** Metodo para configurar los botones de la UI */
     private void setupButtons() {
         Log.d(TAG, "🔧 Configurando botones...");
@@ -168,19 +210,7 @@ public class InicioConductorActivity extends AppCompatActivity {
         // Botón de cerrar sesión
         btnCerrarSesion.setOnClickListener(view -> {
             Log.d(TAG, "🚪 Cerrando sesión de conductor...");
-
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle(getString(R.string.cerrar_sesion))
-                    .setMessage(getString(R.string.confirmar_cerrar_sesion))
-                    .setPositiveButton(getString(R.string.confirmar), (dialog, which) -> {
-                        // Limpiar recursos antes de cerrar sesión
-                        cleanupResources();
-                        authManager.signOut(this);
-                        Toast.makeText(this, getString(R.string.sesion_cerrada_exito), Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .setNegativeButton(getString(R.string.cancelar), null)
-                    .show();
+            mostrarDialogoConfirmacion();
         });
 
         // Botón de perfil del conductor

@@ -13,13 +13,16 @@ import com.chopcode.trasnportenataga_laplata.R;
 import com.chopcode.trasnportenataga_laplata.activities.driver.history.HistorialConductorActivity;
 import com.chopcode.trasnportenataga_laplata.activities.driver.InicioConductorActivity;
 import com.chopcode.trasnportenataga_laplata.activities.driver.editProfile.EditarPerfilConductorActivity;
+import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
 import com.chopcode.trasnportenataga_laplata.models.Vehiculo;
 import com.chopcode.trasnportenataga_laplata.services.user.UserService;
 import com.chopcode.trasnportenataga_laplata.services.reservations.VehiculoService;
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PerfilConductorActivity extends AppCompatActivity {
     private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
@@ -27,6 +30,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
     private UserService userService;
     private VehiculoService vehiculoService;
     private AuthManager authManager;
+    private static final String TAG = "PerfilConductor";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,17 +295,53 @@ public class PerfilConductorActivity extends AppCompatActivity {
         tvAnioVehiculo.setText("N/A");
     }
 
-    /**
-     * Método para mostrar diálogo de confirmación de cierre de sesión
-     */
+    /** Método para mostrar diálogo de confirmación de cierre de sesión */
     private void mostrarDialogoConfirmacion() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        Log.d(TAG, "💬 Mostrando diálogo de confirmación de cierre de sesión");
+
+        // ✅ Registrar evento de diálogo
+        registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
+
+        new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
                 .setTitle("Cerrar Sesión")
                 .setMessage("¿Estás seguro de que quieres cerrar sesión?")
-                .setPositiveButton("Sí", (dialog, which) -> cerrarSesion())
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
+                    registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
+                    cerrarSesion();
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    Log.d(TAG, "❌ Usuario canceló cierre de sesión");
+                    registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
+                    dialog.dismiss();
+                })
                 .setIcon(R.drawable.ic_logout)
                 .show();
+    }
+
+    /**
+     * ✅ MÉTODO AUXILIAR: Registrar eventos analíticos usando MyApp
+     */
+    private void registrarEventoAnalitico(String evento, Integer count, Integer count2) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("user_id", MyApp.getCurrentUserId());
+            params.put("pantalla", "PerfilUsuario");
+
+            if (count != null) {
+                params.put("count", count);
+            }
+            if (count2 != null) {
+                params.put("count2", count2);
+            }
+
+            params.put("timestamp", System.currentTimeMillis());
+
+            MyApp.logEvent(evento, params);
+            Log.d(TAG, "📊 Evento analítico registrado: " + evento);
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error registrando evento analítico: " + e.getMessage());
+        }
     }
 
     /**
