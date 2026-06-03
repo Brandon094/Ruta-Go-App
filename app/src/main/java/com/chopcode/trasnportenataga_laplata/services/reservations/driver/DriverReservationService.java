@@ -425,26 +425,27 @@ public class DriverReservationService {
     }
 
     /**
-     * Libera un asiento reservado - VERSIÓN SIMPLIFICADA
+     * Libera un asiento reservado
      */
     public void liberarAsientoReservado(String horarioId, int numeroAsiento,
                                         ReservationUpdateCallback callback) {
         Log.d(TAG, "🔄 Liberando asiento " + numeroAsiento + " en horario " + horarioId);
 
-        // Paso 1: Eliminar el asiento ocupado
+        // Referencia al nodo de asientos ocupados
         DatabaseReference seatRef = MyApp.getDatabaseReference(
-                "disponibilidadAsientos/" + horarioId + "/asientosOcupados" + numeroAsiento
+                "disponibilidadAsientos/" + horarioId + "/asientosOcupados/" + numeroAsiento
         );
 
-        seatRef.removeValue()
+        // Marcar como false (disponible) en lugar de eliminar el nodo para mantener consistencia con SeatManager
+        seatRef.setValue(false)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Paso 1: Asiento " + numeroAsiento + " eliminado");
+                    Log.d(TAG, "✅ Paso 1: Asiento " + numeroAsiento + " marcado como disponible (false)");
 
-                    // Paso 2: Actualizar contador (opcional, puede fallar)
+                    // Paso 2: Actualizar contador
                     actualizarContadorSimple(horarioId, callback);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error eliminando asiento: " + e.getMessage());
+                    Log.e(TAG, "❌ Error liberando asiento: " + e.getMessage());
                     callback.onError(e.getMessage());
                 });
     }
