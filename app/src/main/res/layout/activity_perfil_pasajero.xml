@@ -1,16 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_edit_profile"
-    android:padding="16dp"
-    android:fitsSystemWindows="true">
+    android:background="@drawable/bg_gradient_edit_profile">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:padding="16dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_nav_container">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
         <!-- Header con gradiente (se mantiene igual) -->
         <LinearLayout
@@ -108,7 +114,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/ic_person"
                         android:layout_marginEnd="8dp"
-                        android:tint="@color/primary_500" />
+                        app:tint="@color/primary_500" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -142,7 +148,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_email"
-                            android:tint="@color/primary_500" />
+                            app:tint="@color/primary_500" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -194,7 +200,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_phone_enabled"
-                            android:tint="@color/primary_500" />
+                            app:tint="@color/primary_500" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -224,226 +230,152 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Botón Editar Perfil -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditarPerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="Editar Perfil"
+                    android:textAllCaps="false"
+                    app:icon="@drawable/ic_edit"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- SECCIÓN ACCIONES RÁPIDAS - FUERA DEL CARD PRINCIPAL -->
-        <LinearLayout
-            android:id="@+id/layoutTituloAcciones"
+        <!-- ===== SECCIÓN PREMIUM (Resumen de Ahorro y Lealtad) ===== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPremiumStats"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardPerfil">
+            app:layout_constraintTop_toBottomOf="@id/cardPerfil"
+            app:strokeColor="@color/warning_500"
+            app:strokeWidth="2dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_bolt"
-                android:layout_marginEnd="8dp"
-                android:tint="@color/primary_500" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Acciones Rápidas"
-                android:textColor="@color/primary_500"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <!-- Grid de botones - ACCIONES RÁPIDAS -->
-        <androidx.gridlayout.widget.GridLayout
-            android:id="@+id/gridAcciones"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="20dp"
-            app:columnCount="4"
-            app:rowCount="1"
-            app:alignmentMode="alignMargins"
-            app:columnOrderPreserved="false"
-            android:padding="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutTituloAcciones">
-
-            <!-- Botón Editar Perfil -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardEditarPerfil"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/primary_500"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="1"
-                android:layout_margin="4dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:layout_column="0"
-                app:layout_row="0">
-
-                <!-- ... (contenido del botón) ... -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_edit"
-                        android:tint="@color/text_on_primary" />
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_trending_up"
+                        app:tint="@color/warning_600"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Resumen Premium"
+                        android:textColor="@color/warning_700"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Editar"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
-
+                        android:text="PRO"
+                        android:background="@drawable/bg_badge_status"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="2dp"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Botón Historial -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardHistorialReservas"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/secondary_500"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="1"
-                android:layout_margin="4dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:layout_column="1"
-                app:layout_row="0">
-
-                <!-- ... (contenido del botón) ... -->
-                <LinearLayout
+                <GridLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:rowCount="1"
+                    android:layout_marginTop="8dp">
 
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_history"
-                        android:tint="@color/text_on_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Gasto Total -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Historial"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:layout_columnWeight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Inversión total"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/tvTotalGastadoPremium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="$0"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
+                    </LinearLayout>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    <!-- Puntos de Lealtad -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Puntos Ruta-Go"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_secondary" />
+                        <TextView
+                            android:id="@+id/tvPuntosLealtad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 pts"
+                            android:textStyle="bold"
+                            android:textColor="@color/success"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </GridLayout>
 
-            <!-- Botón Volver al Inicio -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardVolverInicio"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/success"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="1"
-                android:layout_margin="4dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:layout_column="2"
-                app:layout_row="0">
-
-                <!-- ... (contenido del botón) ... -->
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvRutaFavorita"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
+                    android:layout_height="wrap_content"
+                    android:text="Ruta favorita: Cargando..."
+                    android:textSize="12sp"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/primary_600"
+                    android:textStyle="italic" />
 
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_home"
-                        android:tint="@color/text_on_primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Inicio"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+    <FrameLayout
+        android:id="@+id/bottom_nav_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- Botón Cerrar Sesión -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardCerrarSesion"
-                android:layout_width="0dp"
-                android:layout_height="90dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/error"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="1"
-                android:layout_margin="4dp"
-                android:foreground="?android:attr/selectableItemBackground"
-                app:layout_column="3"
-                app:layout_row="0">
-
-                <!-- ... (contenido del botón) ... -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_logout"
-                        android:tint="@color/text_on_primary" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Salir"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:gravity="center" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </androidx.gridlayout.widget.GridLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

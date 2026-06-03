@@ -10,13 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.trasnportenataga_laplata.R;
-import com.chopcode.trasnportenataga_laplata.activities.passenger.editProfile.EditarPerfilActivity;
 import com.chopcode.trasnportenataga_laplata.activities.passenger.history.HistorialReservasActivity;
 import com.chopcode.trasnportenataga_laplata.activities.passenger.InicioUsuariosActivity;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
 import com.chopcode.trasnportenataga_laplata.services.user.UserService;
+import com.chopcode.trasnportenataga_laplata.services.reservations.passenger.PassengerReservationService;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashMap;
@@ -24,9 +25,12 @@ import java.util.Map;
 
 public class PerfilUsuarioActivity extends AppCompatActivity {
     private TextView tvNombre, tvCorreo, tvTelefono;
-    private MaterialCardView cardEditarPerfil, cardHistorialReservas, cardVolverInicio, cardCerrarSesion;
+    private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
+    private MaterialCardView cardPremiumStats;
+    private com.google.android.material.button.MaterialButton btnEditarPerfil;
     private AuthManager authManager;
     private UserService userService;
+    private PassengerReservationService passengerReservationService;
 
     // ✅ NUEVO: Tag para logs
     private static final String TAG = "PerfilUsuario";
@@ -45,6 +49,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         // Inicializar servicios
         authManager = AuthManager.getInstance();
         userService = new UserService();
+        passengerReservationService = new PassengerReservationService();
         Log.d(TAG, "✅ Servicios inicializados");
 
         // Verificar si el usuario está logueado usando MyApp
@@ -66,10 +71,16 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         // Cargar los datos del usuario desde Firebase
         cargarInfoUsuario();
 
-        // Configurar listeners de botones
-        configurarBotones();
+        // Configurar navegación
+        setupBottomNavigation();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(false))
+                .commit();
     }
 
     private void inicializarVistas() {
@@ -79,171 +90,23 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tvNombreUsuario);
         tvCorreo = findViewById(R.id.tvEmail);
         tvTelefono = findViewById(R.id.tvPhone);
-        Log.d(TAG, "✅ TextViews inicializados");
 
-        // Cards del grid (nuevo diseño)
-        cardEditarPerfil = findViewById(R.id.cardEditarPerfil);
-        //cardHistorialReservas = findViewById(R.id.cardHistorialReservas);
-        cardVolverInicio = findViewById(R.id.cardVolverInicio);
-        cardCerrarSesion = findViewById(R.id.cardCerrarSesion);
-        Log.d(TAG, "✅ Cards del grid inicializadas");
+        // Vistas Premium
+        cardPremiumStats = findViewById(R.id.cardPremiumStats);
+        tvTotalGastadoPremium = findViewById(R.id.tvTotalGastadoPremium);
+        tvPuntosLealtad = findViewById(R.id.tvPuntosLealtad);
+        tvRutaFavorita = findViewById(R.id.tvRutaFavorita);
+
+        // Botones Editar perfil
+        btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
+        if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irAEditarPerfil());
 
         Log.d(TAG, "✅ Todas las vistas inicializadas correctamente");
     }
 
-    private void configurarBotones() {
-        Log.d(TAG, "🔧 Configurando listeners de botones...");
-
-        // Botón Editar Perfil
-        cardEditarPerfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "🎯 Click en Editar Perfil - iniciando animación");
-
-                // ✅ Registrar evento analítico
-                registrarEventoAnalitico("click_editar_perfil_card", null, null);
-
-                cardEditarPerfil.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                cardEditarPerfil.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
-                                Log.d(TAG, "👤 Navegando a EditarPerfil");
-                                editPerfil();
-                            }
-                        }).start();
-            }
-        });
-
-        // Botón Historial Reservas
-  /**      cardHistorialReservas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "🎯 Click en Historial Reservas - iniciando animación");
-
-                // ✅ Registrar evento analítico
-                registrarEventoAnalitico("click_historial_reservas", null, null);
-
-                cardHistorialReservas.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                cardHistorialReservas.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
-                                Log.d(TAG, "📋 Navegando a HistorialReservas");
-                                historialReservas();
-                            }
-                        }).start();
-            }
-        });
-*/
-        // Botón Volver al Inicio
-        cardVolverInicio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "🎯 Click en Volver al Inicio - iniciando animación");
-
-                // ✅ Registrar evento analítico
-                registrarEventoAnalitico("click_volver_inicio", null, null);
-
-                cardVolverInicio.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                cardVolverInicio.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
-                                Log.d(TAG, "🏠 Volviendo a InicioUsuarios");
-                                volverAlInicio();
-                            }
-                        }).start();
-            }
-        });
-
-        // Botón Cerrar Sesión
-        cardCerrarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "🎯 Click en Cerrar Sesión - iniciando animación");
-
-                // ✅ Registrar evento analítico
-                registrarEventoAnalitico("click_cerrar_sesion", null, null);
-
-                cardCerrarSesion.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100)
-                        .withEndAction(new Runnable() {
-                            @Override
-                            public void run() {
-                                cardCerrarSesion.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
-                                Log.d(TAG, "🚪 Mostrando diálogo de confirmación de cierre de sesión");
-                                mostrarDialogoConfirmacion();
-                            }
-                        }).start();
-            }
-        });
-
-        Log.d(TAG, "✅ Todos los listeners configurados correctamente");
-    }
-
-    /** Método para volver al inicio del pasajero */
-    private void volverAlInicio() {
-        Log.d(TAG, "🔄 Ejecutando volverAlInicio");
-
-        // ✅ Registrar evento de navegación
-        registrarEventoAnalitico("navegar_volver_inicio", null, null);
-
-        Intent intent = new Intent(this, InicioUsuariosActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    private void irAEditarPerfil() {
+        Intent intent = new Intent(this, com.chopcode.trasnportenataga_laplata.activities.passenger.editProfile.EditarPerfilActivity.class);
         startActivity(intent);
-        finish();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        Log.d(TAG, "✅ Navegación a inicio completada");
-    }
-
-    /** Método para editar perfil */
-    private void editPerfil() {
-        Log.d(TAG, "🔄 Ejecutando editPerfil");
-
-        // ✅ Registrar evento de navegación
-        registrarEventoAnalitico("navegar_editar_perfil", null, null);
-
-        Intent intent = new Intent(this, EditarPerfilActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        Log.d(TAG, "✅ Navegación a EditarPerfil completada");
-    }
-
-    /** Método para ver historial de reservas */
-    private void historialReservas() {
-        Log.d(TAG, "🔄 Ejecutando historialReservas");
-
-        // ✅ Registrar evento de navegación
-        registrarEventoAnalitico("navegar_historial_reservas", null, null);
-
-        Intent intent = new Intent(this, HistorialReservasActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        Log.d(TAG, "✅ Navegación a HistorialReservas completada");
-    }
-
-    /** Método para mostrar diálogo de confirmación de cierre de sesión */
-    private void mostrarDialogoConfirmacion() {
-        Log.d(TAG, "💬 Mostrando diálogo de confirmación de cierre de sesión");
-
-        // ✅ Registrar evento de diálogo
-        registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
-
-        new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
-                .setTitle("Cerrar Sesión")
-                .setMessage("¿Estás seguro de que quieres cerrar sesión?")
-                .setPositiveButton("Sí", (dialog, which) -> {
-                    Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
-                    registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
-                    cerrarSesion();
-                })
-                .setNegativeButton("Cancelar", (dialog, which) -> {
-                    Log.d(TAG, "❌ Usuario canceló cierre de sesión");
-                    registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
-                    dialog.dismiss();
-                })
-                .setIcon(R.drawable.ic_logout)
-                .show();
     }
 
     /**
@@ -304,6 +167,9 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                         Log.w(TAG, "⚠️ Email del usuario no disponible");
                     }
 
+                    // ✅ CARGAR ESTADÍSTICAS PREMIUM DESPUÉS DE CARGAR USUARIO
+                    cargarEstadisticasPremium(userId);
+
                     Log.d(TAG, "✅ UI actualizada con datos del usuario");
                 });
             }
@@ -338,18 +204,42 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Cierra la sesión y redirige a la pantalla de inicio de sesión.
-     */
-    private void cerrarSesion() {
-        Log.d(TAG, "🚪 Cerrando sesión del usuario...");
+    private void cargarEstadisticasPremium(String usuarioId) {
+        Log.d(TAG, "💰 Cargando estadísticas premium para: " + usuarioId);
 
-        // ✅ Registrar evento de cierre de sesión
-        registrarEventoAnalitico("cerrar_sesion_ejecutado", null, null);
+        passengerReservationService.obtenerEstadisticasPremium(usuarioId, new PassengerReservationService.PremiumStatsCallback() {
+            @Override
+            public void onStatsCalculated(Map<String, Object> stats) {
+                runOnUiThread(() -> {
+                    if (cardPremiumStats != null) {
+                        cardPremiumStats.setVisibility(View.VISIBLE);
+                        
+                        Double gastado = (Double) stats.get("totalGastado");
+                        tvTotalGastadoPremium.setText(formatearPrecio(gastado != null ? gastado : 0.0));
+                        
+                        Object puntos = stats.get("puntosLealtad");
+                        tvPuntosLealtad.setText((puntos != null ? puntos.toString() : "0") + " pts");
+                        
+                        String favorita = (String) stats.get("rutaMasFrecuente");
+                        tvRutaFavorita.setText("Ruta favorita: " + (favorita != null ? favorita : "Calculando..."));
+                        
+                        Log.d(TAG, "✅ Estadísticas premium actualizadas en UI");
+                    }
+                });
+            }
 
-        authManager.signOut(this);
-        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "✅ Sesión cerrada exitosamente");
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "❌ Error cargando estadísticas premium: " + error);
+                runOnUiThread(() -> {
+                    if (cardPremiumStats != null) cardPremiumStats.setVisibility(View.GONE);
+                });
+            }
+        });
+    }
+
+    private String formatearPrecio(double precio) {
+        return String.format("$%,.0f", precio);
     }
 
     @Override

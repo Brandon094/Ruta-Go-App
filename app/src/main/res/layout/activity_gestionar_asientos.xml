@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".activities.driver.GestionarAsientosActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Gestionar Asientos"
+            app:titleTextColor="@color/text_on_primary"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationContentDescription="@string/volver"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- INFORMACIÓN DE LA RUTA -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/infoRutaCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/tvRutaNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ruta: Cargando..."
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvHorarioInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Horario: --:--"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvAsientosDispoInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Disponibles: --"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="@color/success_700"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- LEYENDA -->
+            <LinearLayout
+                android:id="@+id/leyendaLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/infoRutaCard">
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginEnd="12dp">
+                    <View android:layout_width="16dp" android:layout_height="16dp" android:background="@color/success_500" android:layout_marginEnd="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libre" android:textSize="12sp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginEnd="12dp">
+                    <View android:layout_width="16dp" android:layout_height="16dp" android:background="@color/error_500" android:layout_marginEnd="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="App" android:textSize="12sp"/>
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                    <View android:layout_width="16dp" android:layout_height="16dp" android:background="@color/secondary_500" android:layout_marginEnd="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Físico" android:textSize="12sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- MAPA DE ASIENTOS (REUTILIZANDO LOGICA) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cabinaCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintTop_toBottomOf="@id/leyendaLayout">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <GridLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:columnCount="3"
+                        android:rowCount="2">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnConductor"
+                            style="@style/AsientoButtonStyle.Conductor"
+                            android:layout_margin="4dp"
+                            app:icon="@drawable/ic_driver" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsiento1"
+                            style="@style/AsientoButtonStyle.Disponible"
+                            android:layout_margin="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsiento2"
+                            style="@style/AsientoButtonStyle.Disponible"
+                            android:layout_margin="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsiento3"
+                            style="@style/AsientoButtonStyle.Disponible"
+                            android:layout_margin="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsiento4"
+                            style="@style/AsientoButtonStyle.Disponible"
+                            android:layout_margin="4dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAsiento5"
+                            style="@style/AsientoButtonStyle.Disponible"
+                            android:layout_margin="4dp" />
+                    </GridLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintTop_toBottomOf="@id/cabinaCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal"
+                    android:padding="16dp">
+
+                    <!-- Columna izquierda -->
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginEnd="20dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Columna derecha -->
+                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="8dp">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" />
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_marginEnd="8dp"/>
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

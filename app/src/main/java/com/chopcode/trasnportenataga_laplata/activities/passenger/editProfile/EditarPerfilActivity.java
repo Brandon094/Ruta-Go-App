@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.trasnportenataga_laplata.R;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
@@ -66,8 +67,15 @@ public class EditarPerfilActivity extends AppCompatActivity {
 
         // Configurar listeners
         configurarListeners();
+        setupBottomNavigation();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(false))
+                .commit();
     }
 
     private void inicializarVistas() {
