@@ -149,23 +149,28 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    conductorActual = snapshot.getValue(Conductor.class);
-                    if (conductorActual != null) {
-                        conductorActual.setId(userId);
-                        Log.d(TAG, "✅ Datos del conductor cargados:");
-                        Log.d(TAG, "   - Nombre: " + conductorActual.getNombre());
-                        Log.d(TAG, "   - Teléfono: " + conductorActual.getTelefono());
-                        Log.d(TAG, "   - Email: " + conductorActual.getEmail());
+                    // Carga manual segura para evitar error de Long to String
+                    conductorActual = new Conductor();
+                    conductorActual.setId(userId);
+                    conductorActual.setNombre(getStringSafely(snapshot.child("nombre")));
+                    conductorActual.setTelefono(getStringSafely(snapshot.child("telefono")));
+                    conductorActual.setEmail(getStringSafely(snapshot.child("email")));
+                    conductorActual.setVehiculoId(getStringSafely(snapshot.child("vehiculoId")));
+                    conductorActual.setPlacaVehiculo(getStringSafely(snapshot.child("placaVehiculo")));
 
-                        // Obtener ID del vehículo
-                        vehiculoId = conductorActual.getVehiculoId();
-                        Log.d(TAG, "🚗 ID del vehículo: " + vehiculoId);
+                    Log.d(TAG, "✅ Datos del conductor cargados:");
+                    Log.d(TAG, "   - Nombre: " + conductorActual.getNombre());
+                    Log.d(TAG, "   - Teléfono: " + conductorActual.getTelefono());
 
-                        // Actualizar datos del conductor en la UI
-                        actualizarUIDatosConductor();
+                    // Obtener ID del vehículo
+                    vehiculoId = conductorActual.getVehiculoId();
+                    Log.d(TAG, "🚗 ID del vehículo: " + vehiculoId);
 
-                        // Cargar datos del vehículo si existe
-                        if (vehiculoId != null && !vehiculoId.isEmpty()) {
+                    // Actualizar datos del conductor en la UI
+                    actualizarUIDatosConductor();
+
+                    // Cargar datos del vehículo si existe
+                    if (vehiculoId != null && !vehiculoId.isEmpty()) {
                             Log.d(TAG, "🔍 Cargando datos del vehículo...");
                             cargarDatosVehiculo();
                         } else {
@@ -173,7 +178,6 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
                             // Si no tiene vehículo, mostrar campos vacíos
                             inicializarCamposVehiculoVacios();
                         }
-                    }
                 } else {
                     Log.e(TAG, "❌ No se encontraron datos del conductor en Firebase");
                     Toast.makeText(EditarPerfilConductorActivity.this,
@@ -195,17 +199,29 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    vehiculoActual = snapshot.getValue(Vehiculo.class);
-                    if (vehiculoActual != null) {
-                        vehiculoActual.setId(vehiculoId);
-                        Log.d(TAG, "✅ Datos del vehículo cargados:");
-                        Log.d(TAG, "   - Placa: " + vehiculoActual.getPlaca());
-                        Log.d(TAG, "   - Marca: " + vehiculoActual.getMarca());
-                        Log.d(TAG, "   - Modelo: " + vehiculoActual.getModelo());
-                        Log.d(TAG, "   - Color: " + vehiculoActual.getColor());
-                        Log.d(TAG, "   - Capacidad: " + vehiculoActual.getCapacidad());
-                        actualizarUIDatosVehiculo();
+                    // Carga manual segura para evitar error de Long to String en campos numéricos
+                    vehiculoActual = new Vehiculo();
+                    vehiculoActual.setId(vehiculoId);
+                    vehiculoActual.setPlaca(getStringSafely(snapshot.child("placa")));
+                    vehiculoActual.setMarca(getStringSafely(snapshot.child("marca")));
+                    vehiculoActual.setModelo(getStringSafely(snapshot.child("modelo")));
+                    vehiculoActual.setColor(getStringSafely(snapshot.child("color")));
+                    vehiculoActual.setAno(getStringSafely(snapshot.child("ano")));
+                    
+                    Object cap = snapshot.child("capacidad").getValue();
+                    if (cap instanceof Number) {
+                        vehiculoActual.setCapacidad(((Number) cap).intValue());
+                    } else if (cap instanceof String) {
+                        try {
+                            vehiculoActual.setCapacidad(Integer.parseInt((String) cap));
+                        } catch (Exception e) {
+                            vehiculoActual.setCapacidad(0);
+                        }
                     }
+
+                    Log.d(TAG, "✅ Datos del vehículo cargados:");
+                    Log.d(TAG, "   - Placa: " + vehiculoActual.getPlaca());
+                    actualizarUIDatosVehiculo();
                 } else {
                     Log.w(TAG, "⚠️ No se encontró el vehículo con ID: " + vehiculoId);
                     inicializarCamposVehiculoVacios();
@@ -225,16 +241,20 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
     private void actualizarUIDatosConductor() {
         Log.d(TAG, "🔄 Actualizando UI con datos del conductor");
 
-        // Actualizar textos de valores actuales
-        tvNombreActual.setText("Nombre actual: " +
-                (conductorActual.getNombre() != null ? conductorActual.getNombre() : "No definido"));
-        tvTelefonoActual.setText("Teléfono actual: " +
-                (conductorActual.getTelefono() != null ? conductorActual.getTelefono() : "No definido"));
-        tvCorreoActual.setText("Correo actual: " +
-                (conductorActual.getEmail() != null ? conductorActual.getEmail() : "No definido"));
+        if (conductorActual != null) {
+            // Actualizar textos de valores actuales de forma segura
+            tvNombreActual.setText("Nombre actual: " +
+                    (conductorActual.getNombre() != null ? conductorActual.getNombre() : "No definido"));
+            tvTelefonoActual.setText("Teléfono actual: " +
+                    (conductorActual.getTelefono() != null ? conductorActual.getTelefono() : "No definido"));
+            tvCorreoActual.setText("Correo actual: " +
+                    (conductorActual.getEmail() != null ? conductorActual.getEmail() : "No definido"));
 
-        // Llenar campo correo
-        if (conductorActual.getEmail() != null) etCorreo.setText(conductorActual.getEmail());
+            // Llenar campos de entrada con valores actuales para facilitar la edición
+            if (conductorActual.getNombre() != null) etNombre.setText(conductorActual.getNombre());
+            if (conductorActual.getTelefono() != null) etTelefono.setText(conductorActual.getTelefono());
+            if (conductorActual.getEmail() != null) etCorreo.setText(conductorActual.getEmail());
+        }
 
         Log.d(TAG, "✅ UI del conductor actualizada");
     }
@@ -254,6 +274,14 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             tvCapacidadActual.setText("Capacidad actual: " + vehiculoActual.getCapacidad());
             tvAnioActual.setText("Año actual: " +
                     (vehiculoActual.getAno() != null ? vehiculoActual.getAno() : "No definido"));
+
+            // Llenar campos de entrada
+            if (vehiculoActual.getPlaca() != null) etPlaca.setText(vehiculoActual.getPlaca());
+            if (vehiculoActual.getMarca() != null) etMarca.setText(vehiculoActual.getMarca());
+            if (vehiculoActual.getModelo() != null) etModelo.setText(vehiculoActual.getModelo());
+            if (vehiculoActual.getColor() != null) etColor.setText(vehiculoActual.getColor());
+            etCapacidad.setText(String.valueOf(vehiculoActual.getCapacidad()));
+            if (vehiculoActual.getAno() != null) etAnio.setText(vehiculoActual.getAno());
 
             Log.d(TAG, "✅ UI del vehículo actualizada");
         }
@@ -300,15 +328,15 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
     private void guardarCambios() {
         Log.d(TAG, "🔄 Iniciando proceso de guardar cambios...");
 
-        // Validar campos obligatorios
-        String nombre = etNombre.getText().toString().trim();
-        String telefono = etTelefono.getText().toString().trim();
-        String placa = etPlaca.getText().toString().trim();
-        String marca = etMarca.getText().toString().trim();
-        String modelo = etModelo.getText().toString().trim();
-        String color = etColor.getText().toString().trim();
-        String capacidadStr = etCapacidad.getText().toString().trim();
-        String anio = etAnio.getText().toString().trim();
+        // Validar campos obligatorios de forma segura
+        String nombre = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
+        String telefono = etTelefono != null && etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
+        String placa = etPlaca != null && etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
+        String marca = etMarca != null && etMarca.getText() != null ? etMarca.getText().toString().trim() : "";
+        String modelo = etModelo != null && etModelo.getText() != null ? etModelo.getText().toString().trim() : "";
+        String color = etColor != null && etColor.getText() != null ? etColor.getText().toString().trim() : "";
+        String capacidadStr = etCapacidad != null && etCapacidad.getText() != null ? etCapacidad.getText().toString().trim() : "";
+        String anio = etAnio != null && etAnio.getText() != null ? etAnio.getText().toString().trim() : "";
 
         Log.d(TAG, "📝 Datos capturados:");
         Log.d(TAG, "   - Nombre: " + nombre);
@@ -457,7 +485,9 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         conductorRef.child("nombre").setValue(nombre);
         conductorRef.child("telefono").setValue(telefono);
         conductorRef.child("vehiculoId").setValue(vehiculoId);
-        conductorRef.child("placaVehiculo").setValue(etPlaca.getText().toString().trim());
+        
+        String placaFinal = etPlaca != null && etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
+        conductorRef.child("placaVehiculo").setValue(placaFinal);
 
         // También actualizar en la colección de usuarios para consistencia
         DatabaseReference usuarioRef = MyApp.getDatabaseReference("usuarios")
@@ -507,5 +537,14 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "📱 onDestroy - Actividad destruida");
+    }
+
+    /**
+     * Obtiene un valor de forma segura como String, incluso si es un número en Firebase
+     */
+    private String getStringSafely(DataSnapshot snapshot) {
+        Object value = snapshot.getValue();
+        if (value == null) return "";
+        return String.valueOf(value);
     }
 }

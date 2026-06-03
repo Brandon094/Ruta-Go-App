@@ -14,7 +14,7 @@ public class Reserva {
     }
 
     public Reserva(String idReserva, String usuarioId, String horarioId, Integer puestoReservado,
-                   String conductor, String telefonoC, String vehiculoId, double precio,
+                   String conductor, String conductorId, String telefonoC, String vehiculoId, double precio,
                    String origen, String destino, String tiempoEstimado, String metodoPago,
                    String estadoReserva, long fechaReserva, String nombre, String telefono,
                    String email, String idRuta, String nombreRuta) {
