@@ -4,19 +4,19 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class RegistroConductoresService {
 
     public void registrarConductoresExistentes() {
-        DatabaseReference conductoresRef = FirebaseDatabase.getInstance().getReference("conductores");
+        DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
 
         conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -53,7 +53,7 @@ public class RegistroConductoresService {
     }
 
     private void registrarConductorEnAuth(String email, String password, String nombre) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = MyApp.getFirebaseAuthInstance();
 
         // Verificar si el usuario ya existe en Auth
         auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(task -> {

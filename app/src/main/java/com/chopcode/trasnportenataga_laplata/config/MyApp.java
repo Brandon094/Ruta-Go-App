@@ -15,7 +15,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import java.util.Calendar;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import com.chopcode.trasnportenataga_laplata.services.reservations.driver.RotationWorker;
 
 public class MyApp extends Application {
 
@@ -37,7 +46,52 @@ public class MyApp extends Application {
         // Inicializar cada servicio
         initializeFirebaseServices();
 
+        // ✅ Programar la rotación automática de horarios
+        scheduleRotationWorker();
+
         Log.d("MyApp", "✅ Firebase services initialized");
+    }
+
+    /**
+     * Programa el Worker para que revise y ejecute la rotación todos los días.
+     * Se sincroniza para intentar ejecutarse a las 00:00.
+     */
+    private void scheduleRotationWorker() {
+        Log.d("MyApp", "🕒 Programando RotationWorker para las 00:00...");
+
+        // Calcular delay hasta la medianoche
+        Calendar calendar = Calendar.getInstance();
+        long now = calendar.getTimeInMillis();
+        
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        
+        if (calendar.getTimeInMillis() <= now) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        
+        long initialDelay = calendar.getTimeInMillis() - now;
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        PeriodicWorkRequest rotationRequest = new PeriodicWorkRequest.Builder(
+                RotationWorker.class,
+                24, TimeUnit.HOURS) // Una vez al día
+                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .setConstraints(constraints)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "RotationWork",
+                ExistingPeriodicWorkPolicy.KEEP,
+                rotationRequest
+        );
+
+        Log.d("MyApp", "✅ RotationWorker programado con un delay de " + (initialDelay / 1000 / 60) + " minutos");
     }
 
     private void initializeFirebaseServices() {

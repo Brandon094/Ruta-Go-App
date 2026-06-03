@@ -259,7 +259,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 public void onLoginSuccess(String tipoUsuario) {
                     Log.d(TAG, "✅ Login exitoso con email. Tipo recibido: " + tipoUsuario);
 
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseUser user = MyApp.getCurrentUser();
                     if (user != null) {
                         Log.d(TAG, "👤 Usuario Firebase obtenido: " + user.getUid());
 
@@ -588,8 +588,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
      * ✅ INICIAR RECUPERACIÓN DE CONTRASEÑA
      */
     private void iniciarRecuperacionContrasena(String email) {
-        // Aquí implementarías el envío de email de recuperación
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+        MyApp.getFirebaseAuthInstance().sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         mostrarSnackbarCentrado("📧 Se envió un email de recuperación a " + email, false);

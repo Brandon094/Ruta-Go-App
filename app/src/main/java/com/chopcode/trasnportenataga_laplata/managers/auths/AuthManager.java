@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chopcode.trasnportenataga_laplata.activities.common.InicioDeSesionActivity;
+import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -18,7 +19,7 @@ public class AuthManager {
 
     private AuthManager() {
         Log.d(TAG, "🚀 Constructor - Inicializando AuthManager singleton");
-        auth = FirebaseAuth.getInstance();
+        auth = MyApp.getFirebaseAuthInstance();
         Log.d(TAG, "✅ FirebaseAuth instancia obtenida");
     }
 
