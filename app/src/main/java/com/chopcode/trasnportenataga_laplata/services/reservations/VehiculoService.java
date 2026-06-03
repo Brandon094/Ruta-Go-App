@@ -2,11 +2,11 @@ package com.chopcode.trasnportenataga_laplata.services.reservations;
 
 import android.util.Log;
 
+import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.models.Vehiculo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -37,9 +37,7 @@ public class VehiculoService {
             return;
         }
 
-        DatabaseReference vehiculoRef = FirebaseDatabase.getInstance()
-                .getReference("vehiculos")
-                .child(placa);
+        DatabaseReference vehiculoRef = MyApp.getDatabaseReference("vehiculos/" + placa);
 
         Log.d(TAG, "📡 Consultando Firebase en: vehiculos/" + placa);
 
@@ -50,9 +48,8 @@ public class VehiculoService {
                 Log.d(TAG, "   - Existe en BD: " + snapshot.exists());
 
                 if (snapshot.exists()) {
-                    Vehiculo vehiculo = snapshot.getValue(Vehiculo.class);
+                    Vehiculo vehiculo = parseVehiculo(snapshot);
                     if (vehiculo != null) {
-                        vehiculo.setId(snapshot.getKey());
                         Log.d(TAG, "🚗 Vehículo encontrado exitosamente:");
                         Log.d(TAG, "   - Placa: " + vehiculo.getPlaca());
                         Log.d(TAG, "   - Modelo: " + vehiculo.getModelo());
@@ -93,8 +90,7 @@ public class VehiculoService {
             return;
         }
 
-        DatabaseReference vehiculosRef = FirebaseDatabase.getInstance()
-                .getReference("vehiculos");
+        DatabaseReference vehiculosRef = MyApp.getDatabaseReference("vehiculos");
 
         Log.d(TAG, "📡 Consultando Firebase: vehiculos ordenados por conductorId = " + conductorId);
 
@@ -109,9 +105,8 @@ public class VehiculoService {
                             int vehiculosProcesados = 0;
                             for (DataSnapshot vehiculoSnapshot : snapshot.getChildren()) {
                                 vehiculosProcesados++;
-                                Vehiculo vehiculo = vehiculoSnapshot.getValue(Vehiculo.class);
+                                Vehiculo vehiculo = parseVehiculo(vehiculoSnapshot);
                                 if (vehiculo != null) {
-                                    vehiculo.setId(vehiculoSnapshot.getKey());
                                     Log.d(TAG, "🚗 Vehículo encontrado para conductor:");
                                     Log.d(TAG, "   - Placa: " + vehiculo.getPlaca());
                                     Log.d(TAG, "   - Modelo: " + vehiculo.getModelo());
@@ -156,9 +151,7 @@ public class VehiculoService {
             return;
         }
 
-        DatabaseReference vehiculoRef = FirebaseDatabase.getInstance()
-                .getReference("vehiculos")
-                .child(placa);
+        DatabaseReference vehiculoRef = MyApp.getDatabaseReference("vehiculos/" + placa);
 
         Log.d(TAG, "📡 Consultando información básica en: vehiculos/" + placa);
 
@@ -203,5 +196,48 @@ public class VehiculoService {
                 callback.onError("Error al obtener información del vehículo: " + error.getMessage());
             }
         });
+    }
+
+    /**
+     * Parsea un Vehiculo desde un DataSnapshot de forma segura para evitar errores de tipo
+     */
+    private Vehiculo parseVehiculo(DataSnapshot snapshot) {
+        if (!snapshot.exists()) return null;
+
+        try {
+            Vehiculo vehiculo = new Vehiculo();
+            vehiculo.setId(snapshot.getKey());
+            vehiculo.setPlaca(getStringSafely(snapshot.child("placa")));
+            vehiculo.setMarca(getStringSafely(snapshot.child("marca")));
+            vehiculo.setModelo(getStringSafely(snapshot.child("modelo")));
+            vehiculo.setColor(getStringSafely(snapshot.child("color")));
+            vehiculo.setAno(getStringSafely(snapshot.child("ano")));
+            vehiculo.setConductorId(getStringSafely(snapshot.child("conductorId")));
+            vehiculo.setEstado(getStringSafely(snapshot.child("estado")));
+
+            Object cap = snapshot.child("capacidad").getValue();
+            if (cap instanceof Number) {
+                vehiculo.setCapacidad(((Number) cap).intValue());
+            } else if (cap instanceof String) {
+                try {
+                    vehiculo.setCapacidad(Integer.parseInt((String) cap));
+                } catch (Exception e) {
+                    vehiculo.setCapacidad(0);
+                }
+            }
+            return vehiculo;
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error fatal parseando vehículo: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Obtiene un valor de forma segura como String
+     */
+    private String getStringSafely(DataSnapshot snapshot) {
+        Object value = snapshot.getValue();
+        if (value == null) return "";
+        return String.valueOf(value);
     }
 }
