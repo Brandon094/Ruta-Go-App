@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,11 +24,11 @@ import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
 import com.chopcode.trasnportenataga_laplata.models.Ruta;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.EstadisticasViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.PerfilViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.RutasViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.ReservasViewModel;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -56,7 +55,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private TextView tvConductor, tvPlacaVehiculo;
     private TextView tvEmptyReservas, tvEmptyRutas;
     private ProgressBar progressBar;
-    private MaterialButton btnPerfilConductor, btnCerrarSesion;
+    private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabVentaFisica;
 
     // Views de estadísticas
     private TextView tvReservasConfirmadas, tvAsientosDisponibles, tvTotalIngresos;
@@ -99,8 +98,15 @@ public class InicioConductorActivity extends AppCompatActivity {
         setupRecyclerView();
         setupButtons();
         setupObservers();
+        setupBottomNavigation();
 
         loadDriverData();
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
+                .commit();
     }
 
     /** Metodo para inicializar las vistas de la UI*/
@@ -134,10 +140,7 @@ public class InicioConductorActivity extends AppCompatActivity {
         rvProximasRutas = findViewById(R.id.recyclerProximasRutas);
         tvEmptyReservas = findViewById(R.id.tvEmptyReservas);
         tvEmptyRutas = findViewById(R.id.tvEmptyRutas);
-
-        // Botones
-        btnPerfilConductor = findViewById(R.id.btnPerfilConductor);
-        btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
+        fabVentaFisica = findViewById(R.id.fabVentaFisica);
 
         // Configurar valores iniciales usando strings
         tvReservasConfirmadas.setText(getString(R.string.contador_reservas, 0));
@@ -207,18 +210,6 @@ public class InicioConductorActivity extends AppCompatActivity {
     private void setupButtons() {
         Log.d(TAG, "🔧 Configurando botones...");
 
-        // Botón de cerrar sesión
-        btnCerrarSesion.setOnClickListener(view -> {
-            Log.d(TAG, "🚪 Cerrando sesión de conductor...");
-            mostrarDialogoConfirmacion();
-        });
-
-        // Botón de perfil del conductor
-        btnPerfilConductor.setOnClickListener(view -> {
-            Log.d(TAG, "👤 Navegando a perfil de conductor");
-            goToDriverProfile();
-        });
-
         // ✅ Configurar ícono de refresh
         ImageView icRefresh = findViewById(R.id.ic_refresh);
         if (icRefresh != null) {
@@ -229,7 +220,7 @@ public class InicioConductorActivity extends AppCompatActivity {
 
                     // Animación simple
                     icRefresh.animate()
-                            .rotationBy(720f)                    // 2 vueltas
+                            .rotationBy(720f)              // 2 vueltas
                             .setDuration(2000)                   // 2 segundos
                             .setInterpolator(new OvershootInterpolator(1.0f)) // Efecto rebote
                             .withEndAction(() -> {
@@ -255,7 +246,66 @@ public class InicioConductorActivity extends AppCompatActivity {
             });
         }
 
+        // ✅ Configurar FAB para Venta Física
+        if (fabVentaFisica != null) {
+            fabVentaFisica.setOnClickListener(view -> {
+                if (listaRutas == null || listaRutas.isEmpty()) {
+                    Toast.makeText(this, "No tienes rutas asignadas para hoy", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (listaRutas.size() == 1) {
+                    // Si solo hay una ruta, ir directo
+                    abrirGestionAsientos(listaRutas.get(0));
+                } else {
+                    // Si hay varias, dejar que el usuario elija desde la lista o mostrar un diálogo
+                    mostrarSelectorDeRuta();
+                }
+            });
+
+            // Controlar el shrink/extend al hacer scroll
+            androidx.core.widget.NestedScrollView scrollView = findViewById(R.id.nestedScrollView);
+            if (scrollView != null) {
+                scrollView.setOnScrollChangeListener((androidx.core.widget.NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    if (scrollY > oldScrollY + 10 && fabVentaFisica.isExtended()) {
+                        fabVentaFisica.shrink();
+                    } else if (scrollY < oldScrollY - 10 && !fabVentaFisica.isExtended()) {
+                        fabVentaFisica.extend();
+                    }
+                    if (scrollY == 0) {
+                        fabVentaFisica.extend();
+                    }
+                });
+            }
+        }
+
         Log.d(TAG, "✅ Botones configurados");
+    }
+
+    private void abrirGestionAsientos(Ruta ruta) {
+        Log.d(TAG, "🎯 Abriendo gestión de asientos para: " + ruta.getOrigen() + " -> " + ruta.getDestino());
+        Intent intent = new Intent(this, GestionarAsientosActivity.class);
+        intent.putExtra("horarioId", ruta.getHorarioId());
+        intent.putExtra("rutaNombre", ruta.getOrigen() + " -> " + ruta.getDestino());
+        intent.putExtra("horarioHora", ruta.getHora() != null ? ruta.getHora().getHora() : "--:--");
+        startActivity(intent);
+    }
+
+    private void mostrarSelectorDeRuta() {
+        String[] nombresRutas = new String[listaRutas.size()];
+        for (int i = 0; i < listaRutas.size(); i++) {
+            Ruta r = listaRutas.get(i);
+            nombresRutas[i] = r.getOrigen() + " → " + r.getDestino() + " (" + 
+                             (r.getHora() != null ? r.getHora().getHora() : "--:--") + ")";
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Selecciona la ruta para vender pasajes")
+                .setItems(nombresRutas, (dialog, which) -> {
+                    abrirGestionAsientos(listaRutas.get(which));
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     /** Metodo para configurar los observadores de cada seccion */
@@ -480,7 +530,12 @@ public class InicioConductorActivity extends AppCompatActivity {
         rvReservas.setItemAnimator(null); // Desactivar animaciones para mejor rendimiento
 
         // ✅ INICIALIZAR RutaAdapter
-        rutaAdapter = new RutaAdapter(listaRutas);
+        rutaAdapter = new RutaAdapter(listaRutas, new RutaAdapter.OnRutaClickListener() {
+            @Override
+            public void onRutaClick(Ruta ruta) {
+                abrirGestionAsientos(ruta);
+            }
+        });
         rvProximasRutas.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL, false));
         rvProximasRutas.setAdapter(rutaAdapter);

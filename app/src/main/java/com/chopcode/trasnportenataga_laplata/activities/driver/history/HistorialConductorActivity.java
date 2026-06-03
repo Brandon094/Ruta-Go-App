@@ -15,16 +15,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.trasnportenataga_laplata.R;
 import com.chopcode.trasnportenataga_laplata.adapters.historial.HistorialConductorAdapter;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
-import com.chopcode.trasnportenataga_laplata.services.reservations.ReservaService;
+import com.chopcode.trasnportenataga_laplata.services.reservations.driver.DriverReservationService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public class HistorialConductorActivity extends AppCompatActivity {
 
@@ -44,12 +48,17 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
     // Services
     private AuthManager authManager;
-    private ReservaService reservaService;
+    private DriverReservationService driverReservationService;
 
     // Filtros
     private String filtroEstado = "TODAS";
     private String filtroFecha = "TODAS";
     private String textoBusqueda = "";
+    private Long fechaInicioPremium = null;
+    private Long fechaFinPremium = null;
+
+    // Estado Premium (Simulado por ahora, debería venir del perfil del usuario)
+    private boolean esUsuarioPremium = false; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +68,27 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
         // Inicializar servicios
         authManager = AuthManager.getInstance();
-        reservaService = new ReservaService();
+        driverReservationService = new DriverReservationService();
 
         inicializarVistas();
+        verificarEstadoPremium();
         configurarToolbar();
         configurarChips();
         configurarRecyclerView();
         configurarFAB();
+        setupBottomNavigation();
         cargarDatos();
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
+                .commit();
+    }
+
+    private void verificarEstadoPremium() {
+        // ✅ CARGAR ESTADO REAL (Simulado)
+        esUsuarioPremium = true; 
     }
 
     private void inicializarVistas() {
@@ -100,18 +122,13 @@ public class HistorialConductorActivity extends AppCompatActivity {
     }
 
     private void configurarChips() {
-        // ✅ CORREGIDO: Configurar correctamente los chips
         chipGroupFiltros.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) {
-                // Ningún chip seleccionado
                 filtroEstado = "TODAS";
                 filtroFecha = "TODAS";
             } else {
                 int chipId = checkedIds.get(0);
-
-                // Determinar si es un chip de estado o de fecha
                 if (chipId == R.id.chipTodas || chipId == R.id.chipConfirmadas || chipId == R.id.chipCanceladas) {
-                    // Es un chip de estado
                     if (chipId == R.id.chipConfirmadas) {
                         filtroEstado = "CONFIRMADA";
                     } else if (chipId == R.id.chipCanceladas) {
@@ -120,7 +137,6 @@ public class HistorialConductorActivity extends AppCompatActivity {
                         filtroEstado = "TODAS";
                     }
                 } else if (chipId == R.id.chipHoy) {
-                    // Es un chip de fecha
                     filtroFecha = "HOY";
                 }
             }
@@ -137,7 +153,6 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
             @Override
             public void onVerDetallesClick(Reserva reserva) {
-                // Navegar a pantalla de detalles
                 Toast.makeText(HistorialConductorActivity.this,
                         "Ver detalles de: " + reserva.getNombre(), Toast.LENGTH_SHORT).show();
             }
@@ -161,126 +176,102 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
         mostrarLoading(true);
 
-        // ✅ USAR UID EN LUGAR DE NOMBRE para mayor precisión
-        reservaService.cargarReservasConductorPorUID(conductorUID, "TODAS", new ReservaService.ReservationsCallback() {
-            @Override
-            public void onReservationsLoaded(List<Reserva> reservas) {
-                runOnUiThread(() -> {
-                    mostrarLoading(false);
-                    listaReservas.clear();
-                    listaReservas.addAll(reservas);
-                    aplicarFiltros();
-                    actualizarEstadisticas();
-                    actualizarUI();
+        if (esUsuarioPremium && fechaInicioPremium != null && fechaFinPremium != null) {
+            driverReservationService.obtenerEstadisticasAvanzadas(conductorUID, fechaInicioPremium, fechaFinPremium, new DriverReservationService.CompleteStatsCallback() {
+                @Override
+                public void onCompleteStatsLoaded(DriverReservationService.CompleteDriverStats stats) {
+                    runOnUiThread(() -> {
+                        mostrarLoading(false);
+                        listaReservas.clear();
+                        listaReservas.addAll(stats.todasLasReservas);
+                        aplicarFiltros();
+                        tvTotalReservas.setText(String.valueOf(stats.totalReservas));
+                        tvConfirmadas.setText(String.valueOf(stats.reservasConfirmadas));
+                        tvCanceladas.setText(String.valueOf(stats.reservasCanceladas));
+                        Toast.makeText(HistorialConductorActivity.this, "Reporte Premium cargado", Toast.LENGTH_SHORT).show();
+                    });
+                }
 
-                    if (reservas.isEmpty()) {
-                        Toast.makeText(HistorialConductorActivity.this,
-                                "No hay reservas en tu historial", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                @Override
+                public void onError(String error) {
+                    manejarErrorCarga(error);
+                }
+            });
+        } else {
+            driverReservationService.cargarReservasConductorFiltradas(conductorUID, null, "TODAS", true, new DriverReservationService.ReservationsCallback() {
+                @Override
+                public void onReservationsLoaded(List<Reserva> reservas) {
+                    runOnUiThread(() -> {
+                        mostrarLoading(false);
+                        listaReservas.clear();
+                        listaReservas.addAll(reservas);
+                        aplicarFiltros();
+                        actualizarEstadisticas();
+                        actualizarUI();
+                    });
+                }
 
-            @Override
-            public void onError(String error) {
-                runOnUiThread(() -> {
-                    mostrarLoading(false);
-                    Toast.makeText(HistorialConductorActivity.this,
-                            "Error al cargar historial: " + error, Toast.LENGTH_SHORT).show();
-                    mostrarEmptyState();
-                });
-            }
+                @Override
+                public void onError(String error) {
+                    manejarErrorCarga(error);
+                }
+            });
+        }
+    }
+
+    private void manejarErrorCarga(String error) {
+        runOnUiThread(() -> {
+            mostrarLoading(false);
+            Toast.makeText(HistorialConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+            mostrarEmptyState();
         });
     }
+
     private void aplicarFiltros() {
         listaFiltrada.clear();
-
         for (Reserva reserva : listaReservas) {
-            boolean coincideEstado = filtroEstado.equals("TODAS") ||
-                    reserva.getEstadoReserva().equalsIgnoreCase(filtroEstado);
-
-            boolean coincideFecha = filtroFecha.equals("TODAS") ||
-                    esReservaDeHoy(reserva);
-
-            boolean coincideBusqueda = textoBusqueda.isEmpty() ||
-                    contieneTexto(reserva, textoBusqueda);
+            boolean coincideEstado = filtroEstado.equals("TODAS") || reserva.getEstadoReserva().equalsIgnoreCase(filtroEstado);
+            boolean coincideFecha = filtroFecha.equals("TODAS") || (filtroFecha.equals("HOY") && esReservaDeHoy(reserva)) || filtroFecha.equals("RANGO_PREMIUM");
+            boolean coincideBusqueda = textoBusqueda.isEmpty() || contieneTexto(reserva, textoBusqueda);
 
             if (coincideEstado && coincideFecha && coincideBusqueda) {
                 listaFiltrada.add(reserva);
             }
         }
-
-        if (reservaAdapter != null) {
-            reservaAdapter.actualizarLista(listaFiltrada);
-        }
+        if (reservaAdapter != null) reservaAdapter.actualizarLista(listaFiltrada);
         actualizarUI();
     }
 
     private boolean esReservaDeHoy(Reserva reserva) {
-        try {
-            Calendar hoy = Calendar.getInstance();
-            Calendar fechaReserva = Calendar.getInstance();
-            fechaReserva.setTimeInMillis(reserva.getFechaReserva());
-
-            return hoy.get(Calendar.YEAR) == fechaReserva.get(Calendar.YEAR) &&
-                    hoy.get(Calendar.MONTH) == fechaReserva.get(Calendar.MONTH) &&
-                    hoy.get(Calendar.DAY_OF_MONTH) == fechaReserva.get(Calendar.DAY_OF_MONTH);
-        } catch (Exception e) {
-            return false;
-        }
+        Calendar hoy = Calendar.getInstance();
+        Calendar fechaReserva = Calendar.getInstance();
+        fechaReserva.setTimeInMillis(reserva.getFechaReserva());
+        return hoy.get(Calendar.YEAR) == fechaReserva.get(Calendar.YEAR) && hoy.get(Calendar.MONTH) == fechaReserva.get(Calendar.MONTH) && hoy.get(Calendar.DAY_OF_MONTH) == fechaReserva.get(Calendar.DAY_OF_MONTH);
     }
 
     private boolean contieneTexto(Reserva reserva, String texto) {
         if (texto == null || texto.isEmpty()) return true;
-
-        String textoLower = texto.toLowerCase();
-        return (reserva.getNombre() != null && reserva.getNombre().toLowerCase().contains(textoLower)) ||
-                (reserva.getTelefono() != null && reserva.getTelefono().toLowerCase().contains(textoLower)) ||
-                (reserva.getOrigen() != null && reserva.getOrigen().toLowerCase().contains(textoLower)) ||
-                (reserva.getDestino() != null && reserva.getDestino().toLowerCase().contains(textoLower));
+        String t = texto.toLowerCase();
+        return (reserva.getNombre() != null && reserva.getNombre().toLowerCase().contains(t)) || (reserva.getTelefono() != null && reserva.getTelefono().toLowerCase().contains(t));
     }
 
     private void actualizarEstadisticas() {
-        int total = listaReservas.size();
-        int confirmadas = 0;
-        int canceladas = 0;
-        int pendientes = 0;
-
-        for (Reserva reserva : listaReservas) {
-            if (reserva.getEstadoReserva() != null) {
-                String estado = reserva.getEstadoReserva().toUpperCase();
-                switch (estado) {
-                    case "CONFIRMADA":
-                    case "CONFIRMADO":
-                        confirmadas++;
-                        break;
-                    case "CANCELADA":
-                    case "CANCELADO":
-                        canceladas++;
-                        break;
-                    case "PENDIENTE":
-                    case "POR CONFIRMAR":
-                    case "PENDIENTE DE CONFIRMACIÓN":
-                        pendientes++;
-                        break;
-                }
-            }
+        int total = listaReservas.size(), confirmadas = 0, canceladas = 0;
+        for (Reserva r : listaReservas) {
+            if (r.getEstadoReserva() == null) continue;
+            String e = r.getEstadoReserva().toUpperCase();
+            if (e.contains("CONFIRMA")) confirmadas++;
+            else if (e.contains("CANCELA")) canceladas++;
         }
-
         if (tvTotalReservas != null) tvTotalReservas.setText(String.valueOf(total));
         if (tvConfirmadas != null) tvConfirmadas.setText(String.valueOf(confirmadas));
         if (tvCanceladas != null) tvCanceladas.setText(String.valueOf(canceladas));
     }
 
     private void actualizarUI() {
-        if (listaFiltrada.isEmpty()) {
-            mostrarEmptyState();
-        } else {
-            ocultarEmptyState();
-        }
-
-        if (tvTituloLista != null) {
-            tvTituloLista.setText("Últimas reservas (" + listaFiltrada.size() + ")");
-        }
+        if (listaFiltrada.isEmpty()) mostrarEmptyState();
+        else ocultarEmptyState();
+        if (tvTituloLista != null) tvTituloLista.setText("Viajes (" + listaFiltrada.size() + ")");
     }
 
     private void mostrarEmptyState() {
@@ -293,111 +284,73 @@ public class HistorialConductorActivity extends AppCompatActivity {
         if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
     }
 
-    private void mostrarLoading(boolean mostrar) {
-        // ✅ IMPLEMENTACIÓN BÁSICA DE LOADING
-        if (mostrar) {
-            // Mostrar progreso (puedes agregar un ProgressBar)
+    private void mostrarLoading(boolean m) {
+        if (m) {
             if (recyclerHistorial != null) recyclerHistorial.setVisibility(View.GONE);
             if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
-        } else {
-            // Ocultar progreso
         }
     }
 
-    private void mostrarDetallesReserva(Reserva reserva) {
-        // ✅ MOSTRAR DETALLES EN UN Toast
-        String detalles = String.format(
-                "Pasajero: %s\nTeléfono: %s\nRuta: %s → %s\nFecha: %s %s\nPuesto: %d\nPrecio: $%d\nEstado: %s",
-                reserva.getNombre(),
-                reserva.getTelefono(),
-                reserva.getOrigen(),
-                reserva.getDestino(),
-                reserva.getFechaReserva(),
-                reserva.getHorarioId(),
-                reserva.getPuestoReservado(),
-                reserva.getPrecio(),
-                reserva.getEstadoReserva()
-        );
-
-        Toast.makeText(this, detalles, Toast.LENGTH_LONG).show();
+    private void mostrarDetallesReserva(Reserva r) {
+        Toast.makeText(this, "Pasajero: " + r.getNombre() + "\nEstado: " + r.getEstadoReserva(), Toast.LENGTH_LONG).show();
     }
 
     private void exportarHistorial() {
-        Toast.makeText(this, "Exportando historial...", Toast.LENGTH_SHORT).show();
-        // ✅ IMPLEMENTAR LÓGICA DE EXPORTACIÓN
+        Toast.makeText(this, "Exportando...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_historial_filtros, menu);
-
-        // Configurar SearchView
         MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
-            SearchView searchView = (SearchView) searchItem.getActionView();
-            if (searchView != null) {
-                searchView.setQueryHint("Buscar por pasajero...");
-
-                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        textoBusqueda = query;
-                        aplicarFiltros();
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        textoBusqueda = newText;
-                        aplicarFiltros();
-                        return true;
-                    }
-                });
-            }
+            SearchView sv = (SearchView) searchItem.getActionView();
+            sv.setQueryHint("Buscar...");
+            sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override public boolean onQueryTextSubmit(String q) { textoBusqueda = q; aplicarFiltros(); return true; }
+                @Override public boolean onQueryTextChange(String q) { textoBusqueda = q; aplicarFiltros(); return true; }
+            });
         }
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_filter_date) {
-            mostrarDialogoFiltroFecha();
-            return true;
-        } else if (id == R.id.action_export) {
-            exportarHistorial();
-            return true;
-        } else if (id == R.id.action_clear_filters) {
-            limpiarFiltros();
-            return true;
-        }
-
+        if (id == R.id.action_filter_date) { mostrarDialogoFiltroFecha(); return true; }
+        else if (id == R.id.action_stats) { mostrarClientesFrecuentes(); return true; }
+        else if (id == R.id.action_clear_filters) { limpiarFiltros(); return true; }
         return super.onOptionsItemSelected(item);
     }
 
     private void mostrarDialogoFiltroFecha() {
-        Toast.makeText(this, "Filtrar por fecha - Próximamente", Toast.LENGTH_SHORT).show();
+        if (!esUsuarioPremium) { mostrarDialogoMejoraPremium("El filtrado por fecha es Premium."); return; }
+        MaterialDatePicker<Pair<Long, Long>> p = MaterialDatePicker.Builder.dateRangePicker().setTitleText("Selecciona fechas").build();
+        p.addOnPositiveButtonClickListener(s -> { fechaInicioPremium = s.first; fechaFinPremium = s.second; filtroFecha = "RANGO_PREMIUM"; cargarDatos(); });
+        p.show(getSupportFragmentManager(), "DP");
+    }
+
+    private void mostrarDialogoMejoraPremium(String m) {
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this).setTitle("⭐ Premium").setMessage(m).setPositiveButton("Ver Planes", null).setNegativeButton("Cerrar", null).show();
+    }
+
+    private void mostrarClientesFrecuentes() {
+        if (!esUsuarioPremium) { mostrarDialogoMejoraPremium("Los clientes frecuentes son Premium."); return; }
+        driverReservationService.obtenerClientesFrecuentes(authManager.getUserId(), 5, new DriverReservationService.FrequentCustomersCallback() {
+            @Override public void onCustomersLoaded(List<Map<String, Object>> c) {
+                runOnUiThread(() -> {
+                    StringBuilder sb = new StringBuilder("Top Clientes:\n");
+                    for (Map<String, Object> m : c) sb.append("👤 ").append(m.get("nombre")).append(" (").append(m.get("viajes")).append(")\n");
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(HistorialConductorActivity.this).setTitle("📊 Premium").setMessage(sb.toString()).setPositiveButton("OK", null).show();
+                });
+            }
+            @Override public void onError(String e) { Toast.makeText(HistorialConductorActivity.this, e, Toast.LENGTH_SHORT).show(); }
+        });
     }
 
     private void limpiarFiltros() {
-        if (chipGroupFiltros != null) {
-            chipGroupFiltros.clearCheck();
-        }
-        filtroEstado = "TODAS";
-        filtroFecha = "TODAS";
-        textoBusqueda = "";
-        aplicarFiltros();
-        Toast.makeText(this, "Filtros limpiados", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Recargar datos si es necesario
-        if (listaReservas.isEmpty()) {
-            cargarDatos();
-        }
+        if (chipGroupFiltros != null) chipGroupFiltros.clearCheck();
+        filtroEstado = "TODAS"; filtroFecha = "TODAS"; textoBusqueda = ""; fechaInicioPremium = null; fechaFinPremium = null;
+        aplicarFiltros(); cargarDatos();
     }
 }

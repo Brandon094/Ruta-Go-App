@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.chopcode.trasnportenataga_laplata.R;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.models.Conductor;
 import com.chopcode.trasnportenataga_laplata.models.Vehiculo;
 import com.chopcode.trasnportenataga_laplata.services.user.UserService;
@@ -72,8 +73,15 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
 
         // Configurar listeners
         configurarListeners();
+        setupBottomNavigation();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
+                .commit();
     }
 
     private void initViews() {

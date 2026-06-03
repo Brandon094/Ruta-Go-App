@@ -1,7 +1,6 @@
 package com.chopcode.trasnportenataga_laplata.managers.dashboard.passenger;
 
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -20,11 +19,10 @@ public class DashboardUIManager {
 
     // UI References
     private TextView tvUserName, tvWelcome, tvReservasCount, tvViajesCount, tvCanceladasCount;
-    private MaterialButton btnEditarPerfil, btnRefresh;
+    private MaterialButton btnRefresh;
 
     // Callbacks
     public interface UIActionsListener {
-        void onEditProfileClicked();
         void onRefreshClicked();
         void onProfileMenuItemClicked();
     }
@@ -42,14 +40,13 @@ public class DashboardUIManager {
     public void setViewReferences(
             TextView tvUserName, TextView tvWelcome,
             TextView tvReservasCount, TextView tvCanceladasCount, TextView tvViajesCount,
-            MaterialButton btnEditarPerfil, MaterialButton btnRefresh) {
+            MaterialButton btnRefresh) {
 
         this.tvUserName = tvUserName;
         this.tvWelcome = tvWelcome;
         this.tvReservasCount = tvReservasCount;
         this.tvCanceladasCount = tvCanceladasCount;
         this.tvViajesCount = tvViajesCount;
-        this.btnEditarPerfil = btnEditarPerfil;
         this.btnRefresh = btnRefresh;
     }
 
@@ -67,13 +64,6 @@ public class DashboardUIManager {
     }
 
     public void setupButtonListeners() {
-        btnEditarPerfil.setOnClickListener(view -> {
-            analyticsHelper.logButtonClick("editar_perfil");
-            if (listener != null) {
-                listener.onEditProfileClicked();
-            }
-        });
-
         btnRefresh.setOnClickListener(view -> {
             analyticsHelper.logButtonClick("actualizar");
             if (listener != null) {

@@ -17,11 +17,21 @@ public class RutaAdapter extends RecyclerView.Adapter<RutaAdapter.RutaViewHolder
     private static final String SUB_TAG = "RUTAS_ADAPTER";
 
     private List<Ruta> listaRutas;
+    private OnRutaClickListener listener;
+
+    public interface OnRutaClickListener {
+        void onRutaClick(Ruta ruta);
+    }
 
     public RutaAdapter(List<Ruta> listaRutas) {
         Log.d(TAG, SUB_TAG + " - Constructor llamado con " +
                 (listaRutas != null ? listaRutas.size() : "null") + " rutas");
         this.listaRutas = listaRutas;
+    }
+
+    public RutaAdapter(List<Ruta> listaRutas, OnRutaClickListener listener) {
+        this.listaRutas = listaRutas;
+        this.listener = listener;
     }
 
     @NonNull
@@ -60,6 +70,13 @@ public class RutaAdapter extends RecyclerView.Adapter<RutaAdapter.RutaViewHolder
                     ": " + ruta.getOrigen() + " → " + ruta.getDestino());
 
             holder.bind(ruta);
+            
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onRutaClick(ruta);
+                }
+            });
+
             Log.d(TAG, SUB_TAG + " - Ruta enlazada exitosamente en posición: " + position);
 
         } catch (Exception e) {

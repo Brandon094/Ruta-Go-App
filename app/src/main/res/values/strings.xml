@@ -9,6 +9,14 @@
     <string name="cancelar">Cancelar</string>
     <string name="volver">Volver</string>
 
+    <!-- VENTA FÍSICA -->
+    <string name="vender_pasaje">Vender Pasaje</string>
+    <string name="venta_fisica_title">Venta de Pasaje Físico</string>
+    <string name="nombre_pasajero_opcional">Nombre del pasajero (Opcional)</string>
+    <string name="confirmar_venta">Confirmar Venta</string>
+    <string name="venta_exitosa">Venta registrada correctamente</string>
+    <string name="seleccione_ruta_primero">Seleccione una ruta primero</string>
+
     <!-- ==================== -->
     <!-- AUTHENTICATION -->
     <!-- ==================== -->

@@ -14,9 +14,12 @@ import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.analytics.ReservationAnalyticsHelper;
 import com.chopcode.trasnportenataga_laplata.managers.seats.SeatManager;
 import com.chopcode.trasnportenataga_laplata.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
 import com.chopcode.trasnportenataga_laplata.services.reservations.ReservaService;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,6 +52,7 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         obtenerDatosIntent();
         inicializarViews();
         setupManagers();
+        setupBottomNavigation();
         
         cargarDatosAsientos();
     }
@@ -65,11 +69,19 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         tvAsientosDispoInfo = findViewById(R.id.tvAsientosDispoInfo);
         topAppBar = findViewById(R.id.topAppBar);
         
-        tvRutaNombre.setText("Ruta: " + (rutaNombre != null ? rutaNombre : "No disponible"));
+        tvRutaNombre.setText(rutaNombre != null ? rutaNombre : "Ruta no disponible");
         tvHorarioInfo.setText("Horario: " + (horarioHora != null ? horarioHora : "--:--"));
         
         setSupportActionBar(topAppBar);
         topAppBar.setNavigationOnClickListener(v -> finish());
+        
+        topAppBar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_refresh) {
+                cargarDatosAsientos();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupManagers() {
@@ -80,6 +92,12 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         
         seatsDataProcessor = new SeatsDataProcessor();
         reservaService = new ReservaService();
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
+                .commit();
     }
 
     private void cargarDatosAsientos() {
@@ -95,7 +113,7 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
 
             @Override
             public void onError(String error) {
-                Toast.makeText(GestionarAsientosActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Error: " + error, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -109,14 +127,24 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
                 asientosOcupadosApp.clear();
                 asientosOcupadosFisico.clear();
                 
+                long hoy = System.currentTimeMillis();
+                long hace24h = hoy - (24 * 60 * 60 * 1000); // Ventana de 24 horas
+                
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Reserva r = ds.getValue(Reserva.class);
                     if (r != null && horarioId.equals(r.getHorarioId())) {
-                        asientosOcupadosApp.add(r.getPuestoReservado());
+                        
+                        // Solo considerar reservas recientes y válidas (no canceladas)
+                        boolean esReciente = r.getFechaReserva() > hace24h;
+                        boolean esValida = !"Cancelada".equalsIgnoreCase(r.getEstadoReserva());
+                        
+                        if (esReciente && esValida) {
+                            asientosOcupadosApp.add(r.getPuestoReservado());
+                        }
                     }
                 }
                 
-                // Los que están ocupados pero no tienen reserva en la app son físicos
+                // Los que están ocupados pero no tienen reserva activa en la app son físicos
                 for (Integer seat : allOccupied) {
                     if (!asientosOcupadosApp.contains(seat)) {
                         asientosOcupadosFisico.add(seat);
@@ -146,15 +174,17 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
     }
 
     private void mostrarDetallesReservaApp(int seatNumber) {
-        // Opcional: Mostrar quién compró por la app
-        Toast.makeText(this, "Asiento ocupado por la App", Toast.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(android.R.id.content), 
+                "Asiento ocupado por la App (No se puede modificar)", 
+                Snackbar.LENGTH_SHORT).show();
     }
 
     private void mostrarDialogoReservarFisico(int seatNumber) {
-        new AlertDialog.Builder(this)
-                .setTitle("Reserva Física")
-                .setMessage("¿Deseas marcar el asiento " + seatNumber + " como vendido físicamente?")
-                .setPositiveButton("Sí, marcar", (dialog, which) -> {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Confirmar Venta Física")
+                .setMessage("¿Deseas bloquear el asiento " + seatNumber + " por venta física?")
+                .setIcon(R.drawable.ic_seat)
+                .setPositiveButton("Bloquear Asiento", (dialog, which) -> {
                     marcarAsientoFisico(seatNumber);
                 })
                 .setNegativeButton("Cancelar", null)
@@ -162,13 +192,14 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
     }
 
     private void mostrarDialogoLiberarAsientoFisico(int seatNumber) {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle("Liberar Asiento")
-                .setMessage("¿Deseas liberar el asiento " + seatNumber + " (Venta física)?")
-                .setPositiveButton("Sí, liberar", (dialog, which) -> {
+                .setMessage("¿Deseas liberar el asiento " + seatNumber + " marcado como venta física?")
+                .setIcon(R.drawable.ic_clear)
+                .setPositiveButton("Liberar Ahora", (dialog, which) -> {
                     liberarAsientoFisico(seatNumber);
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton("Cerrar", null)
                 .show();
     }
 
@@ -176,13 +207,14 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         seatsDataProcessor.reserveSeat(horarioId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(GestionarAsientosActivity.this, "Asiento bloqueado físicamente", Toast.LENGTH_SHORT).show();
-                cargarDatosAsientos(); // Recargar UI
+                Snackbar.make(findViewById(android.R.id.content), 
+                        "Asiento bloqueado correctamente", Snackbar.LENGTH_SHORT).show();
+                cargarDatosAsientos();
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(GestionarAsientosActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Error: " + error, Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -191,13 +223,14 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         seatsDataProcessor.freeSeat(horarioId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(GestionarAsientosActivity.this, "Asiento liberado", Toast.LENGTH_SHORT).show();
-                cargarDatosAsientos(); // Recargar UI
+                Snackbar.make(findViewById(android.R.id.content), 
+                        "Asiento liberado y disponible", Snackbar.LENGTH_SHORT).show();
+                cargarDatosAsientos();
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(GestionarAsientosActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Error: " + error, Snackbar.LENGTH_LONG).show();
             }
         });
     }

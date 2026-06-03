@@ -114,6 +114,12 @@
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <activity
+            android:name=".activities.driver.GestionarAsientosActivity"
+            android:exported="false"
+            android:label="Gestionar Asientos"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
             android:name=".activities.driver.profile.PerfilConductorActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />

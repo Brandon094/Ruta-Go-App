@@ -288,6 +288,13 @@ public class EstadisticasViewModel extends BaseViewModel {
                         reservasConfirmadasLiveData.postValue(reservasConfirmadasHoyCount);
                         ingresosLiveData.postValue(ingresosHoy);
 
+                        // 🔥 PERSISTIR ESTADÍSTICAS EN FIREBASE (Nodo estadisticas)
+                        String uid = com.chopcode.trasnportenataga_laplata.config.MyApp.getCurrentUserId();
+                        if (uid != null) {
+                            driverReservationService.guardarEstadisticasDiarias(uid, 
+                                    reservasConfirmadasHoyCount, ingresosHoy, null);
+                        }
+
                         // 2. Calcular asientos disponibles HOY (26 asientos totales)
                         int asientosOcupadosHoy = reservasConfirmadasHoyCount + reservasPendientesHoyCount;
                         int asientosDisponiblesHoy = Math.max(0, MAX_ASIENTOS_TOTALES - asientosOcupadosHoy);

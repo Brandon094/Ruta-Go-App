@@ -19,18 +19,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvFecha"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="24 Sep 2024 - 08:30 AM"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+            android:orientation="vertical"
+            android:gravity="start">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipEstado"
@@ -41,7 +31,20 @@
                 app:chipStrokeColor="@color/success"
                 app:chipStrokeWidth="1dp"
                 app:textStartPadding="8dp"
-                app:textEndPadding="8dp" />
+                app:textEndPadding="8dp"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:clickable="false"
+                android:checkable="false" />
+
+            <TextView
+                android:id="@+id/tvFecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="24 Sep 2024 - 08:30 AM"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 
@@ -64,7 +67,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_route"
-                    android:tint="@color/primary_500"
+                    app:tint="@color/primary_500"
                     android:layout_marginEnd="8dp" />
 
                 <TextView
@@ -90,7 +93,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_driver"
-                    android:tint="@color/primary_500"
+                    app:tint="@color/primary_500"
                     android:layout_marginEnd="8dp" />
 
                 <TextView
@@ -116,7 +119,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_seat"
-                    android:tint="@color/primary_500"
+                    app:tint="@color/primary_500"
                     android:layout_marginEnd="8dp" />
 
                 <TextView
@@ -141,7 +144,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_price"
-                    android:tint="@color/primary_500"
+                    app:tint="@color/primary_500"
                     android:layout_marginEnd="8dp" />
 
                 <TextView
@@ -179,36 +182,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <!-- Botón para ver detalles completos (Text) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnVerDetalles"
-                style="@style/AppButton.Text.XSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:text="Ver Detalles" />
-
             <!-- Botón para calificar (Secondary - Outline) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCalificar"
                 style="@style/AppButton.Secondary.XSmall"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="Calificar"
-                android:visibility="gone" />
-
-            <!-- Botón para repetir reserva (Secondary - Outline) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRepetir"
-                style="@style/AppButton.Secondary.XSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:text="Repetir" />
+                android:text="Calificar este viaje"
+                android:visibility="visible" />
 
         </LinearLayout>
 

@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.trasnportenataga_laplata.R;
-import com.chopcode.trasnportenataga_laplata.activities.passenger.editProfile.EditarPerfilActivity;
 import com.chopcode.trasnportenataga_laplata.activities.passenger.profile.PerfilUsuarioActivity;
 import com.chopcode.trasnportenataga_laplata.adapters.horarios.HorarioPagerAdapter;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
@@ -22,6 +21,7 @@ import com.chopcode.trasnportenataga_laplata.managers.analytics.DashboardAnalyti
 import com.chopcode.trasnportenataga_laplata.managers.dashboard.passenger.DashboardUIManager;
 import com.chopcode.trasnportenataga_laplata.managers.dashboard.passenger.ScheduleManager;
 import com.chopcode.trasnportenataga_laplata.managers.dashboard.passenger.UserDashboardManager;
+import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.models.Horario;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -87,8 +87,16 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         // 4. Configurar la UI (listeners de botones, toolbar, etc.)
         configureUI();
 
+        setupBottomNavigation();
+
         // 5. Cargar los datos iniciales (usuario y horarios)
         loadInitialData();
+    }
+
+    private void setupBottomNavigation() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(false))
+                .commit();
     }
 
     /**
@@ -139,7 +147,6 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         }
 
         // Botones de acción
-        MaterialButton btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         MaterialButton btnRefresh = findViewById(R.id.btnRefresh);
 
         // Pestañas y ViewPager para los horarios
@@ -149,7 +156,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
                 tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount,
-                btnEditarPerfil, btnRefresh
+                btnRefresh
         );
         uiManager.setupToolbar(topAppBar);  // Configurar toolbar (menú, título, etc.)
 
@@ -372,18 +379,6 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     // Implementación de DashboardUIManager.UIActionsListener
     // (Eventos de interacción del usuario con la UI)
     // ============================================================
-
-    /**
-     * Evento cuando el usuario hace click en "Editar Perfil".
-     * Navega a la actividad de edición de perfil si el usuario está logueado.
-     */
-    @Override
-    public void onEditProfileClicked() {
-        if (validateLogin()) {
-            Intent intent = new Intent(this, EditarPerfilActivity.class);
-            startActivity(intent);
-        }
-    }
 
     /**
      * Evento cuando el usuario hace click en "Refresh" (actualizar).

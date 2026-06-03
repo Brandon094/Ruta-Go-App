@@ -30,6 +30,7 @@ public class SeatManager {
     private final int VECTOR_ASIENTO_DISPONIBLE = R.drawable.asiento_disponible;
     private final int VECTOR_ASIENTO_SELECCIONADO = R.drawable.asiento_seleccionado;
     private final int VECTOR_ASIENTO_OCUPADO = R.drawable.asiento_ocupado;
+    private final int VECTOR_ASIENTO_FISICO = R.drawable.asiento_fisico;
 
     // ✅ AGREGADO: IDs de los botones de asientos
     private static final int[] BOTONES_ASIENTOS_IDS = {
@@ -108,26 +109,47 @@ public class SeatManager {
     }
 
     /**
-     * Actualiza el estado de los asientos basado en los ocupados
+     * Actualiza el estado de los asientos basado en los ocupados (Compatibilidad)
      */
     public void actualizarEstadoAsientos(Set<Integer> ocupados, int capacidadTotal) {
-        this.asientosOcupados = ocupados != null ? ocupados : new HashSet<>();
+        actualizarEstadoAsientos(ocupados, null, capacidadTotal);
+    }
+
+    /**
+     * Actualiza el estado de los asientos diferenciando entre ocupados por App y Físicos
+     */
+    public void actualizarEstadoAsientos(Set<Integer> ocupadosApp, Set<Integer> ocupadosFisicos, int capacidadTotal) {
+        this.asientosOcupados = new HashSet<>();
+        if (ocupadosApp != null) this.asientosOcupados.addAll(ocupadosApp);
+        if (ocupadosFisicos != null) this.asientosOcupados.addAll(ocupadosFisicos);
 
         for (Map.Entry<Integer, MaterialButton> entry : mapaAsientos.entrySet()) {
             int numAsiento = entry.getKey();
             MaterialButton btn = entry.getValue();
 
-            if (asientosOcupados.contains(numAsiento)) {
+            if (ocupadosApp != null && ocupadosApp.contains(numAsiento)) {
                 marcarAsientoOcupado(btn);
+            } else if (ocupadosFisicos != null && ocupadosFisicos.contains(numAsiento)) {
+                marcarAsientoFisico(btn);
             } else {
                 configurarAsientoDisponible(btn, numAsiento);
             }
         }
 
         // Registrar evento analítico
-        analyticsHelper.logAsientosCargados(ocupados.size(), capacidadTotal, null);
+        analyticsHelper.logAsientosCargados(this.asientosOcupados.size(), capacidadTotal, null);
 
-        Log.d("SeatManager", "✅ Estado de asientos actualizado. Ocupados: " + ocupados.size());
+        Log.d("SeatManager", "✅ Estado de asientos actualizado. Total ocupados: " + this.asientosOcupados.size());
+    }
+
+    /**
+     * Marca un asiento como reserva física (Naranja)
+     */
+    private void marcarAsientoFisico(MaterialButton btn) {
+        btn.setIcon(ContextCompat.getDrawable(context, VECTOR_ASIENTO_FISICO));
+        btn.setEnabled(true); // Permitir click para que el conductor pueda liberarlo
+        int numAsiento = (int) btn.getTag();
+        btn.setOnClickListener(v -> manejarSeleccionAsiento(numAsiento));
     }
 
     /**

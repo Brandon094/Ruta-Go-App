@@ -134,7 +134,7 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
         private static final String TAG = "HistorialViewHolder";
         private TextView tvFecha, tvRuta, tvConductor, tvAsientos, tvPrecioTotal, tvMetodoPago;
         private Chip chipEstado;
-        private MaterialButton btnVerDetalles, btnCalificar, btnRepetir;
+        private MaterialButton btnCalificar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -148,9 +148,7 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
             tvPrecioTotal = itemView.findViewById(R.id.tvPrecioTotal);
             tvMetodoPago = itemView.findViewById(R.id.tvMetodoPago);
             chipEstado = itemView.findViewById(R.id.chipEstado);
-            btnVerDetalles = itemView.findViewById(R.id.btnVerDetalles);
             btnCalificar = itemView.findViewById(R.id.btnCalificar);
-            btnRepetir = itemView.findViewById(R.id.btnRepetir);
 
             // Verificar que todas las vistas se encontraron
             int vistasEncontradas = 0;
@@ -163,9 +161,7 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
             if (tvPrecioTotal != null) vistasEncontradas++; else { Log.e(TAG, "❌ tvPrecioTotal es null"); vistasFaltantes++; }
             if (tvMetodoPago != null) vistasEncontradas++; else { Log.e(TAG, "❌ tvMetodoPago es null"); vistasFaltantes++; }
             if (chipEstado != null) vistasEncontradas++; else { Log.e(TAG, "❌ chipEstado es null"); vistasFaltantes++; }
-            if (btnVerDetalles != null) vistasEncontradas++; else { Log.e(TAG, "❌ btnVerDetalles es null"); vistasFaltantes++; }
             if (btnCalificar != null) vistasEncontradas++; else { Log.e(TAG, "❌ btnCalificar es null"); vistasFaltantes++; }
-            if (btnRepetir != null) vistasEncontradas++; else { Log.e(TAG, "❌ btnRepetir es null"); vistasFaltantes++; }
 
             Log.i(TAG, "Vistas inicializadas: " + vistasEncontradas + " OK, " + vistasFaltantes + " FALTANTES");
         }
@@ -273,17 +269,20 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
 
                 switch (estado.toLowerCase()) {
                     case "confirmado":
+                    case "confirmada":
                         colorFondo = R.color.success_light;
                         colorTexto = R.color.success;
                         Log.v(TAG, "Estado CONFIRMADO - colores success");
                         break;
                     case "cancelado":
-                        colorFondo = R.color.error;
+                    case "cancelada":
+                        colorFondo = R.color.error_50;
                         colorTexto = R.color.error;
                         Log.v(TAG, "Estado CANCELADO - colores error");
                         break;
                     case "pendiente":
-                        colorFondo = R.color.warning;
+                    case "por confirmar":
+                        colorFondo = R.color.warning_50;
                         colorTexto = R.color.warning;
                         Log.v(TAG, "Estado PENDIENTE - colores warning");
                         break;
@@ -308,14 +307,6 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
         private void configurarListeners(Reserva reserva) {
             int position = getAdapterPosition();
 
-            if (btnVerDetalles != null) {
-                btnVerDetalles.setOnClickListener(v -> {
-                    Log.i(TAG, "📋 Botón Ver Detalles clickeado - Posición: " + position +
-                            ", Ruta: " + reserva.getOrigen() + " → " + reserva.getDestino());
-                    verDetallesReserva(reserva);
-                });
-            }
-
             if (btnCalificar != null) {
                 btnCalificar.setOnClickListener(v -> {
                     Log.i(TAG, "⭐ Botón Calificar clickeado - Posición: " + position +
@@ -324,33 +315,13 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
                 });
             }
 
-            if (btnRepetir != null) {
-                btnRepetir.setOnClickListener(v -> {
-                    Log.i(TAG, "🔄 Botón Repetir clickeado - Posición: " + position +
-                            ", Ruta: " + reserva.getOrigen() + " → " + reserva.getDestino());
-                    repetirReserva(reserva);
-                });
-            }
-
-            Log.v(TAG, "Listeners configurados para los 3 botones");
-        }
-
-        private void verDetallesReserva(Reserva reserva) {
-            Log.d(TAG, "Navegando a detalles de reserva: " + reserva.getOrigen() + " → " + reserva.getDestino());
-            // Navegar a actividad de detalles
-            // Implementar navegación aquí
+            Log.v(TAG, "Listener configurado para el botón de calificar");
         }
 
         private void calificarViaje(Reserva reserva) {
             Log.d(TAG, "Abriendo diálogo de calificación para: " + reserva.getOrigen() + " → " + reserva.getDestino());
             // Abrir diálogo de calificación
             // Implementar calificación aquí
-        }
-
-        private void repetirReserva(Reserva reserva) {
-            Log.d(TAG, "Repitiendo reserva: " + reserva.getOrigen() + " → " + reserva.getDestino());
-            // Repetir esta reserva
-            // Implementar repetición aquí
         }
 
         private void establecerValoresPorDefecto() {
