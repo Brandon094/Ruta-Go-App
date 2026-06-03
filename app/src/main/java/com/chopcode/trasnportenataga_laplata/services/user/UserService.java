@@ -1,12 +1,12 @@
 package com.chopcode.trasnportenataga_laplata.services.user;
 
+import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.models.Horario;
 import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -82,6 +82,14 @@ public class UserService {
         void onError(String error);
     }
 
+    /**
+     * Callback para carga de lista de conductores
+     */
+    public interface DriversListCallback {
+        void onDriversLoaded(List<com.chopcode.trasnportenataga_laplata.models.Conductor> conductores);
+        void onError(String error);
+    }
+
     // ========== MÉTODOS GENERALES DE USUARIO ==========
 
     /**
@@ -90,10 +98,8 @@ public class UserService {
      * @param callback Callback para manejar el resultado
      */
     public void loadUserData(String userId, UserDataCallback callback) {
-        // Referencia al nodo del usuario en Firebase
-        DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("usuarios")
-                .child(userId);
+        // Usar MyApp para obtener la referencia de forma centralizada
+        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
 
         // Escuchar una sola vez los datos del usuario
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -129,9 +135,7 @@ public class UserService {
      * @param callback Callback para manejar el resultado
      */
     public void updateUserProfile(String userId, String nombre, String telefono, UserUpdateCallback callback) {
-        DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("usuarios")
-                .child(userId);
+        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
 
         // Crear mapa con las actualizaciones
         Map<String, Object> updates = new HashMap<>();
@@ -152,26 +156,23 @@ public class UserService {
      * @param callback Callback para manejar los datos del conductor
      */
     public void loadDriverData(String userId, DriverDataCallback callback) {
-        // Referencia al nodo del conductor en Firebase
-        DatabaseReference conductorRef = FirebaseDatabase.getInstance()
-                .getReference("conductores")
-                .child(userId);
+        DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
 
         conductorRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    // Extraer datos del conductor del snapshot
-                    String nombre = snapshot.child("nombre").getValue(String.class);
-                    String telefono = snapshot.child("telefono").getValue(String.class);
-                    String placa = snapshot.child("placaVehiculo").getValue(String.class);
+                    // Extraer datos del conductor del snapshot de forma segura
+                    String nombre = getStringSafely(snapshot.child("nombre"));
+                    String telefono = getStringSafely(snapshot.child("telefono"));
+                    String placa = getStringSafely(snapshot.child("placaVehiculo"));
                     List<String> horariosAsignados = new ArrayList<>();
 
                     // Obtener lista de horarios asignados si existe
                     if (snapshot.hasChild("horariosAsignados")) {
                         for (DataSnapshot horarioSnapshot : snapshot.child("horariosAsignados").getChildren()) {
-                            String horarioId = horarioSnapshot.getValue(String.class);
-                            if (horarioId != null) {
+                            String horarioId = getStringSafely(horarioSnapshot);
+                            if (!horarioId.isEmpty()) {
                                 horariosAsignados.add(horarioId);
                             }
                         }
@@ -202,9 +203,7 @@ public class UserService {
      */
     public void updateDriverProfile(String userId, String nombre, String telefono, String placa,
                                     List<String> horariosAsignados, UserUpdateCallback callback) {
-        DatabaseReference driverRef = FirebaseDatabase.getInstance()
-                .getReference("conductores")
-                .child(userId);
+        DatabaseReference driverRef = MyApp.getDatabaseReference("conductores/" + userId);
 
         // Crear mapa de actualizaciones para el conductor
         Map<String, Object> driverUpdates = new HashMap<>();
@@ -250,7 +249,7 @@ public class UserService {
             return;
         }
 
-        DatabaseReference horariosRef = FirebaseDatabase.getInstance().getReference("horarios");
+        DatabaseReference horariosRef = MyApp.getDatabaseReference("horarios");
 
         horariosRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -311,14 +310,41 @@ public class UserService {
     // ========== MÉTODOS DE VERIFICACIÓN ==========
 
     /**
+     * Carga todos los conductores registrados
+     * @param callback Callback con la lista de conductores
+     */
+    public void loadAllDrivers(DriversListCallback callback) {
+        DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
+
+        conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                List<com.chopcode.trasnportenataga_laplata.models.Conductor> conductores = new ArrayList<>();
+                for (DataSnapshot conductorSnap : snapshot.getChildren()) {
+                    com.chopcode.trasnportenataga_laplata.models.Conductor conductor = 
+                        conductorSnap.getValue(com.chopcode.trasnportenataga_laplata.models.Conductor.class);
+                    if (conductor != null) {
+                        conductor.setId(conductorSnap.getKey());
+                        conductores.add(conductor);
+                    }
+                }
+                callback.onDriversLoaded(conductores);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    /**
      * Verifica si un usuario tiene rol de conductor
      * @param userId ID del usuario a verificar
      * @param callback Callback con el resultado de la verificación
      */
     public void checkIfUserIsDriver(String userId, DriverCheckCallback callback) {
-        DatabaseReference driverRef = FirebaseDatabase.getInstance()
-                .getReference("conductores")
-                .child(userId);
+        DatabaseReference driverRef = MyApp.getDatabaseReference("conductores/" + userId);
 
         driverRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -332,5 +358,14 @@ public class UserService {
                 callback.onError(error.getMessage());
             }
         });
+    }
+
+    /**
+     * Obtiene un valor de forma segura como String, incluso si es un número en Firebase
+     */
+    private String getStringSafely(DataSnapshot snapshot) {
+        Object value = snapshot.getValue();
+        if (value == null) return "";
+        return String.valueOf(value);
     }
 }

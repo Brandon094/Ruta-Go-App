@@ -128,11 +128,11 @@ public class ReservaService {
                     return;
                 }
 
-                String nombre = snapshot.child("nombre").getValue(String.class);
-                String telefono = snapshot.child("telefono").getValue(String.class);
-                String email = snapshot.child("email").getValue(String.class);
+                String nombre = String.valueOf(snapshot.child("nombre").getValue());
+                String telefono = String.valueOf(snapshot.child("telefono").getValue());
+                String email = String.valueOf(snapshot.child("email").getValue());
 
-                if (nombre == null || email == null) {
+                if (snapshot.child("nombre").getValue() == null || snapshot.child("email").getValue() == null) {
                     Log.e(TAG, "❌ Datos del usuario incompletos");
                     callback.onError("Datos del usuario incompletos.");
                     return;

@@ -383,6 +383,50 @@ public class SeatsDataProcessor {
     }
 
     /**
+     * 🔥 NUEVO: Reinicia todos los asientos de todos los horarios (Clean slate para el día)
+     */
+    public void reiniciarTodosLosAsientos(SeatReservationCallback callback) {
+        Log.d(TAG, "🧹 Reiniciando todos los asientos de todos los horarios...");
+
+        DatabaseReference dispRef = databaseReference.child("disponibilidadAsientos");
+
+        dispRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Map<String, Object> updates = new HashMap<>();
+
+                for (DataSnapshot horarioSnap : snapshot.getChildren()) {
+                    String hId = horarioSnap.getKey();
+                    if (hId != null) {
+                        // Limpiar asientos ocupados y resetear disponibles
+                        updates.put(hId + "/asientosOcupados", new HashMap<>());
+                        updates.put(hId + "/asientosDisponibles", 13);
+                    }
+                }
+
+                if (!updates.isEmpty()) {
+                    dispRef.updateChildren(updates)
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d(TAG, "✅ Todos los asientos han sido reiniciados");
+                                if (callback != null) callback.onSuccess();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e(TAG, "❌ Error reiniciando asientos: " + e.getMessage());
+                                if (callback != null) callback.onError(e.getMessage());
+                            });
+                } else {
+                    if (callback != null) callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                if (callback != null) callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    /**
      * Crea el nodo asientosOcupados si no existe
      */
     private void createOccupiedSeatsNode(String horarioId) {
