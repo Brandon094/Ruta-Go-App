@@ -39,6 +39,20 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    // ✅ ORGANIZACIÓN DE RECURSOS POR CARPETAS (Modo Profesional)
+    sourceSets {
+        main {
+            res.srcDirs = [
+                    'src/main/res/layouts/activities',
+                    'src/main/res/layouts/fragments',
+                    'src/main/res/layouts/items',
+                    'src/main/res/layouts/dialogs',
+                    'src/main/res/layouts',
+                    'src/main/res'
+            ]
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }

@@ -38,7 +38,7 @@ public class EditarPerfilActivity extends AppCompatActivity {
         // ✅ Registrar evento analítico de inicio de pantalla
         registrarEventoAnalitico("pantalla_editar_perfil_inicio", null, null);
 
-        setContentView(R.layout.edit_perfil_pasajero);
+        setContentView(R.layout.activity_editar_perfil_pasajero);
         Log.d(TAG, "✅ Layout inflado correctamente");
 
         // Inicializar servicios
