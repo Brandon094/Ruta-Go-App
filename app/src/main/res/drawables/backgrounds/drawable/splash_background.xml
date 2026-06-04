@@ -3,23 +3,10 @@
     <!-- Fondo de la app (Navy 900) -->
     <item android:drawable="@color/secondary_900" />
 
-    <!-- Círculo Naranja Accent -->
+    <!-- Icono de la App (Logo Splash - Pin con Bus) -->
     <item
-        android:width="160dp"
-        android:height="160dp"
-        android:gravity="center">
-        <shape android:shape="oval">
-            <solid android:color="@color/primary_500" />
-            <stroke
-                android:width="2dp"
-                android:color="#33FFFFFF" />
-        </shape>
-    </item>
-
-    <!-- Icono de la App -->
-    <item
-        android:width="120dp"
-        android:height="120dp"
-        android:drawable="@mipmap/ic_launcher_round"
+        android:width="280dp"
+        android:height="280dp"
+        android:drawable="@drawable/logo_splash"
         android:gravity="center" />
 </layer-list>

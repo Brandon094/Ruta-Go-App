@@ -143,4 +143,30 @@
     <color name="warning">@color/warning_500</color>
     <color name="info">@color/primary_400</color>
     <color name="error">@color/error_500</color>
+    <!-- Brand Colors -->
+    <color name="rutago_blue_dark">#0D1B2A</color>  <!-- Fondo principal -->
+    <color name="rutago_orange">#FF7D00</color>     <!-- Color de acción -->
+    <color name="rutago_white">#FFFFFF</color>
+    
+    <!-- Functional Colors (Material Design) -->
+    <color name="colorPrimary">@color/rutago_blue_dark</color>
+    <color name="colorSecondary">@color/rutago_orange</color>
+
+    
+    <!-- UI Elements -->
+    <!-- <color name="background">@color/rutago_blue_dark</color> -->
+
+    <!-- <color name="surface">#1B263B</color> -->
+ <!-- Azul ligeramente más claro para tarjetas -->
+    <!-- <color name="text_primary">@color/rutago_white</color> -->
+
+    <!-- <color name="text_secondary">#A0A0A0</color> -->
+
+    
+    <!-- Status Colors -->
+    <!-- <color name="success">#4CAF50</color> -->
+
+    <!-- <color name="error">#E53935</color> -->
+
+    <!-- <color name="warning">#FFB300</color> -->
 </resources>
