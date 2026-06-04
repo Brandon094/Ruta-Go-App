@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.trasnportenataga_laplata.R;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.chopcode.trasnportenataga_laplata.activities.passenger.profile.PerfilUsuarioActivity;
 import com.chopcode.trasnportenataga_laplata.adapters.horarios.HorarioPagerAdapter;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
@@ -24,6 +25,9 @@ import com.chopcode.trasnportenataga_laplata.managers.dashboard.passenger.UserDa
 import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.models.Horario;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
+import com.chopcode.trasnportenataga_laplata.utils.network.NetworkMonitor;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
@@ -56,7 +60,10 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     // ============================================================
     private TabLayout tabLayout;                          // Pestañas para cambiar entre horarios
     private ViewPager2 viewPagerHorarios;                 // Swipe entre pestañas de horarios
+    private ShimmerFrameLayout shimmerLayout;
     private HorarioPagerAdapter pagerAdapter;             // Adaptador para el ViewPager
+    private NetworkMonitor networkMonitor;
+    private Snackbar networkSnackbar;
 
     // ============================================================
     // Variables para la leyenda expandible
@@ -91,6 +98,42 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
 
         // 5. Cargar los datos iniciales (usuario y horarios)
         loadInitialData();
+        setupNetworkMonitor();
+    }
+
+    private void setupNetworkMonitor() {
+        networkMonitor = new NetworkMonitor(this);
+        networkMonitor.observe(this, isConnected -> {
+            if (!isConnected) {
+                showNoInternetSnackbar();
+            } else {
+                dismissNetworkSnackbar();
+            }
+        });
+    }
+
+    private void showNoInternetSnackbar() {
+        if (networkSnackbar == null) {
+            networkSnackbar = Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.network_error),
+                    Snackbar.LENGTH_INDEFINITE);
+            networkSnackbar.setBackgroundTint(getColor(R.color.error_500));
+            networkSnackbar.setTextColor(getColor(R.color.white));
+        }
+        if (!networkSnackbar.isShown()) {
+            networkSnackbar.show();
+        }
+    }
+
+    private void dismissNetworkSnackbar() {
+        if (networkSnackbar != null && networkSnackbar.isShown()) {
+            networkSnackbar.dismiss();
+            Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.network_restored),
+                    Snackbar.LENGTH_SHORT)
+                    .setBackgroundTint(getColor(R.color.success_500))
+                    .show();
+        }
     }
 
     private void setupBottomNavigation() {
@@ -152,6 +195,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         // Pestañas y ViewPager para los horarios
         tabLayout = findViewById(R.id.tabLayout);
         viewPagerHorarios = findViewById(R.id.viewPagerHorarios);
+        shimmerLayout = findViewById(R.id.shimmer_inicio_usuarios);
 
         // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
@@ -283,6 +327,11 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
      * - Horarios
      */
     private void loadInitialData() {
+        if (shimmerLayout != null) {
+            shimmerLayout.setVisibility(View.VISIBLE);
+            shimmerLayout.startShimmer();
+            viewPagerHorarios.setVisibility(View.GONE);
+        }
         dashboardManager.loadUserData();   // Carga usuario y contadores en segundo plano
         scheduleManager.loadSchedules();   // Carga horarios en segundo plano
     }
@@ -357,6 +406,11 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     @Override
     public void onSchedulesLoaded(List<Horario> nataga, List<Horario> laPlata) {
         runOnUiThread(() -> {
+            if (shimmerLayout != null) {
+                shimmerLayout.stopShimmer();
+                shimmerLayout.setVisibility(View.GONE);
+                viewPagerHorarios.setVisibility(View.VISIBLE);
+            }
             pagerAdapter.actualizarDatos(nataga, laPlata);  // Actualizar el adaptador con los nuevos datos
             Toast.makeText(this,
                     "Horarios actualizados: " + scheduleManager.getTotalSchedules() + " total",

@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,7 @@ public class HistorialReservasActivity extends AppCompatActivity {
     private View layoutEmptyState;
     private FloatingActionButton fabActualizar;
     private TextView tvTotalViajes, tvViajesConfirmados, tvViajesCancelados, tvTituloHistorial;
+    private ShimmerFrameLayout shimmerContainer;
     
     // Premium Views
     private MaterialCardView cardPremiumStats;
@@ -108,6 +110,7 @@ public class HistorialReservasActivity extends AppCompatActivity {
         tvViajesConfirmados = findViewById(R.id.tvViajesConfirmados);
         tvViajesCancelados = findViewById(R.id.tvViajesCancelados);
         tvTituloHistorial = findViewById(R.id.tvTituloHistorial);
+        shimmerContainer = findViewById(R.id.shimmer_view_container);
 
         // Vistas Premium
         cardPremiumStats = findViewById(R.id.cardPremiumStats);
@@ -175,6 +178,13 @@ public class HistorialReservasActivity extends AppCompatActivity {
     }
 
     private void cargarHistorialUsuario() {
+        if (shimmerContainer != null) {
+            shimmerContainer.setVisibility(View.VISIBLE);
+            shimmerContainer.startShimmer();
+            recyclerHistorial.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.GONE);
+        }
+
         FirebaseUser currentUser = authManager.getCurrentUser();
         if (currentUser == null) {
             finish();
@@ -234,6 +244,11 @@ public class HistorialReservasActivity extends AppCompatActivity {
     }
 
     private void actualizarVista() {
+        if (shimmerContainer != null) {
+            shimmerContainer.stopShimmer();
+            shimmerContainer.setVisibility(View.GONE);
+        }
+
         adapter.actualizarDatos(listaFiltrada);
         if (listaFiltrada.isEmpty()) {
             recyclerHistorial.setVisibility(View.GONE);

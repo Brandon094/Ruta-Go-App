@@ -174,8 +174,8 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         if (olvidasteContraseña != null) {
             olvidasteContraseña.setOnClickListener(v -> {
                 Log.d(TAG, "🔑 Usuario solicitó recuperar contraseña");
-                Toast.makeText(InicioDeSesionActivity.this, "Función en desarrollo", Toast.LENGTH_SHORT).show();
-                // Aquí puedes implementar la recuperación de contraseña
+                Intent intent = new Intent(InicioDeSesionActivity.this, RecuperarContrasenaActivity.class);
+                startActivity(intent);
             });
         }
 

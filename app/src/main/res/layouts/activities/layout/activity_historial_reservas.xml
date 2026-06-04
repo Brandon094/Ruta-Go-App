@@ -193,11 +193,32 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="12dp" />
 
+                <!-- Shimmer para Carga (Skeletons) -->
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_view_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:shimmer_auto_start="true"
+                    app:shimmer_duration="1200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <include layout="@layout/skeleton_item_historial" />
+                        <include layout="@layout/skeleton_item_historial" />
+                        <include layout="@layout/skeleton_item_historial" />
+                        <include layout="@layout/skeleton_item_historial" />
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <!-- RecyclerView para el historial -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerHistorial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     tools:listitem="@layout/item_historial_viaje_usuario" />
 
             </LinearLayout>

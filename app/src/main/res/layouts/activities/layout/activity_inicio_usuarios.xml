@@ -327,7 +327,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Significado de cada contador"
+                                android:text="@string/contador_leyenda"
                                 android:textSize="11sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/text_primary"
@@ -386,7 +386,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Confirmadas"
+                                        android:text="@string/leyenda_confirmadas_titulo"
                                         android:textSize="9sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/primary_500" />
@@ -395,7 +395,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Validadas por el conductor"
+                                    android:text="@string/leyenda_confirmadas_desc"
                                     android:textSize="8sp"
                                     android:textColor="@color/text_secondary"
                                     android:gravity="center"
@@ -430,7 +430,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Canceladas"
+                                        android:text="@string/leyenda_canceladas_titulo"
                                         android:textSize="9sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/error" />
@@ -439,7 +439,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Anuladas por el conductor"
+                                    android:text="@string/leyenda_canceladas_desc"
                                     android:textSize="8sp"
                                     android:textColor="@color/text_secondary"
                                     android:gravity="center"
@@ -474,7 +474,7 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Total"
+                                        android:text="@string/leyenda_total_titulo"
                                         android:textSize="9sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/success" />
@@ -483,7 +483,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Suma de confirmadas + canceladas"
+                                    android:text="@string/leyenda_total_desc"
                                     android:textSize="8sp"
                                     android:textColor="@color/text_secondary"
                                     android:gravity="center"
@@ -580,7 +580,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+
+            <!-- Shimmer para Carga -->
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_inicio_usuarios"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:shimmer_auto_start="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <include layout="@layout/skeleton_item_historial" />
+                    <include layout="@layout/skeleton_item_historial" />
+                    <include layout="@layout/skeleton_item_historial" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

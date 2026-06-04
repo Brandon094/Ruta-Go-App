@@ -44,7 +44,12 @@
         <activity
             android:name=".activities.common.InicioDeSesionActivity"
             android:exported="false"
-        android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.RecuperarContrasenaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <!-- 🔹 SERVICIO DE NOTIFICACIONES FCM -->
         <service

@@ -4,7 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.chopcode.trasnportenataga_laplata.R;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -13,7 +19,14 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // No necesitas setContentView, usamos el windowBackground del tema
+        setContentView(R.layout.activity_splash);
+
+        // Referencia al logo
+        ImageView logo = findViewById(R.id.logo_splash);
+        
+        // Cargar y aplicar la animación
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.splash_animation);
+        logo.startAnimation(anim);
 
         // Opcional: Verificar si ya hay sesión iniciada
         verificarSesionYRedirigir();
@@ -47,6 +60,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
                 startActivity(intent);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 finish(); // Cerrar SplashActivity
             }
         }, SPLASH_DURATION);

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Fondo de la app (Navy 900) -->
-    <item android:drawable="@color/secondary_900" />
+    <item android:drawable="@color/background_color" />
 
-    <!-- Icono de la App (Logo Splash - Pin con Bus) -->
+    <!-- Icono de la App (Logo Splash) -->
+    <!-- Proporción calculada para 425x587px (aprox 140x193dp) -->
     <item
-        android:width="280dp"
-        android:height="280dp"
-        android:drawable="@drawable/logo_splash"
-        android:gravity="center" />
+        android:width="140dp"
+        android:height="193dp"
+        android:gravity="center">
+        <bitmap
+            android:src="@drawable/logo_splash"
+            android:filter="true"
+            android:gravity="fill" />
+    </item>
 </layer-list>

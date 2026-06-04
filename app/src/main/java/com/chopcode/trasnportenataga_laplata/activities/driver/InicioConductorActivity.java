@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ import com.chopcode.trasnportenataga_laplata.viewmodels.driver.EstadisticasViewM
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.PerfilViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.RutasViewModel;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.ReservasViewModel;
+import com.chopcode.trasnportenataga_laplata.utils.network.NetworkMonitor;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -54,6 +57,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private RecyclerView rvReservas, rvProximasRutas;
     private TextView tvConductor, tvPlacaVehiculo;
     private TextView tvEmptyReservas, tvEmptyRutas;
+    private ShimmerFrameLayout shimmerLayout;
     private ProgressBar progressBar;
     private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabVentaFisica;
 
@@ -79,6 +83,9 @@ public class InicioConductorActivity extends AppCompatActivity {
     private List<Ruta> listaRutas = new ArrayList<>();
     private SimpleDateFormat timeFormat;
 
+    private NetworkMonitor networkMonitor;
+    private Snackbar networkSnackbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +108,42 @@ public class InicioConductorActivity extends AppCompatActivity {
         setupBottomNavigation();
 
         loadDriverData();
+        setupNetworkMonitor();
+    }
+
+    private void setupNetworkMonitor() {
+        networkMonitor = new NetworkMonitor(this);
+        networkMonitor.observe(this, isConnected -> {
+            if (!isConnected) {
+                showNoInternetSnackbar();
+            } else {
+                dismissNetworkSnackbar();
+            }
+        });
+    }
+
+    private void showNoInternetSnackbar() {
+        if (networkSnackbar == null) {
+            networkSnackbar = Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.network_error_driver),
+                    Snackbar.LENGTH_INDEFINITE);
+            networkSnackbar.setBackgroundTint(getColor(R.color.error_500));
+            networkSnackbar.setTextColor(getColor(R.color.white));
+        }
+        if (!networkSnackbar.isShown()) {
+            networkSnackbar.show();
+        }
+    }
+
+    private void dismissNetworkSnackbar() {
+        if (networkSnackbar != null && networkSnackbar.isShown()) {
+            networkSnackbar.dismiss();
+            Snackbar.make(findViewById(android.R.id.content),
+                    getString(R.string.network_restored),
+                    Snackbar.LENGTH_SHORT)
+                    .setBackgroundTint(getColor(R.color.success_500))
+                    .show();
+        }
     }
 
     private void setupBottomNavigation() {
@@ -140,6 +183,7 @@ public class InicioConductorActivity extends AppCompatActivity {
         rvProximasRutas = findViewById(R.id.recyclerProximasRutas);
         tvEmptyReservas = findViewById(R.id.tvEmptyReservas);
         tvEmptyRutas = findViewById(R.id.tvEmptyRutas);
+        shimmerLayout = findViewById(R.id.shimmer_inicio_conductor);
         fabVentaFisica = findViewById(R.id.fabVentaFisica);
 
         // Configurar valores iniciales usando strings
@@ -311,6 +355,31 @@ public class InicioConductorActivity extends AppCompatActivity {
     /** Metodo para configurar los observadores de cada seccion */
     private void setupObservers() {
         Log.d(TAG, "👀 Configurando observadores...");
+        
+        // Observar estado de carga global
+        perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
+            if (isLoading != null) {
+                if (isLoading) {
+                    if (shimmerLayout != null) {
+                        shimmerLayout.setVisibility(View.VISIBLE);
+                        shimmerLayout.startShimmer();
+                    }
+                    findViewById(R.id.cardHeader).setVisibility(View.GONE);
+                    findViewById(R.id.cardReservas).setVisibility(View.GONE);
+                    findViewById(R.id.cardEstadisticas).setVisibility(View.GONE);
+                    findViewById(R.id.cardRutas).setVisibility(View.GONE);
+                } else {
+                    if (shimmerLayout != null) {
+                        shimmerLayout.stopShimmer();
+                        shimmerLayout.setVisibility(View.GONE);
+                    }
+                    findViewById(R.id.cardHeader).setVisibility(View.VISIBLE);
+                    findViewById(R.id.cardReservas).setVisibility(View.VISIBLE);
+                    findViewById(R.id.cardEstadisticas).setVisibility(View.VISIBLE);
+                    findViewById(R.id.cardRutas).setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         // ✅ OBSERVAR DATOS DEL CONDUCTOR DESDE PERFILVIEWMODEL
         perfilViewModel.getConductorNombreLiveData().observe(this, nombre -> {
