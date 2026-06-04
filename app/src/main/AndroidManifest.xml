@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.chopcode.trasnportenataga_laplata">
+    android:installLocation="auto">
 
     <!-- 🔹 PERMISOS PARA FCM Y CONECTIVIDAD -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -49,8 +49,7 @@
         <!-- 🔹 SERVICIO DE NOTIFICACIONES FCM -->
         <service
             android:name=".services.notifications.NotificationService"
-            android:exported="false"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

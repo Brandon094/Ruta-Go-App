@@ -2,7 +2,7 @@
     <!-- ==================== -->
     <!-- GENERAL APP STRINGS -->
     <!-- ==================== -->
-    <string name="app_name">🚍 RutaGo</string>
+    <string name="app_name">RutaGo</string>
     <string name="app_logo">Logo de la aplicación</string>
     <string name="or">o</string>
     <string name="confirmar">Confirmar</string>
@@ -142,7 +142,7 @@
     <string name="reservas_confirmadas_label">Reservas Confirmadas</string>
     <string name="total_del_dia">Total del día \n• Actualizado ahora</string>
     <string name="asientos_disponibles_label">Asientos Disponibles</string>
-    <string name="ocupacion_porcentaje">%d asientos totales\n • Ocupación: %d%%</string>
+    <string name="ocupacion_porcentaje">%1$d asientos totales\n • Ocupación: %2$d%%</string>
 
     <!-- Desglose por ruta -->
     <string name="desglose_ruta">Desglose por Ruta</string>
@@ -190,8 +190,8 @@
     <!-- Formatos de texto -->
     <string name="formato_moneda">$%s</string>
     <string name="formato_porcentaje">%d%%</string>
-    <string name="formato_hora">%02d:%02d</string>
-    <string name="formato_fecha_hora">%s - %s</string>
+    <string name="formato_hora">%1$02d:%2$02d</string>
+    <string name="formato_fecha_hora">%1$s - %2$s</string>
 
     <!-- Tooltips e información adicional -->
     <string name="tooltip_actualizar">Actualizar estadísticas</string>
@@ -239,8 +239,8 @@
     <string name="no_disponible">N/A</string>
     <string name="reserva_procesada_exito">Reserva procesada exitosamente</string>
     <string name="debe_iniciar_sesion">Debe iniciar sesión primero</string>
-    <string name="ocupacion_porcentaje_detallada">%d asientos totales \n• Disponibles: %d \n•
-        Ocupados: %d (%d%%)</string>
+    <string name="ocupacion_porcentaje_detallada">%1$d asientos totales \n• Disponibles: %2$d \n•
+        Ocupados: %3$d (%4$d%%)</string>
     <!-- ==================== -->
     <!-- VEHICLE & PROFILE -->
     <!-- ==================== -->
@@ -287,7 +287,7 @@
     <string name="estado_completada">Completada</string>
 
     <!-- Información de reserva -->
-    <string name="fecha_hora">%s - %s</string>
+    <string name="fecha_hora">%1$s - %2$s</string>
     <string name="pasajero_label">Pasajero</string>
     <string name="telefono_label">Teléfono</string>
     <string name="ruta_label">Ruta</string>
