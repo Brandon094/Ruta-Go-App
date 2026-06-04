@@ -46,7 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class InicioDeSesionActivity extends AppCompatActivity {
 
-    private EditText editTextUsuario, editTextPassword;
+    private TextInputEditText editTextUsuario, editTextPassword;
     private Button buttonIngresar;
     private Button btnGoogleSignIn;
     private IniciarService iniciarService;
@@ -149,7 +149,6 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         olvidasteContraseña = findViewById(R.id.olvidasteContraseña);
 
         TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
-        TextInputEditText editTextPassword = findViewById(R.id.editTextPassword);
 
         // Establecer el icono inicial (contraseña oculta)
         passwordInputLayout.setEndIconDrawable(R.drawable.ic_visibility_off);
