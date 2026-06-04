@@ -136,9 +136,9 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/primary_50"
+                    app:cardBackgroundColor="@color/secondary_900"
                     android:layout_marginBottom="12dp"
-                    app:strokeColor="@color/primary_500"
+                    app:strokeColor="@color/secondary_700"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -188,9 +188,9 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/primary_50"
+                    app:cardBackgroundColor="@color/secondary_900"
                     android:layout_marginBottom="24dp"
-                    app:strokeColor="@color/primary_500"
+                    app:strokeColor="@color/secondary_700"
                     app:strokeWidth="1dp">
 
                     <LinearLayout

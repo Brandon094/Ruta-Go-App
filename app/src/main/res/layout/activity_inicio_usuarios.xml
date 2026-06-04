@@ -18,9 +18,9 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary_500"
+            android:background="@color/secondary_900"
             app:title="@string/horarios"
-            app:titleTextColor="@color/text_on_primary"
+            app:titleTextColor="@color/primary_500"
             app:menu="@menu/menu_inicio_usuarios"
             app:layout_scrollFlags="scroll|enterAlways"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
@@ -29,7 +29,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/header_gradient_primary_light"
+            android:background="@color/primary_500"
             android:orientation="vertical"
             android:gravity="center"
             android:padding="20dp"
@@ -47,7 +47,7 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:src="@drawable/ic_person"
-                    app:civ_border_color="@color/primary_500"
+                    app:civ_border_color="@color/secondary_900"
                     app:civ_border_width="2dp" />
 
                 <LinearLayout
@@ -62,7 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/bienvenida"
-                        android:textColor="@color/text_on_primary"
+                        android:textColor="@color/secondary_900"
                         android:textSize="14sp"
                         android:alpha="0.9" />
 
@@ -71,7 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/cargando"
-                        android:textColor="@color/text_on_primary"
+                        android:textColor="@color/secondary_900"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:maxLines="1"
@@ -84,7 +84,9 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/status_confirmed_light">
+                    app:cardBackgroundColor="@color/secondary_900"
+                    app:strokeColor="@color/primary_500"
+                    app:strokeWidth="1dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -92,7 +94,7 @@
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
                         android:text="@string/activo"
-                        android:textColor="@color/status_confirmed"
+                        android:textColor="@color/primary_500"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </com.google.android.material.card.MaterialCardView>
@@ -105,7 +107,9 @@
                 android:layout_marginBottom="8dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/surface">
+                app:cardBackgroundColor="@color/secondary_800"
+                app:strokeColor="@color/secondary_700"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -158,7 +162,9 @@
                             android:layout_marginEnd="8dp"
                             app:cardCornerRadius="12dp"
                             app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/surface_2">
+                            app:cardBackgroundColor="@color/secondary_800"
+                            app:strokeColor="@color/secondary_700"
+                            app:strokeWidth="1dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -204,7 +210,9 @@
                             android:layout_marginEnd="8dp"
                             app:cardCornerRadius="12dp"
                             app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/surface_2">
+                            app:cardBackgroundColor="@color/secondary_800"
+                            app:strokeColor="@color/secondary_700"
+                            app:strokeWidth="1dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -249,7 +257,9 @@
                             android:layout_weight="1"
                             app:cardCornerRadius="12dp"
                             app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/surface_2">
+                            app:cardBackgroundColor="@color/secondary_800"
+                            app:strokeColor="@color/secondary_700"
+                            app:strokeWidth="1dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"

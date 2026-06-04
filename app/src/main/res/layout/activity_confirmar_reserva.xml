@@ -165,7 +165,7 @@
                                 android:text="@string/cargando"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/primary_700"
+                                android:textColor="@color/primary_500"
                                 android:maxLines="1"
                                 android:ellipsize="end" />
 
@@ -182,7 +182,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_arrow_right"
-                            android:tint="@color/primary_400"
+                            app:tint="@color/primary_500"
                             android:layout_marginHorizontal="12dp" />
 
                         <LinearLayout
@@ -199,7 +199,7 @@
                                 android:text="@string/cargando"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/primary_700"
+                                android:textColor="@color/primary_500"
                                 android:maxLines="1"
                                 android:ellipsize="end" />
 
@@ -347,7 +347,6 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:background="@drawable/bg_price_highlight"
-                        android:backgroundTint="@color/primary_50"
                         android:padding="24dp"
                         android:paddingVertical="20dp"
                         app:cornerRadius="12dp">
@@ -373,14 +372,14 @@
                                 android:text="@string/cargando"
                                 android:textSize="28sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/primary_600" />
+                                android:textColor="@color/primary_500" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/moneda_cop"
                                 android:textSize="12sp"
-                                android:textColor="@color/text_tertiary"
+                                android:textColor="@color/primary_500"
                                 android:layout_marginStart="4dp"
                                 android:layout_marginTop="8dp" />
                         </LinearLayout>

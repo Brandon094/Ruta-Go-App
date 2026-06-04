@@ -1,237 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ==================== -->
-    <!-- COLORES BASE MEJORADOS -->
+    <!-- COLORES BASE ECOSISTEMA SERVICARGA (DARK THEME) -->
     <!-- ==================== -->
-    <color name="helper_gray">#99000000</color> <!-- 60% opacidad -->
+    <color name="helper_gray">#99FFFFFF</color>
 
-    <color name="snackbar_primary">@color/primary_500</color> <!-- El gris oscuro que tenías antes
-     -->
+    <color name="snackbar_primary">@color/secondary_500</color>
 
-    <!-- AZUL PRINCIPAL - Más profesional y accesible -->
-    <color name="primary_50">#E8F2FF</color>
-    <color name="primary_100">#C5DFFF</color>
-    <color name="primary_200">#9DCAFF</color>
-    <color name="primary_300">#75B4FF</color>
-    <color name="primary_400">#57A3FF</color>
-    <color name="primary_500">#2B87FF</color>  <!-- Principal mejorado -->
-    <color name="primary_600">#1F76F0</color>
-    <color name="primary_700">#1361D6</color>
-    <color name="primary_800">#084CC2</color>
-    <color name="primary_900">#0038A8</color>
+    <!-- NARANJA PRINCIPAL (Accent ServiCarga) -->
+    <color name="primary_50">#FFF3E0</color>
+    <color name="primary_100">#FFE0B2</color>
+    <color name="primary_200">#FFCC80</color>
+    <color name="primary_300">#FFB74D</color>
+    <color name="primary_400">#FFA726</color>
+    <color name="primary_500">#FF7A1A</color>  <!-- Naranja ServiCarga -->
+    <color name="primary_600">#F57C00</color>
+    <color name="primary_700">#E65100</color>
+    <color name="primary_800">#BF360C</color>
+    <color name="primary_900">#8D3A00</color>
 
-    <!-- NARANJA SECUNDARIO - Más vibrante y moderno -->
-    <color name="secondary_50">#FFF5E6</color>
-    <color name="secondary_100">#FFE4BF</color>
-    <color name="secondary_200">#FFD299</color>
-    <color name="secondary_300">#FFBF73</color>
-    <color name="secondary_400">#FFB057</color>
-    <color name="secondary_500">#FF9B3B</color>  <!-- Secundario mejorado -->
-    <color name="secondary_600">#FF8A2B</color>
-    <color name="secondary_700">#FF7619</color>
-    <color name="secondary_800">#FF6307</color>
-    <color name="secondary_900">#F54D00</color>
+    <!-- NAVY SECUNDARIO (Background Principal ServiCarga) -->
+    <color name="secondary_50">#E1E8EB</color>
+    <color name="secondary_100">#B5C5CD</color>
+    <color name="secondary_200">#839FAD</color>
+    <color name="secondary_300">#51798D</color>
+    <color name="secondary_400">#2C5C76</color>
+    <color name="secondary_500">#0B2B3F</color>  <!-- Navy Intermedio -->
+    <color name="secondary_600">#0A2639</color>
+    <color name="secondary_700">#081F31</color>
+    <color name="secondary_800">#061929</color>  <!-- Navy Oscuro para Cards -->
+    <color name="secondary_900">#061426</color>  <!-- Navy Fondo de Pantalla -->
 
-    <!-- VERDE ÉXITO - Más natural y profesional -->
-    <color name="success_50">#E8F8F0</color>
-    <color name="success_100">#C7EED9</color>
-    <color name="success_200">#A3E3C0</color>
-    <color name="success_300">#7FD8A7</color>
-    <color name="success_400">#64CF94</color>
-    <color name="success_500">#48C581</color>  <!-- Verde éxito mejorado -->
-    <color name="success_600">#3DB573</color>
-    <color name="success_700">#31A363</color>
-    <color name="success_800">#259153</color>
-    <color name="success_900">#12723E</color>
+    <!-- VERDE ÉXITO -->
+    <color name="success_50">#E8F5E9</color>
+    <color name="success_100">#C8E6C9</color>
+    <color name="success_600">#1B7E35</color>
+    <color name="success_700">#156A2E</color>
+    <color name="success_500">#1F8F3C</color>
 
-    <!-- AMARILLO ADVERTENCIA - Más cálido y visible -->
+    <!-- AMARILLO ADVERTENCIA -->
     <color name="warning_50">#FFF9E6</color>
     <color name="warning_100">#FFEFBF</color>
-    <color name="warning_200">#FFE599</color>
-    <color name="warning_300">#FFDB73</color>
-    <color name="warning_400">#FFD357</color>
-    <color name="warning_500">#FFC93B</color>  <!-- Advertencia mejorado -->
-    <color name="warning_600">#FFBA2B</color>
-    <color name="warning_700">#FFA719</color>
-    <color name="warning_800">#FF9507</color>
-    <color name="warning_900">#F57C00</color>
+    <color name="warning_600">#D9860A</color>
+    <color name="warning_700">#B36D08</color>
+    <color name="warning_500">#F59E0B</color>
 
-    <!-- ROJO ERROR - Más intenso y claro -->
+    <!-- ROJO ERROR -->
     <color name="error_50">#FFEBEE</color>
     <color name="error_100">#FFCDD2</color>
-    <color name="error_200">#EF9A9A</color>
     <color name="error_300">#E57373</color>
-    <color name="error_400">#EF5350</color>
-    <color name="error_500">#F44336</color>  <!-- Error mejorado -->
-    <color name="error_600">#E53935</color>
-    <color name="error_700">#D32F2F</color>
-    <color name="error_800">#C62828</color>
-    <color name="error_900">#B71C1C</color>
+    <color name="error_500">#EF4444</color>
 
-    <!-- AZUL INFORMACIÓN - Más distintivo -->
+    <!-- AZUL INFORMACIÓN -->
     <color name="info_50">#E3F2FD</color>
     <color name="info_100">#BBDEFB</color>
-    <color name="info_200">#90CAF9</color>
-    <color name="info_300">#64B5F6</color>
-    <color name="info_400">#42A5F5</color>
-    <color name="info_500">#2196F3</color>  <!-- Información mejorado -->
-    <color name="info_600">#1E88E5</color>
-    <color name="info_700">#1976D2</color>
-    <color name="info_800">#1565C0</color>
-    <color name="info_900">#0D47A1</color>
-
-    <!-- NEUTRALES MEJORADOS - Más equilibrio -->
-    <color name="neutral_50">#FAFAFA</color>
-    <color name="neutral_100">#F5F5F5</color>
-    <color name="neutral_200">#EEEEEE</color>
-    <color name="neutral_300">#E0E0E0</color>
-    <color name="neutral_400">#BDBDBD</color>
-    <color name="neutral_500">#9E9E9E</color>
-    <color name="neutral_600">#757575</color>
-    <color name="neutral_700">#616161</color>
-    <color name="neutral_800">#424242</color>
-    <color name="neutral_900">#212121</color>
+    <color name="info_600">#2563EB</color>
+    <color name="info_700">#1D4ED8</color>
+    <color name="info_500">#3B82F6</color>
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
     <!-- ==================== -->
-    <!-- COLORES PARA TEMA CLARO MEJORADOS -->
+    <!-- ASIGNACIÓN DE SUPERFICIES (ESTILO SERVICARGA) -->
     <!-- ==================== -->
-    <color name="background">#FFFFFF</color>
-    <color name="surface">#FFFFFF</color>
+    <color name="background">@color/secondary_900</color> <!-- Fondo Navy Muy Oscuro -->
+    <color name="surface">@color/secondary_800</color>    <!-- Superficie Navy Oscuro -->
+    <color name="surface_variant">@color/secondary_700</color>
+    <color name="surface_1">@color/secondary_800</color>
+    <color name="surface_2">@color/secondary_700</color>
+    <color name="surface_3">@color/secondary_600</color>
 
-    <!-- Textos para tema claro - Mejor contraste -->
-    <color name="text_primary">#1A1A1A</color>      <!-- Más oscuro para mejor legibilidad -->
-    <color name="text_secondary">#4A4A4A</color>    <!-- Mejor contraste -->
-    <color name="text_tertiary">#767676</color>     <!-- Más suave -->
-    <color name="text_disabled">#B0B0B0</color>     <!-- Nuevo: texto deshabilitado -->
-    <color name="text_on_primary">#FFFFFF</color>
+    <!-- NEUTRALES -->
+    <color name="neutral_300">#E0E0E0</color>
+    <color name="neutral_500">#9E9E9E</color>
+    <color name="neutral_700">#616161</color>
+
+    <!-- TEXTOS PARA TEMA OSCURO -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="primary_text">#FFFFFF</color>
+    <color name="text_secondary">#B5C5CD</color> <!-- Navy claro -->
+    <color name="secondary_text">#B5C5CD</color>
+    <color name="text_tertiary">#839FAD</color>
+    <color name="text_disabled">#51798D</color>
+    <color name="text_on_primary">@color/secondary_900</color>
     <color name="text_on_secondary">#FFFFFF</color>
     <color name="text_on_success">#FFFFFF</color>
-    <color name="text_on_warning">#212121</color>   <!-- Texto oscuro sobre fondo amarillo -->
+    <color name="text_on_warning">#212121</color>
     <color name="text_on_error">#FFFFFF</color>
 
-    <!-- Superficies para tema claro - Más sutiles -->
-    <color name="surface_variant">#F8F9FA</color>
-    <color name="surface_1">#F5F7FA</color>         <!-- Más azulado sutil -->
-    <color name="surface_2">#EFF2F7</color>
-    <color name="surface_3">#E8ECF1</color>
-    <color name="surface_4">#DFE4EA</color>
+    <color name="divider">#1AFFFFFF</color>
+    <color name="outline">#33FFFFFF</color>
+    <color name="overlay">#CC000000</color>
+    <color name="shadow">#66000000</color>
 
-    <!-- Elementos UI para tema claro -->
-    <color name="divider">#E8ECF1</color>           <!-- Coincide con surface_3 -->
-    <color name="outline">#C8D0D9</color>           <!-- Más suave -->
-    <color name="overlay">#33000000</color>
-    <color name="shadow">#1A000000</color>
+    <!-- Efectos de ripple -->
+    <color name="ripple_color">#33FFFFFF</color>
+    <color name="ripple_primary">#33FF7A1A</color>
+    <color name="ripple_success">#331F8F3C</color>
 
-    <!-- ==================== -->
-    <!-- COLORES PARA TEMA OSCURO MEJORADOS -->
-    <!-- ==================== -->
+    <!-- Chips -->
+    <color name="chip_background">@color/secondary_700</color>
+    <color name="chip_background_selected">@color/primary_500</color>
+    <color name="chip_text">#FFFFFF</color>
+    <color name="chip_text_selected">#FFFFFF</color>
 
-    <!-- Colores de fondo oscuros - Más profundos y ricos -->
-    <color name="dark_background">#121212</color>
-    <color name="dark_surface">#1E1E1E</color>
-    <color name="dark_surface_bright">#252525</color>  <!-- Nuevo: superficie más clara -->
-
-    <!-- Colores de texto para modo oscuro - Mejor legibilidad -->
-    <color name="dark_text_primary">#FFFFFF</color>
-    <color name="dark_text_secondary">#E0E0E0</color>  <!-- Más claro -->
-    <color name="dark_text_tertiary">#A0A0A0</color>   <!-- Mejor diferenciación -->
-    <color name="dark_text_disabled">#666666</color>   <!-- Nuevo: texto deshabilitado -->
-    <color name="dark_text_on_primary">#FFFFFF</color>
-    <color name="dark_text_on_secondary">#FFFFFF</color>
-    <color name="dark_text_on_success">#FFFFFF</color>
-    <color name="dark_text_on_warning">#212121</color>
-    <color name="dark_text_on_error">#FFFFFF</color>
-
-    <!-- Colores de barras del sistema -->
-    <color name="dark_status_bar">#000000</color>      <!-- Negro puro para OLED -->
-    <color name="dark_navigation_bar">#000000</color>
-
-    <!-- Colores de superficie/variantes oscuros - Más matices -->
-    <color name="dark_surface_variant">#252525</color>
-    <color name="dark_surface_1">#2A2A2A</color>       <!-- Mejor gradación -->
-    <color name="dark_surface_2">#303030</color>
-    <color name="dark_surface_3">#353535</color>
-    <color name="dark_surface_4">#3A3A3A</color>
-
-    <!-- Elementos UI oscuros -->
-    <color name="dark_divider">#383838</color>
-    <color name="dark_outline">#404040</color>
-    <color name="dark_overlay">#CC000000</color>
-    <color name="dark_shadow">#80000000</color>
+    <!-- Dark Chips (Fallback) -->
+    <color name="dark_chip_background">@color/secondary_600</color>
 
     <!-- ==================== -->
-    <!-- COLORES ESPECÍFICOS PARA COMPONENTES MEJORADOS -->
+    <!-- ESTADOS DE COMPONENTES -->
     <!-- ==================== -->
-
-    <!-- Estados de asientos - Más claros y distintivos -->
     <color name="seat_available">@color/success_500</color>
     <color name="seat_selected">@color/primary_500</color>
-    <color name="seat_booked">@color/neutral_500</color>
-    <color name="seat_disabled">@color/neutral_300</color>
+    <color name="seat_booked">@color/secondary_400</color>
+    <color name="seat_disabled">@color/secondary_700</color>
 
-    <!-- Estados de reservas - Coherentes con la paleta -->
     <color name="status_confirmed">@color/success_500</color>
     <color name="status_pending">@color/warning_500</color>
     <color name="status_cancelled">@color/error_500</color>
-    <color name="status_completed">@color/neutral_500</color>
 
-    <!-- Colores de chips - Más modernos -->
-    <color name="chip_background">@color/neutral_100</color>
-    <color name="chip_background_selected">@color/primary_500</color>
-    <color name="chip_text">@color/text_primary</color>
-    <color name="chip_text_selected">@color/text_on_primary</color>
-
-    <color name="dark_chip_background">@color/dark_surface_2</color>
-    <color name="dark_chip_background_selected">@color/primary_400</color>
-    <color name="dark_chip_text">@color/dark_text_primary</color>
-    <color name="dark_chip_text_selected">@color/dark_text_on_primary</color>
-
-    <!-- Estados con variantes claras - Más sutiles -->
-    <color name="status_confirmed_light">@color/success_50</color>
-    <color name="status_pending_light">@color/warning_50</color>
-    <color name="status_cancelled_light">@color/error_50</color>
-    <color name="status_completed_light">@color/neutral_50</color>
-
-    <color name="dark_status_confirmed_light">#1A2E1F</color>      <!-- Verde oscuro sutil -->
-    <color name="dark_status_pending_light">#2A2500</color>        <!-- Amarillo oscuro sutil -->
-    <color name="dark_status_cancelled_light">#2A1A1A</color>      <!-- Rojo oscuro sutil -->
-    <color name="dark_status_completed_light">#2A2A2A</color>      <!-- Gris oscuro -->
-
-    <!-- Efectos de ripple mejorados -->
-    <color name="ripple_color">#1A000000</color>
-    <color name="ripple_primary">#1A2B87FF</color>
-    <color name="ripple_success">#1A48C581</color>
-    <color name="ripple_warning">#33FFC93B</color>
-    <color name="ripple_error">#1AF44336</color>
-
-    <color name="dark_ripple_color">#1AFFFFFF</color>
-    <color name="dark_ripple_primary">#1A75B4FF</color>
-    <color name="dark_ripple_success">#1A7FD8A7</color>
-    <color name="dark_ripple_warning">#33FFDB73</color>
-    <color name="dark_ripple_error">#1AE57373</color>
+    <!-- Variantes claras para contraste en fondos oscuros (baja opacidad) -->
+    <color name="status_confirmed_light">#261F8F3C</color>
+    <color name="status_pending_light">#26F59E0B</color>
+    <color name="status_cancelled_light">#26EF4444</color>
+    <color name="success_light">#261F8F3C</color>
 
     <!-- ==================== -->
-    <!-- ALIAS PARA CONSISTENCIA MEJORADOS -->
+    <!-- ALIAS PARA CONSISTENCIA -->
     <!-- ==================== -->
     <color name="primary_color">@color/primary_500</color>
     <color name="secondary_color">@color/secondary_500</color>
     <color name="success_color">@color/success_500</color>
     <color name="warning_color">@color/warning_500</color>
     <color name="error_color">@color/error_500</color>
-    <color name="info_color">@color/info_500</color>
+    <color name="info_color">@color/primary_400</color>
 
-    <color name="primary_text">@color/text_primary</color>
-    <color name="secondary_text">@color/text_secondary</color>
     <color name="background_color">@color/background</color>
-    <color name="card_background">@color/surface_variant</color>
+    <color name="card_background">@color/surface</color>
 
-    <!-- Alias para compatibilidad -->
     <color name="success">@color/success_500</color>
-    <color name="success_light">@color/status_confirmed_light</color>
     <color name="warning">@color/warning_500</color>
-    <color name="info">@color/info_500</color>
+    <color name="info">@color/primary_400</color>
     <color name="error">@color/error_500</color>
 </resources>

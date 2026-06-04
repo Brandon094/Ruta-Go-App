@@ -72,7 +72,7 @@
         <item name="strokeWidth">1.5dp</item>
         <item name="android:textColor">@color/secondary_text_selector</item>
         <item name="iconTint">@color/secondary_text_selector</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">@android:color/transparent</item>
         <item name="rippleColor">@color/primary_100</item>
         <item name="elevation">0dp</item>
     </style>
@@ -92,42 +92,6 @@
         <item name="rippleColor">@color/primary_100</item>
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="elevation">0dp</item>
-    </style>
-
-    <!-- ==================== -->
-    <!-- ESTILOS PARA DIÁLOGOS - CON MÁRGENES CORREGIDOS -->
-    <!-- ==================== -->
-
-    <style name="AppDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <!-- Botones directamente -->
-        <item name="buttonBarPositiveButtonStyle">@style/AppButton.Primary</item>
-        <item name="buttonBarNegativeButtonStyle">@style/AppButton.Secondary</item>
-
-        <!-- Tipografía -->
-        <item name="materialAlertDialogTitleTextStyle">@style/TextTitleMedium</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/TextBodyMedium</item>
-
-        <!-- Esquinas redondeadas -->
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Dialog.Rounded</item>
-
-        <!-- Fondo -->
-        <item name="android:background">@color/surface</item>
-        <item name="android:windowBackground">@color/surface</item>
-
-        <!-- Padding del diálogo -->
-        <item name="android:padding">2dp</item>
-    </style>
-
-    <style name="ShapeAppearanceOverlay.Dialog.Rounded" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">24dp</item>
-    </style>
-
-    <!-- Estilo personalizado para Snackbar -->
-    <style name="AppSnackbarStyle" parent="@style/Widget.MaterialComponents.Snackbar">
-        <item name="android:background">@drawable/snackbar_background</item>
-        <item name="android:maxWidth">400dp</item>
-        <item name="android:layout_margin">24dp</item>
     </style>
 
     <!-- ==================== -->
@@ -287,10 +251,10 @@
         <item name="iconTint">@null</item>
 
         <!-- Colores base - VALORES FIJOS -->
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/secondary_900</item>
         <item name="strokeColor">@color/outline</item>
         <item name="strokeWidth">1.5dp</item>
-        <item name="rippleColor">@color/ripple_success</item>
+        <item name="rippleColor">@color/primary_500</item>
         <item name="elevation">1dp</item>
     </style>
 
@@ -309,15 +273,15 @@
     <!-- Estilo para asiento ocupado -->
     <style name="AsientoButtonStyle.Ocupado" parent="AsientoButtonStyle">
         <item name="strokeColor">@color/status_cancelled</item>
-        <item name="backgroundTint">@color/error_300</item>
+        <item name="backgroundTint">@color/status_cancelled_light</item>
         <item name="rippleColor">@color/ripple_color</item>
         <item name="android:enabled">false</item>
     </style>
 
     <!-- Estilo para asiento de conductor -->
     <style name="AsientoButtonStyle.Conductor" parent="AsientoButtonStyle.Ocupado">
-        <item name="backgroundTint">@color/surface_2</item>
-        <item name="strokeColor">@color/neutral_500</item>
+        <item name="backgroundTint">@color/secondary_700</item>
+        <item name="strokeColor">@color/secondary_100</item>
         <item name="strokeWidth">1.5dp</item>
     </style>
 
