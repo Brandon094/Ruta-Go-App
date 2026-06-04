@@ -1,5 +1,6 @@
 package com.chopcode.trasnportenataga_laplata.services.reservations.driver;
 
+import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -207,18 +208,24 @@ public class DriverReservationService {
                 });
     }
 
-    public void actualizarEstadoReserva(String reservaId, String nuevoEstado, ReservationUpdateCallback callback) {
+    public void actualizarEstadoReserva(Context context, String reservaId, String nuevoEstado, ReservationUpdateCallback callback) {
         DatabaseReference reservaRef = MyApp.getDatabaseReference("reservas/" + reservaId + "/estadoReserva");
         reservaRef.setValue(nuevoEstado)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnSuccessListener(aVoid -> {
+                    if ("Confirmada".equalsIgnoreCase(nuevoEstado)) {
+                        notificarPasajeroCambioEstado(context, reservaId, "confirmada");
+                    }
+                    callback.onSuccess();
+                })
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
-    public void cancelarReservaConLiberacion(String reservaId, String horarioId,
+    public void cancelarReservaConLiberacion(Context context, String reservaId, String horarioId,
                                              int numeroAsiento, ReservationUpdateCallback callback) {
-        actualizarEstadoReserva(reservaId, "Cancelada", new ReservationUpdateCallback() {
+        actualizarEstadoReserva(context, reservaId, "Cancelada", new ReservationUpdateCallback() {
             @Override
             public void onSuccess() {
+                notificarPasajeroCambioEstado(context, reservaId, "cancelada");
                 liberarAsientoReservado(horarioId, numeroAsiento, new ReservationUpdateCallback() {
                     @Override
                     public void onSuccess() {
@@ -233,6 +240,40 @@ public class DriverReservationService {
             @Override
             public void onError(String error) {
                 callback.onError(error);
+            }
+        });
+    }
+
+    private void notificarPasajeroCambioEstado(Context context, String reservaId, String tipo) {
+        DatabaseReference reservaRef = MyApp.getDatabaseReference("reservas/" + reservaId);
+        reservaRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String pasajeroId = snapshot.child("usuarioId").getValue(String.class);
+                    String conductorNombre = snapshot.child("conductor").getValue(String.class);
+                    String ruta = snapshot.child("origen").getValue(String.class) + " -> " + snapshot.child("destino").getValue(String.class);
+                    String fechaHora = snapshot.child("tiempoEstimado").getValue(String.class);
+                    Integer asiento = snapshot.child("puestoReservado").getValue(Integer.class);
+                    String placa = snapshot.child("vehiculoId").getValue(String.class);
+
+                    if (pasajeroId != null) {
+                        com.chopcode.trasnportenataga_laplata.managers.notificactions.NotificationManager nm =
+                                com.chopcode.trasnportenataga_laplata.managers.notificactions.NotificationManager.getInstance(context);
+
+                        if ("confirmada".equals(tipo)) {
+                            nm.notificarReservaConfirmadaAlPasajero(pasajeroId, conductorNombre, ruta, fechaHora,
+                                    asiento != null ? asiento : 0, placa, "", null);
+                        } else {
+                            nm.notificarReservaCanceladaAlPasajero(pasajeroId, conductorNombre, ruta, "Cancelada por el conductor", null);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error obteniendo datos para notificar pasajero: " + error.getMessage());
             }
         });
     }

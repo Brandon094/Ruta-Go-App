@@ -254,6 +254,10 @@ public class ReservaService {
                     MyApp.logEvent("reserva_exitosa", eventParams);
 
                     Toast.makeText(context, "Reserva confirmada", Toast.LENGTH_SHORT).show();
+
+                    // ✅ NOTIFICAR AL CONDUCTOR (Si es posible obtener su ID)
+                    notificarConductor(context, idReserva, uid, nombre, horarioId, asientoSeleccionado, origen, destino, precio, metodoPago);
+
                     callback.onReservaExitosa();
                 })
                 .addOnFailureListener(e -> {
@@ -307,6 +311,50 @@ public class ReservaService {
     }
 
     //refactorizar en otra clase solo para manejar el historial de reservas del conductor
+    private void notificarConductor(Context context, String reservaId, String pasajeroId, String pasajeroNombre,
+                                    String horarioId, int asiento, String origen, String destino,
+                                    double precio, String metodoPago) {
+
+        Log.d(TAG, "🔔 Buscando conductor asignado al horario " + horarioId + " para notificar...");
+
+        // ✅ NUEVA LÓGICA: Buscar en 'conductores' quién tiene asignado este horario
+        DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
+        
+        conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String conductorIdEncontrado = null;
+                
+                for (DataSnapshot conductor : snapshot.getChildren()) {
+                    DataSnapshot horariosAsignados = conductor.child("horariosAsignados");
+                    for (DataSnapshot h : horariosAsignados.getChildren()) {
+                        if (horarioId.equals(h.getValue(String.class))) {
+                            conductorIdEncontrado = conductor.getKey();
+                            break;
+                        }
+                    }
+                    if (conductorIdEncontrado != null) break;
+                }
+
+                if (conductorIdEncontrado != null) {
+                    Log.d(TAG, "🚀 Conductor identificado: " + conductorIdEncontrado + ". Enviando notificación...");
+                    
+                    com.chopcode.trasnportenataga_laplata.managers.notificactions.NotificationManager.getInstance(context)
+                            .notificarNuevaReservaAlConductor(conductorIdEncontrado, pasajeroNombre,
+                                    origen + " -> " + destino, "En camino", 
+                                    asiento, precio, metodoPago, null);
+                } else {
+                    Log.w(TAG, "⚠️ No se encontró ningún conductor con el horario " + horarioId + " asignado.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "❌ Error al buscar conductor: " + error.getMessage());
+            }
+        });
+    }
+
     /**
      * Carga TODAS las reservas de un conductor
      */

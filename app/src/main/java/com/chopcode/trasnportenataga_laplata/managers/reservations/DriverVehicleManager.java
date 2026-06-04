@@ -103,6 +103,34 @@ public class DriverVehicleManager {
      * Busca conductor por horario asignado
      */
     private void buscarConductorPorHorario(String horarioId, DriverVehicleCallback callback) {
+        // ✅ MEJORADO: Primero intentar obtener el conductorId directamente del nodo del horario
+        DatabaseReference horarioRef = MyApp.getDatabaseReference("horarios/" + horarioId);
+        
+        horarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChild("conductorId")) {
+                    String idDirecto = snapshot.child("conductorId").getValue(String.class);
+                    if (idDirecto != null && !idDirecto.isEmpty()) {
+                        Log.d(TAG, "ConductorId encontrado directamente en el horario: " + idDirecto);
+                        conductorId = idDirecto;
+                        cargarInformacionConductor(conductorId, callback);
+                        return;
+                    }
+                }
+                
+                // Si no se encontró directamente, proceder con la búsqueda exhaustiva (fallback)
+                buscarConductorExhaustivamente(horarioId, callback);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                buscarConductorExhaustivamente(horarioId, callback);
+            }
+        });
+    }
+
+    private void buscarConductorExhaustivamente(String horarioId, DriverVehicleCallback callback) {
         DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
 
         conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -118,10 +146,10 @@ public class DriverVehicleManager {
                             String horarioAsignado = horarioAsignadoSnapshot.getValue(String.class);
                             if (horarioId.equals(horarioAsignado)) {
                                 conductorId = conductorSnapshot.getKey();
-                                Log.d(TAG, "Conductor encontrado: " + conductorId);
+                                Log.d(TAG, "Conductor encontrado por búsqueda exhaustiva: " + conductorId);
 
                                 Map<String, Object> params = new HashMap<>();
-                                params.put("conductor_encontrado", 1);
+                                params.put("conductor_encontrado_exhaustivo", 1);
                                 analyticsHelper.logEvent("conductor_encontrado", params);
 
                                 cargarInformacionConductor(conductorId, callback);
@@ -134,16 +162,16 @@ public class DriverVehicleManager {
                 }
 
                 if (!conductorEncontrado) {
-                    Log.w(TAG, "No se encontró conductor para el horario " + horarioId);
+                    Log.w(TAG, "No se encontró conductor para el horario " + horarioId + " tras búsqueda exhaustiva");
                     establecerValoresPorDefecto();
 
                     if (callback != null) {
                         callback.onDriverVehicleLoaded(
                                 null,
-                                "------",
-                                "------",
-                                "------",
-                                "------",
+                                "Pendiente",
+                                "No disponible",
+                                "---",
+                                "---",
                                 seatManager.getCapacidadTotal()
                         );
                     }
@@ -152,10 +180,7 @@ public class DriverVehicleManager {
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.e(TAG, "Error buscando conductor: " + error.getMessage());
-                MyApp.logError(new Exception("Error buscando conductor: " + error.getMessage()));
-                analyticsHelper.logError("busqueda_conductor", error.getMessage());
-
+                Log.e(TAG, "Error buscando conductor exhaustivamente: " + error.getMessage());
                 establecerValoresPorDefecto();
 
                 if (callback != null) {
@@ -305,10 +330,10 @@ public class DriverVehicleManager {
      * Establece valores por defecto cuando hay error
      */
     private void establecerValoresPorDefecto() {
-        conductorNombre = "------";
-        conductorTelefono = "------";
-        placaVehiculo = "------";
-        modeloVehiculo = "------";
+        conductorNombre = "Pendiente de asignar";
+        conductorTelefono = "No disponible";
+        placaVehiculo = "---";
+        modeloVehiculo = "---";
         capacidadVehiculo = seatManager.getCapacidadTotal();
 
         updateUI();

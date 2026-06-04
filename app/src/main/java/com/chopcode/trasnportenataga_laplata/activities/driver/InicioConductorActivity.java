@@ -644,9 +644,9 @@ public class InicioConductorActivity extends AppCompatActivity {
                     Log.d(TAG, "✅ Usuario confirmó " + (isConfirmation ? "confirmación" : "cancelación"));
 
                     if (isConfirmation) {
-                        reservasViewModel.confirmarReserva(reserva);
+                        reservasViewModel.confirmarReserva(InicioConductorActivity.this, reserva);
                     } else {
-                        reservasViewModel.cancelarReserva(reserva);
+                        reservasViewModel.cancelarReserva(InicioConductorActivity.this, reserva);
                     }
 
                     actualizarTiempoActualizacion();

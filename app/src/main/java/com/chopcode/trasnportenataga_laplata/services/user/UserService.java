@@ -4,6 +4,7 @@ import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.models.Horario;
 import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.models.Usuario;
+import androidx.annotation.NonNull;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -178,16 +179,48 @@ public class UserService {
                         }
                     }
 
-                    // Devolver datos al callback
-                    callback.onDriverDataLoaded(nombre, telefono, placa, horariosAsignados);
+                    // ✅ FALLBACK: Si el nombre está vacío o es "No disponible", buscar en el nodo de usuarios
+                    if (nombre.isEmpty() || nombre.equalsIgnoreCase("No disponible") || nombre.contains("Conductor ")) {
+                        buscarNombreEnUsuarios(userId, telefono, placa, horariosAsignados, callback);
+                    } else {
+                        callback.onDriverDataLoaded(nombre, telefono, placa, horariosAsignados);
+                    }
                 } else {
-                    callback.onError("No se encontró el conductor en la BD");
+                    // Si no existe en conductores, intentar en usuarios por si acaso
+                    buscarNombreEnUsuarios(userId, "", "", new ArrayList<>(), callback);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 callback.onError(error.getMessage());
+            }
+        });
+    }
+
+    private void buscarNombreEnUsuarios(String userId, String telFallback, String placaFallback, 
+                                        List<String> horarios, DriverDataCallback callback) {
+        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String nombre = telFallback; // Iniciar con el nombre que ya teníamos
+                String tel = telFallback;
+                
+                if (snapshot.exists()) {
+                    nombre = getStringSafely(snapshot.child("nombre"));
+                    if (tel.isEmpty() || tel.equalsIgnoreCase("No disponible")) {
+                        tel = getStringSafely(snapshot.child("telefono"));
+                    }
+                }
+                
+                if (nombre.isEmpty()) nombre = "Conductor " + userId.substring(0, 5);
+                callback.onDriverDataLoaded(nombre, tel, placaFallback, horarios);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onDriverDataLoaded("Conductor " + userId.substring(0, 5), telFallback, placaFallback, horarios);
             }
         });
     }

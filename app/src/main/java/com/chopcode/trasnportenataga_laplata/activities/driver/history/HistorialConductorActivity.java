@@ -292,7 +292,41 @@ public class HistorialConductorActivity extends AppCompatActivity {
     }
 
     private void mostrarDetallesReserva(Reserva r) {
-        Toast.makeText(this, "Pasajero: " + r.getNombre() + "\nEstado: " + r.getEstadoReserva(), Toast.LENGTH_LONG).show();
+        if ("Por confirmar".equalsIgnoreCase(r.getEstadoReserva())) {
+            new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                    .setTitle("Gestionar Reserva")
+                    .setMessage("Pasajero: " + r.getNombre() + "\nRuta: " + r.getOrigen() + " -> " + r.getDestino() + "\n\n¿Qué deseas hacer con esta reserva?")
+                    .setPositiveButton("Confirmar", (dialog, which) -> {
+                        driverReservationService.actualizarEstadoReserva(this, r.getIdReserva(), "Confirmada", new DriverReservationService.ReservationUpdateCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(HistorialConductorActivity.this, "Reserva confirmada", Toast.LENGTH_SHORT).show();
+                                cargarDatos();
+                            }
+                            @Override
+                            public void onError(String error) {
+                                Toast.makeText(HistorialConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("Cancelar", (dialog, which) -> {
+                        driverReservationService.cancelarReservaConLiberacion(this, r.getIdReserva(), r.getHorarioId(), r.getPuestoReservado(), new DriverReservationService.ReservationUpdateCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(HistorialConductorActivity.this, "Reserva cancelada", Toast.LENGTH_SHORT).show();
+                                cargarDatos();
+                            }
+                            @Override
+                            public void onError(String error) {
+                                Toast.makeText(HistorialConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNeutralButton("Volver", null)
+                    .show();
+        } else {
+            Toast.makeText(this, "Pasajero: " + r.getNombre() + "\nEstado: " + r.getEstadoReserva(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void exportarHistorial() {

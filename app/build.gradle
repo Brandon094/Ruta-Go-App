@@ -24,7 +24,9 @@ android {
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'
             ), 'proguard-rules.pro'
-            debuggable true  // ✅ Para poder depurar versiones release si es necesario
+            debuggable true
+            signingConfig signingConfigs.debug
+// ✅ Para poder depurar versiones release si es necesario
         }
         debug {
             debuggable true  // ✅ CORREGIDO: Solo una "g"
@@ -47,6 +49,7 @@ android {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/INDEX.LIST'
     }
 }
 
@@ -102,6 +105,7 @@ dependencies {
     implementation 'androidx.work:work-runtime:2.8.1'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'androidx.core:core-animation:1.0.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.23.0' // ✅ PARA FCM V1
 
     // 🔹 TESTING
     testImplementation 'junit:junit:4.13.2'

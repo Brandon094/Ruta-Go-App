@@ -183,7 +183,7 @@ public class ReservasViewModel extends BaseViewModel {
     /**
      * Confirma una reserva pendiente
      */
-    public void confirmarReserva(Reserva reserva) {
+    public void confirmarReserva(android.content.Context context, Reserva reserva) {
         if (reserva == null || reserva.getIdReserva() == null) {
             Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
             setError("Reserva no válida");
@@ -195,6 +195,7 @@ public class ReservasViewModel extends BaseViewModel {
         reservaProcesadaLiveData.postValue(false);
 
         driverReservationService.actualizarEstadoReserva(
+                context,
                 reserva.getIdReserva(),
                 "Confirmada",
                 new DriverReservationService.ReservationUpdateCallback() {
@@ -221,7 +222,7 @@ public class ReservasViewModel extends BaseViewModel {
     /**
      * Cancela una reserva pendiente
      */
-    public void cancelarReserva(Reserva reserva) {
+    public void cancelarReserva(android.content.Context context, Reserva reserva) {
         if (reserva == null || reserva.getIdReserva() == null) {
             Log.e(TAG, "❌ Reserva o ID de reserva es nulo");
             setError("Reserva no válida");
@@ -240,6 +241,7 @@ public class ReservasViewModel extends BaseViewModel {
         // Verificar si tenemos información para liberar el asiento
         if (reserva.getHorarioId() != null && reserva.getPuestoReservado() > 0) {
             driverReservationService.cancelarReservaConLiberacion(
+                    context,
                     reserva.getIdReserva(),
                     reserva.getHorarioId(),
                     reserva.getPuestoReservado(),
@@ -264,6 +266,7 @@ public class ReservasViewModel extends BaseViewModel {
         } else {
             // Cancelar sin liberar asiento (fallback)
             driverReservationService.actualizarEstadoReserva(
+                    context,
                     reserva.getIdReserva(),
                     "Cancelada",
                     new DriverReservationService.ReservationUpdateCallback() {
