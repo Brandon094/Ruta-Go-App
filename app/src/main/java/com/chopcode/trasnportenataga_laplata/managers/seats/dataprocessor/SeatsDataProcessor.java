@@ -78,9 +78,7 @@ public class SeatsDataProcessor {
                             }
                         }
                     } else {
-                        Log.w(TAG, "⚠️ Nodo 'asientosOcupados' no existe, creándolo...");
-                        // Crear nodo vacío si no existe
-                        createOccupiedSeatsNode(horarioId);
+                        Log.w(TAG, "⚠️ Nodo 'asientosOcupados' no existe para horario: " + horarioId);
                     }
 
                     // Obtener asientos disponibles
@@ -186,72 +184,27 @@ public class SeatsDataProcessor {
     }
 
     private void performSeatReservation(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        // Obtener referencia al asiento
+        // ✅ MEJORADO: Marcar el asiento como ocupado de forma individual
+        // No intentamos actualizar el contador total aquí porque da Permission Denied a los pasajeros.
+        // El conductor actualizará el contador total al confirmar la reserva.
+        
         DatabaseReference seatRef = databaseReference
                 .child("disponibilidadAsientos")
                 .child(horarioId)
                 .child("asientosOcupados")
                 .child(String.valueOf(seatNumber));
 
-        // Obtener referencia al contador
-        DatabaseReference availableRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosDisponibles");
+        Log.d(TAG, "📡 Marcando asiento A" + seatNumber + " como OCUPADO...");
 
-        // Obtener valor actual de asientos disponibles
-        availableRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer currentAvailable = snapshot.getValue(Integer.class);
-                if (currentAvailable == null || currentAvailable <= 0) {
-                    Log.e(TAG, "❌ No hay asientos disponibles");
-                    callback.onError("No hay asientos disponibles");
-                    return;
-                }
-
-                int newAvailable = currentAvailable - 1;
-
-                // Crear mapa de actualizaciones
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("asientosOcupados/" + seatNumber, true);
-                updates.put("asientosDisponibles", newAvailable);
-
-                // Aplicar actualizaciones
-                DatabaseReference scheduleRef = databaseReference
-                        .child("disponibilidadAsientos")
-                        .child(horarioId);
-
-                scheduleRef.updateChildren(updates)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.d(TAG, "✅ Asiento reservado exitosamente:");
-                            Log.d(TAG, "   - Asiento: " + seatNumber);
-                            Log.d(TAG, "   - Disponibles antes: " + currentAvailable);
-                            Log.d(TAG, "   - Disponibles ahora: " + newAvailable);
-
-                            // Registrar evento
-                            Map<String, Object> params = new HashMap<>();
-                            params.put("horario_id", horarioId);
-                            params.put("asiento", seatNumber);
-                            params.put("disponibles_antes", currentAvailable);
-                            params.put("disponibles_ahora", newAvailable);
-                            MyApp.logEvent("asiento_reservado_exito", params);
-
-                            callback.onSuccess();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e(TAG, "❌ Error reservando asiento: " + e.getMessage());
-                            MyApp.logError(e);
-                            callback.onError("Error reservando asiento: " + e.getMessage());
-                        });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error obteniendo disponibilidad: " + error.getMessage());
-                callback.onError("Error obteniendo disponibilidad: " + error.getMessage());
-            }
-        });
+        seatRef.setValue(true)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "✅ Asiento A" + seatNumber + " marcado exitosamente");
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "❌ Fallo al marcar asiento: " + e.getMessage());
+                    callback.onError("Error al reservar: " + e.getMessage());
+                });
     }
 
     /**

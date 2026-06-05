@@ -65,7 +65,7 @@ public class ReservaService {
                                                  String origen, String destino, String tiempoEstimado,
                                                  String metodoPago, String estadoReserva,
                                                  String placa, Double precio,
-                                                 String conductor, String telefonoC,
+                                                 String conductor, String conductorId, String telefonoC,
                                                  ReservaCallback callback) {
 
         Log.d(TAG, "🔄 Iniciando proceso de reserva para asiento: " + asientoSeleccionado);
@@ -100,7 +100,7 @@ public class ReservaService {
                         // ✅ PASO 2: Si el asiento está disponible, obtener datos del usuario
                         obtenerDatosUsuarioYContinuar(context, uid, horarioId, asientoSeleccionado,
                                 origen, destino, tiempoEstimado, metodoPago, estadoReserva,
-                                placa, precio, conductor, telefonoC, callback);
+                                placa, precio, conductor, conductorId, telefonoC, callback);
                     }
 
                     @Override
@@ -114,7 +114,8 @@ public class ReservaService {
     private void obtenerDatosUsuarioYContinuar(Context context, String uid, String horarioId, int asientoSeleccionado,
                                                String origen, String destino, String tiempoEstimado,
                                                String metodoPago, String estadoReserva,
-                                               String placa, Double precio, String conductor, String telefonoC,
+                                               String placa, Double precio, String conductor, 
+                                               String conductorId, String telefonoC,
                                                ReservaCallback callback) {
 
         DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + uid);
@@ -146,7 +147,7 @@ public class ReservaService {
                                 // ✅ PASO 4: Crear la reserva
                                 registrarReserva(context, uid, nombre, telefono, email, horarioId, asientoSeleccionado,
                                         origen, destino, tiempoEstimado, metodoPago, estadoReserva,
-                                        placa, precio, conductor, telefonoC, callback);
+                                        placa, precio, conductor, conductorId, telefonoC, callback);
                             }
 
                             @Override
@@ -165,9 +166,32 @@ public class ReservaService {
         });
     }
 
-    /**
-     * 🔥 NUEVO: Método para liberar un asiento cuando se cancela una reserva
-     */
+    private void procederRegistrarReserva(Context context, String uid, String nombre, String telefono, String email, String horarioId, int asientoSeleccionado, String origen, String destino, String tiempoEstimado, String metodoPago, String estadoReserva, String placa, Double precio, String conductor, String conductorId, String telefonoC, ReservaCallback callback) {
+        registrarReserva(context, uid, nombre, telefono, email, horarioId, asientoSeleccionado, origen, destino, tiempoEstimado, metodoPago, estadoReserva, placa, precio, conductor, conductorId, telefonoC, callback);
+    }
+
+    private interface DriverCheckCallback {
+        void onResult(boolean isDriver);
+    }
+
+    private void checkIfUserIsDriver(String uid, DriverCheckCallback callback) {
+        databaseReference.child("conductores").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // ✅ MEJORADO: No solo verificar si existe el nodo (puede ser un token huérfano)
+                // sino verificar si tiene datos reales de conductor
+                boolean hasDriverData = snapshot.exists() && 
+                        (snapshot.hasChild("placaVehiculo") || snapshot.hasChild("licencia"));
+                
+                Log.d(TAG, "🔍 Verificando rol para " + uid + ": Es conductor? " + hasDriverData);
+                callback.onResult(hasDriverData);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onResult(false);
+            }
+        });
+    }
     public void liberarAsientoReservado(String horarioId, int numeroAsiento, ReservationUpdateCallback callback) {
         Log.d(TAG, "🔄 Liberando asiento para cancelación - Horario: " + horarioId + ", Asiento: " + numeroAsiento);
 
@@ -206,7 +230,7 @@ public class ReservaService {
     private void registrarReserva(Context context, String uid, String nombre, String telefono, String email,
                                   String horarioId, int asientoSeleccionado, String origen, String destino,
                                   String tiempoEstimado, String metodoPago, String estadoReserva,
-                                  String placa, double precio, String conductor, String telefonoC,
+                                  String placa, double precio, String conductor, String conductorId, String telefonoC,
                                   ReservaCallback callback) {
         String idReserva = UUID.randomUUID().toString();
         long fechaReserva = System.currentTimeMillis();
@@ -216,14 +240,15 @@ public class ReservaService {
         Log.d(TAG, "   - Usuario: " + nombre + " (" + uid + ")");
         Log.d(TAG, "   - Horario: " + horarioId);
         Log.d(TAG, "   - Asiento: " + asientoSeleccionado);
+        Log.d(TAG, "   - Conductor: " + conductor + " (" + conductorId + ")");
         Log.d(TAG, "   - Ruta: " + origen + " → " + destino);
         Log.d(TAG, "   - Método Pago: " + metodoPago);
         Log.d(TAG, "   - Precio: $" + precio);
 
         Reserva reserva = new Reserva(
-                idReserva, uid, horarioId, asientoSeleccionado, conductor, telefonoC, placa, precio,
+                idReserva, uid, horarioId, asientoSeleccionado, conductor, conductorId, telefonoC, placa, precio,
                 origen, destino, tiempoEstimado, metodoPago, estadoReserva, fechaReserva,
-                nombre, telefono, email
+                nombre, telefono, email, null, null
         );
 
         // Asegúrate de que asientoSeleccionado sea mayor a 0

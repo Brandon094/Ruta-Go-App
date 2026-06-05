@@ -571,6 +571,10 @@ public class CrearReservasActivity extends AppCompatActivity implements SeatMana
             seatManager.cleanup();
         }
 
+        if (driverVehicleManager != null) {
+            driverVehicleManager.cleanup();
+        }
+
         if (expandableSectionManager != null) {
             expandableSectionManager.cleanup();
         }
