@@ -175,6 +175,12 @@ public class InicioConductorActivity extends AppCompatActivity {
         tvNombreRutaAsientos2 = findViewById(R.id.tvNombreRutaAsientos2);
         tvAsientosRuta2 = findViewById(R.id.tvAsientosRuta2);
 
+        // ✅ AGREGAR REFERENCIAS DE TEXTVIEW DE NOMBRES SI NO ESTÁN ASIGNADOS
+        tvNombreRutaReservas = findViewById(R.id.tvNombreRutaReservas);
+        tvNombreRutaReservas2 = findViewById(R.id.tvNombreRutaReservas2);
+        tvNombreRutaAsientos = findViewById(R.id.tvNombreRutaAsientos);
+        tvNombreRutaAsientos2 = findViewById(R.id.tvNombreRutaAsientos2);
+
         tvContadorReservas = findViewById(R.id.tvContadorReservas);
         tvContadorRutas = findViewById(R.id.tvContadorRutas);
 
@@ -387,12 +393,17 @@ public class InicioConductorActivity extends AppCompatActivity {
                 tvConductor.setText(nombre);
                 Log.d(TAG, "✅ Nombre del conductor actualizado: " + nombre);
 
-                // Pasar nombre a ReservasViewModel
+                // Pasar nombre a ReservasViewModel (este usa el nombre para filtrar)
                 reservasViewModel.inicializarConNombreConductor(nombre);
 
-                // Establecer conductor en EstadisticasViewModel
-                estadisticasViewModel.setConductorActual(nombre);
-                estadisticasViewModel.refreshStatistics();
+                // ✅ CORREGIDO: Pasar el UID (userId) a EstadisticasViewModel
+                // La búsqueda de estadísticas es más precisa por ID que por nombre
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                if (userId != null) {
+                    Log.d(TAG, "📊 Configurando estadísticas para UID: " + userId);
+                    estadisticasViewModel.setConductorActual(userId);
+                    estadisticasViewModel.refreshStatistics();
+                }
 
                 isDataLoaded = true;
             } else {
@@ -417,6 +428,10 @@ public class InicioConductorActivity extends AppCompatActivity {
                 Log.d(TAG, "✅ Horarios asignados obtenidos: " + horarios.size());
                 // Cargar rutas basadas en horarios
                 rutasViewModel.loadRoutes(horarios);
+
+                // ✅ PASAR HORARIOS A ESTADÍSTICAS PARA MEJORAR EL FILTRADO
+                estadisticasViewModel.setHorariosAsignados(horarios);
+                estadisticasViewModel.refreshStatistics();
             } else {
                 Log.w(TAG, "⚠️ Conductor sin horarios asignados");
                 tvEmptyRutas.setVisibility(View.VISIBLE);
@@ -570,6 +585,21 @@ public class InicioConductorActivity extends AppCompatActivity {
         estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> {
             if (count != null) {
                 tvAsientosRuta2.setText(String.valueOf(count));
+            }
+        });
+
+        // ✅ OBSERVAR NOMBRES DE RUTAS PARA LAS TARJETAS
+        estadisticasViewModel.getNombreRuta1LiveData().observe(this, nombre -> {
+            if (nombre != null) {
+                tvNombreRutaReservas.setText(nombre);
+                tvNombreRutaAsientos.setText(nombre);
+            }
+        });
+
+        estadisticasViewModel.getNombreRuta2LiveData().observe(this, nombre -> {
+            if (nombre != null) {
+                tvNombreRutaReservas2.setText(nombre);
+                tvNombreRutaAsientos2.setText(nombre);
             }
         });
 

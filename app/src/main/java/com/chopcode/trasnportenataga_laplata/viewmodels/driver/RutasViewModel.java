@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RutasViewModel extends BaseViewModel {
+    private static final String TAG = "RutasViewModel";
     private final RutasManager rutasManager;
     private final MutableLiveData<List<Ruta>> rutasLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> contadorRutasLiveData = new MutableLiveData<>();
@@ -57,7 +58,7 @@ public class RutasViewModel extends BaseViewModel {
                     String infoProximaRuta = proximaRuta.getOrigen() + " → " +
                             proximaRuta.getDestino() +
                             " (" + (proximaRuta.getHora() != null ?
-                            proximaRuta.getHora() : "--:--") + ")";
+                            proximaRuta.getHora().getHora() : "--:--") + ")";
                     proximaRutaLiveData.postValue(infoProximaRuta);
                 } else {
                     proximaRutaLiveData.postValue(null);

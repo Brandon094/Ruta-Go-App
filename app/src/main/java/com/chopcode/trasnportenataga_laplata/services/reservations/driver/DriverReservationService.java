@@ -107,7 +107,18 @@ public class DriverReservationService {
                         String conductorIdReserva = obtenerConductorId(dataSnapshot, reserva, esUID);
                         String horarioIdReserva = obtenerHorarioId(dataSnapshot, reserva);
 
-                        boolean esDelConductor = conductorIdentificador.equals(conductorIdReserva);
+                        boolean esDelConductor = false;
+
+                        if (esUID && conductorIdReserva == null) {
+                            // FALLBACK PARA DATOS ANTIGUOS: Si no tiene conductorId, verificar si el horario le pertenece
+                            if (horariosAsignados != null && horarioIdReserva != null) {
+                                esDelConductor = horariosAsignados.contains(horarioIdReserva);
+                                if (esDelConductor) Log.d(TAG, "♻️ Identificada reserva antigua por horario: " + reserva.getIdReserva());
+                            }
+                        } else {
+                            esDelConductor = conductorIdentificador.equals(conductorIdReserva);
+                        }
+
                         boolean estadoCoincide = aplicarFiltroEstado(reserva.getEstadoReserva(), estadoFiltro);
                         boolean horarioCoincide = aplicarFiltroHorario(horarioIdReserva, horariosAsignados);
 
@@ -131,8 +142,8 @@ public class DriverReservationService {
     /**
      * Carga estadísticas completas con una sola consulta
      */
-    public void obtenerEstadisticasCompletas(String conductorUID, CompleteStatsCallback callback) {
-        cargarReservasConductorFiltradas(conductorUID, null, "TODAS", true, new ReservationsCallback() {
+    public void obtenerEstadisticasCompletas(String conductorUID, @Nullable List<String> schedules, CompleteStatsCallback callback) {
+        cargarReservasConductorFiltradas(conductorUID, schedules, "TODAS", true, new ReservationsCallback() {
             @Override
             public void onReservationsLoaded(List<Reserva> todasLasReservas) {
                 CompleteDriverStats stats = new CompleteDriverStats();
@@ -212,8 +223,11 @@ public class DriverReservationService {
         DatabaseReference reservaRef = MyApp.getDatabaseReference("reservas/" + reservaId + "/estadoReserva");
         reservaRef.setValue(nuevoEstado)
                 .addOnSuccessListener(aVoid -> {
+                    // ✅ CORREGIDO: Notificar al PASAJERO según el nuevo estado
                     if ("Confirmada".equalsIgnoreCase(nuevoEstado)) {
                         notificarPasajeroCambioEstado(context, reservaId, "confirmada");
+                    } else if ("Cancelada".equalsIgnoreCase(nuevoEstado)) {
+                        notificarPasajeroCambioEstado(context, reservaId, "cancelada");
                     }
                     callback.onSuccess();
                 })
@@ -222,20 +236,11 @@ public class DriverReservationService {
 
     public void cancelarReservaConLiberacion(Context context, String reservaId, String horarioId,
                                              int numeroAsiento, ReservationUpdateCallback callback) {
+        // ✅ CORREGIDO: Usar el método que ya tiene la lógica de notificación integrada
         actualizarEstadoReserva(context, reservaId, "Cancelada", new ReservationUpdateCallback() {
             @Override
             public void onSuccess() {
-                notificarPasajeroCambioEstado(context, reservaId, "cancelada");
-                liberarAsientoReservado(horarioId, numeroAsiento, new ReservationUpdateCallback() {
-                    @Override
-                    public void onSuccess() {
-                        callback.onSuccess();
-                    }
-                    @Override
-                    public void onError(String error) {
-                        callback.onSuccess(); // Éxito parcial
-                    }
-                });
+                liberarAsientoReservado(horarioId, numeroAsiento, callback);
             }
             @Override
             public void onError(String error) {
@@ -383,11 +388,19 @@ public class DriverReservationService {
     // ============ MÉTODOS AUXILIARES ============
 
     private String obtenerConductorId(DataSnapshot dataSnapshot, Reserva reserva, boolean esUID) {
-        String conductorId = reserva.getConductor();
-        if (conductorId == null && dataSnapshot.hasChild("conductorId")) {
-            conductorId = dataSnapshot.child("conductorId").getValue(String.class);
+        if (esUID) {
+            // Si buscamos por UID, priorizamos el campo 'conductorId' de la reserva
+            String uid = reserva.getConductorId();
+            // Si no está en el objeto, lo buscamos en el snapshot
+            if (uid == null && dataSnapshot.hasChild("conductorId")) {
+                uid = dataSnapshot.child("conductorId").getValue(String.class);
+                if (uid != null) reserva.setConductorId(uid);
+            }
+            return uid;
+        } else {
+            // Si buscamos por Nombre, usamos el campo 'conductor' (que guarda el nombre)
+            return reserva.getConductor();
         }
-        return conductorId;
     }
 
     private String obtenerHorarioId(DataSnapshot dataSnapshot, Reserva reserva) {

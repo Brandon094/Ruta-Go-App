@@ -198,6 +198,10 @@ public class ConfirmationDataProcessor {
         return conductorNombre != null ? conductorNombre : "Conductor no disponible";
     }
 
+    public String getConductorId() {
+        return conductorId;
+    }
+
     public String getConductorTelefono() {
         return conductorTelefono != null ? conductorTelefono : "Teléfono no disponible";
     }

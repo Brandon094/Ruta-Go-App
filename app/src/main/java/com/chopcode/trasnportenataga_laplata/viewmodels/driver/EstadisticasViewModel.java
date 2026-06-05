@@ -41,9 +41,10 @@ import java.util.concurrent.Executors;
  */
 public class EstadisticasViewModel extends BaseViewModel {
 
+    private static final String TAG = "EstadisticasViewModel";
+
     // CONSTANTES DE CAPACIDAD
     private static final int MAX_ASIENTOS_POR_RUTA = 13;
-    private static final int MAX_ASIENTOS_TOTALES = 26;
 
     // =========================================================================
     // CONSTANTES Y VARIABLES DE INSTANCIA
@@ -98,6 +99,9 @@ public class EstadisticasViewModel extends BaseViewModel {
     /** UID o nombre del conductor actual para filtrar estadísticas */
     private String conductorActual;
 
+    /** Horarios asignados al conductor para filtrado de legado */
+    private List<String> horariosAsignados;
+
     /** Executor para operaciones en segundo plano (procesamiento local) */
     private final Executor mainExecutor = Executors.newSingleThreadExecutor();
 
@@ -141,6 +145,14 @@ public class EstadisticasViewModel extends BaseViewModel {
     public void setConductorActual(String conductorActual) {
         this.conductorActual = conductorActual;
         Log.d(TAG, "👤 Conductor actual establecido: " + conductorActual);
+    }
+
+    /**
+     * Establece los horarios asignados para mejorar el filtrado de reservas antiguas.
+     */
+    public void setHorariosAsignados(List<String> horarios) {
+        this.horariosAsignados = horarios;
+        Log.d(TAG, "🕐 Horarios asignados para estadísticas: " + (horarios != null ? horarios.size() : 0));
     }
 
     // -------------------------------------------------------------------------
@@ -254,7 +266,7 @@ public class EstadisticasViewModel extends BaseViewModel {
         Log.d(TAG, "🚀 Cargando estadísticas COMPLETAS (solo hoy) desde Firebase (1 consulta) para: " + conductorActual);
         setLoading(true);
 
-        driverReservationService.obtenerEstadisticasCompletas(conductorActual,
+        driverReservationService.obtenerEstadisticasCompletas(conductorActual, horariosAsignados,
                 new DriverReservationService.CompleteStatsCallback() {
                     @Override
                     public void onCompleteStatsLoaded(
@@ -295,9 +307,12 @@ public class EstadisticasViewModel extends BaseViewModel {
                                     reservasConfirmadasHoyCount, ingresosHoy, null);
                         }
 
-                        // 2. Calcular asientos disponibles HOY (26 asientos totales)
+                        // 2. Calcular asientos disponibles HOY (Dinámico según rutas asignadas)
+                        int numRutas = (horariosAsignados != null) ? horariosAsignados.size() : 2;
+                        int capacidadTotalConductor = numRutas * MAX_ASIENTOS_POR_RUTA;
+                        
                         int asientosOcupadosHoy = reservasConfirmadasHoyCount + reservasPendientesHoyCount;
-                        int asientosDisponiblesHoy = Math.max(0, MAX_ASIENTOS_TOTALES - asientosOcupadosHoy);
+                        int asientosDisponiblesHoy = Math.max(0, capacidadTotalConductor - asientosOcupadosHoy);
                         asientosDisponiblesLiveData.postValue(asientosDisponiblesHoy);
 
                         // 3. ¡IMPORTANTE! Procesar análisis por ruta usando listas YA FILTRADAS (solo hoy)
