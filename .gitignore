@@ -1,17 +1,22 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Android Studio & Gradle
+.gradle/
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+/captures/
+.externalNativeBuild/
+.cxx/
 local.properties
-.idea
-.idea/misc.xml
+.intellij
+.idea/
+*.iml
+.DS_Store
+*.bak
+*.swp
+
+# Firebase Functions
+firebase_functions/node_modules/
+firebase_functions/firebase-debug.log
+firebase_functions/package-lock.json
+
+# Firebase Config (Sensitive)
+.firebaserc
