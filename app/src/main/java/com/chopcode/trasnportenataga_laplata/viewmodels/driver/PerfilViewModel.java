@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class PerfilViewModel extends BaseViewModel {
 
+    private static final String TAG = "PerfilViewModel";
+
     private final UserService userService;
 
     // LiveData para información del conductor
@@ -69,7 +71,7 @@ public class PerfilViewModel extends BaseViewModel {
 
         userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horarios) {
+            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
                 Log.d(TAG, "✅ Datos completos cargados: " + nombre);
 
                 // Guardar todos los datos
@@ -118,7 +120,7 @@ public class PerfilViewModel extends BaseViewModel {
 
         userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horarios) {
+            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
                 Log.d(TAG, "✅ Datos básicos cargados: " + nombre + " | Placa: " + placa);
 
                 // Solo guardamos nombre y placa
@@ -165,7 +167,7 @@ public class PerfilViewModel extends BaseViewModel {
         // Cargar datos actuales para mantener horarios y teléfono
         userService.loadDriverData(conductorUIDActual, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horarios) {
+            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
                 userService.updateDriverProfile(
                         conductorUIDActual,
                         nombre, // Mantener nombre

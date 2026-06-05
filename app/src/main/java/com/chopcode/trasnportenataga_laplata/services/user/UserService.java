@@ -46,7 +46,7 @@ public class UserService {
      * Callback para carga de datos específicos de conductor
      */
     public interface DriverDataCallback {
-        void onDriverDataLoaded(String nombre, String telefono, String placa,
+        void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo,
                                 List<String> horariosAsignados);
         void onError(String error);
     }
@@ -167,6 +167,7 @@ public class UserService {
                     String nombre = getStringSafely(snapshot.child("nombre"));
                     String telefono = getStringSafely(snapshot.child("telefono"));
                     String placa = getStringSafely(snapshot.child("placaVehiculo"));
+                    String modelo = getStringSafely(snapshot.child("modeloVehiculo"));
                     List<String> horariosAsignados = new ArrayList<>();
 
                     // Obtener lista de horarios asignados si existe
@@ -181,13 +182,13 @@ public class UserService {
 
                     // ✅ FALLBACK: Si el nombre está vacío o es "No disponible", buscar en el nodo de usuarios
                     if (nombre.isEmpty() || nombre.equalsIgnoreCase("No disponible") || nombre.contains("Conductor ")) {
-                        buscarNombreEnUsuarios(userId, telefono, placa, horariosAsignados, callback);
+                        buscarNombreEnUsuarios(userId, telefono, placa, modelo, horariosAsignados, callback);
                     } else {
-                        callback.onDriverDataLoaded(nombre, telefono, placa, horariosAsignados);
+                        callback.onDriverDataLoaded(nombre, telefono, placa, modelo, horariosAsignados);
                     }
                 } else {
                     // Si no existe en conductores, intentar en usuarios por si acaso
-                    buscarNombreEnUsuarios(userId, "", "", new ArrayList<>(), callback);
+                    buscarNombreEnUsuarios(userId, "", "", "", new ArrayList<>(), callback);
                 }
             }
 
@@ -199,7 +200,7 @@ public class UserService {
     }
 
     private void buscarNombreEnUsuarios(String userId, String telFallback, String placaFallback, 
-                                        List<String> horarios, DriverDataCallback callback) {
+                                        String modeloFallback, List<String> horarios, DriverDataCallback callback) {
         DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -215,12 +216,12 @@ public class UserService {
                 }
                 
                 if (nombre.isEmpty()) nombre = "Conductor " + userId.substring(0, 5);
-                callback.onDriverDataLoaded(nombre, tel, placaFallback, horarios);
+                callback.onDriverDataLoaded(nombre, tel, placaFallback, modeloFallback, horarios);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                callback.onDriverDataLoaded("Conductor " + userId.substring(0, 5), telFallback, placaFallback, horarios);
+                callback.onDriverDataLoaded("Conductor " + userId.substring(0, 5), telFallback, placaFallback, modeloFallback, horarios);
             }
         });
     }

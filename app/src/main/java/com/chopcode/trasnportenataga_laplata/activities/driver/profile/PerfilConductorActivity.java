@@ -98,7 +98,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
         // CARGAR TODO EN PARALELO: conductor + usuario + vehículo
         userService.loadDriverData(userId, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placaVehiculo, List<String> horariosAsignados) {
+            public void onDriverDataLoaded(String nombre, String telefono, String placaVehiculo, String modelo, List<String> horariosAsignados) {
                 // CARGAR DATOS DE USUARIO (email) EN PARALELO
                 cargarDatosUsuarioYCompletar(nombre, telefono, placaVehiculo, userId);
             }

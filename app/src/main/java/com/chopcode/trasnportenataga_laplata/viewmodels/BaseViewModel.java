@@ -19,7 +19,9 @@ public abstract class BaseViewModel extends ViewModel {
     }
 
     public void setError(String error) {
-        Log.e(TAG, "Error: " + error);
+        if (error != null) {
+            Log.e(TAG, "Error: " + error);
+        }
         errorLiveData.postValue(error);
     }
 

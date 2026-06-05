@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class ReservasViewModel extends BaseViewModel {
 
+    private static final String TAG = "ReservasViewModel";
+
     // Servicios
     private final DriverReservationService driverReservationService;
 

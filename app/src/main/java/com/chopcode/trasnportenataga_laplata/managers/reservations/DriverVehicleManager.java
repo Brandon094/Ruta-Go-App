@@ -51,6 +51,10 @@ public class DriverVehicleManager {
     private TextView tvVehiculoInfo;
     private TextView tvCapacidadInfo;
 
+    // Listeners
+    private ValueEventListener driverListener;
+    private DatabaseReference currentHorarioRef;
+
     // Data
     private String conductorId;
     private String conductorNombre;
@@ -103,16 +107,18 @@ public class DriverVehicleManager {
      * Busca conductor por horario asignado
      */
     private void buscarConductorPorHorario(String horarioId, DriverVehicleCallback callback) {
-        // ✅ MEJORADO: Primero intentar obtener el conductorId directamente del nodo del horario
-        DatabaseReference horarioRef = MyApp.getDatabaseReference("horarios/" + horarioId);
+        // Limpiar listener previo si existe
+        cleanup();
+
+        currentHorarioRef = MyApp.getDatabaseReference("horarios/" + horarioId);
         
-        horarioRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        driverListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists() && snapshot.hasChild("conductorId")) {
                     String idDirecto = snapshot.child("conductorId").getValue(String.class);
                     if (idDirecto != null && !idDirecto.isEmpty()) {
-                        Log.d(TAG, "ConductorId encontrado directamente en el horario: " + idDirecto);
+                        Log.d(TAG, "ConductorId encontrado/actualizado en el horario: " + idDirecto);
                         conductorId = idDirecto;
                         cargarInformacionConductor(conductorId, callback);
                         return;
@@ -127,31 +133,50 @@ public class DriverVehicleManager {
             public void onCancelled(DatabaseError error) {
                 buscarConductorExhaustivamente(horarioId, callback);
             }
-        });
+        };
+
+        // Escuchar cambios en tiempo real
+        currentHorarioRef.addValueEventListener(driverListener);
+    }
+
+    /**
+     * Limpia los listeners activos para evitar fugas de memoria
+     */
+    public void cleanup() {
+        if (currentHorarioRef != null && driverListener != null) {
+            currentHorarioRef.removeEventListener(driverListener);
+            driverListener = null;
+            currentHorarioRef = null;
+            Log.d(TAG, "🧹 Listener de conductor removido");
+        }
     }
 
     private void buscarConductorExhaustivamente(String horarioId, DriverVehicleCallback callback) {
+        // En lugar de iterar por TODOS los conductores (que puede dar Permission Denied)
+        // buscamos solo en el nodo de conductores pero de forma más defensiva
         DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
 
+        // Intentamos una búsqueda por índice si es posible, pero si no, 
+        // mantenemos la búsqueda manual pero quitando la escritura
         conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Log.w(TAG, "⚠️ Nodo de conductores no accesible o vacío");
+                    establecerValoresPorDefecto();
+                    return;
+                }
+
                 boolean conductorEncontrado = false;
-
                 for (DataSnapshot conductorSnapshot : snapshot.getChildren()) {
-                    if (conductorSnapshot.hasChild("horariosAsignados")) {
-                        DataSnapshot horariosAsignadosSnapshot = conductorSnapshot.child("horariosAsignados");
-
-                        for (DataSnapshot horarioAsignadoSnapshot : horariosAsignadosSnapshot.getChildren()) {
-                            String horarioAsignado = horarioAsignadoSnapshot.getValue(String.class);
-                            if (horarioId.equals(horarioAsignado)) {
+                    DataSnapshot horariosSnapshot = conductorSnapshot.child("horariosAsignados");
+                    
+                    if (horariosSnapshot.exists()) {
+                        for (DataSnapshot hSnap : horariosSnapshot.getChildren()) {
+                            String hId = String.valueOf(hSnap.getValue());
+                            if (horarioId.equals(hId)) {
                                 conductorId = conductorSnapshot.getKey();
-                                Log.d(TAG, "Conductor encontrado por búsqueda exhaustiva: " + conductorId);
-
-                                Map<String, Object> params = new HashMap<>();
-                                params.put("conductor_encontrado_exhaustivo", 1);
-                                analyticsHelper.logEvent("conductor_encontrado", params);
-
+                                Log.d(TAG, "🎯 Conductor encontrado: " + conductorId);
                                 cargarInformacionConductor(conductorId, callback);
                                 conductorEncontrado = true;
                                 break;
@@ -162,30 +187,25 @@ public class DriverVehicleManager {
                 }
 
                 if (!conductorEncontrado) {
-                    Log.w(TAG, "No se encontró conductor para el horario " + horarioId + " tras búsqueda exhaustiva");
+                    Log.w(TAG, "❌ No se encontró conductor para " + horarioId);
                     establecerValoresPorDefecto();
-
                     if (callback != null) {
-                        callback.onDriverVehicleLoaded(
-                                null,
-                                "Pendiente",
-                                "No disponible",
-                                "---",
-                                "---",
-                                seatManager.getCapacidadTotal()
-                        );
+                        callback.onDriverVehicleLoaded(null, "Sin asignar", "N/A", "N/A", "N/A", seatManager.getCapacidadTotal());
                     }
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Log.e(TAG, "Error buscando conductor exhaustivamente: " + error.getMessage());
-                establecerValoresPorDefecto();
-
-                if (callback != null) {
-                    callback.onError("Error buscando conductor: " + error.getMessage());
+                if (error.getCode() == DatabaseError.PERMISSION_DENIED) {
+                    Log.e(TAG, "🔥 Error de Permisos: El pasajero no puede buscar en la lista de conductores. " +
+                            "Asegúrate de que 'conductorId' esté en el nodo del horario o permite '.read' en el nodo raíz de 'conductores'.");
+                } else {
+                    Log.e(TAG, "🔥 Error Firebase: " + error.getMessage());
                 }
+                
+                establecerValoresPorDefecto();
+                if (callback != null) callback.onError("Error de acceso: " + error.getMessage());
             }
         });
     }
@@ -202,11 +222,12 @@ public class DriverVehicleManager {
 
         userService.loadDriverData(conductorId, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, List<String> horariosAsignados) {
+            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horariosAsignados) {
                 if (nombre != null && !nombre.isEmpty()) {
                     conductorNombre = nombre;
                     conductorTelefono = telefono != null ? telefono : "No disponible";
                     placaVehiculo = placa != null ? placa : "No disponible";
+                    modeloVehiculo = modelo != null ? modelo : "No disponible";
 
                     updateUI();
                     analyticsHelper.logConductorCargado(conductorId, nombre, telefono);
@@ -237,9 +258,36 @@ public class DriverVehicleManager {
     }
 
     /**
-     * Carga información del vehículo del conductor
+     * Carga información del vehículo del conductor usando la placa como ID directo
      */
     private void cargarInformacionVehiculo(String conductorId, DriverVehicleCallback callback) {
+        // ✅ MEJORADO: Buscar por PLACA directamente si la tenemos, para evitar Permission Denied en queries
+        if (placaVehiculo != null && !placaVehiculo.isEmpty() && !placaVehiculo.equals("No disponible") && !placaVehiculo.equals("N/A")) {
+            Log.d(TAG, "📡 Buscando vehículo directamente por PLACA (ID): " + placaVehiculo);
+            
+            vehiculoService.obtenerVehiculoPorPlaca(placaVehiculo, new VehiculoService.VehiculoCallback() {
+                @Override
+                public void onVehiculoCargado(Vehiculo vehiculo) {
+                    if (vehiculo != null) {
+                        procesarVehiculoCargado(vehiculo, conductorId, callback);
+                    } else {
+                        // Fallback al método por conductor si por placa falla
+                        buscarVehiculoPorConductorFallback(conductorId, callback);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.w(TAG, "⚠️ Error buscando por placa, intentando fallback por conductor: " + error);
+                    buscarVehiculoPorConductorFallback(conductorId, callback);
+                }
+            });
+        } else {
+            buscarVehiculoPorConductorFallback(conductorId, callback);
+        }
+    }
+
+    private void buscarVehiculoPorConductorFallback(String conductorId, DriverVehicleCallback callback) {
         Map<String, Object> params = new HashMap<>();
         params.put("accion", "carga_vehiculo_inicio");
         analyticsHelper.logEvent("carga_vehiculo_inicio", params);
@@ -247,62 +295,44 @@ public class DriverVehicleManager {
         vehiculoService.obtenerVehiculoPorConductor(conductorId, new VehiculoService.VehiculoCallback() {
             @Override
             public void onVehiculoCargado(Vehiculo vehiculo) {
-                if (vehiculo != null) {
-                    modeloVehiculo = vehiculo.getModelo() != null ? vehiculo.getModelo() : "No disponible";
-                    placaVehiculo = vehiculo.getPlaca() != null ? vehiculo.getPlaca() : placaVehiculo;
-                    capacidadVehiculo = vehiculo.getCapacidad() > 0 ?
-                            vehiculo.getCapacidad() : seatManager.getCapacidadTotal();
-
-                    analyticsHelper.logVehiculoCargado(vehiculo, conductorId);
-                    updateUI();
-
-                    Log.d(TAG, "✓ Vehículo cargado: " + placaVehiculo + " - " + modeloVehiculo);
-
-                    if (callback != null) {
-                        callback.onDriverVehicleLoaded(
-                                conductorId,
-                                conductorNombre,
-                                conductorTelefono,
-                                placaVehiculo,
-                                modeloVehiculo,
-                                capacidadVehiculo
-                        );
-                    }
-                } else {
-                    capacidadVehiculo = seatManager.getCapacidadTotal();
-                    updateUI();
-
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("accion", "vehiculo_no_encontrado");
-                    analyticsHelper.logEvent("vehiculo_no_encontrado", params);
-
-                    if (callback != null) {
-                        callback.onDriverVehicleLoaded(
-                                conductorId,
-                                conductorNombre,
-                                conductorTelefono,
-                                placaVehiculo,
-                                modeloVehiculo,
-                                capacidadVehiculo
-                        );
-                    }
-                }
+                procesarVehiculoCargado(vehiculo, conductorId, callback);
             }
 
             @Override
             public void onError(String error) {
                 Log.e(TAG, "Error cargando vehículo: " + error);
-                MyApp.logError(new Exception("Error cargando vehículo: " + error));
-                analyticsHelper.logError("carga_vehiculo", error);
-
+                
+                // Si da Permission Denied aquí, es por el query indexed.
+                // Como ya tenemos placa y modelo del conductor, el daño es mínimo.
                 capacidadVehiculo = seatManager.getCapacidadTotal();
                 updateUI();
 
                 if (callback != null) {
-                    callback.onError("Error cargando vehículo: " + error);
+                    // Retornar éxito aunque el vehículo falle, porque ya tenemos lo básico del conductor
+                    callback.onDriverVehicleLoaded(conductorId, conductorNombre, conductorTelefono, placaVehiculo, modeloVehiculo, capacidadVehiculo);
                 }
             }
         });
+    }
+
+    private void procesarVehiculoCargado(Vehiculo vehiculo, String conductorId, DriverVehicleCallback callback) {
+        if (vehiculo != null) {
+            modeloVehiculo = (vehiculo.getModelo() != null && !vehiculo.getModelo().isEmpty()) ? vehiculo.getModelo() : modeloVehiculo;
+            placaVehiculo = (vehiculo.getPlaca() != null && !vehiculo.getPlaca().isEmpty()) ? vehiculo.getPlaca() : placaVehiculo;
+            capacidadVehiculo = vehiculo.getCapacidad() > 0 ? vehiculo.getCapacidad() : seatManager.getCapacidadTotal();
+
+            analyticsHelper.logVehiculoCargado(vehiculo, conductorId);
+            updateUI();
+
+            Log.d(TAG, "✓ Vehículo cargado: " + placaVehiculo + " - " + modeloVehiculo);
+        } else {
+            capacidadVehiculo = seatManager.getCapacidadTotal();
+            updateUI();
+        }
+
+        if (callback != null) {
+            callback.onDriverVehicleLoaded(conductorId, conductorNombre, conductorTelefono, placaVehiculo, modeloVehiculo, capacidadVehiculo);
+        }
     }
 
     /**
@@ -330,17 +360,13 @@ public class DriverVehicleManager {
      * Establece valores por defecto cuando hay error
      */
     private void establecerValoresPorDefecto() {
-        conductorNombre = "Pendiente de asignar";
+        conductorNombre = "Sin asignar";
         conductorTelefono = "No disponible";
-        placaVehiculo = "---";
-        modeloVehiculo = "---";
+        placaVehiculo = "N/A";
+        modeloVehiculo = "N/A";
         capacidadVehiculo = seatManager.getCapacidadTotal();
 
         updateUI();
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("accion", "valores_por_defecto_conductor");
-        analyticsHelper.logEvent("valores_por_defecto_conductor", params);
     }
 
     // Getters para obtener la información cargada
