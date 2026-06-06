@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Historial de Viajes"
-            app:titleTextColor="@color/white"
+            app:titleTextColor="@color/text_on_primary"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:menu="@menu/menu_historial_usuario" />
 

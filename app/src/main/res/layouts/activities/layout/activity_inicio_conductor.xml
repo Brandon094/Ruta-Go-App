@@ -423,18 +423,6 @@
                                     android:textColor="@color/warning_700"
                                     android:textStyle="bold"
                                     android:textAlignment="textEnd"/>
-                                <!-- Actualmente no se usa el vs ayer -->
-                               <!-- <TextView
-                                    android:id="@+id/tvTendenciaIngresos"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/vs_ayer"
-                                    android:textColor="@color/success_600"
-                                    android:textSize="12sp"
-                                    android:layout_marginTop="4dp"
-                                    android:drawablePadding="4dp"
-                                    app:drawableStartCompat="@drawable/ic_trending_up"
-                                    android:visibility="gone"/> -->
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -626,7 +614,8 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_info"
-                            android:layout_marginEnd="8dp"/>
+                            android:layout_marginEnd="8dp"
+                            app:tint="@color/primary_500" />
                         <TextView
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="match_parent"
@@ -698,20 +687,20 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
                             <!-- Reservas Ruta 1 -->
                             <com.google.android.material.card.MaterialCardView
                                 android:id="@+id/cardRuta1Reservas"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_marginEnd="6dp"
-                                app:cardBackgroundColor="@color/info_50"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/secondary_900"
                                 app:cardCornerRadius="12dp"
                                 app:cardElevation="2dp"
-                                app:strokeColor="@color/info_100"
+                                app:strokeColor="@color/info_500"
                                 app:strokeWidth="1dp">
 
                                 <LinearLayout
@@ -722,43 +711,44 @@
                                     android:padding="16dp">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_checklist"
-                                        app:tint="@color/info_600"/>
+                                        app:tint="@color/info_500" />
 
                                     <TextView
                                         android:id="@+id/tvReservasRuta"
                                         style="@style/TextAppearance.MaterialComponents.Headline4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="12dp"
+                                        android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
                                         android:text="0"
-                                        android:textColor="@color/info_700"
-                                        android:textStyle="bold"/>
+                                        android:textColor="@color/info_100"
+                                        android:textStyle="bold" />
 
                                     <TextView
                                         android:id="@+id/tvNombreRutaReservas"
                                         style="@style/TextAppearance.MaterialComponents.Caption"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginBottom="2dp"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
                                         android:text="@string/nataga_laplata"
                                         android:textAlignment="center"
-                                        android:textColor="@color/text_secondary"
-                                        android:layout_marginBottom="4dp"
-                                        android:maxLines="1"
-                                        android:ellipsize="end"/>
+                                        android:textColor="@color/text_tertiary" />
 
                                     <TextView
                                         style="@style/TextAppearance.MaterialComponents.Caption"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.7"
                                         android:text="@string/reservas_confirmadas_ruta"
                                         android:textAlignment="center"
                                         android:textColor="@color/text_tertiary"
-                                        android:textSize="11sp"
-                                        android:textStyle="italic"/>
+                                        android:textSize="10sp"
+                                        android:textStyle="italic" />
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -767,12 +757,12 @@
                                 android:id="@+id/cardRuta1Asientos"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_marginStart="6dp"
-                                app:cardBackgroundColor="@color/warning_50"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="@color/secondary_900"
                                 app:cardCornerRadius="12dp"
                                 app:cardElevation="2dp"
-                                app:strokeColor="@color/warning_100"
+                                app:strokeColor="@color/warning_500"
                                 app:strokeWidth="1dp">
 
                                 <LinearLayout
@@ -783,43 +773,44 @@
                                     android:padding="16dp">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_seat"
-                                        app:tint="@color/warning_600"/>
+                                        app:tint="@color/warning_500" />
 
                                     <TextView
                                         android:id="@+id/tvAsientosRuta"
                                         style="@style/TextAppearance.MaterialComponents.Headline4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="12dp"
+                                        android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
                                         android:text="13"
-                                        android:textColor="@color/warning_700"
-                                        android:textStyle="bold"/>
+                                        android:textColor="@color/warning_100"
+                                        android:textStyle="bold" />
 
                                     <TextView
                                         android:id="@+id/tvNombreRutaAsientos"
                                         style="@style/TextAppearance.MaterialComponents.Caption"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_marginBottom="2dp"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
                                         android:text="@string/nataga_laplata"
                                         android:textAlignment="center"
-                                        android:textColor="@color/text_secondary"
-                                        android:layout_marginBottom="4dp"
-                                        android:maxLines="1"
-                                        android:ellipsize="end"/>
+                                        android:textColor="@color/text_tertiary" />
 
                                     <TextView
                                         style="@style/TextAppearance.MaterialComponents.Caption"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:alpha="0.7"
                                         android:text="@string/asientos_disponibles_ruta"
                                         android:textAlignment="center"
                                         android:textColor="@color/text_tertiary"
-                                        android:textSize="11sp"
-                                        android:textStyle="italic"/>
+                                        android:textSize="10sp"
+                                        android:textStyle="italic" />
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
@@ -886,10 +877,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginEnd="6dp"
-                                app:cardBackgroundColor="@color/secondary_50"
+                                app:cardBackgroundColor="@color/secondary_900"
                                 app:cardCornerRadius="12dp"
                                 app:cardElevation="2dp"
-                                app:strokeColor="@color/secondary_100"
+                                app:strokeColor="@color/success_500"
                                 app:strokeWidth="1dp">
 
                                 <LinearLayout
@@ -900,20 +891,20 @@
                                     android:padding="16dp">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_checklist"
-                                        app:tint="@color/secondary_600"/>
+                                        app:tint="@color/success_500"/>
 
                                     <TextView
                                         android:id="@+id/tvReservasRuta2"
                                         style="@style/TextAppearance.MaterialComponents.Headline4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="12dp"
+                                        android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
                                         android:text="0"
-                                        android:textColor="@color/secondary_700"
+                                        android:textColor="@color/success_100"
                                         android:textStyle="bold"/>
 
                                     <TextView
@@ -923,8 +914,8 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/laplata_nataga"
                                         android:textAlignment="center"
-                                        android:textColor="@color/text_secondary"
-                                        android:layout_marginBottom="4dp"
+                                        android:textColor="@color/text_tertiary"
+                                        android:layout_marginBottom="2dp"
                                         android:maxLines="1"
                                         android:ellipsize="end"/>
 
@@ -935,7 +926,8 @@
                                         android:text="@string/reservas_confirmadas_ruta"
                                         android:textAlignment="center"
                                         android:textColor="@color/text_tertiary"
-                                        android:textSize="11sp"
+                                        android:textSize="10sp"
+                                        android:alpha="0.7"
                                         android:textStyle="italic"/>
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
@@ -947,10 +939,10 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginStart="6dp"
-                                app:cardBackgroundColor="@color/warning_50"
+                                app:cardBackgroundColor="@color/secondary_900"
                                 app:cardCornerRadius="12dp"
                                 app:cardElevation="2dp"
-                                app:strokeColor="@color/warning_100"
+                                app:strokeColor="@color/warning_500"
                                 app:strokeWidth="1dp">
 
                                 <LinearLayout
@@ -961,20 +953,20 @@
                                     android:padding="16dp">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_seat"
-                                        app:tint="@color/warning_600"/>
+                                        app:tint="@color/warning_500"/>
 
                                     <TextView
                                         android:id="@+id/tvAsientosRuta2"
                                         style="@style/TextAppearance.MaterialComponents.Headline4"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginTop="12dp"
+                                        android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
                                         android:text="13"
-                                        android:textColor="@color/warning_700"
+                                        android:textColor="@color/warning_100"
                                         android:textStyle="bold"/>
 
                                     <TextView
@@ -984,8 +976,8 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/laplata_nataga"
                                         android:textAlignment="center"
-                                        android:textColor="@color/text_secondary"
-                                        android:layout_marginBottom="4dp"
+                                        android:textColor="@color/text_tertiary"
+                                        android:layout_marginBottom="2dp"
                                         android:maxLines="1"
                                         android:ellipsize="end"/>
 
@@ -996,7 +988,8 @@
                                         android:text="@string/asientos_disponibles_ruta"
                                         android:textAlignment="center"
                                         android:textColor="@color/text_tertiary"
-                                        android:textSize="11sp"
+                                        android:textSize="10sp"
+                                        android:alpha="0.7"
                                         android:textStyle="italic"/>
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
