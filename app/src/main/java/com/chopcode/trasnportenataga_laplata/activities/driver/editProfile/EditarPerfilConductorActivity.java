@@ -250,7 +250,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         Log.d(TAG, "🔄 Actualizando UI con datos del conductor");
 
         if (conductorActual != null) {
-            // Actualizar textos de valores actuales de forma segura
+            // Mostrar valores actuales en los TextViews
             tvNombreActual.setText("Nombre actual: " +
                     (conductorActual.getNombre() != null ? conductorActual.getNombre() : "No definido"));
             tvTelefonoActual.setText("Teléfono actual: " +
@@ -258,10 +258,13 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             tvCorreoActual.setText("Correo actual: " +
                     (conductorActual.getEmail() != null ? conductorActual.getEmail() : "No definido"));
 
-            // Llenar campos de entrada con valores actuales para facilitar la edición
-            if (conductorActual.getNombre() != null) etNombre.setText(conductorActual.getNombre());
-            if (conductorActual.getTelefono() != null) etTelefono.setText(conductorActual.getTelefono());
-            if (conductorActual.getEmail() != null) etCorreo.setText(conductorActual.getEmail());
+            // Poblar solo el correo (suele ser no editable)
+            if (etCorreo != null) {
+                etCorreo.setText(conductorActual.getEmail());
+            }
+
+            // Los campos etNombre y etTelefono permanecen vacíos para nueva entrada
+            // similar a EditarPerfilActivity (pasajero)
         }
 
         Log.d(TAG, "✅ UI del conductor actualizada");
@@ -271,6 +274,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         Log.d(TAG, "🔄 Actualizando UI con datos del vehículo");
 
         if (vehiculoActual != null) {
+            // Mostrar valores actuales en los TextViews
             tvPlacaActual.setText("Placa actual: " +
                     (vehiculoActual.getPlaca() != null ? vehiculoActual.getPlaca() : "No definida"));
             tvMarcaActual.setText("Marca actual: " +
@@ -283,16 +287,10 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             tvAnioActual.setText("Año actual: " +
                     (vehiculoActual.getAno() != null ? vehiculoActual.getAno() : "No definido"));
 
-            // Llenar campos de entrada
-            if (vehiculoActual.getPlaca() != null) etPlaca.setText(vehiculoActual.getPlaca());
-            if (vehiculoActual.getMarca() != null) etMarca.setText(vehiculoActual.getMarca());
-            if (vehiculoActual.getModelo() != null) etModelo.setText(vehiculoActual.getModelo());
-            if (vehiculoActual.getColor() != null) etColor.setText(vehiculoActual.getColor());
-            etCapacidad.setText(String.valueOf(vehiculoActual.getCapacidad()));
-            if (vehiculoActual.getAno() != null) etAnio.setText(vehiculoActual.getAno());
-
-            Log.d(TAG, "✅ UI del vehículo actualizada");
+            // Los campos etPlaca, etMarca, etc., permanecen vacíos para nueva entrada
         }
+
+        Log.d(TAG, "✅ UI del vehículo actualizada");
     }
 
     private void inicializarCamposVehiculoVacios() {
@@ -334,82 +332,73 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
     }
 
     private void guardarCambios() {
-        Log.d(TAG, "🔄 Iniciando proceso de guardar cambios...");
+        Log.d(TAG, "🔄 Iniciando proceso de guardar cambios con lógica flexible...");
 
-        // Validar campos obligatorios de forma segura
-        String nombre = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
-        String telefono = etTelefono != null && etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
-        String placa = etPlaca != null && etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
-        String marca = etMarca != null && etMarca.getText() != null ? etMarca.getText().toString().trim() : "";
-        String modelo = etModelo != null && etModelo.getText() != null ? etModelo.getText().toString().trim() : "";
-        String color = etColor != null && etColor.getText() != null ? etColor.getText().toString().trim() : "";
-        String capacidadStr = etCapacidad != null && etCapacidad.getText() != null ? etCapacidad.getText().toString().trim() : "";
-        String anio = etAnio != null && etAnio.getText() != null ? etAnio.getText().toString().trim() : "";
+        // Capturar entradas del usuario
+        String nombreInput = etNombre != null && etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
+        String telefonoInput = etTelefono != null && etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
+        String placaInput = etPlaca != null && etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
+        String marcaInput = etMarca != null && etMarca.getText() != null ? etMarca.getText().toString().trim() : "";
+        String modeloInput = etModelo != null && etModelo.getText() != null ? etModelo.getText().toString().trim() : "";
+        String colorInput = etColor != null && etColor.getText() != null ? etColor.getText().toString().trim() : "";
+        String capacidadInput = etCapacidad != null && etCapacidad.getText() != null ? etCapacidad.getText().toString().trim() : "";
+        String anioInput = etAnio != null && etAnio.getText() != null ? etAnio.getText().toString().trim() : "";
 
-        Log.d(TAG, "📝 Datos capturados:");
-        Log.d(TAG, "   - Nombre: " + nombre);
-        Log.d(TAG, "   - Teléfono: " + telefono);
-        Log.d(TAG, "   - Placa: " + placa);
-        Log.d(TAG, "   - Marca: " + marca);
-        Log.d(TAG, "   - Modelo: " + modelo);
-        Log.d(TAG, "   - Color: " + color);
-        Log.d(TAG, "   - Capacidad: " + capacidadStr);
-        Log.d(TAG, "   - Año: " + anio);
-
-        if (TextUtils.isEmpty(nombre)) {
-            Log.w(TAG, "⚠️ Validación fallida - nombre vacío");
-            etNombre.setError("El nombre es obligatorio");
-            return;
-        }
-
-        if (TextUtils.isEmpty(telefono)) {
-            Log.w(TAG, "⚠️ Validación fallida - teléfono vacío");
-            etTelefono.setError("El teléfono es obligatorio");
-            return;
-        }
-
-        if (TextUtils.isEmpty(placa)) {
-            Log.w(TAG, "⚠️ Validación fallida - placa vacía");
-            etPlaca.setError("La placa es obligatoria");
-            return;
-        }
-
-        if (TextUtils.isEmpty(marca)) {
-            Log.w(TAG, "⚠️ Validación fallida - marca vacía");
-            etMarca.setError("La marca es obligatoria");
-            return;
-        }
-
-        // Validar capacidad
-        int capacidad = 0;
-        if (!TextUtils.isEmpty(capacidadStr)) {
+        // Lógica de Mezcla: Si la entrada está vacía, usar el valor actual de la base de datos
+        String nombreFinal = !nombreInput.isEmpty() ? nombreInput : (conductorActual != null ? conductorActual.getNombre() : "");
+        String telefonoFinal = !telefonoInput.isEmpty() ? telefonoInput : (conductorActual != null ? conductorActual.getTelefono() : "");
+        
+        String placaFinal = !placaInput.isEmpty() ? placaInput : (vehiculoActual != null ? vehiculoActual.getPlaca() : "");
+        String marcaFinal = !marcaInput.isEmpty() ? marcaInput : (vehiculoActual != null ? vehiculoActual.getMarca() : "");
+        String modeloFinal = !modeloInput.isEmpty() ? modeloInput : (vehiculoActual != null ? vehiculoActual.getModelo() : "");
+        String colorFinal = !colorInput.isEmpty() ? colorInput : (vehiculoActual != null ? vehiculoActual.getColor() : "");
+        String anioFinal = !anioInput.isEmpty() ? anioInput : (vehiculoActual != null ? vehiculoActual.getAno() : "");
+        
+        int capacidadFinal = (vehiculoActual != null) ? vehiculoActual.getCapacidad() : 0;
+        if (!capacidadInput.isEmpty()) {
             try {
-                capacidad = Integer.parseInt(capacidadStr);
-                if (capacidad <= 0) {
-                    Log.w(TAG, "⚠️ Validación fallida - capacidad menor o igual a 0");
+                capacidadFinal = Integer.parseInt(capacidadInput);
+                if (capacidadFinal <= 0) {
                     etCapacidad.setError("La capacidad debe ser mayor a 0");
                     return;
                 }
             } catch (NumberFormatException e) {
-                Log.w(TAG, "⚠️ Validación fallida - formato de capacidad inválido");
-                etCapacidad.setError("Formato inválido");
+                etCapacidad.setError("Formato de capacidad inválido");
                 return;
             }
-        } else {
-            Log.w(TAG, "⚠️ Validación fallida - capacidad vacía");
-            etCapacidad.setError("La capacidad es obligatoria");
+        }
+
+        // Verificar si se ingresó algún cambio real
+        boolean hayCambios = !nombreInput.isEmpty() || !telefonoInput.isEmpty() || !placaInput.isEmpty() || 
+                           !marcaInput.isEmpty() || !modeloInput.isEmpty() || !colorInput.isEmpty() || 
+                           !capacidadInput.isEmpty() || !anioInput.isEmpty();
+
+        if (!hayCambios) {
+            Log.d(TAG, "ℹ️ No se detectaron cambios en los campos de entrada");
+            Toast.makeText(this, "No has ingresado ningún cambio", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d(TAG, "✅ Validaciones exitosas - procediendo a guardar");
+        // Validaciones mínimas de seguridad para datos que NO pueden ser nulos en Firebase
+        if (TextUtils.isEmpty(nombreFinal)) {
+            etNombre.setError("El nombre es necesario");
+            return;
+        }
+        
+        if (TextUtils.isEmpty(placaFinal)) {
+            etPlaca.setError("La placa es necesaria para identificar el vehículo");
+            return;
+        }
+
+        Log.d(TAG, "✅ Validaciones de mezcla exitosas. Guardando...");
 
         // Mostrar progreso
         btnGuardarCambios.setEnabled(false);
         btnGuardarCambios.setText("Guardando...");
-        Log.d(TAG, "⏳ Botón deshabilitado - proceso de guardado en curso");
 
-        // Actualizar conductor y vehículo
-        actualizarConductorYVehiculo(nombre, telefono, placa, marca, modelo, color, capacidad, anio);
+        // Actualizar usando los valores mezclados
+        actualizarConductorYVehiculo(nombreFinal, telefonoFinal, placaFinal, marcaFinal, 
+                                   modeloFinal, colorFinal, capacidadFinal, anioFinal);
     }
 
     private void actualizarConductorYVehiculo(String nombre, String telefono, String placa,
@@ -422,7 +411,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             public void onVehiculoActualizado(String vehiculoId) {
                 Log.d(TAG, "✅ Vehículo actualizado - ID: " + vehiculoId);
                 // Luego actualizar conductor con el ID del vehículo
-                actualizarConductor(nombre, telefono, vehiculoId);
+                actualizarConductor(nombre, telefono, vehiculoId, placa);
             }
 
             @Override
@@ -482,7 +471,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         }
     }
 
-    private void actualizarConductor(String nombre, String telefono, String vehiculoId) {
+    private void actualizarConductor(String nombre, String telefono, String vehiculoId, String placa) {
         Log.d(TAG, "👤 Actualizando datos del conductor...");
 
         // Usar MyApp para obtener referencias de base de datos
@@ -494,8 +483,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         conductorRef.child("telefono").setValue(telefono);
         conductorRef.child("vehiculoId").setValue(vehiculoId);
         
-        String placaFinal = etPlaca != null && etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
-        conductorRef.child("placaVehiculo").setValue(placaFinal);
+        conductorRef.child("placaVehiculo").setValue(placa);
 
         // También actualizar en la colección de usuarios para consistencia
         DatabaseReference usuarioRef = MyApp.getDatabaseReference("usuarios")
