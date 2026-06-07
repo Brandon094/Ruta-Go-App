@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -277,8 +278,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                     } else {
                         Log.e(TAG, "❌ Usuario Firebase es null después de login exitoso");
                         restaurarBotonLogin();
-                        mostrarErrorDialog("Error de sesión",
-                                "No se pudo obtener la información del usuario. Por favor, intenta de nuevo.");
+                        mostrarSnackbarCentrado("No se pudo obtener la información del usuario. Por favor, intenta de nuevo.", true);
                     }
                 }
 
@@ -363,8 +363,12 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         // Error de conexión
         if (errorTraducido.contains("Error de conexión")) {
-            mostrarErrorDialog("Error de conexión",
-                    "No se pudo conectar con el servidor. Verifica tu conexión a internet.");
+            mostrarErrorConexionDialog();
+        }
+
+        // Error interno
+        else if (errorTraducido.contains("Error interno")) {
+            mostrarErrorConexionDialog();
         }
 
         // Credenciales incorrectas (caso especial)
@@ -572,7 +576,61 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MOSTRAR DIALOG DE ERROR
+     * ✅ MOSTRAR DIALOG DE ERROR DE CONEXIÓN PERSONALIZADO
+     */
+    private void mostrarErrorConexionDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_error_connection, null);
+        
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        com.google.android.material.button.MaterialButton btnRetry = dialogView.findViewById(R.id.btnRetryConnection);
+        if (btnRetry != null) {
+            btnRetry.setOnClickListener(v -> {
+                dialog.dismiss();
+                // Opcional: Reintentar la última acción o simplemente cerrar
+            });
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * ✅ MOSTRAR DIALOG DE ERROR DINÁMICO (Layout XML)
+     */
+    private void mostrarErrorDynamicDialog(String titulo, String mensaje) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_error_generic, null);
+        
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        TextView tvTitle = dialogView.findViewById(R.id.errorTitle);
+        TextView tvMessage = dialogView.findViewById(R.id.errorMessage);
+        com.google.android.material.button.MaterialButton btnAction = dialogView.findViewById(R.id.btnErrorAction);
+
+        if (tvTitle != null) tvTitle.setText(titulo);
+        if (tvMessage != null) tvMessage.setText(mensaje);
+        if (btnAction != null) {
+            btnAction.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * ✅ MOSTRAR DIALOG DE ERROR GENÉRICO (Deprecado - Usar mostrarErrorDynamicDialog)
      */
     private void mostrarErrorDialog(String titulo, String mensaje) {
         new AlertDialog.Builder(this)
@@ -639,7 +697,13 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 public void onLoginFailure(String error) {
                     Log.e(TAG, "❌ Error en login con Google: " + error);
                     btnGoogleSignIn.setEnabled(true);
-                    mostrarSnackbarCentrado("Error: " + error, true); // 👈 Snackbar animado
+                    
+                    // Si el error es de cancelación, no mostramos diálogo invasivo, solo snackbar
+                    if (error.contains("cancelado")) {
+                        mostrarSnackbarCentrado(error, true);
+                    } else {
+                        mostrarErrorDynamicDialog("Error de Google", error);
+                    }
                 }
             });
         });
@@ -696,7 +760,12 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 public void onLoginFailure(String error) {
                     Log.e(TAG, "❌ Error en Google Sign-In (ActivityResult): " + error);
                     btnGoogleSignIn.setEnabled(true);
-                    mostrarSnackbarCentrado("Error: " + error, true); // 👈 Snackbar animado
+                    
+                    if (error.contains("cancelado")) {
+                        mostrarSnackbarCentrado(error, true);
+                    } else {
+                        mostrarErrorDynamicDialog("Error de Autenticación", error);
+                    }
                 }
             });
         } else {

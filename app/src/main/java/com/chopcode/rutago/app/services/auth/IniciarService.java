@@ -267,9 +267,13 @@ public class IniciarService {
                 errorLower.contains("network error") ||
                 errorLower.contains("timeout") ||
                 errorLower.contains("failed to connect") ||
-                errorLower.contains("unable to connect") ||
-                errorLower.contains("internal error")) {
+                errorLower.contains("unable to connect")) {
             return "Error de conexión. Verifica tu internet";
+        }
+
+        // ERROR INTERNO
+        else if (errorLower.contains("internal error")) {
+            return "Error interno del servidor. Intenta de nuevo";
         }
 
         // CASO ESPECIAL: El mismo error para credenciales incorrectas

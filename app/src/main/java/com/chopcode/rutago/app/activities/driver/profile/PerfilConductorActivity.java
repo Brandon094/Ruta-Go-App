@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ import java.util.Map;
 public class PerfilConductorActivity extends AppCompatActivity {
     private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
     private View cardInicio; 
-    private com.google.android.material.button.MaterialButton btnEditarPerfil;
+    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private UserService userService;
     private VehiculoService vehiculoService;
     private AuthManager authManager;
@@ -80,8 +81,71 @@ public class PerfilConductorActivity extends AppCompatActivity {
         if (cardInicio != null) cardInicio.setOnClickListener(view -> irInicioConductor());
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irEditarPerfil());
 
+        // Botón Borrar Cuenta
+        btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+        if (btnDeleteAccount != null) {
+            btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
+        }
+
         // Configurar navegación
         setupBottomNavigation();
+    }
+
+    private void mostrarDialogoConfirmacionBorrado() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_account, null);
+        
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        com.google.android.material.button.MaterialButton btnConfirm = dialogView.findViewById(R.id.btnConfirmDelete);
+        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelDelete);
+
+        if (btnConfirm != null) {
+            btnConfirm.setOnClickListener(v -> {
+                dialog.dismiss();
+                procesarSolicitudBorrado();
+            });
+        }
+
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.show();
+    }
+
+    private void procesarSolicitudBorrado() {
+        String userId = authManager.getUserId();
+        if (userId == null) return;
+
+        userService.requestAccountDeletion(userId, new UserService.UserUpdateCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    Toast.makeText(PerfilConductorActivity.this, 
+                        "Solicitud enviada. Tu cuenta será revisada para su eliminación.", 
+                        Toast.LENGTH_LONG).show();
+                    
+                    authManager.signOut(PerfilConductorActivity.this);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(PerfilConductorActivity.this, 
+                        "Error al enviar la solicitud: " + error, 
+                        Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     /**

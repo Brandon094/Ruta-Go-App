@@ -149,6 +149,23 @@ public class UserService {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    /**
+     * Registra una solicitud de borrado de cuenta para un usuario
+     * @param userId ID del usuario
+     * @param callback Callback para manejar el resultado
+     */
+    public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
+        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("solicitudBorrado", true);
+        updates.put("fechaSolicitudBorrado", System.currentTimeMillis());
+
+        userRef.updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
     // ========== MÉTODOS ESPECÍFICOS DE CONDUCTOR ==========
 
     /**

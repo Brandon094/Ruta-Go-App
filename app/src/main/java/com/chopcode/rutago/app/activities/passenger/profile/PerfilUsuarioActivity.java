@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     private TextView tvNombre, tvCorreo, tvTelefono;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
     private MaterialCardView cardPremiumStats;
-    private com.google.android.material.button.MaterialButton btnEditarPerfil;
+    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private AuthManager authManager;
     private UserService userService;
     private PassengerReservationService passengerReservationService;
@@ -101,7 +102,74 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irAEditarPerfil());
 
+        // Botón Borrar Cuenta
+        btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+        if (btnDeleteAccount != null) {
+            btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
+        }
+
         Log.d(TAG, "✅ Todas las vistas inicializadas correctamente");
+    }
+
+    private void mostrarDialogoConfirmacionBorrado() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_account, null);
+        
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Configurar botones del layout inflado
+        com.google.android.material.button.MaterialButton btnConfirm = dialogView.findViewById(R.id.btnConfirmDelete);
+        com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelDelete);
+
+        if (btnConfirm != null) {
+            btnConfirm.setOnClickListener(v -> {
+                dialog.dismiss();
+                procesarSolicitudBorrado();
+            });
+        }
+
+        if (btnCancel != null) {
+            btnCancel.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.show();
+    }
+
+    private void procesarSolicitudBorrado() {
+        String userId = MyApp.getCurrentUserId();
+        if (userId == null) return;
+
+        registrarEventoAnalitico("solicitud_borrado_cuenta_confirmada", null, null);
+
+        userService.requestAccountDeletion(userId, new UserService.UserUpdateCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    Toast.makeText(PerfilUsuarioActivity.this, 
+                        "Solicitud enviada. Tu cuenta será revisada para su eliminación.", 
+                        Toast.LENGTH_LONG).show();
+                    
+                    // Cerrar sesión después de solicitar el borrado
+                    authManager.signOut(PerfilUsuarioActivity.this);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(PerfilUsuarioActivity.this, 
+                        "Error al enviar la solicitud: " + error, 
+                        Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     private void irAEditarPerfil() {
