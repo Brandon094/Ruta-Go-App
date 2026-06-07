@@ -235,6 +235,11 @@ public class RegistroService {
                                 userData.put("telefono", pasajero.getTelefono());
                                 userData.put("rol", "usuario");
                                 userData.put("fechaRegistro", System.currentTimeMillis());
+                                
+                                // ✅ AGREGAR FOTO DE GOOGLE
+                                if (user.getPhotoUrl() != null) {
+                                    userData.put("photoUrl", user.getPhotoUrl().toString());
+                                }
 
                                 Log.d(TAG, "📝 Guardando datos de usuario Google en Realtime Database:");
                                 Log.d(TAG, "   - Nombre: " + pasajero.getNombre());

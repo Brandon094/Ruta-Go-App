@@ -6,6 +6,7 @@ public class Usuario {
     protected String telefono;
     protected String email;
     protected String password;
+    protected String photoUrl;
 
     // Constructor vacío necesario para Firebase
     public Usuario() { }
@@ -26,6 +27,9 @@ public class Usuario {
         this.telefono = telefono;
         this.email = email;
     }
+
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 
     // Getters y setters comunes
     public String getId() { return id; }

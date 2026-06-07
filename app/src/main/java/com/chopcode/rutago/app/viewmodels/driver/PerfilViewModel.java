@@ -21,6 +21,7 @@ public class PerfilViewModel extends BaseViewModel {
     private final MutableLiveData<String> conductorNombreLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> placaVehiculoLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> horariosAsignadosLiveData = new MutableLiveData<>();
+    private final MutableLiveData<com.chopcode.rutago.app.models.Conductor> conductorLiveData = new MutableLiveData<>();
 
     // Variables de instancia
     private String conductorUIDActual;
@@ -53,6 +54,10 @@ public class PerfilViewModel extends BaseViewModel {
         return horariosAsignadosLiveData;
     }
 
+    public MutableLiveData<com.chopcode.rutago.app.models.Conductor> getConductorLiveData() {
+        return conductorLiveData;
+    }
+
     // ============ MÉTODOS PRINCIPALES ============
 
     /**
@@ -71,21 +76,22 @@ public class PerfilViewModel extends BaseViewModel {
 
         userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
-                Log.d(TAG, "✅ Datos completos cargados: " + nombre);
+            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
+                Log.d(TAG, "✅ Datos completos cargados: " + conductor.getNombre());
 
                 // Guardar todos los datos
-                conductorNombreActual = nombre;
-                placaVehiculoActual = placa;
-                horariosAsignadosActual = horarios != null ? horarios : new ArrayList<>();
+                conductorNombreActual = conductor.getNombre();
+                placaVehiculoActual = conductor.getPlacaVehiculo();
+                horariosAsignadosActual = conductor.getHorariosAsignados() != null ? conductor.getHorariosAsignados() : new ArrayList<>();
 
                 // Actualizar LiveData para UI
-                conductorNombreLiveData.postValue(nombre);
-                placaVehiculoLiveData.postValue(placa);
+                conductorNombreLiveData.postValue(conductorNombreActual);
+                placaVehiculoLiveData.postValue(placaVehiculoActual);
                 horariosAsignadosLiveData.postValue(horariosAsignadosActual);
+                conductorLiveData.postValue(conductor);
 
                 // Registrar evento analítico
-                registrarEventoAnalitico("perfil_completo_cargado", nombre,
+                registrarEventoAnalitico("perfil_completo_cargado", conductorNombreActual,
                         horariosAsignadosActual != null ? horariosAsignadosActual.size() : 0);
 
                 setLoading(false);
@@ -120,18 +126,19 @@ public class PerfilViewModel extends BaseViewModel {
 
         userService.loadDriverData(conductorUID, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
-                Log.d(TAG, "✅ Datos básicos cargados: " + nombre + " | Placa: " + placa);
+            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
+                Log.d(TAG, "✅ Datos básicos cargados: " + conductor.getNombre() + " | Placa: " + conductor.getPlacaVehiculo());
 
                 // Solo guardamos nombre y placa
-                conductorNombreActual = nombre;
-                placaVehiculoActual = placa;
+                conductorNombreActual = conductor.getNombre();
+                placaVehiculoActual = conductor.getPlacaVehiculo();
 
                 // Solo actualizamos nombre y placa en LiveData
-                conductorNombreLiveData.postValue(nombre);
-                placaVehiculoLiveData.postValue(placa);
+                conductorNombreLiveData.postValue(conductorNombreActual);
+                placaVehiculoLiveData.postValue(placaVehiculoActual);
+                conductorLiveData.postValue(conductor);
 
-                registrarEventoAnalitico("perfil_basico_cargado", nombre, 1);
+                registrarEventoAnalitico("perfil_basico_cargado", conductorNombreActual, 1);
                 setLoading(false);
             }
 
@@ -167,13 +174,13 @@ public class PerfilViewModel extends BaseViewModel {
         // Cargar datos actuales para mantener horarios y teléfono
         userService.loadDriverData(conductorUIDActual, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horarios) {
+            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
                 userService.updateDriverProfile(
                         conductorUIDActual,
-                        nombre, // Mantener nombre
-                        telefono, // Mantener teléfono
+                        conductor.getNombre(), // Mantener nombre
+                        conductor.getTelefono(), // Mantener teléfono
                         placaLimpia, // Nueva placa
-                        horarios, // Mantener horarios
+                        conductor.getHorariosAsignados(), // Mantener horarios
                         new UserService.UserUpdateCallback() {
                             @Override
                             public void onSuccess() {
@@ -182,7 +189,7 @@ public class PerfilViewModel extends BaseViewModel {
                                 placaVehiculoLiveData.postValue(placaLimpia);
                                 setLoading(false);
 
-                                registrarEventoAnalitico("placa_actualizada", nombre, 1);
+                                registrarEventoAnalitico("placa_actualizada", conductor.getNombre(), 1);
                             }
 
                             @Override

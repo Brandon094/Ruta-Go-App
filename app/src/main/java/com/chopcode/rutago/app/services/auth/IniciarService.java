@@ -435,6 +435,15 @@ public class IniciarService {
                                         @Override
                                         public void onTipoDetectado(String tipo) {
                                             Log.d(TAG, "✅ Usuario Google ya registrado como: " + tipo);
+                                            
+                                            // ✅ ACTUALIZAR FOTO DE PERFIL SIEMPRE QUE INICIE SESIÓN
+                                            if (user.getPhotoUrl() != null) {
+                                                String nodo = tipo.equals("conductor") ? "conductores" : "usuarios";
+                                                MyApp.getDatabaseReference(nodo + "/" + user.getUid())
+                                                        .child("photoUrl")
+                                                        .setValue(user.getPhotoUrl().toString());
+                                            }
+
                                             callback.onLoginSuccess(tipo);
                                         }
 

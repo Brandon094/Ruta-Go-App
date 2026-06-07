@@ -46,8 +46,7 @@ public class UserService {
      * Callback para carga de datos específicos de conductor
      */
     public interface DriverDataCallback {
-        void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo,
-                                List<String> horariosAsignados);
+        void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor);
         void onError(String error);
     }
 
@@ -150,6 +149,38 @@ public class UserService {
     }
 
     /**
+     * Actualiza la foto de perfil de un usuario
+     * @param userId ID del usuario
+     * @param photoUrl Nueva URL de la foto
+     * @param node Nodo donde se guardará ("usuarios" o "conductores")
+     * @param callback Callback para manejar el resultado
+     */
+    public void updateProfilePicture(String userId, String photoUrl, String node, UserUpdateCallback callback) {
+        DatabaseReference userRef = MyApp.getDatabaseReference(node + "/" + userId);
+
+        userRef.child("photoUrl").setValue(photoUrl)
+                .addOnSuccessListener(aVoid -> {
+                    if (node.equals("conductores")) {
+                        // Mantener consistencia en usuarios también
+                        updateProfilePicture(userId, photoUrl, "usuarios", new UserUpdateCallback() {
+                            @Override
+                            public void onSuccess() {
+                                callback.onSuccess();
+                            }
+                            @Override
+                            public void onError(String error) {
+                                // Ignoramos si falla en usuarios, lo importante es el nodo principal
+                                callback.onSuccess();
+                            }
+                        });
+                    } else {
+                        callback.onSuccess();
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    /**
      * Registra una solicitud de borrado de cuenta para un usuario
      * @param userId ID del usuario
      * @param callback Callback para manejar el resultado
@@ -181,31 +212,24 @@ public class UserService {
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     // Extraer datos del conductor del snapshot de forma segura
-                    String nombre = getStringSafely(snapshot.child("nombre"));
-                    String telefono = getStringSafely(snapshot.child("telefono"));
-                    String placa = getStringSafely(snapshot.child("placaVehiculo"));
-                    String modelo = getStringSafely(snapshot.child("modeloVehiculo"));
-                    List<String> horariosAsignados = new ArrayList<>();
-
-                    // Obtener lista de horarios asignados si existe
-                    if (snapshot.hasChild("horariosAsignados")) {
-                        for (DataSnapshot horarioSnapshot : snapshot.child("horariosAsignados").getChildren()) {
-                            String horarioId = getStringSafely(horarioSnapshot);
-                            if (!horarioId.isEmpty()) {
-                                horariosAsignados.add(horarioId);
-                            }
+                    com.chopcode.rutago.app.models.Conductor conductor = snapshot.getValue(com.chopcode.rutago.app.models.Conductor.class);
+                    if (conductor != null) {
+                        conductor.setId(userId);
+                        
+                        // ✅ FALLBACK: Si el nombre está vacío o es genérico, buscar en el nodo de usuarios
+                        if (conductor.getNombre() == null || conductor.getNombre().isEmpty() || 
+                            conductor.getNombre().equalsIgnoreCase("No disponible") || 
+                            conductor.getNombre().contains("Conductor ")) {
+                            buscarNombreEnUsuarios(userId, conductor, callback);
+                        } else {
+                            callback.onDriverDataLoaded(conductor);
                         }
-                    }
-
-                    // ✅ FALLBACK: Si el nombre está vacío o es "No disponible", buscar en el nodo de usuarios
-                    if (nombre.isEmpty() || nombre.equalsIgnoreCase("No disponible") || nombre.contains("Conductor ")) {
-                        buscarNombreEnUsuarios(userId, telefono, placa, modelo, horariosAsignados, callback);
                     } else {
-                        callback.onDriverDataLoaded(nombre, telefono, placa, modelo, horariosAsignados);
+                        callback.onError("Error al parsear datos del conductor");
                     }
                 } else {
                     // Si no existe en conductores, intentar en usuarios por si acaso
-                    buscarNombreEnUsuarios(userId, "", "", "", new ArrayList<>(), callback);
+                    buscarNombreEnUsuarios(userId, new com.chopcode.rutago.app.models.Conductor(), callback);
                 }
             }
 
@@ -216,29 +240,39 @@ public class UserService {
         });
     }
 
-    private void buscarNombreEnUsuarios(String userId, String telFallback, String placaFallback, 
-                                        String modeloFallback, List<String> horarios, DriverDataCallback callback) {
+    private void buscarNombreEnUsuarios(String userId, com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
         DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String nombre = telFallback; // Iniciar con el nombre que ya teníamos
-                String tel = telFallback;
-                
                 if (snapshot.exists()) {
-                    nombre = getStringSafely(snapshot.child("nombre"));
-                    if (tel.isEmpty() || tel.equalsIgnoreCase("No disponible")) {
-                        tel = getStringSafely(snapshot.child("telefono"));
+                    String nombre = getStringSafely(snapshot.child("nombre"));
+                    String tel = getStringSafely(snapshot.child("telefono"));
+                    String photo = getStringSafely(snapshot.child("photoUrl"));
+                    
+                    if (conductor.getNombre() == null || conductor.getNombre().isEmpty()) {
+                        conductor.setNombre(nombre.isEmpty() ? "Conductor " + userId.substring(0, 5) : nombre);
+                    }
+                    if (conductor.getTelefono() == null || conductor.getTelefono().isEmpty()) {
+                        conductor.setTelefono(tel);
+                    }
+                    if (conductor.getPhotoUrl() == null || conductor.getPhotoUrl().isEmpty()) {
+                        conductor.setPhotoUrl(photo);
                     }
                 }
                 
-                if (nombre.isEmpty()) nombre = "Conductor " + userId.substring(0, 5);
-                callback.onDriverDataLoaded(nombre, tel, placaFallback, modeloFallback, horarios);
+                if (conductor.getNombre() == null || conductor.getNombre().isEmpty()) {
+                    conductor.setNombre("Conductor " + userId.substring(0, 5));
+                }
+                callback.onDriverDataLoaded(conductor);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                callback.onDriverDataLoaded("Conductor " + userId.substring(0, 5), telFallback, placaFallback, modeloFallback, horarios);
+                if (conductor.getNombre() == null || conductor.getNombre().isEmpty()) {
+                    conductor.setNombre("Conductor " + userId.substring(0, 5));
+                }
+                callback.onDriverDataLoaded(conductor);
             }
         });
     }

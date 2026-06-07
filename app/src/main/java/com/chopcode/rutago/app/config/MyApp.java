@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class MyApp extends Application {
     private FirebaseDatabase firebaseDatabase;
     private FirebaseMessaging firebaseMessaging;
     private FirebaseAnalytics firebaseAnalytics;
+    private FirebaseStorage firebaseStorage;
     private FirebaseCrashlytics firebaseCrashlytics;
 
     @Override
@@ -60,7 +63,11 @@ public class MyApp extends Application {
             firebaseAnalytics = FirebaseAnalytics.getInstance(this);
             Log.d("MyApp", "✅ FirebaseAnalytics initialized");
 
-            // 5. Crashlytics
+            // 5. Storage
+            firebaseStorage = FirebaseStorage.getInstance();
+            Log.d("MyApp", "✅ FirebaseStorage initialized");
+
+            // 6. Crashlytics
             firebaseCrashlytics = FirebaseCrashlytics.getInstance();
             firebaseCrashlytics.setCrashlyticsCollectionEnabled(true);
             Log.d("MyApp", "✅ FirebaseCrashlytics initialized");
@@ -109,6 +116,13 @@ public class MyApp extends Application {
         return firebaseAnalytics;
     }
 
+    public FirebaseStorage getFirebaseStorage() {
+        if (firebaseStorage == null) {
+            firebaseStorage = FirebaseStorage.getInstance();
+        }
+        return firebaseStorage;
+    }
+
     public FirebaseCrashlytics getFirebaseCrashlytics() {
         if (firebaseCrashlytics == null) {
             firebaseCrashlytics = FirebaseCrashlytics.getInstance();
@@ -150,6 +164,21 @@ public class MyApp extends Application {
             Log.e("MyApp", "❌ Error getting FirebaseDatabase", e);
             return FirebaseDatabase.getInstance();
         }
+    }
+
+    // ✅ Método para obtener FirebaseStorage
+    public static FirebaseStorage getFirebaseStorageInstance() {
+        try {
+            return getInstance().getFirebaseStorage();
+        } catch (Exception e) {
+            Log.e("MyApp", "❌ Error getting FirebaseStorage", e);
+            return FirebaseStorage.getInstance();
+        }
+    }
+
+    // ✅ Método para obtener StorageReference
+    public static StorageReference getStorageReference(String path) {
+        return getFirebaseStorageInstance().getReference(path);
     }
 
     // ✅ Método para obtener usuario actual

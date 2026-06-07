@@ -1,15 +1,19 @@
 package com.chopcode.rutago.app.activities.driver.profile;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.history.HistorialConductorActivity;
 import com.chopcode.rutago.app.activities.driver.InicioConductorActivity;
@@ -19,6 +23,7 @@ import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Vehiculo;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehiculoService;
 
 import java.util.HashMap;
@@ -27,12 +32,24 @@ import java.util.Map;
 
 public class PerfilConductorActivity extends AppCompatActivity {
     private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
+    private ImageView ivProfilePicture;
     private View cardInicio; 
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private UserService userService;
+    private StorageService storageService;
     private VehiculoService vehiculoService;
     private AuthManager authManager;
     private static final String TAG = "PerfilConductor";
+
+    // Lanzador para seleccionar imagen de la galería
+    private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    subirFotoDePerfil(uri);
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +58,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
 
         // Inicializar servicios
         userService = new UserService();
+        storageService = new StorageService();
         vehiculoService = new VehiculoService();
         authManager = AuthManager.getInstance();
 
@@ -63,6 +81,15 @@ public class PerfilConductorActivity extends AppCompatActivity {
     }
 
     private void inicializarVistas() {
+        // ImageView
+        ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        if (ivProfilePicture != null) {
+            ivProfilePicture.setOnClickListener(v -> {
+                Log.d(TAG, "📸 Clic en foto de perfil - Abriendo galería");
+                imagePickerLauncher.launch("image/*");
+            });
+        }
+
         // TextViews de información personal
         tvConductor = findViewById(R.id.tvNombreUsuario);
         tvEmail = findViewById(R.id.tvEmail);
@@ -162,9 +189,9 @@ public class PerfilConductorActivity extends AppCompatActivity {
         // CARGAR TODO EN PARALELO: conductor + usuario + vehículo
         userService.loadDriverData(userId, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placaVehiculo, String modelo, List<String> horariosAsignados) {
+            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
                 // CARGAR DATOS DE USUARIO (email) EN PARALELO
-                cargarDatosUsuarioYCompletar(nombre, telefono, placaVehiculo, userId);
+                cargarDatosUsuarioYCompletar(conductor.getNombre(), conductor.getTelefono(), conductor.getPlacaVehiculo(), userId);
             }
 
             @Override
@@ -221,6 +248,15 @@ public class PerfilConductorActivity extends AppCompatActivity {
         tvEmail.setText(emailFinal);
 
         tvPlaca.setText(placa != null ? placa : "No asignado");
+
+        // ✅ CARGAR FOTO DE PERFIL SI EXISTE
+        if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(usuario.getPhotoUrl())
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(ivProfilePicture);
+        }
     }
 
     private void actualizarUIConDatosMinimos(String nombre, String telefono, String placa) {
@@ -326,6 +362,47 @@ public class PerfilConductorActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();
+    }
+
+    private void subirFotoDePerfil(Uri uri) {
+        String userId = authManager.getUserId();
+        if (userId == null) return;
+
+        Log.d(TAG, "📤 Subiendo nueva foto de perfil conductor...");
+        Toast.makeText(this, "Subiendo foto...", Toast.LENGTH_SHORT).show();
+
+        storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
+            @Override
+            public void onSuccess(String downloadUrl) {
+                // Actualizar en Database (nodo conductores)
+                userService.updateProfilePicture(userId, downloadUrl, "conductores", new UserService.UserUpdateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            Log.d(TAG, "✅ Foto actualizada en DB y UI");
+                            Glide.with(PerfilConductorActivity.this)
+                                    .load(downloadUrl)
+                                    .placeholder(R.drawable.ic_person)
+                                    .into(ivProfilePicture);
+                            Toast.makeText(PerfilConductorActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al subir: " + error, Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onProgress(double progress) { }
+        });
     }
 
     @Override

@@ -222,15 +222,15 @@ public class DriverVehicleManager {
 
         userService.loadDriverData(conductorId, new UserService.DriverDataCallback() {
             @Override
-            public void onDriverDataLoaded(String nombre, String telefono, String placa, String modelo, List<String> horariosAsignados) {
-                if (nombre != null && !nombre.isEmpty()) {
-                    conductorNombre = nombre;
-                    conductorTelefono = telefono != null ? telefono : "No disponible";
-                    placaVehiculo = placa != null ? placa : "No disponible";
-                    modeloVehiculo = modelo != null ? modelo : "No disponible";
+            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
+                if (conductor != null && conductor.getNombre() != null && !conductor.getNombre().isEmpty()) {
+                    conductorNombre = conductor.getNombre();
+                    conductorTelefono = conductor.getTelefono() != null ? conductor.getTelefono() : "No disponible";
+                    placaVehiculo = conductor.getPlacaVehiculo() != null ? conductor.getPlacaVehiculo() : "No disponible";
+                    modeloVehiculo = conductor.getModeloVehiculo() != null ? conductor.getModeloVehiculo() : "No disponible";
 
                     updateUI();
-                    analyticsHelper.logConductorCargado(conductorId, nombre, telefono);
+                    analyticsHelper.logConductorCargado(conductorId, conductorNombre, conductorTelefono);
 
                     Log.d(TAG, "✓ Conductor cargado: " + conductorNombre);
                     cargarInformacionVehiculo(conductorId, callback);

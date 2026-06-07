@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.net.Uri;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.passenger.history.HistorialReservasActivity;
 import com.chopcode.rutago.app.activities.passenger.InicioUsuariosActivity;
@@ -18,6 +23,7 @@ import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.models.Usuario;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService;
 import com.google.android.material.card.MaterialCardView;
 
@@ -27,11 +33,23 @@ import java.util.Map;
 public class PerfilUsuarioActivity extends AppCompatActivity {
     private TextView tvNombre, tvCorreo, tvTelefono;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
+    private ImageView ivProfilePicture;
     private MaterialCardView cardPremiumStats;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private AuthManager authManager;
     private UserService userService;
+    private StorageService storageService;
     private PassengerReservationService passengerReservationService;
+
+    // Lanzador para seleccionar imagen de la galería
+    private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    subirFotoDePerfil(uri);
+                }
+            }
+    );
 
     // ✅ NUEVO: Tag para logs
     private static final String TAG = "PerfilUsuario";
@@ -50,6 +68,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         // Inicializar servicios
         authManager = AuthManager.getInstance();
         userService = new UserService();
+        storageService = new StorageService();
         passengerReservationService = new PassengerReservationService();
         Log.d(TAG, "✅ Servicios inicializados");
 
@@ -86,6 +105,15 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
     private void inicializarVistas() {
         Log.d(TAG, "🔧 Inicializando vistas...");
+
+        // ImageView
+        ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        if (ivProfilePicture != null) {
+            ivProfilePicture.setOnClickListener(v -> {
+                Log.d(TAG, "📸 Clic en foto de perfil - Abriendo galería");
+                imagePickerLauncher.launch("image/*");
+            });
+        }
 
         // TextViews
         tvNombre = findViewById(R.id.tvNombreUsuario);
@@ -177,6 +205,49 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void subirFotoDePerfil(Uri uri) {
+        String userId = MyApp.getCurrentUserId();
+        if (userId == null) return;
+
+        Log.d(TAG, "📤 Subiendo nueva foto de perfil...");
+        Toast.makeText(this, "Subiendo foto...", Toast.LENGTH_SHORT).show();
+
+        storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
+            @Override
+            public void onSuccess(String downloadUrl) {
+                // Actualizar en Database
+                userService.updateProfilePicture(userId, downloadUrl, "usuarios", new UserService.UserUpdateCallback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(() -> {
+                            Log.d(TAG, "✅ Foto actualizada en DB y UI");
+                            Glide.with(PerfilUsuarioActivity.this)
+                                    .load(downloadUrl)
+                                    .placeholder(R.drawable.ic_person)
+                                    .into(ivProfilePicture);
+                            Toast.makeText(PerfilUsuarioActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error al subir: " + error, Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onProgress(double progress) {
+                // Podrías mostrar un progreso si quieres
+            }
+        });
+    }
+
     /**
      * Método para obtener la información del usuario usando loadUserData
      */
@@ -233,6 +304,15 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     } else {
                         tvCorreo.setText("Email no disponible");
                         Log.w(TAG, "⚠️ Email del usuario no disponible");
+                    }
+
+                    // ✅ CARGAR FOTO DE PERFIL SI EXISTE
+                    if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
+                        Glide.with(PerfilUsuarioActivity.this)
+                                .load(usuario.getPhotoUrl())
+                                .placeholder(R.drawable.ic_person)
+                                .error(R.drawable.ic_person)
+                                .into(ivProfilePicture);
                     }
 
                     // ✅ CARGAR ESTADÍSTICAS PREMIUM DESPUÉS DE CARGAR USUARIO

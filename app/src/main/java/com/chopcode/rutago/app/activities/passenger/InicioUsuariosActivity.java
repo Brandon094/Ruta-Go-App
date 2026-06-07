@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.rutago.app.R;
+import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.chopcode.rutago.app.activities.passenger.profile.PerfilUsuarioActivity;
 import com.chopcode.rutago.app.adapters.horarios.HorarioPagerAdapter;
@@ -62,6 +63,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     private ViewPager2 viewPagerHorarios;                 // Swipe entre pestañas de horarios
     private ShimmerFrameLayout shimmerLayout;
     private HorarioPagerAdapter pagerAdapter;             // Adaptador para el ViewPager
+    private ImageView ivUserAvatar;
     private NetworkMonitor networkMonitor;
     private Snackbar networkSnackbar;
 
@@ -196,6 +198,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         tabLayout = findViewById(R.id.tabLayout);
         viewPagerHorarios = findViewById(R.id.viewPagerHorarios);
         shimmerLayout = findViewById(R.id.shimmer_inicio_usuarios);
+        ivUserAvatar = findViewById(R.id.ivUserAvatar);
 
         // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
@@ -349,6 +352,15 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     public void onUserDataLoaded(Usuario usuario) {
         runOnUiThread(() -> {
             uiManager.updateUserInfo(usuario);  // Actualiza los TextViews con los datos del usuario
+            
+            // ✅ CARGAR FOTO DE PERFIL DE GOOGLE SI EXISTE
+            if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
+                Glide.with(this)
+                        .load(usuario.getPhotoUrl())
+                        .placeholder(R.drawable.ic_person)
+                        .error(R.drawable.ic_person)
+                        .into(ivUserAvatar);
+            }
         });
     }
 

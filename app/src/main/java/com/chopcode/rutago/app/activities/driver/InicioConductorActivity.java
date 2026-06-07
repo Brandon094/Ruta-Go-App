@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.profile.PerfilConductorActivity;
 import com.chopcode.rutago.app.adapters.reservas.ReservaAdapter;
@@ -60,6 +61,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private RecyclerView rvReservas, rvProximasRutas;
     private TextView tvConductor, tvPlacaVehiculo;
     private TextView tvEmptyReservas, tvEmptyRutas;
+    private ImageView ivConductorAvatar;
     private ShimmerFrameLayout shimmerLayout;
     private ProgressBar progressBar;
     private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabVentaFisica;
@@ -194,6 +196,7 @@ public class InicioConductorActivity extends AppCompatActivity {
         tvEmptyRutas = findViewById(R.id.tvEmptyRutas);
         shimmerLayout = findViewById(R.id.shimmer_inicio_conductor);
         fabVentaFisica = findViewById(R.id.fabVentaFisica);
+        ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
 
         // Configurar valores iniciales usando strings
         tvReservasConfirmadas.setText(getString(R.string.contador_reservas, 0));
@@ -448,6 +451,19 @@ public class InicioConductorActivity extends AppCompatActivity {
         });
 
         // Observar estado de carga desde PerfilViewModel
+        perfilViewModel.getConductorLiveData().observe(this, conductor -> {
+            if (conductor != null) {
+                // ✅ CARGAR FOTO DE PERFIL DE GOOGLE SI EXISTE
+                if (conductor.getPhotoUrl() != null && !conductor.getPhotoUrl().isEmpty()) {
+                    Glide.with(this)
+                            .load(conductor.getPhotoUrl())
+                            .placeholder(R.drawable.ic_person)
+                            .error(R.drawable.ic_person)
+                            .into(ivConductorAvatar);
+                }
+            }
+        });
+
         perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
             if (isLoading != null) {
                 progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
