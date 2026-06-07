@@ -58,6 +58,8 @@ public class HistorialReservasActivity extends AppCompatActivity {
     private HistorialPasajeroAdapter adapter;
     private List<Reserva> listaReservas = new ArrayList<>();
     private List<Reserva> listaFiltrada = new ArrayList<>();
+    private String textoBusqueda = "";
+    private String filtroActual = "TODOS";
 
     // Estado Premium
     private boolean esUsuarioPremium = false;
@@ -105,7 +107,10 @@ public class HistorialReservasActivity extends AppCompatActivity {
         chipGroupFiltros = findViewById(R.id.chipGroupFiltros);
         recyclerHistorial = findViewById(R.id.recyclerHistorial);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
-        fabActualizar = findViewById(R.id.fabActualizar);
+        
+        // El FAB ha sido eliminado del layout para simplificar la interfaz
+        fabActualizar = null;
+
         tvTotalViajes = findViewById(R.id.tvTotalViajes);
         tvViajesConfirmados = findViewById(R.id.tvViajesConfirmados);
         tvViajesCancelados = findViewById(R.id.tvViajesCancelados);
@@ -135,10 +140,12 @@ public class HistorialReservasActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        fabActualizar.setOnClickListener(v -> {
-            cargarHistorialUsuario();
-            Snackbar.make(v, "Actualizando historial...", Snackbar.LENGTH_SHORT).show();
-        });
+        if (fabActualizar != null) {
+            fabActualizar.setOnClickListener(v -> {
+                cargarHistorialUsuario();
+                Snackbar.make(v, "Actualizando historial...", Snackbar.LENGTH_SHORT).show();
+            });
+        }
 
         chipGroupFiltros.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) {
@@ -157,22 +164,53 @@ public class HistorialReservasActivity extends AppCompatActivity {
     }
 
     private void aplicarFiltro(String tipoFiltro) {
+        this.filtroActual = tipoFiltro;
+        aplicarFiltros();
+    }
+
+    private void aplicarFiltros() {
         listaFiltrada.clear();
         long unMesAtras = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
+        String query = textoBusqueda.toLowerCase().trim();
 
         for (Reserva reserva : listaReservas) {
-            boolean coincide = false;
+            // 1. Filtrar por estado/tiempo (Chips)
+            boolean coincideFiltro = false;
             String estado = reserva.getEstadoReserva();
             if (estado == null) estado = "";
 
-            switch (tipoFiltro) {
-                case "TODOS": coincide = true; break;
-                case "CONFIRMADOS": coincide = estado.equalsIgnoreCase("confirmado") || estado.equalsIgnoreCase("confirmada"); break;
-                case "CANCELADOS": coincide = estado.equalsIgnoreCase("cancelado") || estado.equalsIgnoreCase("cancelada"); break;
-                case "ESTE_MES": coincide = reserva.getFechaReserva() >= unMesAtras; break;
+            switch (filtroActual) {
+                case "TODOS":
+                    coincideFiltro = true;
+                    break;
+                case "CONFIRMADOS":
+                    coincideFiltro = estado.equalsIgnoreCase("confirmado") || estado.equalsIgnoreCase("confirmada");
+                    break;
+                case "CANCELADOS":
+                    coincideFiltro = estado.equalsIgnoreCase("cancelado") || estado.equalsIgnoreCase("cancelada");
+                    break;
+                case "ESTE_MES":
+                    coincideFiltro = reserva.getFechaReserva() >= unMesAtras;
+                    break;
             }
 
-            if (coincide) listaFiltrada.add(reserva);
+            // 2. Filtrar por texto de búsqueda
+            boolean coincideBusqueda = true;
+            if (!query.isEmpty()) {
+                String conductor = (reserva.getConductor() != null) ? reserva.getConductor().toLowerCase() : "";
+                String origen = (reserva.getOrigen() != null) ? reserva.getOrigen().toLowerCase() : "";
+                String destino = (reserva.getDestino() != null) ? reserva.getDestino().toLowerCase() : "";
+                String ruta = (reserva.getNombreRuta() != null) ? reserva.getNombreRuta().toLowerCase() : "";
+
+                coincideBusqueda = conductor.contains(query) ||
+                        origen.contains(query) ||
+                        destino.contains(query) ||
+                        ruta.contains(query);
+            }
+
+            if (coincideFiltro && coincideBusqueda) {
+                listaFiltrada.add(reserva);
+            }
         }
         actualizarVista();
     }
@@ -250,6 +288,10 @@ public class HistorialReservasActivity extends AppCompatActivity {
         }
 
         adapter.actualizarDatos(listaFiltrada);
+        if (tvTituloHistorial != null) {
+            tvTituloHistorial.setText("Historial de Viajes (" + listaFiltrada.size() + ")");
+        }
+
         if (listaFiltrada.isEmpty()) {
             recyclerHistorial.setVisibility(View.GONE);
             layoutEmptyState.setVisibility(View.VISIBLE);
@@ -265,14 +307,39 @@ public class HistorialReservasActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_historial_usuario, menu);
+        getMenuInflater().inflate(R.menu.menu_historial_general, menu);
+        
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        if (searchItem != null) {
+            androidx.appcompat.widget.SearchView sv = (androidx.appcompat.widget.SearchView) searchItem.getActionView();
+            sv.setQueryHint("Buscar por ruta o conductor...");
+            sv.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    textoBusqueda = query;
+                    aplicarFiltros();
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    textoBusqueda = newText;
+                    aplicarFiltros();
+                    return true;
+                }
+            });
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
             onBackPressed();
+            return true;
+        } else if (id == R.id.action_refresh) {
+            cargarHistorialUsuario();
             return true;
         }
         return super.onOptionsItemSelected(item);

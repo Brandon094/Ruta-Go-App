@@ -101,13 +101,20 @@ public class HistorialConductorActivity extends AppCompatActivity {
         recyclerHistorial = findViewById(R.id.recyclerHistorial);
         tvTituloLista = findViewById(R.id.tvTituloLista);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
-        fabExportar = findViewById(R.id.fabExportar);
+        
+        // El FAB ha sido eliminado del layout para simplificar la interfaz
+        fabExportar = null;
 
         View cardEstadisticas = findViewById(R.id.cardEstadisticas);
         if (cardEstadisticas != null) {
             tvTotalReservas = cardEstadisticas.findViewById(R.id.tvTotal);
             tvConfirmadas = cardEstadisticas.findViewById(R.id.tvConfirmadas);
             tvCanceladas = cardEstadisticas.findViewById(R.id.tvCanceladas);
+        } else {
+            // Fallback si no está dentro de la card
+            tvTotalReservas = findViewById(R.id.tvTotal);
+            tvConfirmadas = findViewById(R.id.tvConfirmadas);
+            tvCanceladas = findViewById(R.id.tvCanceladas);
         }
     }
 
@@ -145,25 +152,16 @@ public class HistorialConductorActivity extends AppCompatActivity {
     }
 
     private void configurarRecyclerView() {
-        reservaAdapter = new HistorialConductorAdapter(listaFiltrada, new HistorialConductorAdapter.OnReservaClickListener() {
-            @Override
-            public void onReservaClick(Reserva reserva) {
-                mostrarDetallesReserva(reserva);
-            }
-
-            @Override
-            public void onVerDetallesClick(Reserva reserva) {
-                Toast.makeText(HistorialConductorActivity.this,
-                        "Ver detalles de: " + reserva.getNombre(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        reservaAdapter = new HistorialConductorAdapter(listaFiltrada);
 
         recyclerHistorial.setLayoutManager(new LinearLayoutManager(this));
         recyclerHistorial.setAdapter(reservaAdapter);
     }
 
     private void configurarFAB() {
-        fabExportar.setOnClickListener(v -> exportarHistorial());
+        if (fabExportar != null) {
+            fabExportar.setOnClickListener(v -> exportarHistorial());
+        }
     }
 
     private void cargarDatos() {
@@ -335,7 +333,7 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_historial_filtros, menu);
+        getMenuInflater().inflate(R.menu.menu_historial_general, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
             SearchView sv = (SearchView) searchItem.getActionView();
@@ -351,9 +349,13 @@ public class HistorialConductorActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_filter_date) { mostrarDialogoFiltroFecha(); return true; }
-        else if (id == R.id.action_stats) { mostrarClientesFrecuentes(); return true; }
-        else if (id == R.id.action_clear_filters) { limpiarFiltros(); return true; }
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else if (id == R.id.action_refresh) {
+            cargarDatos();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
