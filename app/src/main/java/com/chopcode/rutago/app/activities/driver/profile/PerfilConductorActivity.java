@@ -374,30 +374,32 @@ public class PerfilConductorActivity extends AppCompatActivity {
         storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
             @Override
             public void onSuccess(String downloadUrl) {
-                // Actualizar en Database (nodo conductores)
+                // ✅ CORREGIDO: Actualizar primero en el nodo 'conductores'
                 userService.updateProfilePicture(userId, downloadUrl, "conductores", new UserService.UserUpdateCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(() -> {
-                            Log.d(TAG, "✅ Foto actualizada en DB y UI");
+                            Log.d(TAG, "✅ Foto actualizada en nodo conductores y UI");
                             Glide.with(PerfilConductorActivity.this)
                                     .load(downloadUrl)
                                     .placeholder(R.drawable.ic_person)
                                     .into(ivProfilePicture);
-                            Toast.makeText(PerfilConductorActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PerfilConductorActivity.this, "Foto de perfil actualizada", Toast.LENGTH_SHORT).show();
                         });
                     }
 
                     @Override
                     public void onError(String error) {
-                        runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+                        Log.e(TAG, "❌ Error actualizando foto en DB: " + error);
+                        runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al guardar enlace: " + error, Toast.LENGTH_SHORT).show());
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al subir: " + error, Toast.LENGTH_SHORT).show());
+                Log.e(TAG, "❌ Error en Storage: " + error);
+                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al subir imagen: " + error, Toast.LENGTH_SHORT).show());
             }
 
             @Override
