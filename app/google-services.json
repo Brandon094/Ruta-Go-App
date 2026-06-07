@@ -8,12 +8,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:175264872585:android:af9ca6f6aa555d9ef72e58",
+        "mobilesdk_app_id": "1:175264872585:android:3c22326bb5c7bfcff72e58",
         "android_client_info": {
-          "package_name": "com.chopcode.trasnportenataga_laplata"
+          "package_name": "com.chopcode.rutago.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "175264872585-5f79l7b79b4oc1k0j60ho2dk37emomkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chopcode.rutago.app",
+            "certificate_hash": "704d49b098debf04562c888f9d870b5189c3c501"
+          }
+        },
+        {
+          "client_id": "175264872585-beniod08nlf8tpv432v70qvaj6gtaboo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chopcode.rutago.app",
+            "certificate_hash": "989d581dc57ddda1f096e3a81a29230657d13c38"
+          }
+        },
         {
           "client_id": "175264872585-abombvqq36bqqeet86onnhkf7uep6c60.apps.googleusercontent.com",
           "client_type": 3
@@ -21,7 +37,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBpxgTKGvh3jJYylT6Qr6p2amgHmMzCTZQ"
+          "current_key": "AIzaSyDsKYO4DAp8VoCXgVt4QJuhQdI6PfLXahk"
         }
       ],
       "services": {
