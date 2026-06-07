@@ -427,4 +427,19 @@
     <string name="leyenda_canceladas_desc">Anuladas por el conductor</string>
     <string name="leyenda_total_titulo">Total</string>
     <string name="leyenda_total_desc">Suma de confirmadas + canceladas</string>
+
+    <!-- RATING DIALOG -->
+    <string name="como_fue_viaje">¿Cómo fue tu viaje?</string>
+    <string name="califica_conductor">Califica a tu conductor</string>
+    <string name="comentarios_opcional">Comentarios (Opcional)</string>
+
+    <!-- LOGOUT DIALOG -->
+    <string name="titulo_cerrar_sesion">¿Cerrar Sesión?</string>
+    <string name="mensaje_cerrar_sesion">Estás a punto de salir de tu cuenta. ¿Confirmas que deseas finalizar la sesión actual?</string>
+    <string name="desc_icono_logout">Icono de cerrar sesión</string>
+
+    <!-- SELECT ROUTE DIALOG -->
+    <string name="seleccionar_ruta">Selecciona la Ruta</string>
+    <string name="desc_seleccionar_ruta">Elige el trayecto para realizar la venta física</string>
+    <string name="desc_seleccionar">Seleccionar</string>
 </resources>
