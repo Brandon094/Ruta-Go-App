@@ -73,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="🚗 Conductor Activo"
+                android:text="@string/status_conductor_activo"
                 android:textColor="@color/primary_200"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -124,7 +124,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Información Personal"
+                        android:text="@string/informacion_personal"
                         android:textColor="@color/primary_500"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -164,7 +164,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Email"
+                                android:text="@string/email_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -216,7 +216,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Teléfono"
+                                android:text="@string/telefono_label_short"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -252,7 +252,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Información del Vehículo"
+                        android:text="@string/informacion_vehiculo"
                         android:textColor="@color/primary_500"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -299,7 +299,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Placa"
+                                android:text="@string/placa_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -346,7 +346,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Modelo"
+                                android:text="@string/modelo_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -393,7 +393,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Capacidad"
+                                android:text="@string/capacidad_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -440,7 +440,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Año"
+                                android:text="@string/anio_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -465,7 +465,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="24dp"
-                    android:text="Editar Perfil del Conductor"
+                    android:text="@string/editar_perfil_conductor"
                     android:textAllCaps="false"
                     android:textColor="@color/primary_500"
                     android:textSize="14sp"

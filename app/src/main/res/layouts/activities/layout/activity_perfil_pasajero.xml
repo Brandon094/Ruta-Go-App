@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="🎯 Pasajero Activo"
+                android:text="@string/status_pasajero_activo"
                 android:textColor="@color/primary_200"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -119,7 +119,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Información Personal"
+                        android:text="@string/informacion_personal"
                         android:textColor="@color/primary_500"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -160,7 +160,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Email"
+                                android:text="@string/email_label"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -213,7 +213,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Teléfono"
+                                android:text="@string/telefono_label_short"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp" />
 
@@ -238,7 +238,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:layout_marginTop="24dp"
-                    android:text="Editar Información Personal"
+                    android:text="@string/editar_informacion_personal"
                     android:textAllCaps="false"
                     android:textColor="@color/primary_500"
                     android:textSize="14sp"
@@ -296,7 +296,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Fidelizacion RutaGo"
+                        android:text="@string/fidelizacion_rutago"
                         android:textColor="@color/warning_700"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -304,7 +304,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="PRO"
+                        android:text="@string/pro_label"
                         android:background="@drawable/bg_badge_status"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp"
@@ -329,7 +329,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Inversión total"
+                            android:text="@string/inversion_total"
                             android:textSize="11sp"
                             android:textColor="@color/text_secondary" />
                         <TextView
@@ -351,7 +351,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Puntos Ruta-Go"
+                            android:text="@string/puntos_rutago"
                             android:textSize="11sp"
                             android:textColor="@color/text_secondary" />
                         <TextView
@@ -369,7 +369,7 @@
                     android:id="@+id/tvRutaFavorita"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ruta favorita: Cargando..."
+                    android:text="@string/cargando_ruta"
                     android:textSize="12sp"
                     android:layout_marginTop="16dp"
                     android:textColor="@color/primary_600"

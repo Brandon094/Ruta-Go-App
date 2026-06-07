@@ -442,4 +442,26 @@
     <string name="seleccionar_ruta">Selecciona la Ruta</string>
     <string name="desc_seleccionar_ruta">Elige el trayecto para realizar la venta física</string>
     <string name="desc_seleccionar">Seleccionar</string>
+
+    <!-- PROFILE SCREENS -->
+    <string name="status_pasajero_activo">🎯 Pasajero Activo</string>
+    <string name="informacion_personal">Información Personal</string>
+    <string name="email_label">Email</string>
+    <string name="telefono_label_short">Teléfono</string>
+    <string name="editar_informacion_personal">Editar Información Personal</string>
+    <string name="fidelizacion_rutago">Fidelizacion RutaGo</string>
+    <string name="pro_label">PRO</string>
+    <string name="inversion_total">Inversión total</string>
+    <string name="puntos_rutago">Puntos Ruta-Go</string>
+    <string name="puntos_format">%s pts</string>
+    <string name="ruta_favorita_prefix">Ruta favorita: %s</string>
+    <string name="cargando_ruta">Cargando...</string>
+
+    <string name="status_conductor_activo">🚗 Conductor Activo</string>
+    <string name="informacion_vehiculo">Información del Vehículo</string>
+    <string name="placa_label">Placa</string>
+    <string name="modelo_label">Modelo</string>
+    <string name="capacidad_label">Capacidad</string>
+    <string name="anio_label">Año</string>
+    <string name="editar_perfil_conductor">Editar Perfil del Conductor</string>
 </resources>
