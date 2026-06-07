@@ -79,15 +79,16 @@ exports.automatedRotation = onSchedule({
         await db.ref().update(updates);
 
         // 5. LIMPIEZA DE ASIENTOS (Preparar el nuevo ciclo)
-        // Reiniciamos todos los horarios en 'disponibilidadAsientos'
-        const dispSnap = await db.ref('disponibilidadAsientos').once('value');
+        // Usamos horariosSnap para asegurar que TODOS los horarios se inicialicen/limpien
         const dispUpdates = {};
 
-        dispSnap.forEach(hSnap => {
-            // Ponemos 'asientosOcupados' en null (vacío)
-            // y reseteamos el contador a 13
-            dispUpdates[`${hSnap.key}/asientosOcupados`] = null;
-            dispUpdates[`${hSnap.key}/asientosDisponibles`] = 13;
+        horariosSnap.forEach(hSnap => {
+            const hId = hSnap.key;
+            // Ponemos 'asientosOcupados' en null (vacío), reseteamos a 13
+            // y nos aseguramos de que existan los campos base
+            dispUpdates[`${hId}/asientosOcupados`] = null;
+            dispUpdates[`${hId}/asientosDisponibles`] = 13;
+            dispUpdates[`${hId}/totalAsientos`] = 13;
         });
 
         await db.ref('disponibilidadAsientos').update(dispUpdates);

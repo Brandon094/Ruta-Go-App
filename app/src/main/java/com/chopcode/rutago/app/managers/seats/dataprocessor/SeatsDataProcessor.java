@@ -51,8 +51,12 @@ public class SeatsDataProcessor {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    Log.e(TAG, "❌ Horario no encontrado: " + horarioId);
-                    callback.onError("Horario no encontrado");
+                    Log.w(TAG, "⚠️ Horario no encontrado en disponibilidad: " + horarioId + ". Reparando...");
+                    // Si no existe, lo reparamos/creamos en background
+                    repairSeatStructure(horarioId);
+                    
+                    // Pero retornamos éxito con valores por defecto para que la app no falle
+                    callback.onSeatsDataLoaded(new HashSet<>(), 13);
                     return;
                 }
 

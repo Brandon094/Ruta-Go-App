@@ -227,12 +227,20 @@ public class RegistroService {
                                         user.getEmail()
                                 );
 
-                                Log.d(TAG, "📝 Creando objeto Pasajero para registro automático:");
+                                // Agregar fecha de registro y rol para usuarios de Google también
+                                Map<String, Object> userData = new HashMap<>();
+                                userData.put("id", uid);
+                                userData.put("nombre", pasajero.getNombre());
+                                userData.put("email", pasajero.getEmail());
+                                userData.put("telefono", pasajero.getTelefono());
+                                userData.put("rol", "usuario");
+                                userData.put("fechaRegistro", System.currentTimeMillis());
+
+                                Log.d(TAG, "📝 Guardando datos de usuario Google en Realtime Database:");
                                 Log.d(TAG, "   - Nombre: " + pasajero.getNombre());
                                 Log.d(TAG, "   - Email: " + pasajero.getEmail());
-                                Log.d(TAG, "   - Teléfono: " + pasajero.getTelefono());
 
-                                rootRef.child("usuarios").child(uid).setValue(pasajero)
+                                rootRef.child("usuarios").child(uid).setValue(userData)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.d(TAG, "✅ Usuario Google registrado exitosamente como pasajero:");
                                             Log.d(TAG, "   - UID: " + uid);

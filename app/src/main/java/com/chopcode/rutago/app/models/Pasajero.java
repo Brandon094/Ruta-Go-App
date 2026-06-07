@@ -2,7 +2,7 @@ package com.chopcode.rutago.app.models;
 
 public class Pasajero extends Usuario {
 
-    String rol = "pasajero";
+    private String rol = "pasajero";
 
     public Pasajero() {
         super();
@@ -14,6 +14,14 @@ public class Pasajero extends Usuario {
     // Constructor para iniciar con google
     public Pasajero(String id, String nombre, String telefono, String email){
         super(id, nombre, telefono, email);
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 
     // Metodo toString
