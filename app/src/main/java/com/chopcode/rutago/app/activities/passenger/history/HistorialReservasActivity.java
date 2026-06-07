@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.adapters.historial.HistorialPasajeroAdapter;
@@ -48,6 +49,7 @@ public class HistorialReservasActivity extends AppCompatActivity {
     // Premium Views
     private MaterialCardView cardPremiumStats;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
+    private com.google.android.material.button.MaterialButton btnIrAReservar;
 
     // Servicios y managers
     private ReservaService reservaService;
@@ -122,6 +124,8 @@ public class HistorialReservasActivity extends AppCompatActivity {
         tvTotalGastadoPremium = findViewById(R.id.tvTotalGastadoPremium);
         tvPuntosLealtad = findViewById(R.id.tvPuntosLealtad);
         tvRutaFavorita = findViewById(R.id.tvRutaFavorita);
+        
+        btnIrAReservar = findViewById(R.id.btnIrAReservar);
     }
 
     private void setupToolbar() {
@@ -154,6 +158,16 @@ public class HistorialReservasActivity extends AppCompatActivity {
                 aplicarFiltroPorChip(checkedIds.get(0));
             }
         });
+
+        if (btnIrAReservar != null) {
+            btnIrAReservar.setOnClickListener(v -> {
+                Log.d(TAG, "🎯 Clic en 'Ir a Reservar' - Redirigiendo a InicioUsuarios");
+                Intent intent = new Intent(this, InicioUsuariosActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            });
+        }
     }
 
     private void aplicarFiltroPorChip(int chipId) {
