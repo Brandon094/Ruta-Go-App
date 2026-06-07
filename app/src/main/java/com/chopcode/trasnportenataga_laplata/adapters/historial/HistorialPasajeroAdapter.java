@@ -132,9 +132,9 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
                 tvInfoConductor.setText("Conductor: " + reserva.getConductor());
             }
 
-            new MaterialAlertDialogBuilder(itemView.getContext())
+            new MaterialAlertDialogBuilder(itemView.getContext(), R.style.AppDialogTheme)
                 .setView(dialogView)
-                .setPositiveButton("Enviar", (dialog, which) -> {
+                .setPositiveButton("Enviar Calificación", (dialog, which) -> {
                     float rating = ratingBar.getRating();
                     String comentario = etComentarios.getText().toString().trim();
                     

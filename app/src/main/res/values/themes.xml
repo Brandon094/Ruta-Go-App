@@ -170,6 +170,29 @@
     <style name="AppDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="android:background">@color/secondary_800</item>
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/secondary_200</item>
         <item name="colorAccent">@color/primary_500</item>
+        <item name="colorPrimary">@color/primary_500</item>
+        <!-- Estilo para los botones del diálogo -->
+        <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogNegativeButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogNeutralButton</item>
+    </style>
+
+    <style name="DialogPositiveButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="rippleColor">@color/primary_500</item>
+    </style>
+
+    <style name="DialogNegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/secondary_300</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DialogNeutralButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/secondary_400</item>
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

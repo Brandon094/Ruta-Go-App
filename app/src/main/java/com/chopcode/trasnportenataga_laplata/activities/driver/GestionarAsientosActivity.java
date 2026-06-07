@@ -180,7 +180,7 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
     }
 
     private void mostrarDialogoReservarFisico(int seatNumber) {
-        new MaterialAlertDialogBuilder(this)
+        new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
                 .setTitle("Confirmar Venta Física")
                 .setMessage("¿Deseas bloquear el asiento " + seatNumber + " por venta física?")
                 .setIcon(R.drawable.ic_seat)
@@ -192,7 +192,7 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
     }
 
     private void mostrarDialogoLiberarAsientoFisico(int seatNumber) {
-        new MaterialAlertDialogBuilder(this)
+        new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
                 .setTitle("Liberar Asiento")
                 .setMessage("¿Deseas liberar el asiento " + seatNumber + " marcado como venta física?")
                 .setIcon(R.drawable.ic_clear)

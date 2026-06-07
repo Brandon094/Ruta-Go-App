@@ -4,6 +4,7 @@ package com.chopcode.trasnportenataga_laplata.activities.driver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
@@ -23,7 +24,9 @@ import com.chopcode.trasnportenataga_laplata.adapters.reservas.ReservaAdapter;
 import com.chopcode.trasnportenataga_laplata.adapters.rutas.RutaAdapter;
 import com.chopcode.trasnportenataga_laplata.config.MyApp;
 import com.chopcode.trasnportenataga_laplata.managers.auths.AuthManager;
+import com.chopcode.trasnportenataga_laplata.adapters.rutas.SelectRouteAdapter;
 import com.chopcode.trasnportenataga_laplata.models.Reserva;
+import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.models.Ruta;
 import com.chopcode.trasnportenataga_laplata.fragments.BottomNavFragment;
 import com.chopcode.trasnportenataga_laplata.viewmodels.driver.EstadisticasViewModel;
@@ -221,10 +224,11 @@ public class InicioConductorActivity extends AppCompatActivity {
         Log.d(TAG, "💬 Mostrando diálogo de confirmación de cierre de sesión");
         registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
 
-        new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
-                .setTitle("Cerrar Sesión")
-                .setMessage("¿Estás seguro de que quieres cerrar sesión?")
-                .setPositiveButton("Sí", (dialog, which) -> {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null);
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setPositiveButton("Cerrar Sesión", (dialog, which) -> {
                     Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
                     registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
 
@@ -233,12 +237,11 @@ public class InicioConductorActivity extends AppCompatActivity {
                     Toast.makeText(this, getString(R.string.sesion_cerrada_exito), Toast.LENGTH_SHORT).show();
                     finish();
                 })
-                .setNegativeButton("Cancelar", (dialog, which) -> {
+                .setNegativeButton("Volver", (dialog, which) -> {
                     Log.d(TAG, "❌ Usuario canceló cierre de sesión");
                     registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
                     dialog.dismiss();
                 })
-                .setIcon(R.drawable.ic_logout)
                 .show();
     }
 
@@ -342,20 +345,26 @@ public class InicioConductorActivity extends AppCompatActivity {
     }
 
     private void mostrarSelectorDeRuta() {
-        String[] nombresRutas = new String[listaRutas.size()];
-        for (int i = 0; i < listaRutas.size(); i++) {
-            Ruta r = listaRutas.get(i);
-            nombresRutas[i] = r.getOrigen() + " → " + r.getDestino() + " (" + 
-                             (r.getHora() != null ? r.getHora().getHora() : "--:--") + ")";
+        if (listaRutas == null || listaRutas.isEmpty()) {
+            Toast.makeText(this, "No hay rutas disponibles", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Selecciona la ruta para vender pasajes")
-                .setItems(nombresRutas, (dialog, which) -> {
-                    abrirGestionAsientos(listaRutas.get(which));
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_select_route, null);
+        RecyclerView rv = dialogView.findViewById(R.id.rvSelectRoute);
+        
+        androidx.appcompat.app.AlertDialog dialog = new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setNegativeButton("Volver", null)
+                .create();
+
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(new SelectRouteAdapter(listaRutas, ruta -> {
+            dialog.dismiss();
+            abrirGestionAsientos(ruta);
+        }));
+
+        dialog.show();
     }
 
     /** Metodo para configurar los observadores de cada seccion */
@@ -730,7 +739,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private void showConfirmationDialog(Reserva reserva, boolean isConfirmation) {
         Log.d(TAG, "💬 Mostrando diálogo de " + (isConfirmation ? "confirmación" : "cancelación"));
 
-        new MaterialAlertDialogBuilder(this)
+        new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
                 .setTitle(isConfirmation ?
                         getString(R.string.confirmar_reserva) :
                         getString(R.string.cancelar_reserva))

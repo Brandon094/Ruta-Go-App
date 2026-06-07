@@ -140,14 +140,15 @@ public class BottomNavFragment extends Fragment {
     }
 
     private void showLogoutConfirmation() {
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle("Cerrar Sesión")
-                .setMessage("¿Estás seguro de que quieres salir?")
-                .setPositiveButton("Sí", (dialog, which) -> {
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_logout, null);
+
+        new MaterialAlertDialogBuilder(getContext(), R.style.AppDialogTheme)
+                .setView(dialogView)
+                .setPositiveButton("Cerrar Sesión", (dialog, which) -> {
                     authManager.signOut(getActivity());
                     getActivity().finishAffinity();
                 })
-                .setNegativeButton("No", null)
+                .setNegativeButton("Volver", null)
                 .show();
     }
 }
