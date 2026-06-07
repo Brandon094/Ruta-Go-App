@@ -232,43 +232,57 @@
             <LinearLayout
                 android:id="@+id/layoutEmptyState"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="400dp"
                 android:visibility="gone"
                 android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:padding="24dp">
 
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_history"
-                    android:tint="@color/text_secondary" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    app:cardCornerRadius="70dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/secondary_800"
+                    app:strokeColor="@color/secondary_700"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="24dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_history"
+                        android:padding="35dp"
+                        app:tint="@color/primary_500" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hay viajes en tu historial"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="16sp"
-                    android:layout_marginTop="16dp"
+                    android:text="@string/empty_historial_titulo"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="280dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Los viajes confirmados o cancelados aparecerán aquí"
+                    android:text="@string/empty_historial_descripcion"
                     android:textColor="@color/text_tertiary"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:gravity="center"
                     android:layout_marginTop="8dp" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnIrAReservar"
+                    style="@style/AppButton.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Realizar mi primera reserva"
-                    android:layout_marginTop="24dp"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    app:strokeColor="@color/primary_500"
-                    app:strokeWidth="1dp" />
+                    android:layout_marginTop="32dp"
+                    android:paddingHorizontal="32dp"
+                    app:icon="@drawable/ic_add"
+                    app:iconGravity="textStart" />
 
             </LinearLayout>
 
