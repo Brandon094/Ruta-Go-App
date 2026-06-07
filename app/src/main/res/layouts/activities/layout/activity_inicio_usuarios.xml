@@ -25,97 +25,96 @@
             app:layout_scrollFlags="scroll|enterAlways"
             style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
 
-        <!-- Header con gradiente usando la nueva paleta -->
-        <LinearLayout
+        <!-- Header Rediseñado - Estilo Premium -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary_500"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="20dp"
+            android:padding="24dp"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
 
-            <!-- Avatar y bienvenida -->
+            <!-- Avatar más grande y elegante -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivUserAvatar"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/ic_person"
+                app:civ_border_color="@color/secondary_900"
+                app:civ_border_width="3dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginStart="20dp"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
+                app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
+                app:layout_constraintStart_toEndOf="@id/ivUserAvatar"
+                app:layout_constraintEnd_toStartOf="@id/statusBadge">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ivUserAvatar"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_person"
-                    app:civ_border_color="@color/secondary_900"
-                    app:civ_border_width="2dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvWelcome"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/bienvenida"
-                        android:textColor="@color/secondary_900"
-                        android:textSize="14sp"
-                        android:alpha="0.9" />
-
-                    <TextView
-                        android:id="@+id/tvUserName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cargando"
-                        android:textColor="@color/secondary_900"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:maxLines="1"
-                        android:ellipsize="end" />
-                </LinearLayout>
-
-                <!-- Badge de estado con nuevos colores -->
-                <com.google.android.material.card.MaterialCardView
+                <TextView
+                    android:id="@+id/tvWelcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/secondary_900"
-                    app:strokeColor="@color/primary_500"
-                    app:strokeWidth="1dp">
+                    android:text="@string/bienvenida"
+                    android:textColor="@color/secondary_900"
+                    android:textSize="14sp"
+                    android:alpha="0.8" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:text="@string/activo"
-                        android:textColor="@color/chip_text_selected"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/tvUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cargando"
+                    android:textColor="@color/secondary_900"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
             </LinearLayout>
+
+            <!-- Badge de estado estilizado -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/statusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/secondary_900"
+                app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
+                app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="6dp"
+                    android:text="@string/activo"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Seccion para contadores y leyenda -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardStatsContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/secondary_800"
                 app:strokeColor="@color/secondary_700"
-                app:strokeWidth="1dp">
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toBottomOf="@id/ivUserAvatar">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center_vertical"
                     android:paddingVertical="16dp">
 
                     <!-- Título con icono -->
@@ -131,7 +130,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_stast"
-                            android:tint="@color/primary_500"
+                            app:tint="@color/primary_500"
                             android:layout_marginEnd="12dp"
                             android:contentDescription="@string/desc_stats_icon" />
 
@@ -178,7 +177,7 @@
                                     android:layout_width="28dp"
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_check"
-                                    android:tint="@color/primary_500"
+                                    app:tint="@color/primary_500"
                                     android:layout_marginBottom="8dp"
                                     android:contentDescription="@string/desc_check_icon" />
 
@@ -227,7 +226,7 @@
                                     android:layout_width="28dp"
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_cancel"
-                                    android:tint="@color/error"
+                                    app:tint="@color/error"
                                     android:layout_marginBottom="8dp"
                                     android:contentDescription="@string/desc_cancel_icon" />
 
@@ -275,7 +274,7 @@
                                     android:layout_width="28dp"
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_checklist"
-                                    android:tint="@color/success"
+                                    app:tint="@color/success"
                                     android:layout_marginBottom="8dp"
                                     android:contentDescription="@string/desc_total_icon" />
 
@@ -342,7 +341,7 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_expand_more"
-                                android:tint="@color/primary_500"
+                                app:tint="@color/primary_500"
                                 android:contentDescription="@string/desc_expand_icon" />
                         </LinearLayout>
                     </RelativeLayout>
@@ -385,7 +384,7 @@
                                         android:layout_width="12dp"
                                         android:layout_height="12dp"
                                         android:src="@drawable/ic_check"
-                                        android:tint="@color/primary_500"
+                                        app:tint="@color/primary_500"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -429,7 +428,7 @@
                                         android:layout_width="12dp"
                                         android:layout_height="12dp"
                                         android:src="@drawable/ic_cancel"
-                                        android:tint="@color/error"
+                                        app:tint="@color/error"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -473,7 +472,7 @@
                                         android:layout_width="12dp"
                                         android:layout_height="12dp"
                                         android:src="@drawable/ic_checklist"
-                                        android:tint="@color/success"
+                                        app:tint="@color/success"
                                         android:layout_marginEnd="4dp" />
 
                                     <TextView
@@ -500,7 +499,7 @@
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Contenido principal simplificado -->
