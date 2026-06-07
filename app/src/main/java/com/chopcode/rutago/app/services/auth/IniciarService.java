@@ -436,13 +436,21 @@ public class IniciarService {
                                         public void onTipoDetectado(String tipo) {
                                             Log.d(TAG, "✅ Usuario Google ya registrado como: " + tipo);
                                             
-                                            // ✅ ACTUALIZAR FOTO DE PERFIL SIEMPRE QUE INICIE SESIÓN
-                                            if (user.getPhotoUrl() != null) {
-                                                String nodo = tipo.equals("conductor") ? "conductores" : "usuarios";
-                                                MyApp.getDatabaseReference(nodo + "/" + user.getUid())
-                                                        .child("photoUrl")
-                                                        .setValue(user.getPhotoUrl().toString());
-                                            }
+                                            // ✅ SOLUCIÓN: Solo actualizar foto si NO tiene una ya guardada
+                                            String nodo = tipo.equals("conductor") ? "conductores" : "usuarios";
+                                            DatabaseReference userRef = MyApp.getDatabaseReference(nodo + "/" + user.getUid());
+                                            
+                                            userRef.child("photoUrl").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    // Si no existe foto en la DB, ponemos la de Google por defecto
+                                                    if (!snapshot.exists() && user.getPhotoUrl() != null) {
+                                                        userRef.child("photoUrl").setValue(user.getPhotoUrl().toString());
+                                                    }
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {}
+                                            });
 
                                             callback.onLoginSuccess(tipo);
                                         }
