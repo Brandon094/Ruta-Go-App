@@ -20,10 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Gestión de Asientos"
-            app:titleTextColor="@color/white"
+            app:titleCentered="true"
+            app:titleTextColor="@color/text_on_primary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/white"
-            android:background="@drawable/header_gradient_driver"
+            app:navigationIconTint="@color/text_on_primary"
+            android:background="@color/primary_500"
             app:menu="@menu/gestionar_asientos_menu"
             style="@style/Widget.MaterialComponents.Toolbar.Primary" />
 
@@ -34,22 +35,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        android:paddingBottom="100dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- CABECERA DE INFORMACIÓN -->
+            <!-- CABECERA DE INFORMACIÓN MEJORADA -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/infoRutaCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/surface"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="1dp"
                 app:layout_constraintTop_toTopOf="parent">
@@ -58,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="24dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -67,11 +68,11 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
                             android:src="@drawable/ic_route"
-                            app:tint="@color/primary_600"
-                            android:layout_marginEnd="12dp" />
+                            app:tint="@color/primary_500"
+                            android:layout_marginEnd="16dp" />
 
                         <TextView
                             android:id="@+id/tvRutaNombre"
@@ -79,181 +80,196 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Natagá -> La Plata"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginVertical="16dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="12dp"
                         android:gravity="center_vertical">
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_time"
-                            app:tint="@color/text_secondary"
-                            android:layout_marginEnd="12dp" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Horario"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary" />
+                            <TextView
+                                android:id="@+id/tvHorarioInfo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="08:00 AM"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary" />
+                        </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/tvHorarioInfo"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Horario: 08:00 AM"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="@color/text_secondary" />
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="16dp"
-                            android:background="@color/divider"
-                            android:layout_marginHorizontal="12dp" />
-
-                        <TextView
-                            android:id="@+id/tvAsientosDispoInfo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Disponibles: 13"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textStyle="bold"
-                            android:textColor="@color/success_700" />
+                            android:orientation="vertical"
+                            android:gravity="end">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Disponibles"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary" />
+                            <TextView
+                                android:id="@+id/tvAsientosDispoInfo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="13 puestos"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/success_500" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- LEYENDA ESTILIZADA -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/leyendaCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_variant"
-                app:layout_constraintTop_toBottomOf="@id/infoRutaCard">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:gravity="center">
-
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginHorizontal="8dp">
-                        <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/success_500" android:layout_marginEnd="6dp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libre" android:textSize="11sp" android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginHorizontal="8dp">
-                        <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/error_500" android:layout_marginEnd="6dp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="App" android:textSize="11sp" android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginHorizontal="8dp">
-                        <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/secondary_500" android:layout_marginEnd="6dp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Físico" android:textSize="11sp" android:textStyle="bold" />
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- INSTRUCCIONES -->
-            <TextView
-                android:id="@+id/tvInstrucciones"
+            <HorizontalScrollView
+                android:id="@+id/leyendaScroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Toca un asiento para marcarlo como vendido o liberarlo"
-                android:textAlignment="center"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="@color/text_tertiary"
-                app:layout_constraintTop_toBottomOf="@id/leyendaCard" />
+                android:scrollbars="none"
+                app:layout_constraintTop_toBottomOf="@id/infoRutaCard">
 
-            <!-- CONTENEDOR DE BUS -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/outline"
+                        app:strokeWidth="1dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:paddingVertical="6dp">
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/success_500" android:layout_marginEnd="8dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libre" android:textSize="12sp" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/outline"
+                        app:strokeWidth="1dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:paddingVertical="6dp">
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/error_500" android:layout_marginEnd="8dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="App" android:textSize="12sp" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="8dp"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/outline"
+                        app:strokeWidth="1dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="12dp" android:paddingVertical="6dp">
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:background="@color/secondary_500" android:layout_marginEnd="8dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Local" android:textSize="12sp" android:textColor="@color/text_primary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- CONTENEDOR DE BUS ESTILIZADO -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/busLayoutCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:cardCornerRadius="24dp"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="32dp"
                 app:cardElevation="2dp"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="2dp"
-                app:layout_constraintTop_toBottomOf="@id/tvInstrucciones">
+                app:layout_constraintTop_toBottomOf="@id/leyendaScroll">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp"
+                    android:padding="28dp"
                     android:background="@drawable/bg_route_header">
 
-                    <!-- SECCIÓN DELANTERA (CABINA) -->
-                    <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CABINA DELANTERA"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.2"
+                        android:textColor="@color/text_tertiary"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="24dp" />
+
+                    <!-- SECCIÓN DELANTERA -->
+                    <GridLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:layout_marginBottom="32dp">
+                        android:columnCount="3"
+                        android:rowCount="2"
+                        android:alignmentMode="alignMargins">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="FRENTE"
-                            android:textAppearance="?attr/textAppearanceLabelLarge"
-                            android:textColor="@color/text_tertiary"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginBottom="12dp" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnConductor"
+                            style="@style/AsientoButtonStyle.Conductor"
+                            android:layout_margin="10dp"
+                            app:icon="@drawable/ic_driver" />
 
-                        <GridLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:columnCount="3"
-                            android:rowCount="2"
-                            android:alignmentMode="alignMargins">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento1" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="10dp" android:text="1" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento2" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="10dp" android:text="2" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento3" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="10dp" android:text="3" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento4" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="10dp" android:text="4" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento5" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="10dp" android:text="5" />
+                    </GridLayout>
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnConductor"
-                                style="@style/AsientoButtonStyle.Conductor"
-                                android:layout_margin="8dp"
-                                app:icon="@drawable/ic_driver" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAsiento1"
-                                style="@style/AsientoButtonStyle.Disponible"
-                                android:layout_margin="8dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAsiento2"
-                                style="@style/AsientoButtonStyle.Disponible"
-                                android:layout_margin="8dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAsiento3"
-                                style="@style/AsientoButtonStyle.Disponible"
-                                android:layout_margin="8dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAsiento4"
-                                style="@style/AsientoButtonStyle.Disponible"
-                                android:layout_margin="8dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnAsiento5"
-                                style="@style/AsientoButtonStyle.Disponible"
-                                android:layout_margin="8dp" />
-                        </GridLayout>
-                    </LinearLayout>
-
-                    <!-- PASILLO / SEPARADOR -->
+                    <!-- PASILLO -->
                     <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/divider"
-                        android:layout_marginHorizontal="20dp"
-                        android:layout_marginBottom="32dp" />
+                        android:layout_width="120dp"
+                        android:layout_height="4dp"
+                        android:background="@drawable/gradient_divider_small"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginVertical="32dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ZONA TRASERA"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.2"
+                        android:textColor="@color/text_tertiary"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="24dp" />
 
                     <!-- SECCIÓN TRASERA -->
                     <LinearLayout
@@ -266,34 +282,45 @@
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:columnCount="2"
-                            android:layout_marginEnd="24dp">
-
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
+                            android:columnCount="2">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="6" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="7" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="8" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="9" />
                         </GridLayout>
+
+                        <!-- Pasillo Central -->
+                        <View
+                            android:layout_width="24dp"
+                            android:layout_height="match_parent" />
 
                         <!-- Bloque Derecho -->
                         <GridLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:columnCount="2">
-
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
-                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="6dp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="10" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="11" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="12" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="8dp" android:text="13" />
                         </GridLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Toca un asiento para gestionar su estado"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                app:layout_constraintTop_toBottomOf="@id/busLayoutCard" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <FrameLayout
         android:id="@+id/bottom_nav_container"
         android:layout_width="match_parent"

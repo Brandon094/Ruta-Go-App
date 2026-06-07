@@ -296,7 +296,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Resumen Premium"
+                        android:text="Fidelizacion RutaGo"
                         android:textColor="@color/warning_700"
                         android:textSize="18sp"
                         android:textStyle="bold" />
