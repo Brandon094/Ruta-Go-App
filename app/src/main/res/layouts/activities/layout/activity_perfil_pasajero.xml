@@ -31,23 +31,55 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <!-- ... (tu header existente se mantiene igual) ... -->
-            <LinearLayout
+            <!-- Círculo de perfil e indicador de edición -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_circle_photo"
-                android:padding="6dp"
                 android:layout_marginTop="5dp">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/ivProfilePicture"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/ic_person"
-                    android:scaleType="centerCrop"
-                    app:civ_border_color="@color/text_on_primary"
-                    app:civ_border_width="4dp" />
+                <LinearLayout
+                    android:id="@+id/containerProfilePhoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_circle_photo"
+                    android:padding="6dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
 
-            </LinearLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/ivProfilePicture"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/ic_person"
+                        android:scaleType="centerCrop"
+                        app:civ_border_color="@color/text_on_primary"
+                        app:civ_border_width="4dp" />
+
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@color/primary_500"
+                    app:strokeColor="@color/white"
+                    app:strokeWidth="2dp"
+                    app:layout_constraintBottom_toBottomOf="@id/containerProfilePhoto"
+                    app:layout_constraintEnd_toEndOf="@id/containerProfilePhoto"
+                    android:layout_margin="2dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_edit"
+                        android:padding="7dp"
+                        app:tint="@color/white"
+                        android:contentDescription="@string/editarPerfil" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tvNombreUsuario"
