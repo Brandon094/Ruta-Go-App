@@ -24,9 +24,7 @@ android {
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'
             ), 'proguard-rules.pro'
-            debuggable true
-            signingConfig signingConfigs.debug
-// ✅ Para poder depurar versiones release si es necesario
+            debuggable false
         }
         debug {
             debuggable true  // ✅ CORREGIDO: Solo una "g"
@@ -134,5 +132,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // ✅ TESTING PARA FIREBASE (opcional, puedes removerlo si no lo usas)
-    androidTestImplementation 'com.google.firebase:firebase-auth-testing:1.0.0'
+    // androidTestImplementation 'com.google.firebase:firebase-auth-testing:1.0.0'
 }
