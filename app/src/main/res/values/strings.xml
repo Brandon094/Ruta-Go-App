@@ -401,11 +401,30 @@
     <string name="_2">2</string>
     <string name="_3">3</string>
     <string name="_0">0</string>
+    <string name="_13">13</string>
     <string name="_26">26</string>
     <string name="error_carga_datos">¡Error al intentar cargar los datos!</string>
     <string name="estad_sticas_r_pidas">Estadísticas rápidas</string>
     <string name="powered_by">Powered by</string>
     <string name="chop_code">ChopCode</string>
+
+    <!-- CONTENT DESCRIPTIONS -->
+    <string name="desc_stats_icon">Icono de estadísticas</string>
+    <string name="desc_check_icon">Icono de check</string>
+    <string name="desc_cancel_icon">Icono de cancelar</string>
+    <string name="desc_total_icon">Icono de total</string>
+    <string name="desc_expand_icon">Icono de expandir</string>
+    <string name="desc_schedule_icon">Icono de horario</string>
+    <string name="desc_person_icon">Icono de persona</string>
+    <string name="desc_license_icon">Icono de licencia</string>
+    <string name="desc_info_icon">Icono de información</string>
+    <string name="desc_money_icon">Icono de dinero</string>
+    <string name="desc_seat_icon">Icono de asiento</string>
+    <string name="desc_route_icon">Icono de ruta</string>
+    <string name="desc_arrow_forward">Icono de flecha adelante</string>
+    <string name="desc_arrow_back">Icono de flecha atrás</string>
+    <string name="desc_refresh_icon">Icono de actualizar</string>
+
     <string name="recuperar_contrasena_title">Recuperar Contraseña</string>
     <string name="instrucciones_recuperar">Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.</string>
     <string name="enviar_instrucciones">Enviar Instrucciones</string>

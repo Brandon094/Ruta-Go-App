@@ -132,7 +132,8 @@
                             android:layout_height="24dp"
                             android:src="@drawable/ic_stast"
                             android:tint="@color/primary_500"
-                            android:layout_marginEnd="12dp" />
+                            android:layout_marginEnd="12dp"
+                            android:contentDescription="@string/desc_stats_icon" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -178,7 +179,8 @@
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_check"
                                     android:tint="@color/primary_500"
-                                    android:layout_marginBottom="8dp" />
+                                    android:layout_marginBottom="8dp"
+                                    android:contentDescription="@string/desc_check_icon" />
 
                                 <TextView
                                     android:id="@+id/tvReservasCount"
@@ -226,7 +228,8 @@
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_cancel"
                                     android:tint="@color/error"
-                                    android:layout_marginBottom="8dp" />
+                                    android:layout_marginBottom="8dp"
+                                    android:contentDescription="@string/desc_cancel_icon" />
 
                                 <TextView
                                     android:id="@+id/tvCanceladasCount"
@@ -273,7 +276,8 @@
                                     android:layout_height="28dp"
                                     android:src="@drawable/ic_checklist"
                                     android:tint="@color/success"
-                                    android:layout_marginBottom="8dp" />
+                                    android:layout_marginBottom="8dp"
+                                    android:contentDescription="@string/desc_total_icon" />
 
                                 <TextView
                                     android:id="@+id/tvTotalCount"
@@ -338,7 +342,8 @@
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_expand_more"
-                                android:tint="@color/primary_500" />
+                                android:tint="@color/primary_500"
+                                android:contentDescription="@string/desc_expand_icon" />
                         </LinearLayout>
                     </RelativeLayout>
 
@@ -527,7 +532,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_schedule"
-                    android:tint="@color/primary_500" />
+                    android:tint="@color/primary_500"
+                    android:contentDescription="@string/desc_schedule_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -546,7 +552,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:icon="@drawable/ic_refresh"
-                    app:iconGravity="textStart" />
+                    app:iconGravity="textStart"
+                    android:contentDescription="@string/tooltip_actualizar" />
             </LinearLayout>
 
             <!-- Pestañas para las rutas -->

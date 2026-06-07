@@ -107,7 +107,8 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_person"
                                 app:tint="@color/secondary_900"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_person_icon"/>
 
                             <TextView
                                 android:id="@+id/tvConductor"
@@ -129,7 +130,8 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_license"
                                 app:tint="@color/secondary_900"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_license_icon"/>
 
                             <TextView
                                 android:id="@+id/tvPlacaVehiculo"
@@ -188,7 +190,8 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_report"
                                 app:tint="@color/primary_500"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_stats_icon"/>
 
                             <TextView
                                 android:id="@+id/tvReservasActivas"
@@ -294,7 +297,8 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_stast"
                                 app:tint="@color/primary_500"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_stats_icon"/>
                             <TextView
                                 android:id="@+id/tvTituloEstadisticas"
                                 style="@style/TextAppearance.MaterialComponents.Headline6"
@@ -341,7 +345,8 @@
                             android:layout_height="24dp"
                             android:src="@drawable/ic_cash"
                             app:tint="@color/primary_500"
-                            android:layout_marginEnd="8dp"/>
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="@string/desc_money_icon"/>
                         <TextView
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="match_parent"
@@ -385,7 +390,8 @@
                                         android:layout_height="24dp"
                                         android:src="@drawable/ic_monetization"
                                         app:tint="@color/warning_600"
-                                        android:layout_marginEnd="8dp"/>
+                                        android:layout_marginEnd="8dp"
+                                        android:contentDescription="@string/desc_money_icon"/>
 
                                     <TextView
                                         style="@style/TextAppearance.MaterialComponents.Subtitle2"
@@ -445,7 +451,9 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_stast"
-                            android:layout_marginEnd="8dp"/>
+                            app:tint="@color/primary_500"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="@string/desc_stats_icon"/>
                         <TextView
                             style="@style/TextAppearance.MaterialComponents.Subtitle2"
                             android:layout_width="match_parent"
@@ -488,7 +496,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:src="@drawable/ic_checklist"
                                     app:tint="@color/success_600"
-                                    android:layout_marginBottom="12dp"/>
+                                    android:layout_marginBottom="12dp"
+                                    android:contentDescription="@string/desc_check_icon"/>
 
                                 <!-- Valor principal -->
                                 <TextView
@@ -556,7 +565,8 @@
                                     android:layout_gravity="center_horizontal"
                                     android:src="@drawable/ic_seat"
                                     app:tint="@color/primary_600"
-                                    android:layout_marginBottom="12dp"/>
+                                    android:layout_marginBottom="12dp"
+                                    android:contentDescription="@string/desc_seat_icon"/>
 
                                 <!-- Valor principal -->
                                 <TextView
@@ -658,7 +668,8 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_arrow_forward"
                                 app:tint="@color/info_600"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_arrow_forward"/>
 
                             <TextView
                                 android:id="@+id/tvNombreRutaHeader1"
@@ -714,7 +725,8 @@
                                         android:layout_width="28dp"
                                         android:layout_height="28dp"
                                         android:src="@drawable/ic_checklist"
-                                        app:tint="@color/info_500" />
+                                        app:tint="@color/info_500"
+                                        android:contentDescription="@string/desc_check_icon" />
 
                                     <TextView
                                         android:id="@+id/tvReservasRuta"
@@ -723,7 +735,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
-                                        android:text="0"
+                                        android:text="@string/_0"
                                         android:textColor="@color/info_100"
                                         android:textStyle="bold" />
 
@@ -776,7 +788,8 @@
                                         android:layout_width="28dp"
                                         android:layout_height="28dp"
                                         android:src="@drawable/ic_seat"
-                                        app:tint="@color/warning_500" />
+                                        app:tint="@color/warning_500"
+                                        android:contentDescription="@string/desc_seat_icon" />
 
                                     <TextView
                                         android:id="@+id/tvAsientosRuta"
@@ -785,7 +798,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
-                                        android:text="13"
+                                        android:text="@string/_13"
                                         android:textColor="@color/warning_100"
                                         android:textStyle="bold" />
 
@@ -839,7 +852,8 @@
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_arrow_back"
                                 app:tint="@color/secondary_600"
-                                android:layout_marginEnd="8dp" />
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="@string/desc_arrow_back" />
 
                             <TextView
                                 android:id="@+id/tvNombreRutaHeader2"
@@ -894,7 +908,8 @@
                                         android:layout_width="28dp"
                                         android:layout_height="28dp"
                                         android:src="@drawable/ic_checklist"
-                                        app:tint="@color/success_500"/>
+                                        app:tint="@color/success_500"
+                                        android:contentDescription="@string/desc_check_icon"/>
 
                                     <TextView
                                         android:id="@+id/tvReservasRuta2"
@@ -903,7 +918,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
-                                        android:text="0"
+                                        android:text="@string/_0"
                                         android:textColor="@color/success_100"
                                         android:textStyle="bold"/>
 
@@ -956,7 +971,8 @@
                                         android:layout_width="28dp"
                                         android:layout_height="28dp"
                                         android:src="@drawable/ic_seat"
-                                        app:tint="@color/warning_500"/>
+                                        app:tint="@color/warning_500"
+                                        android:contentDescription="@string/desc_seat_icon"/>
 
                                     <TextView
                                         android:id="@+id/tvAsientosRuta2"
@@ -965,7 +981,7 @@
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:layout_marginBottom="4dp"
-                                        android:text="13"
+                                        android:text="@string/_13"
                                         android:textColor="@color/warning_100"
                                         android:textStyle="bold"/>
 
@@ -1018,7 +1034,8 @@
                             android:layout_height="18dp"
                             android:src="@drawable/ic_info"
                             app:tint="@color/info_600"
-                            android:layout_marginEnd="8dp"/>
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="@string/desc_info_icon"/>
 
                         <TextView
                             style="@style/TextAppearance.MaterialComponents.Caption"
