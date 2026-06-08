@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.history.HistorialConductorActivity;
@@ -25,6 +26,8 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehiculoService;
+import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.viewmodels.driver.PerfilViewModel;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +42,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
     private StorageService storageService;
     private VehiculoService vehiculoService;
     private AuthManager authManager;
+    private PerfilViewModel perfilViewModel;
     private static final String TAG = "PerfilConductor";
 
     // Lanzador para seleccionar imagen de la galería
@@ -61,6 +65,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
         storageService = new StorageService();
         vehiculoService = new VehiculoService();
         authManager = AuthManager.getInstance();
+        perfilViewModel = new ViewModelProvider(this).get(PerfilViewModel.class);
 
         // Verificar autenticación
         if (!authManager.isUserLoggedIn()) {
@@ -70,8 +75,49 @@ public class PerfilConductorActivity extends AppCompatActivity {
         }
 
         inicializarVistas();
-        cargarInfoConductorCompleta();
+        setupObservers();
+        cargarDatos();
         setupBottomNavigation();
+    }
+
+    private void setupObservers() {
+        // Observar datos del conductor (la "fuente de verdad")
+        perfilViewModel.getConductorLiveData().observe(this, conductor -> {
+            if (conductor != null) {
+                actualizarUI(conductor);
+            }
+        });
+
+        // Observar errores usando la base del ViewModel
+        perfilViewModel.getErrorLiveData().observe(this, error -> {
+            if (error != null && !error.isEmpty()) {
+                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void cargarDatos() {
+        String userId = authManager.getUserId();
+        if (userId != null) {
+            perfilViewModel.cargarDatosCompletos(userId);
+        }
+    }
+
+    private void actualizarUI(com.chopcode.rutago.app.models.Conductor conductor) {
+        tvConductor.setText(conductor.getNombre() != null ? conductor.getNombre() : "Conductor");
+        tvEmail.setText(conductor.getEmail() != null ? conductor.getEmail() : "No disponible");
+        tvTelefono.setText(conductor.getTelefono() != null ? conductor.getTelefono() : "No disponible");
+        tvPlaca.setText(conductor.getPlacaVehiculo() != null ? conductor.getPlacaVehiculo() : "No asignado");
+
+        // ✅ CARGAR FOTO CENTRALIZADA USANDO EL VIEWMODEL
+        ImageUtils.loadProfilePhoto(this, conductor.getPhotoUrl(), ivProfilePicture);
+
+        // Cargar detalles del vehículo si tiene placa
+        if (conductor.getPlacaVehiculo() != null && !conductor.getPlacaVehiculo().isEmpty()) {
+            cargarInformacionVehiculo(conductor.getPlacaVehiculo());
+        } else {
+            mostrarVehiculoNoDisponible();
+        }
     }
 
     private void setupBottomNavigation() {
@@ -175,138 +221,6 @@ public class PerfilConductorActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Método unificado para cargar toda la información del conductor, usuario y vehículo
-     */
-    private void cargarInfoConductorCompleta() {
-        String userId = authManager.getUserId();
-        if (userId == null) {
-            Toast.makeText(this, "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show();
-            mostrarDatosPorDefecto();
-            return;
-        }
-
-        // CARGAR TODO EN PARALELO: conductor + usuario + vehículo
-        userService.loadDriverData(userId, new UserService.DriverDataCallback() {
-            @Override
-            public void onDriverDataLoaded(com.chopcode.rutago.app.models.Conductor conductor) {
-                // CARGAR DATOS DE USUARIO (email) EN PARALELO
-                cargarDatosUsuarioYCompletar(conductor.getNombre(), conductor.getTelefono(), conductor.getPlacaVehiculo(), userId);
-            }
-
-            @Override
-            public void onError(String error) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "Error cargando conductor: " + error);
-                    Toast.makeText(PerfilConductorActivity.this, "Error al cargar datos del conductor", Toast.LENGTH_SHORT).show();
-                    cargarSoloDatosUsuario(userId);
-                });
-            }
-        });
-    }
-
-    private void cargarDatosUsuarioYCompletar(String nombreConductor, String telefonoConductor, String placaVehiculo, String userId) {
-        userService.loadUserData(userId, new UserService.UserDataCallback() {
-            @Override
-            public void onUserDataLoaded(com.chopcode.rutago.app.models.Usuario usuario) {
-                runOnUiThread(() -> {
-                    actualizarUICompleta(nombreConductor, telefonoConductor, placaVehiculo, usuario);
-
-                    if (placaVehiculo != null && !placaVehiculo.isEmpty()) {
-                        cargarInformacionVehiculo(placaVehiculo);
-                    } else {
-                        mostrarVehiculoNoDisponible();
-                    }
-                });
-            }
-
-            @Override
-            public void onError(String error) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "Error cargando usuario: " + error);
-                    actualizarUIConDatosMinimos(nombreConductor, telefonoConductor, placaVehiculo);
-
-                    if (placaVehiculo != null && !placaVehiculo.isEmpty()) {
-                        cargarInformacionVehiculo(placaVehiculo);
-                    } else {
-                        mostrarVehiculoNoDisponible();
-                    }
-                });
-            }
-        });
-    }
-
-    private void actualizarUICompleta(String nombre, String telefono, String placa, com.chopcode.rutago.app.models.Usuario usuario) {
-        tvConductor.setText(nombre != null ? nombre : "Conductor");
-
-        String telefonoFinal = telefono != null ? telefono :
-                (usuario.getTelefono() != null ? usuario.getTelefono() : "No disponible");
-        tvTelefono.setText(telefonoFinal);
-
-        String emailFinal = usuario.getEmail() != null ? usuario.getEmail() :
-                (authManager.getCurrentUser() != null ? authManager.getCurrentUser().getEmail() : "No disponible");
-        tvEmail.setText(emailFinal);
-
-        tvPlaca.setText(placa != null ? placa : "No asignado");
-
-        // ✅ CARGAR FOTO DE PERFIL SI EXISTE
-        if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
-            Glide.with(this)
-                    .load(usuario.getPhotoUrl())
-                    .placeholder(R.drawable.ic_person)
-                    .error(R.drawable.ic_person)
-                    .into(ivProfilePicture);
-        }
-    }
-
-    private void actualizarUIConDatosMinimos(String nombre, String telefono, String placa) {
-        tvConductor.setText(nombre != null ? nombre : "Conductor");
-        tvTelefono.setText(telefono != null ? telefono : "No disponible");
-        tvPlaca.setText(placa != null ? placa : "No asignado");
-
-        if (authManager.getCurrentUser() != null) {
-            tvEmail.setText(authManager.getCurrentUser().getEmail());
-        } else {
-            tvEmail.setText("No disponible");
-        }
-    }
-
-    private void cargarSoloDatosUsuario(String userId) {
-        userService.loadUserData(userId, new UserService.UserDataCallback() {
-            @Override
-            public void onUserDataLoaded(com.chopcode.rutago.app.models.Usuario usuario) {
-                runOnUiThread(() -> {
-                    tvConductor.setText("Conductor");
-                    tvTelefono.setText(usuario.getTelefono() != null ? usuario.getTelefono() : "No disponible");
-                    tvEmail.setText(usuario.getEmail() != null ? usuario.getEmail() : "No disponible");
-                    tvPlaca.setText("No asignado");
-                    mostrarVehiculoNoDisponible();
-                });
-            }
-
-            @Override
-            public void onError(String error) {
-                runOnUiThread(() -> {
-                    mostrarDatosPorDefecto();
-                });
-            }
-        });
-    }
-
-    private void mostrarDatosPorDefecto() {
-        tvConductor.setText("Conductor");
-        tvTelefono.setText("No disponible");
-        tvPlaca.setText("No asignado");
-
-        if (authManager.getCurrentUser() != null) {
-            tvEmail.setText(authManager.getCurrentUser().getEmail());
-        } else {
-            tvEmail.setText("No disponible");
-        }
-
-        mostrarVehiculoNoDisponible();
-    }
-
     private void cargarInformacionVehiculo(String placa) {
         vehiculoService.obtenerVehiculoPorPlaca(placa, new VehiculoService.VehiculoCallback() {
             @Override
@@ -364,6 +278,9 @@ public class PerfilConductorActivity extends AppCompatActivity {
         finish();
     }
 
+    // --- MÉTODOS ELIMINADOS POR LA REFACTORIZACIÓN DEL VIEWMODEL ---
+    // (cargarInfoConductorCompleta, cargarDatosUsuarioYCompletar, actualizarUICompleta, etc.)
+
     private void subirFotoDePerfil(Uri uri) {
         String userId = authManager.getUserId();
         if (userId == null) return;
@@ -374,24 +291,21 @@ public class PerfilConductorActivity extends AppCompatActivity {
         storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
             @Override
             public void onSuccess(String downloadUrl) {
-                // ✅ CORREGIDO: Actualizar primero en el nodo 'conductores'
+                // ✅ Simplificado: El servicio ya se encarga de actualizar ambos nodos (conductores y usuarios)
                 userService.updateProfilePicture(userId, downloadUrl, "conductores", new UserService.UserUpdateCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(() -> {
-                            Log.d(TAG, "✅ Foto actualizada en nodo conductores y UI");
-                            Glide.with(PerfilConductorActivity.this)
-                                    .load(downloadUrl)
-                                    .placeholder(R.drawable.ic_person)
-                                    .into(ivProfilePicture);
+                            Log.d(TAG, "✅ Foto actualizada exitosamente");
+                            ImageUtils.loadProfilePhoto(PerfilConductorActivity.this, downloadUrl, ivProfilePicture);
                             Toast.makeText(PerfilConductorActivity.this, "Foto de perfil actualizada", Toast.LENGTH_SHORT).show();
                         });
                     }
 
                     @Override
                     public void onError(String error) {
-                        Log.e(TAG, "❌ Error actualizando foto en DB: " + error);
-                        runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al guardar enlace: " + error, Toast.LENGTH_SHORT).show());
+                        Log.e(TAG, "❌ Error actualizando enlace: " + error);
+                        runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
                     }
                 });
             }
@@ -410,6 +324,6 @@ public class PerfilConductorActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        cargarInfoConductorCompleta();
+        cargarDatos();
     }
 }

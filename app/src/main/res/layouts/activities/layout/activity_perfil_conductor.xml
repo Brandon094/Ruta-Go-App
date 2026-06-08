@@ -39,46 +39,42 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp">
 
-                <LinearLayout
-                    android:id="@+id/containerProfilePhoto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_circle_photo_driver"
-                    android:padding="6dp"
+                <!-- Avatar del Conductor con Borde Neon Naranja -->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfilePicture"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:src="@drawable/bg_profile_placeholder"
+                    app:civ_border_color="@color/primary_500"
+                    app:civ_border_width="4dp"
+                    app:civ_circle_background_color="@color/surface"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:contentDescription="@string/conductor" />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/ivProfilePicture"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/ic_person"
-                        android:scaleType="centerCrop"
-                        app:civ_border_color="@color/text_on_primary"
-                        app:civ_border_width="4dp" />
-
-                </LinearLayout>
-
+                <!-- Botón de edición flotante sobre la foto -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    app:cardCornerRadius="16dp"
+                    android:id="@+id/btnChangePhoto"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    app:cardCornerRadius="17dp"
                     app:cardElevation="6dp"
                     app:cardBackgroundColor="@color/primary_500"
                     app:strokeColor="@color/white"
                     app:strokeWidth="2dp"
-                    app:layout_constraintBottom_toBottomOf="@id/containerProfilePhoto"
-                    app:layout_constraintEnd_toEndOf="@id/containerProfilePhoto"
-                    android:layout_margin="2dp">
+                    app:layout_constraintBottom_toBottomOf="@id/ivProfilePicture"
+                    app:layout_constraintEnd_toEndOf="@id/ivProfilePicture"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@drawable/ic_edit"
-                        android:padding="7dp"
+                        android:padding="8dp"
                         app:tint="@color/white"
                         android:contentDescription="@string/editarPerfil" />
-
                 </com.google.android.material.card.MaterialCardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
