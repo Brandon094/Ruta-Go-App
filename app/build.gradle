@@ -4,6 +4,13 @@ plugins {
     id 'com.google.firebase.crashlytics'
 }
 
+// Cargar archivo secrets.properties
+def secretsPropertiesFile = rootProject.file("secrets.properties")
+def secretsProperties = new Properties()
+if (secretsPropertiesFile.exists()) {
+    secretsProperties.load(new FileInputStream(secretsPropertiesFile))
+}
+
 android {
     namespace 'com.chopcode.rutago.app'
     compileSdk 34
@@ -16,6 +23,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  // ✅ CORRECTO
+
+        // Inyectar llaves desde secrets.properties como recursos de strings
+        resValue "string", "default_web_client_id", secretsProperties['GOOGLE_WEB_CLIENT_ID'] ?: ""
     }
 
     buildTypes {

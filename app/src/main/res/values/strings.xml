@@ -394,9 +394,8 @@
     <string name="error_confirmacion">Las contraseñas no coinciden</string>
 
     <!-- ==================== -->
-    <!-- API KEYS -->
+    <!-- API KEYS (Inyectadas desde secrets.properties) -->
     <!-- ==================== -->
-    <string name="default_web_client_id" translatable="false">175264872585-abombvqq36bqqeet86onnhkf7uep6c60.apps.googleusercontent.com</string>
     <string name="_1">1</string>
     <string name="_2">2</string>
     <string name="_3">3</string>

@@ -18,5 +18,15 @@ firebase_functions/node_modules/
 firebase_functions/firebase-debug.log
 firebase_functions/package-lock.json
 
+# Secrets
+secrets.properties
+
 # Firebase Config (Sensitive)
 .firebaserc
+google-services.json
+app/google-services.json
+service-account.json
+app/src/main/assets/service-account.json
+*.pem
+*.jks
+release/
