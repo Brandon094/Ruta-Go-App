@@ -23,9 +23,6 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true  // ✅ CORRECTO
-
-        // Inyectar llaves desde secrets.properties como recursos de strings
-        resValue "string", "default_web_client_id", secretsProperties['GOOGLE_WEB_CLIENT_ID'] ?: ""
     }
 
     buildTypes {
