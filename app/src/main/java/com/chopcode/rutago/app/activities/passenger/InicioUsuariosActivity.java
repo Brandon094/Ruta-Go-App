@@ -27,6 +27,7 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.models.Horario;
 import com.chopcode.rutago.app.models.Usuario;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
+import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -352,15 +353,9 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     public void onUserDataLoaded(Usuario usuario) {
         runOnUiThread(() -> {
             uiManager.updateUserInfo(usuario);  // Actualiza los TextViews con los datos del usuario
-            
-            // ✅ CARGAR FOTO DE PERFIL DE GOOGLE SI EXISTE
-            if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
-                Glide.with(this)
-                        .load(usuario.getPhotoUrl())
-                        .placeholder(R.drawable.ic_person)
-                        .error(R.drawable.ic_person)
-                        .into(ivUserAvatar);
-            }
+
+            // ✅ CARGAR FOTO DE PERFIL CENTRALIZADA
+            ImageUtils.loadProfilePhoto(this, usuario.getPhotoUrl(), ivUserAvatar);
         });
     }
 

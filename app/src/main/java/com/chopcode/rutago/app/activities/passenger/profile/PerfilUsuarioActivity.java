@@ -25,6 +25,7 @@ import com.chopcode.rutago.app.models.Usuario;
 import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService;
+import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashMap;
@@ -221,10 +222,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     public void onSuccess() {
                         runOnUiThread(() -> {
                             Log.d(TAG, "✅ Foto actualizada en DB y UI");
-                            Glide.with(PerfilUsuarioActivity.this)
-                                    .load(downloadUrl)
-                                    .placeholder(R.drawable.ic_person)
-                                    .into(ivProfilePicture);
+                            ImageUtils.loadProfilePhoto(PerfilUsuarioActivity.this, downloadUrl, ivProfilePicture);
                             Toast.makeText(PerfilUsuarioActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
                         });
                     }
@@ -306,14 +304,8 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                         Log.w(TAG, "⚠️ Email del usuario no disponible");
                     }
 
-                    // ✅ CARGAR FOTO DE PERFIL SI EXISTE
-                    if (usuario.getPhotoUrl() != null && !usuario.getPhotoUrl().isEmpty()) {
-                        Glide.with(PerfilUsuarioActivity.this)
-                                .load(usuario.getPhotoUrl())
-                                .placeholder(R.drawable.ic_person)
-                                .error(R.drawable.ic_person)
-                                .into(ivProfilePicture);
-                    }
+                    // ✅ CARGAR FOTO DE PERFIL CENTRALIZADA
+                    ImageUtils.loadProfilePhoto(PerfilUsuarioActivity.this, usuario.getPhotoUrl(), ivProfilePicture);
 
                     // ✅ CARGAR ESTADÍSTICAS PREMIUM DESPUÉS DE CARGAR USUARIO
                     cargarEstadisticasPremium(userId);

@@ -35,6 +35,7 @@ import com.chopcode.rutago.app.viewmodels.driver.PerfilViewModel;
 import com.chopcode.rutago.app.viewmodels.driver.RutasViewModel;
 import com.chopcode.rutago.app.viewmodels.driver.ReservasViewModel;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
+import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -453,14 +454,8 @@ public class InicioConductorActivity extends AppCompatActivity {
         // Observar estado de carga desde PerfilViewModel
         perfilViewModel.getConductorLiveData().observe(this, conductor -> {
             if (conductor != null) {
-                // ✅ CARGAR FOTO DE PERFIL DE GOOGLE SI EXISTE
-                if (conductor.getPhotoUrl() != null && !conductor.getPhotoUrl().isEmpty()) {
-                    Glide.with(this)
-                            .load(conductor.getPhotoUrl())
-                            .placeholder(R.drawable.ic_person)
-                            .error(R.drawable.ic_person)
-                            .into(ivConductorAvatar);
-                }
+                // ✅ CARGAR FOTO DE PERFIL CENTRALIZADA
+                ImageUtils.loadProfilePhoto(this, conductor.getPhotoUrl(), ivConductorAvatar);
             }
         });
 
