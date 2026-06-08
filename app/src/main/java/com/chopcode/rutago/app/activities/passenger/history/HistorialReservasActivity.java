@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.chopcode.rutago.app.activities.passenger.InicioUsuariosActivity;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -162,7 +163,7 @@ public class HistorialReservasActivity extends AppCompatActivity {
         if (btnIrAReservar != null) {
             btnIrAReservar.setOnClickListener(v -> {
                 Log.d(TAG, "🎯 Clic en 'Ir a Reservar' - Redirigiendo a InicioUsuarios");
-                Intent intent = new Intent(this, InicioUsuariosActivity.class);
+                Intent intent = new Intent(HistorialReservasActivity.this, InicioUsuariosActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 finish();

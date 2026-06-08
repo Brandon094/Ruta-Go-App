@@ -151,7 +151,7 @@ public class UserDashboardManager {
                     dataSnapshot.getValue(com.chopcode.rutago.app.models.Reserva.class);
             if (reserva != null) {
                 String estado = reserva.getEstadoReserva();
-                if (estado != null && (estado.equals("Confirmada"))) {
+                if (estado != null && (estado.equalsIgnoreCase("confirmado") || estado.equalsIgnoreCase("confirmada"))) {
                     count++;
                 }
             }
@@ -166,7 +166,7 @@ public class UserDashboardManager {
                     dataSnapshot.getValue(com.chopcode.rutago.app.models.Reserva.class);
             if (reserva != null) {
                 String estado = reserva.getEstadoReserva();
-                if (estado != null && (estado.equals("Cancelada"))) {
+                if (estado != null && (estado.equalsIgnoreCase("cancelado") || estado.equalsIgnoreCase("cancelada"))) {
                     count++;
                 }
             }
@@ -181,7 +181,8 @@ public class UserDashboardManager {
                     dataSnapshot.getValue(com.chopcode.rutago.app.models.Reserva.class);
             if (reserva != null) {
                 String estado = reserva.getEstadoReserva();
-                if (estado != null && estado.equals("Confirmada") || estado.equals("Cancelada")) {
+                if (estado != null && (estado.equalsIgnoreCase("confirmado") || estado.equalsIgnoreCase("confirmada") ||
+                        estado.equalsIgnoreCase("cancelado") || estado.equalsIgnoreCase("cancelada"))) {
                     count++;
                 }
             }
