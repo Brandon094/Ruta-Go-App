@@ -62,22 +62,37 @@ public class BottomNavFragment extends Fragment {
     private void setupNavigation(BottomNavigationView navView) {
         navView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
+            int currentId = navView.getSelectedItemId();
             
+            if (id == currentId) return false;
+
+            // Determinar dirección de la animación
+            int currentPos = getMenuPosition(currentId);
+            int targetPos = getMenuPosition(id);
+            boolean slideRight = targetPos > currentPos;
+
             if (id == R.id.nav_home) {
-                navigateToHome();
+                navigateToHome(slideRight);
                 return true;
             } else if (id == R.id.nav_history) {
-                navigateToHistory();
+                navigateToHistory(slideRight);
                 return true;
             } else if (id == R.id.nav_profile) {
-                navigateToProfile();
+                navigateToProfile(slideRight);
                 return true;
             } else if (id == R.id.nav_logout) {
                 showLogoutConfirmation();
-                return false; // Don't select logout item
+                return false;
             }
             return false;
         });
+    }
+
+    private int getMenuPosition(int id) {
+        if (id == R.id.nav_home) return 0;
+        if (id == R.id.nav_history) return 1;
+        if (id == R.id.nav_profile) return 2;
+        return 0;
     }
 
     private void setSelectedMenu(BottomNavigationView navView) {
@@ -94,7 +109,6 @@ public class BottomNavFragment extends Fragment {
         } else if (currentActivity.contains("Perfil") && !currentActivity.contains("Editar")) {
             navView.setSelectedItemId(R.id.nav_profile);
         } else if (currentActivity.contains("Editar")) {
-            // Si estamos editando, seleccionamos el ícono de perfil pero NO disparamos navegación
             navView.setSelectedItemId(R.id.nav_profile);
         }
 
@@ -102,7 +116,7 @@ public class BottomNavFragment extends Fragment {
         setupNavigation(navView);
     }
 
-    private void navigateToHome() {
+    private void navigateToHome(boolean slideRight) {
         if (getActivity() instanceof InicioConductorActivity || getActivity() instanceof InicioUsuariosActivity) return;
         
         Intent intent;
@@ -113,9 +127,10 @@ public class BottomNavFragment extends Fragment {
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+        applyTransition(slideRight);
     }
 
-    private void navigateToHistory() {
+    private void navigateToHistory(boolean slideRight) {
         if (getActivity() instanceof HistorialConductorActivity || getActivity() instanceof HistorialReservasActivity) return;
 
         Intent intent;
@@ -125,9 +140,10 @@ public class BottomNavFragment extends Fragment {
             intent = new Intent(getActivity(), HistorialReservasActivity.class);
         }
         startActivity(intent);
+        applyTransition(slideRight);
     }
 
-    private void navigateToProfile() {
+    private void navigateToProfile(boolean slideRight) {
         if (getActivity() instanceof PerfilConductorActivity || getActivity() instanceof PerfilUsuarioActivity) return;
 
         Intent intent;
@@ -137,6 +153,16 @@ public class BottomNavFragment extends Fragment {
             intent = new Intent(getActivity(), PerfilUsuarioActivity.class);
         }
         startActivity(intent);
+        applyTransition(slideRight);
+    }
+
+    private void applyTransition(boolean slideRight) {
+        if (getActivity() == null) return;
+        if (slideRight) {
+            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        } else {
+            getActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        }
     }
 
     private void showLogoutConfirmation() {
