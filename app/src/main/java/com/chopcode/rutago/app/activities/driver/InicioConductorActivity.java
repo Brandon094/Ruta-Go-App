@@ -69,12 +69,11 @@ public class InicioConductorActivity extends AppCompatActivity {
 
     // Views de estadísticas
     private TextView tvReservasConfirmadas, tvAsientosDisponibles, tvTotalIngresos;
-    private TextView tvInfoCapacidad, tvInfoIngresos, tvInfoReservas;
     private TextView tvUltimaActualizacion;
-
-    // Views por ruta
-    private TextView tvNombreRutaReservas, tvReservasRuta, tvNombreRutaAsientos, tvAsientosRuta;
-    private TextView tvNombreRutaReservas2, tvReservasRuta2, tvNombreRutaAsientos2, tvAsientosRuta2;
+    
+    // Views de desglose por ruta (El Plus)
+    private TextView tvNombreRutaReservas, tvReservasRuta, tvAsientosRuta;
+    private TextView tvNombreRutaReservas2, tvReservasRuta2, tvAsientosRuta2;
     private TextView tvContadorReservas, tvContadorRutas;
 
     // ViewModels INDIVIDUALES
@@ -166,26 +165,15 @@ public class InicioConductorActivity extends AppCompatActivity {
         tvReservasConfirmadas = findViewById(R.id.tvReservasConfirmadas);
         tvAsientosDisponibles = findViewById(R.id.tvAsientosDisponibles);
         tvTotalIngresos = findViewById(R.id.tvTotalIngresos);
-        tvInfoCapacidad = findViewById(R.id.tvInfoCapacidad);
-        tvInfoIngresos = findViewById(R.id.tvInfoIngresos);
-        tvInfoReservas = findViewById(R.id.tvInfoReservas);
         tvUltimaActualizacion = findViewById(R.id.tvUltimaActualizacion);
 
+        // Desglose por ruta
         tvNombreRutaReservas = findViewById(R.id.tvNombreRutaReservas);
         tvReservasRuta = findViewById(R.id.tvReservasRuta);
-        tvNombreRutaAsientos = findViewById(R.id.tvNombreRutaAsientos);
         tvAsientosRuta = findViewById(R.id.tvAsientosRuta);
-
         tvNombreRutaReservas2 = findViewById(R.id.tvNombreRutaReservas2);
         tvReservasRuta2 = findViewById(R.id.tvReservasRuta2);
-        tvNombreRutaAsientos2 = findViewById(R.id.tvNombreRutaAsientos2);
         tvAsientosRuta2 = findViewById(R.id.tvAsientosRuta2);
-
-        // ✅ AGREGAR REFERENCIAS DE TEXTVIEW DE NOMBRES SI NO ESTÁN ASIGNADOS
-        tvNombreRutaReservas = findViewById(R.id.tvNombreRutaReservas);
-        tvNombreRutaReservas2 = findViewById(R.id.tvNombreRutaReservas2);
-        tvNombreRutaAsientos = findViewById(R.id.tvNombreRutaAsientos);
-        tvNombreRutaAsientos2 = findViewById(R.id.tvNombreRutaAsientos2);
 
         tvContadorReservas = findViewById(R.id.tvContadorReservas);
         tvContadorRutas = findViewById(R.id.tvContadorRutas);
@@ -200,22 +188,11 @@ public class InicioConductorActivity extends AppCompatActivity {
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
 
         // Configurar valores iniciales usando strings
-        tvReservasConfirmadas.setText(getString(R.string.contador_reservas, 0));
-        tvAsientosDisponibles.setText("26"); // Valor por defecto
-        tvTotalIngresos.setText(getString(R.string.formato_moneda, "0"));
-        tvContadorReservas.setText(getString(R.string.contador_reservas, 0));
-        tvContadorRutas.setText(getString(R.string.contador_rutas, 0));
-
-        // Configurar información por defecto usando strings
-        if (tvInfoCapacidad != null) {
-            tvInfoCapacidad.setText(getString(R.string.ocupacion_porcentaje, 26, 0));
-        }
-        if (tvInfoIngresos != null) {
-            tvInfoIngresos.setText(getString(R.string.acumulado_desde_inicio));
-        }
-        if (tvInfoReservas != null) {
-            tvInfoReservas.setText(getString(R.string.total_del_dia));
-        }
+        tvReservasConfirmadas.setText("0");
+        tvAsientosDisponibles.setText("13"); // Valor por defecto
+        tvTotalIngresos.setText("$0");
+        tvContadorReservas.setText("0");
+        tvContadorRutas.setText("0");
 
         // Actualizar tiempo de actualización
         actualizarTiempoActualizacion();
@@ -582,45 +559,28 @@ public class InicioConductorActivity extends AppCompatActivity {
         });
 
         // Observar estadísticas por ruta
-        // Ruta 1
         estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> {
-            if (count != null) {
-                tvReservasRuta.setText(String.valueOf(count));
-            }
+            if (count != null && tvReservasRuta != null) tvReservasRuta.setText(String.valueOf(count));
         });
 
         estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> {
-            if (count != null) {
-                tvAsientosRuta.setText(String.valueOf(count));
-            }
+            if (count != null && tvAsientosRuta != null) tvAsientosRuta.setText(String.valueOf(count));
         });
 
-        // Ruta 2
         estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> {
-            if (count != null) {
-                tvReservasRuta2.setText(String.valueOf(count));
-            }
+            if (count != null && tvReservasRuta2 != null) tvReservasRuta2.setText(String.valueOf(count));
         });
 
         estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> {
-            if (count != null) {
-                tvAsientosRuta2.setText(String.valueOf(count));
-            }
+            if (count != null && tvAsientosRuta2 != null) tvAsientosRuta2.setText(String.valueOf(count));
         });
 
-        // ✅ OBSERVAR NOMBRES DE RUTAS PARA LAS TARJETAS
         estadisticasViewModel.getNombreRuta1LiveData().observe(this, nombre -> {
-            if (nombre != null) {
-                tvNombreRutaReservas.setText(nombre);
-                tvNombreRutaAsientos.setText(nombre);
-            }
+            if (nombre != null && tvNombreRutaReservas != null) tvNombreRutaReservas.setText(nombre);
         });
 
         estadisticasViewModel.getNombreRuta2LiveData().observe(this, nombre -> {
-            if (nombre != null) {
-                tvNombreRutaReservas2.setText(nombre);
-                tvNombreRutaAsientos2.setText(nombre);
-            }
+            if (nombre != null && tvNombreRutaReservas2 != null) tvNombreRutaReservas2.setText(nombre);
         });
 
         Log.d(TAG, "✅ Observadores configurados");
@@ -716,32 +676,17 @@ public class InicioConductorActivity extends AppCompatActivity {
         showEmptyReservations();
         showEmptyRoutes();
         tvConductor.setText(getString(R.string.no_disponible));
-        tvPlacaVehiculo.setText(getString(R.string.placaVehiculo, getString(R.string.no_disponible)));
+        tvPlacaVehiculo.setText("Placa: --");
 
-        // Valores por defecto usando strings
-        tvReservasConfirmadas.setText(getString(R.string.contador_reservas, 0));
-        tvAsientosDisponibles.setText("N/A"); // Valor por defecto
-        tvTotalIngresos.setText(getString(R.string.formato_moneda, "0"));
-        tvContadorReservas.setText(getString(R.string.contador_reservas, 0));
-        tvContadorRutas.setText(getString(R.string.contador_rutas, 0));
-
-        // Datos por defecto para cada ruta individual
-        if (tvReservasRuta != null) tvReservasRuta.setText(getString(R.string.contador_reservas, 0));
-        if (tvAsientosRuta != null) tvAsientosRuta.setText("N/A"); // Valor por defecto
-        if (tvReservasRuta2 != null) tvReservasRuta2.setText(getString(R.string.contador_reservas, 0));
-        if (tvAsientosRuta2 != null) tvAsientosRuta2.setText("N/A"); // Valor por defecto
+        // Valores por defecto
+        tvReservasConfirmadas.setText("0");
+        tvAsientosDisponibles.setText("13");
+        tvTotalIngresos.setText("$0");
+        tvContadorReservas.setText("0");
+        tvContadorRutas.setText("0");
 
         // Actualizar tiempo de actualización
         actualizarTiempoActualizacion();
-
-        // Actualizar información de capacidad
-        actualizarInformacionCapacidad(0);
-
-        // Datos por defecto para estadísticas por ruta
-        if (tvNombreRutaReservas != null) tvNombreRutaReservas.setText(getString(R.string.nataga_laplata));
-        if (tvNombreRutaAsientos != null) tvNombreRutaAsientos.setText(getString(R.string.nataga_laplata));
-        if (tvNombreRutaReservas2 != null) tvNombreRutaReservas2.setText(getString(R.string.laplata_nataga));
-        if (tvNombreRutaAsientos2 != null) tvNombreRutaAsientos2.setText(getString(R.string.laplata_nataga));
 
         Log.d(TAG, "✅ Datos por defecto mostrados");
     }
@@ -797,16 +742,6 @@ public class InicioConductorActivity extends AppCompatActivity {
         tvEmptyRutas.setVisibility(hayRutas ? View.GONE : View.VISIBLE);
         rvProximasRutas.setVisibility(hayRutas ? View.VISIBLE : View.GONE);
 
-        // Controlar visibilidad de la segunda ruta
-        View layoutRuta2 = findViewById(R.id.layoutRuta2);
-        boolean haySegundaRuta = hayRutas && listaRutas.size() >= 2;
-
-        if (layoutRuta2 != null) {
-            layoutRuta2.setVisibility(haySegundaRuta ? View.VISIBLE : View.GONE);
-            Log.d(TAG, "✅ Visibilidad de segunda ruta: " +
-                    (haySegundaRuta ? "VISIBLE" : "GONE"));
-        }
-
         Log.d(TAG, "✅ UI de rutas actualizada - " +
                 (hayRutas ? "Mostrando " + listaRutas.size() + " rutas" : "Sin rutas"));
     }
@@ -815,35 +750,14 @@ public class InicioConductorActivity extends AppCompatActivity {
     private void actualizarTiempoActualizacion() {
         if (tvUltimaActualizacion != null) {
             String currentTime = timeFormat.format(new Date());
-            tvUltimaActualizacion.setText(String.format(getString(R.string.ultima_actualizacion), currentTime));
+            tvUltimaActualizacion.setText("Actualizado: " + currentTime);
             Log.d(TAG, "🕐 Tiempo de actualización: " + currentTime);
         }
     }
 
     /** Metodo para calcular el porcentaje de ocupacion total de las 2 rutas */
     private void actualizarInformacionCapacidad(Integer reservasConfirmadas) {
-        if (tvInfoCapacidad != null && tvAsientosDisponibles != null) {
-            try {
-                // Leer el valor actual de asientos disponibles
-                int disponibles = Integer.parseInt(tvAsientosDisponibles.getText().toString());
-
-                // Si se pasa reservasConfirmadas, actualizar ocupados
-                int ocupados = reservasConfirmadas != null ? reservasConfirmadas :
-                        (26 - disponibles); // Total fijo de 26 asientos
-
-                final int CAPACIDAD_TOTAL = 26;
-                int porcentajeOcupacion = ocupados > 0 ? (ocupados * 100) / CAPACIDAD_TOTAL : 0;
-
-                String info = getString(R.string.ocupacion_porcentaje_detallada,
-                        CAPACIDAD_TOTAL, disponibles, ocupados, porcentajeOcupacion);
-                tvInfoCapacidad.setText(info);
-
-                Log.d(TAG, "📊 Información de capacidad: " + info);
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "❌ Error al calcular información de capacidad: " + e.getMessage());
-                tvInfoCapacidad.setText(getString(R.string.ocupacion_porcentaje, 26, 0));
-            }
-        }
+        // Método simplificado o eliminado si ya no se usa la vista tvInfoCapacidad
     }
 
     /** Metodo para la navegacion a la actividad del perfil del conductor */
