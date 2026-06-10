@@ -10,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Usuario;
@@ -67,15 +66,8 @@ public class EditarPerfilActivity extends AppCompatActivity {
 
         // Configurar listeners
         configurarListeners();
-        setupBottomNavigation();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
-    }
-
-    private void setupBottomNavigation() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(false))
-                .commit();
     }
 
     private void inicializarVistas() {
@@ -249,9 +241,9 @@ public class EditarPerfilActivity extends AppCompatActivity {
                     String telefonoActual = usuario.getTelefono() != null ? usuario.getTelefono() : "No disponible";
                     String correoActual = usuario.getEmail() != null ? usuario.getEmail() : "No disponible";
 
-                    tvNombreActual.setText("Nombre actual: " + nombreActual);
-                    tvTelefonoActual.setText("Teléfono actual: " + telefonoActual);
-                    tvCorreoActual.setText("Correo actual: " + correoActual);
+                    tvNombreActual.setText(nombreActual);
+                    tvTelefonoActual.setText(telefonoActual);
+                    tvCorreoActual.setText(correoActual);
 
                     Log.d(TAG, "✅ TextViews de datos actuales actualizados");
 
