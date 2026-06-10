@@ -108,11 +108,16 @@ public class ReservasViewModel extends BaseViewModel {
     }
 
     /**
-     * Establece los horarios asignados (vienen del PerfilViewModel)
+     * Establece los horarios asignados y refresca la carga
      */
     public void setHorariosAsignados(List<String> horarios) {
         this.horariosAsignadosActual = horarios != null ? new ArrayList<>(horarios) : new ArrayList<>();
         Log.d(TAG, "🕐 Horarios asignados establecidos: " + horariosAsignadosActual.size());
+        
+        // Si ya tenemos el nombre del conductor, intentar cargar de una vez
+        if (conductorNombreActual != null && !horariosAsignadosActual.isEmpty()) {
+            cargarReservasPendientes();
+        }
     }
 
     /**

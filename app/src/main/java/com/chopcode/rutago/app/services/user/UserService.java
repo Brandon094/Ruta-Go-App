@@ -82,14 +82,6 @@ public class UserService {
         void onError(String error);
     }
 
-    /**
-     * Callback para carga de lista de conductores
-     */
-    public interface DriversListCallback {
-        void onDriversLoaded(List<com.chopcode.rutago.app.models.Conductor> conductores);
-        void onError(String error);
-    }
-
     // ========== MÉTODOS GENERALES DE USUARIO ==========
 
     /**
@@ -393,35 +385,6 @@ public class UserService {
     }
 
     // ========== MÉTODOS DE VERIFICACIÓN ==========
-
-    /**
-     * Carga todos los conductores registrados
-     * @param callback Callback con la lista de conductores
-     */
-    public void loadAllDrivers(DriversListCallback callback) {
-        DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
-
-        conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                List<com.chopcode.rutago.app.models.Conductor> conductores = new ArrayList<>();
-                for (DataSnapshot conductorSnap : snapshot.getChildren()) {
-                    com.chopcode.rutago.app.models.Conductor conductor = 
-                        conductorSnap.getValue(com.chopcode.rutago.app.models.Conductor.class);
-                    if (conductor != null) {
-                        conductor.setId(conductorSnap.getKey());
-                        conductores.add(conductor);
-                    }
-                }
-                callback.onDriversLoaded(conductores);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                callback.onError(error.getMessage());
-            }
-        });
-    }
 
     /**
      * Verifica si un usuario tiene rol de conductor

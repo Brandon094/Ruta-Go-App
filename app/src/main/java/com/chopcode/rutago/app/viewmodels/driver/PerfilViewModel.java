@@ -114,7 +114,7 @@ public class PerfilViewModel extends BaseViewModel {
     /**
      * Carga solo nombre y placa (sin horarios)
      */
-    public void cargarDatosBasicos(String conductorUID) {
+   /** public void cargarDatosBasicos(String conductorUID) {
         if (conductorUID == null || conductorUID.isEmpty()) {
             Log.e(TAG, "❌ conductorUID es nulo o vacío");
             setError("ID del conductor no válido");
@@ -149,7 +149,7 @@ public class PerfilViewModel extends BaseViewModel {
                 setLoading(false);
             }
         });
-    }
+    }*/
 
     /**
      * Actualiza la placa del vehículo

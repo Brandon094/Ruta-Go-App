@@ -416,10 +416,15 @@ public class InicioConductorActivity extends AppCompatActivity {
         perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
             if (horarios != null && !horarios.isEmpty()) {
                 Log.d(TAG, "✅ Horarios asignados obtenidos: " + horarios.size());
-                // Cargar rutas basadas en horarios
+                
+                // 1. Cargar rutas visuales
                 rutasViewModel.loadRoutes(horarios);
 
-                // ✅ PASAR HORARIOS A ESTADÍSTICAS PARA MEJORAR EL FILTRADO
+                // 2. ✅ PASAR HORARIOS A RESERVAS PARA QUE APAREZCAN LAS NUEVAS
+                reservasViewModel.setHorariosAsignados(horarios);
+                reservasViewModel.cargarReservasPendientes();
+
+                // 3. Pasar horarios a estadísticas
                 estadisticasViewModel.setHorariosAsignados(horarios);
                 estadisticasViewModel.refreshStatistics();
             } else {

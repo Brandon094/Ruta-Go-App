@@ -301,10 +301,22 @@ public class EstadisticasViewModel extends BaseViewModel {
                         ingresosLiveData.postValue(ingresosHoy);
 
                         // 🔥 PERSISTIR ESTADÍSTICAS EN FIREBASE (Nodo estadisticas)
+                        // Ahora con manejo de callback para asegurar el registro
                         String uid = com.chopcode.rutago.app.config.MyApp.getCurrentUserId();
                         if (uid != null) {
                             driverReservationService.guardarEstadisticasDiarias(uid, 
-                                    reservasConfirmadasHoyCount, ingresosHoy, null);
+                                    reservasConfirmadasHoyCount, ingresosHoy, 
+                                    new DriverReservationService.ReservationUpdateCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.d(TAG, "📊 Historial de ingresos actualizado en la nube");
+                                        }
+
+                                        @Override
+                                        public void onError(String error) {
+                                            Log.e(TAG, "⚠️ Error guardando historial: " + error);
+                                        }
+                                    });
                         }
 
                         // 2. Calcular asientos disponibles HOY (Dinámico según rutas asignadas)
