@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.activities.driver.editProfile.EditarPerfilConductorActivity;
-import com.chopcode.rutago.app.activities.passenger.editProfile.EditarPerfilActivity;
 import com.chopcode.rutago.app.activities.driver.InicioConductorActivity;
 import com.chopcode.rutago.app.activities.driver.history.HistorialConductorActivity;
 import com.chopcode.rutago.app.activities.driver.profile.PerfilConductorActivity;
@@ -47,16 +45,25 @@ public class BottomNavFragment extends Fragment {
         }
     }
 
+    private BottomNavigationView navView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bottom_nav, container, false);
-        BottomNavigationView navView = view.findViewById(R.id.bottomNavigationView);
+        navView = view.findViewById(R.id.bottomNavigationView);
 
         setupNavigation(navView);
-        setSelectedMenu(navView);
-
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // ✅ Forzar la selección correcta cada vez que el fragmento se hace visible
+        if (navView != null) {
+            setSelectedMenu(navView);
+        }
     }
 
     private void setupNavigation(BottomNavigationView navView) {
@@ -66,19 +73,14 @@ public class BottomNavFragment extends Fragment {
             
             if (id == currentId) return false;
 
-            // Determinar dirección de la animación
-            int currentPos = getMenuPosition(currentId);
-            int targetPos = getMenuPosition(id);
-            boolean slideRight = targetPos > currentPos;
-
             if (id == R.id.nav_home) {
-                navigateToHome(slideRight);
+                navigateToHome();
                 return true;
             } else if (id == R.id.nav_history) {
-                navigateToHistory(slideRight);
+                navigateToHistory();
                 return true;
             } else if (id == R.id.nav_profile) {
-                navigateToProfile(slideRight);
+                navigateToProfile();
                 return true;
             } else if (id == R.id.nav_logout) {
                 showLogoutConfirmation();
@@ -88,80 +90,54 @@ public class BottomNavFragment extends Fragment {
         });
     }
 
-    private int getMenuPosition(int id) {
-        if (id == R.id.nav_home) return 0;
-        if (id == R.id.nav_history) return 1;
-        if (id == R.id.nav_profile) return 2;
-        return 0;
-    }
-
     private void setSelectedMenu(BottomNavigationView navView) {
-        String currentActivity = getActivity().getClass().getSimpleName();
-        Log.d(TAG, "📍 setSelectedMenu - Actividad actual: " + currentActivity);
+        if (getActivity() == null) return;
+        
+        navView.setOnItemSelectedListener(null); // Evitar disparar navegación al setear
 
-        // Remover temporalmente el listener para evitar bucles de navegación
-        navView.setOnItemSelectedListener(null);
-
-        if (currentActivity.contains("Inicio")) {
+        // ✅ USAR INSTANCEOF PARA SINCRONIZACIÓN 100% REAL
+        if (getActivity() instanceof InicioUsuariosActivity || getActivity() instanceof InicioConductorActivity) {
             navView.setSelectedItemId(R.id.nav_home);
-        } else if (currentActivity.contains("Historial")) {
+        } else if (getActivity() instanceof HistorialReservasActivity || getActivity() instanceof HistorialConductorActivity) {
             navView.setSelectedItemId(R.id.nav_history);
-        } else if (currentActivity.contains("Perfil") && !currentActivity.contains("Editar")) {
-            navView.setSelectedItemId(R.id.nav_profile);
-        } else if (currentActivity.contains("Editar")) {
+        } else if (getActivity() instanceof PerfilUsuarioActivity || getActivity() instanceof PerfilConductorActivity) {
             navView.setSelectedItemId(R.id.nav_profile);
         }
 
-        // Reestablecer el listener
-        setupNavigation(navView);
+        setupNavigation(navView); // Restaurar listener
     }
 
-    private void navigateToHome(boolean slideRight) {
+    private void navigateToHome() {
         if (getActivity() instanceof InicioConductorActivity || getActivity() instanceof InicioUsuariosActivity) return;
         
-        Intent intent;
-        if (isDriver) {
-            intent = new Intent(getActivity(), InicioConductorActivity.class);
-        } else {
-            intent = new Intent(getActivity(), InicioUsuariosActivity.class);
-        }
+        Intent intent = new Intent(getActivity(), isDriver ? InicioConductorActivity.class : InicioUsuariosActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
-        applyTransition(slideRight);
+        applyInstantTransition();
     }
 
-    private void navigateToHistory(boolean slideRight) {
+    private void navigateToHistory() {
         if (getActivity() instanceof HistorialConductorActivity || getActivity() instanceof HistorialReservasActivity) return;
 
-        Intent intent;
-        if (isDriver) {
-            intent = new Intent(getActivity(), HistorialConductorActivity.class);
-        } else {
-            intent = new Intent(getActivity(), HistorialReservasActivity.class);
-        }
+        Intent intent = new Intent(getActivity(), isDriver ? HistorialConductorActivity.class : HistorialReservasActivity.class);
         startActivity(intent);
-        applyTransition(slideRight);
+        applyInstantTransition();
     }
 
-    private void navigateToProfile(boolean slideRight) {
+    private void navigateToProfile() {
         if (getActivity() instanceof PerfilConductorActivity || getActivity() instanceof PerfilUsuarioActivity) return;
 
-        Intent intent;
-        if (isDriver) {
-            intent = new Intent(getActivity(), PerfilConductorActivity.class);
-        } else {
-            intent = new Intent(getActivity(), PerfilUsuarioActivity.class);
-        }
+        Intent intent = new Intent(getActivity(), isDriver ? PerfilConductorActivity.class : PerfilUsuarioActivity.class);
         startActivity(intent);
-        applyTransition(slideRight);
+        applyInstantTransition();
     }
 
-    private void applyTransition(boolean slideRight) {
-        if (getActivity() == null) return;
-        if (slideRight) {
-            getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        } else {
-            getActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    /**
+     * ✅ EFECTO DUOLINGO: Quita la animación de la actividad para que la barra parezca fija.
+     */
+    private void applyInstantTransition() {
+        if (getActivity() != null) {
+            getActivity().overridePendingTransition(0, 0);
         }
     }
 

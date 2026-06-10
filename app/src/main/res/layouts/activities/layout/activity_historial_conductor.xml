@@ -239,6 +239,8 @@
         android:id="@+id/bottom_nav_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        android:background="@color/background"
+        android:elevation="12dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
