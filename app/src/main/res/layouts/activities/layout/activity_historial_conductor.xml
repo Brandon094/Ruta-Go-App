@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary_500"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/historial_reservas"
-            app:titleTextColor="@color/text_on_primary" />
+            app:title="Historial de Reservas"
+            app:titleTextColor="@color/secondary_900" />
 
         <!-- ChipGroup con Scroll Horizontal para filtros rápidos -->
         <HorizontalScrollView
@@ -30,36 +30,50 @@
                 android:id="@+id/chipGroupFiltros"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="12dp"
                 app:singleLine="true"
-                app:singleSelection="true">
+                app:singleSelection="true"
+                app:selectionRequired="true">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipTodas"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/todas"
+                    android:text="Todas"
+                    app:chipBackgroundColor="@color/secondary_800"
+                    android:textColor="@color/white"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipConfirmadas"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/confirmadas"
+                    android:text="Confirmadas"
+                    app:chipBackgroundColor="@color/secondary_800"
+                    android:textColor="@color/white"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCanceladas"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/canceladas"
+                    android:text="Canceladas"
+                    app:chipBackgroundColor="@color/secondary_800"
+                    android:textColor="@color/white"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipHoy"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/hoy"
+                    android:text="Hoy"
+                    app:chipBackgroundColor="@color/secondary_800"
+                    android:textColor="@color/white"
                     app:checkedIconVisible="false" />
 
             </com.google.android.material.chip.ChipGroup>
@@ -71,6 +85,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -79,22 +95,25 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Tarjeta de estadísticas rápidas -->
+            <!-- Tarjeta de resumen de reservas (Compacta estilo Premium) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/surface">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/secondary_800"
+                app:strokeColor="@color/secondary_700"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="12dp"
+                    android:weightSum="3">
 
-                    <!-- Estadística: Total reservas -->
+                    <!-- Total -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -107,20 +126,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/secondary_500"
-                            android:textSize="24sp"
+                            android:textColor="@color/primary_500"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/total_reservas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:text="Total"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="11sp" />
 
                     </LinearLayout>
 
-                    <!-- Estadística: Confirmadas -->
+                    <!-- Confirmadas -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -134,19 +153,19 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/success"
-                            android:textSize="24sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/reservas_confirmadas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:text="Confirmadas"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="11sp" />
 
                     </LinearLayout>
 
-                    <!-- Estadística: Canceladas -->
+                    <!-- Canceladas -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -160,15 +179,15 @@
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/error"
-                            android:textSize="24sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/reservas_canceladas"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:text="Canceladas"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="11sp" />
 
                     </LinearLayout>
 
@@ -176,54 +195,94 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Título de la lista -->
-            <TextView
-                android:id="@+id/tvTituloLista"
+            <!-- Sección de historial -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Últimas reservas"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical">
 
-            <!-- RecyclerView para las reservas -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerHistorial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                tools:listitem="@layout/item_historial_reserva" />
+                <!-- Título de la sección -->
+                <TextView
+                    android:id="@+id/tvTituloLista"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Últimas reservas"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="4dp"/>
 
-            <!-- Estado vacío -->
+                <!-- Shimmer para Carga (Skeletons) -->
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_view_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:shimmer_auto_start="true"
+                    app:shimmer_duration="1200">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <include layout="@layout/skeleton_item_historial" />
+                        <include layout="@layout/skeleton_item_historial" />
+                        <include layout="@layout/skeleton_item_historial" />
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <!-- RecyclerView para el historial -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerHistorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:listitem="@layout/item_historial_reserva" />
+
+            </LinearLayout>
+
+            <!-- Estado vacío (Consistente) -->
             <LinearLayout
                 android:id="@+id/layoutEmptyState"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="350dp"
                 android:visibility="gone"
                 android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="center"
+                android:padding="24dp">
 
-                <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_history"
-                    android:tint="@color/text_secondary" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:cardCornerRadius="50dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/secondary_800"
+                    app:strokeColor="@color/secondary_700"
+                    app:strokeWidth="1dp"
+                    android:layout_marginBottom="20dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_history"
+                        android:padding="25dp"
+                        app:tint="@color/primary_500" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No hay reservas en el historial"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="16sp"
-                    android:layout_marginTop="16dp"
+                    android:text="Sin historial de reservas"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="280dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Las reservas confirmadas o canceladas aparecerán aquí"
-                    android:textColor="@color/text_secondary"
+                    android:text="Las reservas confirmadas o canceladas aparecerán aquí para tu control."
+                    android:textColor="@color/text_tertiary"
                     android:textSize="14sp"
                     android:gravity="center"
                     android:layout_marginTop="8dp" />
@@ -239,7 +298,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/background"
-        android:elevation="12dp" />
+        android:background="@android:color/transparent"
+        android:elevation="16dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

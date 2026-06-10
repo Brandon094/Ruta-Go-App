@@ -19,6 +19,7 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Reserva;
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,8 +38,9 @@ public class HistorialConductorActivity extends AppCompatActivity {
     private ChipGroup chipGroupFiltros;
     private Chip chipTodas, chipConfirmadas, chipCanceladas, chipHoy;
     private RecyclerView recyclerHistorial;
-    private TextView tvTituloLista, tvTotalReservas, tvConfirmadas, tvCanceladas;
+    private TextView tvTituloLista, tvTotal, tvConfirmadas, tvCanceladas;
     private View layoutEmptyState;
+    private ShimmerFrameLayout shimmerViewContainer;
     private FloatingActionButton fabExportar;
 
     // Adapters y Data
@@ -101,21 +103,14 @@ public class HistorialConductorActivity extends AppCompatActivity {
         recyclerHistorial = findViewById(R.id.recyclerHistorial);
         tvTituloLista = findViewById(R.id.tvTituloLista);
         layoutEmptyState = findViewById(R.id.layoutEmptyState);
-        
+        shimmerViewContainer = findViewById(R.id.shimmer_view_container);
+
+        tvTotal = findViewById(R.id.tvTotal);
+        tvConfirmadas = findViewById(R.id.tvConfirmadas);
+        tvCanceladas = findViewById(R.id.tvCanceladas);
+
         // El FAB ha sido eliminado del layout para simplificar la interfaz
         fabExportar = null;
-
-        View cardEstadisticas = findViewById(R.id.cardEstadisticas);
-        if (cardEstadisticas != null) {
-            tvTotalReservas = cardEstadisticas.findViewById(R.id.tvTotal);
-            tvConfirmadas = cardEstadisticas.findViewById(R.id.tvConfirmadas);
-            tvCanceladas = cardEstadisticas.findViewById(R.id.tvCanceladas);
-        } else {
-            // Fallback si no está dentro de la card
-            tvTotalReservas = findViewById(R.id.tvTotal);
-            tvConfirmadas = findViewById(R.id.tvConfirmadas);
-            tvCanceladas = findViewById(R.id.tvCanceladas);
-        }
     }
 
     private void configurarToolbar() {
@@ -181,7 +176,7 @@ public class HistorialConductorActivity extends AppCompatActivity {
                         listaReservas.clear();
                         listaReservas.addAll(stats.todasLasReservas);
                         aplicarFiltros();
-                        tvTotalReservas.setText(String.valueOf(stats.totalReservas));
+                        tvTotal.setText(String.valueOf(stats.totalReservas));
                         tvConfirmadas.setText(String.valueOf(stats.reservasConfirmadas));
                         tvCanceladas.setText(String.valueOf(stats.reservasCanceladas));
                         Toast.makeText(HistorialConductorActivity.this, "Reporte Premium cargado", Toast.LENGTH_SHORT).show();
@@ -259,7 +254,7 @@ public class HistorialConductorActivity extends AppCompatActivity {
             if (e.contains("CONFIRMA")) confirmadas++;
             else if (e.contains("CANCELA")) canceladas++;
         }
-        if (tvTotalReservas != null) tvTotalReservas.setText(String.valueOf(total));
+        if (tvTotal != null) tvTotal.setText(String.valueOf(total));
         if (tvConfirmadas != null) tvConfirmadas.setText(String.valueOf(confirmadas));
         if (tvCanceladas != null) tvCanceladas.setText(String.valueOf(canceladas));
     }
@@ -271,6 +266,10 @@ public class HistorialConductorActivity extends AppCompatActivity {
     }
 
     private void mostrarEmptyState() {
+        if (shimmerViewContainer != null) {
+            shimmerViewContainer.stopShimmer();
+            shimmerViewContainer.setVisibility(View.GONE);
+        }
         if (recyclerHistorial != null) recyclerHistorial.setVisibility(View.GONE);
         if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.VISIBLE);
     }
@@ -282,8 +281,17 @@ public class HistorialConductorActivity extends AppCompatActivity {
 
     private void mostrarLoading(boolean m) {
         if (m) {
+            if (shimmerViewContainer != null) {
+                shimmerViewContainer.startShimmer();
+                shimmerViewContainer.setVisibility(View.VISIBLE);
+            }
             if (recyclerHistorial != null) recyclerHistorial.setVisibility(View.GONE);
             if (layoutEmptyState != null) layoutEmptyState.setVisibility(View.GONE);
+        } else {
+            if (shimmerViewContainer != null) {
+                shimmerViewContainer.stopShimmer();
+                shimmerViewContainer.setVisibility(View.GONE);
+            }
         }
     }
 
