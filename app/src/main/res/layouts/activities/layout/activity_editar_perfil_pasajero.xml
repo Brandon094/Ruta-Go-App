@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- AppBar Naranja Consistente -->
+    <!-- AppBar Naranja con Flecha de Volver -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:padding="20dp">
 
-            <!-- Card de Datos Actuales (Informativo con Iconos) -->
+            <!-- Card de Datos Actuales -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardInfoActual"
                 android:layout_width="match_parent"
@@ -62,74 +62,38 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp"/>
 
-                    <!-- Fila Nombre -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="10dp">
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_person"
-                            app:tint="@color/text_tertiary" />
-                        <TextView
-                            android:id="@+id/tvNombreActual"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Cargando..."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp"/>
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_person" app:tint="@color/text_tertiary" />
+                        <TextView android:id="@+id/tvNombreActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="Cargando..." android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
 
-                    <!-- Fila Teléfono -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="10dp">
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_phone_enabled"
-                            app:tint="@color/text_tertiary" />
-                        <TextView
-                            android:id="@+id/tvTelefonoActual"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Cargando..."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp"/>
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_phone_enabled" app:tint="@color/text_tertiary" />
+                        <TextView android:id="@+id/tvTelefonoActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="Cargando..." android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
 
-                    <!-- Fila Correo -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
-                        <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
-                            android:src="@drawable/ic_email"
-                            app:tint="@color/text_tertiary" />
-                        <TextView
-                            android:id="@+id/tvCorreoActual"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="Cargando..."
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp"/>
+                        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_email" app:tint="@color/text_tertiary" />
+                        <TextView android:id="@+id/tvCorreoActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="Cargando..." android:textColor="@color/text_secondary" android:textSize="12sp"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card de Formulario de Edición -->
+            <!-- Card de Formulario -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFormulario"
                 android:layout_width="match_parent"
@@ -157,7 +121,6 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="20dp"/>
 
-                    <!-- Campo Nombre -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutNombre"
                         style="@style/TextInputStyle"
@@ -168,17 +131,14 @@
                         app:startIconDrawable="@drawable/ic_person"
                         app:startIconTint="@color/primary_500"
                         app:boxBackgroundColor="@color/surface_1">
-
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etNombre"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPersonName"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                            android:textColor="@color/text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Campo Teléfono -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutTelefono"
                         style="@style/TextInputStyle"
@@ -189,17 +149,14 @@
                         app:startIconDrawable="@drawable/ic_phone_enabled"
                         app:startIconTint="@color/primary_500"
                         app:boxBackgroundColor="@color/surface_1">
-
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTelefono"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="phone"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                            android:textColor="@color/text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Sección Correo (No editable) -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -220,7 +177,6 @@
                         app:startIconTint="@color/text_disabled"
                         app:boxBackgroundColor="@color/secondary_900"
                         android:hint="Correo electrónico (Fijo)">
-
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etCorreo"
                             android:layout_width="match_parent"
@@ -228,7 +184,6 @@
                             android:inputType="textEmailAddress"
                             android:textColor="@color/text_disabled" />
                     </com.google.android.material.textfield.TextInputLayout>
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

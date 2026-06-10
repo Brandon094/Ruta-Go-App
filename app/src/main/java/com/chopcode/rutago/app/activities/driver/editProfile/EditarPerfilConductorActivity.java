@@ -3,6 +3,7 @@ package com.chopcode.rutago.app.activities.driver.editProfile;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,10 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.models.Conductor;
 import com.chopcode.rutago.app.models.Vehiculo;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +36,9 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
     // Views
     private TextInputEditText etCorreo, etNombre, etTelefono, etPlaca, etMarca, etModelo, etColor, etCapacidad, etAnio;
     private TextView tvCorreoActual, tvNombreActual, tvTelefonoActual, tvPlacaActual, tvMarcaActual, tvModeloActual, tvColorActual, tvCapacidadActual, tvAnioActual;
+    private MaterialToolbar topAppBar;
+    private TabLayout tabLayout;
+    private View containerPersonal, containerVehiculo;
     private Button btnCancelar, btnGuardarCambios;
 
     // Datos
@@ -73,15 +78,8 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
 
         // Configurar listeners
         configurarListeners();
-        setupBottomNavigation();
 
         Log.d(TAG, "✅ Configuración completa - Actividad lista");
-    }
-
-    private void setupBottomNavigation() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
-                .commit();
     }
 
     private void initViews() {
@@ -108,6 +106,11 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
         etColor = findViewById(R.id.etColor);
         etCapacidad = findViewById(R.id.etCapacidad);
         etAnio = findViewById(R.id.etAnio);
+
+        topAppBar = findViewById(R.id.topAppBar);
+        tabLayout = findViewById(R.id.tabLayoutEditar);
+        containerPersonal = findViewById(R.id.containerPersonal);
+        containerVehiculo = findViewById(R.id.containerVehiculo);
 
         // Botones
         btnCancelar = findViewById(R.id.btnCancelar);
@@ -315,6 +318,31 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
 
     private void configurarListeners() {
         Log.d(TAG, "🔧 Configurando listeners...");
+
+        // Listener de Pestañas (TabLayout)
+        if (tabLayout != null) {
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    if (tab.getPosition() == 0) {
+                        Log.d(TAG, "📂 Pestaña seleccionada: Personal");
+                        containerPersonal.setVisibility(View.VISIBLE);
+                        containerVehiculo.setVisibility(View.GONE);
+                    } else {
+                        Log.d(TAG, "🚗 Pestaña seleccionada: Vehículo");
+                        containerPersonal.setVisibility(View.GONE);
+                        containerVehiculo.setVisibility(View.VISIBLE);
+                    }
+                }
+                @Override public void onTabUnselected(TabLayout.Tab tab) {}
+                @Override public void onTabReselected(TabLayout.Tab tab) {}
+            });
+        }
+
+        // Toolbar navigation
+        if (topAppBar != null) {
+            topAppBar.setNavigationOnClickListener(v -> onBackPressed());
+        }
 
         // Botón Cancelar
         btnCancelar.setOnClickListener(v -> {
