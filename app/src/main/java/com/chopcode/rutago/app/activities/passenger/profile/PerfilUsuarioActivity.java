@@ -26,6 +26,7 @@ import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.HashMap;
@@ -35,7 +36,9 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     private TextView tvNombre, tvCorreo, tvTelefono;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
     private ImageView ivProfilePicture;
-    private MaterialCardView cardPremiumStats;
+    private MaterialCardView cardPremiumStats, cardPerfil;
+    private View headerContent;
+    private ShimmerFrameLayout shimmerHeader, shimmerCard, shimmerPremium;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private AuthManager authManager;
     private UserService userService;
@@ -106,6 +109,15 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
     private void inicializarVistas() {
         Log.d(TAG, "🔧 Inicializando vistas...");
+
+        // Shimmers
+        shimmerHeader = findViewById(R.id.shimmer_header);
+        shimmerCard = findViewById(R.id.shimmer_card);
+        shimmerPremium = findViewById(R.id.shimmer_premium);
+
+        // Content Views
+        headerContent = findViewById(R.id.headerContent);
+        cardPerfil = findViewById(R.id.cardPerfil);
 
         // ImageView
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
@@ -273,16 +285,19 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         userService.loadUserData(userId, new UserService.UserDataCallback() {
             @Override
             public void onUserDataLoaded(Usuario usuario) {
-                Log.d(TAG, "✅ Datos de usuario cargados exitosamente:");
-                Log.d(TAG, "   - Nombre: " + usuario.getNombre());
-                Log.d(TAG, "   - Email: " + usuario.getEmail());
-                Log.d(TAG, "   - Teléfono: " + usuario.getTelefono());
-
-                // ✅ Registrar evento de carga exitosa
-                registrarUsuarioCargadoAnalitico(usuario);
-
                 // Actualizar la UI con los datos del usuario
                 runOnUiThread(() -> {
+                    if (shimmerHeader != null) {
+                        shimmerHeader.stopShimmer();
+                        shimmerHeader.setVisibility(View.GONE);
+                    }
+                    if (shimmerCard != null) {
+                        shimmerCard.stopShimmer();
+                        shimmerCard.setVisibility(View.GONE);
+                    }
+                    if (headerContent != null) headerContent.setVisibility(View.VISIBLE);
+                    if (cardPerfil != null) cardPerfil.setVisibility(View.VISIBLE);
+
                     if (usuario.getNombre() != null) {
                         tvNombre.setText(usuario.getNombre());
                     } else {
@@ -325,6 +340,17 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 registrarEventoAnalitico("error_carga_datos_usuario", null, null);
 
                 runOnUiThread(() -> {
+                    if (shimmerHeader != null) {
+                        shimmerHeader.stopShimmer();
+                        shimmerHeader.setVisibility(View.GONE);
+                    }
+                    if (shimmerCard != null) {
+                        shimmerCard.stopShimmer();
+                        shimmerCard.setVisibility(View.GONE);
+                    }
+                    if (headerContent != null) headerContent.setVisibility(View.VISIBLE);
+                    if (cardPerfil != null) cardPerfil.setVisibility(View.VISIBLE);
+
                     Toast.makeText(PerfilUsuarioActivity.this, "Error cargando datos: " + error, Toast.LENGTH_SHORT).show();
 
                     // Mostrar datos por defecto en caso de error
@@ -351,6 +377,11 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             @Override
             public void onStatsCalculated(Map<String, Object> stats) {
                 runOnUiThread(() -> {
+                    if (shimmerPremium != null) {
+                        shimmerPremium.stopShimmer();
+                        shimmerPremium.setVisibility(View.GONE);
+                    }
+
                     if (cardPremiumStats != null) {
                         cardPremiumStats.setVisibility(View.VISIBLE);
                         
@@ -372,6 +403,10 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             public void onError(String error) {
                 Log.e(TAG, "❌ Error cargando estadísticas premium: " + error);
                 runOnUiThread(() -> {
+                    if (shimmerPremium != null) {
+                        shimmerPremium.stopShimmer();
+                        shimmerPremium.setVisibility(View.GONE);
+                    }
                     if (cardPremiumStats != null) cardPremiumStats.setVisibility(View.GONE);
                 });
             }

@@ -47,9 +47,6 @@ public class HistorialReservasActivity extends AppCompatActivity {
     private TextView tvTotalViajes, tvViajesConfirmados, tvViajesCancelados, tvTituloHistorial;
     private ShimmerFrameLayout shimmerContainer;
     
-    // Premium Views
-    private MaterialCardView cardPremiumStats;
-    private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
     private com.google.android.material.button.MaterialButton btnIrAReservar;
 
     // Servicios y managers
@@ -119,12 +116,6 @@ public class HistorialReservasActivity extends AppCompatActivity {
         tvViajesCancelados = findViewById(R.id.tvViajesCancelados);
         tvTituloHistorial = findViewById(R.id.tvTituloHistorial);
         shimmerContainer = findViewById(R.id.shimmer_view_container);
-
-        // Vistas Premium
-        cardPremiumStats = findViewById(R.id.cardPremiumStats);
-        tvTotalGastadoPremium = findViewById(R.id.tvTotalGastadoPremium);
-        tvPuntosLealtad = findViewById(R.id.tvPuntosLealtad);
-        tvRutaFavorita = findViewById(R.id.tvRutaFavorita);
         
         btnIrAReservar = findViewById(R.id.btnIrAReservar);
     }
@@ -245,25 +236,6 @@ public class HistorialReservasActivity extends AppCompatActivity {
         }
 
         String usuarioId = currentUser.getUid();
-
-        // ✅ CARGAR ESTADÍSTICAS PREMIUM SI APLICA
-        if (esUsuarioPremium && cardPremiumStats != null) {
-            cardPremiumStats.setVisibility(View.VISIBLE);
-            passengerReservationService.obtenerEstadisticasPremium(usuarioId, new PassengerReservationService.PremiumStatsCallback() {
-                @Override
-                public void onStatsCalculated(Map<String, Object> stats) {
-                    runOnUiThread(() -> {
-                        Double gastado = (Double) stats.get("totalGastado");
-                        tvTotalGastadoPremium.setText(formatearPrecio(gastado != null ? gastado : 0.0));
-                        tvPuntosLealtad.setText(stats.get("puntosLealtad") + " pts");
-                        tvRutaFavorita.setText("Ruta favorita: " + stats.get("rutaMasFrecuente"));
-                    });
-                }
-                @Override public void onError(String error) { Log.e(TAG, "Error Premium: " + error); }
-            });
-        } else if (cardPremiumStats != null) {
-            cardPremiumStats.setVisibility(View.GONE);
-        }
 
         reservaService.obtenerHistorialUsuario(usuarioId, new ReservaService.HistorialCallback() {
             @Override
