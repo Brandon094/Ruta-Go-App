@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
 import com.chopcode.rutago.app.models.Reserva;
 import com.google.firebase.auth.FirebaseUser;
@@ -335,26 +336,30 @@ public class ReservaService {
         });
     }
 
-    //refactorizar en otra clase solo para manejar el historial de reservas del conductor
     private void notificarConductor(Context context, String reservaId, String pasajeroId, String pasajeroNombre,
                                     String horarioId, int asiento, String origen, String destino,
                                     double precio, String metodoPago) {
 
-        Log.d(TAG, "🔔 Buscando conductor asignado al horario " + horarioId + " para notificar...");
+        Log.d(TAG, "🔔 Buscando conductor para horario: " + horarioId);
 
-        // ✅ NUEVA LÓGICA: Buscar en 'conductores' quién tiene asignado este horario
+        // Buscar en el nodo de conductores quién tiene asignado este horario
         DatabaseReference conductoresRef = MyApp.getDatabaseReference("conductores");
         
         conductoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String conductorIdEncontrado = null;
+                String conductorNombre = "Conductor";
                 
-                for (DataSnapshot conductor : snapshot.getChildren()) {
-                    DataSnapshot horariosAsignados = conductor.child("horariosAsignados");
+                for (DataSnapshot conductorSnap : snapshot.getChildren()) {
+                    DataSnapshot horariosAsignados = conductorSnap.child("horariosAsignados");
+                    
+                    // Recorrer los horarios asignados al conductor
                     for (DataSnapshot h : horariosAsignados.getChildren()) {
-                        if (horarioId.equals(h.getValue(String.class))) {
-                            conductorIdEncontrado = conductor.getKey();
+                        String idH = String.valueOf(h.getValue());
+                        if (horarioId.equals(idH)) {
+                            conductorIdEncontrado = conductorSnap.getKey();
+                            conductorNombre = conductorSnap.child("nombre").getValue(String.class);
                             break;
                         }
                     }
@@ -362,20 +367,30 @@ public class ReservaService {
                 }
 
                 if (conductorIdEncontrado != null) {
-                    Log.d(TAG, "🚀 Conductor identificado: " + conductorIdEncontrado + ". Enviando notificación...");
+                    Log.d(TAG, "🚀 Conductor identificado: " + conductorNombre + " (ID: " + conductorIdEncontrado + ")");
                     
-                    com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(context)
+                    NotificationManager.getInstance(context)
                             .notificarNuevaReservaAlConductor(conductorIdEncontrado, pasajeroNombre,
-                                    origen + " -> " + destino, "En camino", 
-                                    asiento, precio, metodoPago, null);
+                                    origen + " -> " + destino, "Hoy", 
+                                    asiento, precio, metodoPago, new NotificationManager.NotificationCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.d(TAG, "✅ Push enviado al conductor");
+                                        }
+
+                                        @Override
+                                        public void onError(String error) {
+                                            Log.e(TAG, "❌ Fallo enviando push al conductor: " + error);
+                                        }
+                                    });
                 } else {
-                    Log.w(TAG, "⚠️ No se encontró ningún conductor con el horario " + horarioId + " asignado.");
+                    Log.w(TAG, "⚠️ No se encontró ningún conductor asignado al horario: " + horarioId);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error al buscar conductor: " + error.getMessage());
+                Log.e(TAG, "❌ Error buscando conductor: " + error.getMessage());
             }
         });
     }

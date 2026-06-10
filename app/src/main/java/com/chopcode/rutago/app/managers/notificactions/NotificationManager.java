@@ -54,11 +54,30 @@ public class NotificationManager {
     }
 
     private String getAccessToken() throws IOException {
-        InputStream is = context.getAssets().open("service-account.json");
-        GoogleCredentials credentials = GoogleCredentials.fromStream(is)
-                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
-        credentials.refreshIfExpired();
-        return credentials.getAccessToken().getTokenValue();
+        InputStream is = null;
+        try {
+            Log.d(TAG, "📂 Cargando llave desde assets...");
+            is = context.getAssets().open("service-account.json");
+            
+            // Forzar la recarga de credenciales y verificar el tiempo
+            GoogleCredentials credentials = GoogleCredentials.fromStream(is)
+                    .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+            
+            Log.d(TAG, "🔐 Refrescando token de acceso...");
+            credentials.refresh(); // Intentar refrescar explícitamente
+            
+            String token = credentials.getAccessToken().getTokenValue();
+            Log.d(TAG, "✅ Access Token generado exitosamente");
+            return token;
+        } catch (Exception e) {
+            Log.e(TAG, "❌ ERROR FATAL OAUTH2: " + e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("400 Bad Request")) {
+                Log.e(TAG, "💡 TIP: Este error suele ser por FECHA/HORA incorrecta en el dispositivo.");
+            }
+            throw new IOException(e.getMessage());
+        } finally {
+            if (is != null) try { is.close(); } catch (IOException ignored) {}
+        }
     }
 
     /**

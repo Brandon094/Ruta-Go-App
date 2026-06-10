@@ -199,17 +199,25 @@ public class NotificationService extends FirebaseMessagingService {
     }
 
     private void sendRegistrationToServer(String token) {
-        Log.d(TAG, "🔑 Token FCM generado en servicio: " + token);
-
-        // Solo loguear el token - El guardado real se hará desde InicioDeSesion
-        String userId = obtenerUserIdActual();
-
-        if (userId != null && !userId.isEmpty() && !userId.equals("current_user_id")) {
-            Log.d(TAG, "👤 Token generado para userId: " + userId);
-            Log.d(TAG, "💡 Nota: El token se guardará cuando el usuario inicie sesión en InicioDeSesion");
+        // ✅ REPARADO: Obtener ID directamente de Firebase Auth si es posible
+        String userId = null;
+        com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+        
+        if (user != null) {
+            userId = user.getUid();
         } else {
-            Log.w(TAG, "⚠️ Token generado pero userId no disponible aún. Se guardará al iniciar sesión.");
-            Log.d(TAG, "🔑 Token para guardar más tarde: " + token.substring(0, 30) + "...");
+            // Intentar por SharedPreferences
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            userId = prefs.getString(KEY_USER_ID, null);
+        }
+
+        if (userId != null && !userId.isEmpty()) {
+            Log.d(TAG, "💾 Guardando Token FCM para: " + userId);
+            com.google.firebase.database.DatabaseReference db = com.chopcode.rutago.app.config.MyApp.getDatabaseReference("");
+            db.child("usuarios").child(userId).child("tokenFCM").setValue(token);
+            db.child("conductores").child(userId).child("tokenFCM").setValue(token);
+        } else {
+            Log.w(TAG, "⚠️ Token generado pero el usuario no ha iniciado sesión.");
         }
     }
 

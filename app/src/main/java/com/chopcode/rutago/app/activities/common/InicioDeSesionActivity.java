@@ -804,33 +804,38 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ CORREGIDO: Guardar token FCM en Realtime Database usando NotificationManager
+     * ✅ CORREGIDO: Guardar token FCM en Realtime Database de forma redundante para asegurar notificaciones
      */
     private void guardarTokenFCMEnRealtimeDatabase(String userId, String tipoUsuario) {
-        Log.d(TAG, "🔑 guardarTokenFCMEnRealtimeDatabase - Usuario: " + userId + ", Tipo: " + tipoUsuario);
+        Log.d(TAG, "🔑 Intentando registrar Token FCM para usuario: " + userId);
 
         MyApp.getInstance().getFirebaseMessaging().getToken()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         String token = task.getResult();
-                        Log.d(TAG, "✅ Token FCM obtenido: " + (token != null ? token.substring(0, 20) + "..." : "null"));
+                        Log.d(TAG, "✅ Token FCM fresh: " + token.substring(0, 15) + "...");
 
-                        // ✅ AGREGADO: Guardar token localmente como backup
+                        // 1. Guardar localmente
                         guardarTokenLocalmente(token);
 
-                        // ✅ USAR NOTIFICATION MANAGER PARA GUARDAR EN REALTIME DATABASE
-                        NotificationManager notificationManager = NotificationManager.getInstance(this);
-                        notificationManager.saveFCMTokenToRealtimeDatabase(userId, tipoUsuario);
+                        // 2. Guardar en NotificationManager (nodo específico)
+                        NotificationManager.getInstance(this).saveFCMTokenToRealtimeDatabase(userId, tipoUsuario);
 
-                        // ✅ TAMBIÉN GUARDAR DIRECTAMENTE POR COMPATIBILIDAD
-                        guardarTokenDirectamenteEnRTDB(userId, tipoUsuario, token);
+                        // 3. REFUERZO: Guardar en ambos nodos si es posible para evitar fallos de búsqueda
+                        DatabaseReference baseRef = MyApp.getDatabaseReference("");
+                        
+                        // Guardar en nodo usuarios siempre
+                        baseRef.child("usuarios").child(userId).child("tokenFCM").setValue(token);
+                        
+                        // Si es conductor, asegurar que esté en conductores
+                        if ("conductor".equals(tipoUsuario) || "conductores".equals(tipoUsuario)) {
+                            baseRef.child("conductores").child(userId).child("tokenFCM").setValue(token);
+                        }
+
+                        Log.d(TAG, "🚀 Sincronización de token FCM completada en todos los nodos.");
 
                     } else {
-                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
-                        Log.e(TAG, "❌ Error obteniendo token FCM: " + errorMsg);
-                        if (task.getException() != null) {
-                            MyApp.logError(task.getException());
-                        }
+                        Log.e(TAG, "❌ No se pudo obtener el Token FCM");
                     }
                 });
     }

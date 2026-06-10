@@ -263,14 +263,29 @@ public class DriverReservationService {
                     String placa = snapshot.child("vehiculoId").getValue(String.class);
 
                     if (pasajeroId != null) {
+                        Log.d(TAG, "🚀 Notificando cambio de estado (" + tipo + ") al pasajero: " + pasajeroId);
+                        
                         com.chopcode.rutago.app.managers.notificactions.NotificationManager nm =
                                 com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(context);
 
+                        com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback callback = 
+                            new com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TAG, "✅ Notificación de estado enviada al pasajero");
+                                }
+
+                                @Override
+                                public void onError(String error) {
+                                    Log.e(TAG, "❌ Error notificando al pasajero: " + error);
+                                }
+                            };
+
                         if ("confirmada".equals(tipo)) {
                             nm.notificarReservaConfirmadaAlPasajero(pasajeroId, conductorNombre, ruta, fechaHora,
-                                    asiento != null ? asiento : 0, placa, "", null);
+                                    asiento != null ? asiento : 0, placa, "", callback);
                         } else {
-                            nm.notificarReservaCanceladaAlPasajero(pasajeroId, conductorNombre, ruta, "Cancelada por el conductor", null);
+                            nm.notificarReservaCanceladaAlPasajero(pasajeroId, conductorNombre, ruta, "Cancelada por el conductor", callback);
                         }
                     }
                 }
@@ -278,7 +293,7 @@ public class DriverReservationService {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Error obteniendo datos para notificar pasajero: " + error.getMessage());
+                Log.e(TAG, "❌ Error obteniendo datos para notificar pasajero: " + error.getMessage());
             }
         });
     }
