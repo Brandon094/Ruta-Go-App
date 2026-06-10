@@ -62,7 +62,9 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     // ============================================================
     private TabLayout tabLayout;                          // Pestañas para cambiar entre horarios
     private ViewPager2 viewPagerHorarios;                 // Swipe entre pestañas de horarios
-    private ShimmerFrameLayout shimmerLayout;
+    private ShimmerFrameLayout shimmerSchedules;
+    private ShimmerFrameLayout shimmerStats;
+    private LinearLayout layoutRealStats;
     private HorarioPagerAdapter pagerAdapter;             // Adaptador para el ViewPager
     private ImageView ivUserAvatar;
     private NetworkMonitor networkMonitor;
@@ -85,21 +87,29 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Iniciando actividad principal de usuario");
 
-        // 1. Inicializar los managers (primero, porque las vistas los necesitarán)
-        initializeManagers();
-
-        // 2. Establecer el layout
+        // 1. Establecer el layout primero para que las vistas existan
         setContentView(R.layout.activity_inicio_usuarios);
 
-        // 3. Inicializar y enlazar las vistas con sus IDs
+        // 2. Inicializar Managers y Helpers (sin activar listeners todavía)
+        analyticsHelper = new DashboardAnalyticsHelper();
+        uiManager = new DashboardUIManager(analyticsHelper);
+        uiManager.setUIActionsListener(this);
+        dashboardManager = new UserDashboardManager(this, analyticsHelper);
+        scheduleManager = new ScheduleManager(analyticsHelper);
+
+        // 3. Inicializar vistas (enlace de IDs y referencias al UI Manager)
         initializeViews();
 
-        // 4. Configurar la UI (listeners de botones, toolbar, etc.)
-        configureUI();
+        // 4. Conectar listeners de datos (esto disparará la carga de caché si existe)
+        // Se hace DESPUÉS de initializeViews para asegurar que ivUserAvatar y otros no sean null
+        dashboardManager.setDashboardListener(this);
+        scheduleManager.setScheduleListener(this);
 
+        // 5. Configuración adicional
+        configureUI();
         setupBottomNavigation();
 
-        // 5. Cargar los datos iniciales (usuario y horarios)
+        // 6. Cargar datos de red
         loadInitialData();
         setupNetworkMonitor();
     }
@@ -150,16 +160,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
      * Se encargan de la lógica de negocio y comunicación con capas de datos.
      */
     private void initializeManagers() {
-        analyticsHelper = new DashboardAnalyticsHelper();
-
-        dashboardManager = new UserDashboardManager(this, analyticsHelper);
-        dashboardManager.setDashboardListener(this);  // La actividad escucha los eventos del manager
-
-        scheduleManager = new ScheduleManager(analyticsHelper);
-        scheduleManager.setScheduleListener(this);    // La actividad escucha los eventos del manager
-
-        uiManager = new DashboardUIManager(analyticsHelper);
-        uiManager.setUIActionsListener(this);         // La actividad escucha los clicks de UI
+        // Lógica movida directamente al onCreate para garantizar el orden de inicialización
     }
 
     /**
@@ -192,19 +193,19 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
             setupLegendToggle();
         }
 
-        // Botones de acción
-        MaterialButton btnRefresh = findViewById(R.id.btnRefresh);
+        // Botones de acción (Eliminado btnRefresh)
 
         // Pestañas y ViewPager para los horarios
         tabLayout = findViewById(R.id.tabLayout);
         viewPagerHorarios = findViewById(R.id.viewPagerHorarios);
-        shimmerLayout = findViewById(R.id.shimmer_inicio_usuarios);
+        shimmerSchedules = findViewById(R.id.shimmer_inicio_usuarios);
+        shimmerStats = findViewById(R.id.shimmer_stats);
+        layoutRealStats = findViewById(R.id.layout_real_stats);
         ivUserAvatar = findViewById(R.id.ivUserAvatar);
 
         // Pasar todas las referencias de vistas al UIManager para que las gestione
         uiManager.setViewReferences(
-                tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount,
-                btnRefresh
+                tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount
         );
         uiManager.setupToolbar(topAppBar);  // Configurar toolbar (menú, título, etc.)
 
@@ -216,8 +217,38 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         );
         viewPagerHorarios.setAdapter(pagerAdapter);
 
+        // ✅ AÑADIR ANIMACIÓN SUAVE AL VIEW PAGER
+        setupViewPagerAnimation();
+
         // Conectar el TabLayout con el ViewPager (para que se sincronicen)
         uiManager.setupTabLayout(tabLayout, viewPagerHorarios);
+    }
+
+    /**
+     * Configura una animación de transición suave (Fade & Scale) para el ViewPager2.
+     */
+    private void setupViewPagerAnimation() {
+        viewPagerHorarios.setPageTransformer((page, position) -> {
+            float absPos = Math.abs(position);
+            
+            // Efecto de desvanecimiento (Fade)
+            page.setAlpha(1.0f - absPos);
+            
+            // Efecto de escala sutil (Scale)
+            float scale = 0.85f + (1.0f - absPos) * 0.15f;
+            page.setScaleX(scale);
+            page.setScaleY(scale);
+            
+            // Evitar que las páginas se superpongan de forma extraña
+            page.setTranslationX(page.getWidth() * -position);
+            
+            // Ajustar la elevación para que la página activa esté encima
+            if (absPos > 0.5f) {
+                page.setVisibility(View.GONE);
+            } else {
+                page.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     /**
@@ -225,7 +256,7 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
      * El UIManager se encarga de enlazar los clicks con los callbacks de esta actividad.
      */
     private void configureUI() {
-        uiManager.setupButtonListeners();
+        // (Lógica de btnRefresh eliminada)
     }
 
     // ============================================================
@@ -331,11 +362,21 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
      * - Horarios
      */
     private void loadInitialData() {
-        if (shimmerLayout != null) {
-            shimmerLayout.setVisibility(View.VISIBLE);
-            shimmerLayout.startShimmer();
+        if (shimmerSchedules != null) {
+            shimmerSchedules.setVisibility(View.VISIBLE);
+            shimmerSchedules.startShimmer();
             viewPagerHorarios.setVisibility(View.GONE);
         }
+        
+        if (shimmerStats != null) {
+            shimmerStats.setVisibility(View.VISIBLE);
+            shimmerStats.startShimmer();
+        }
+        
+        if (layoutRealStats != null) {
+            layoutRealStats.setVisibility(View.GONE);
+        }
+
         dashboardManager.loadUserData();   // Carga usuario y contadores en segundo plano
         scheduleManager.loadSchedules();   // Carga horarios en segundo plano
     }
@@ -379,6 +420,14 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     @Override
     public void onCountersLoaded(int reservasCount, int canceladasCount, int viajesCount) {
         runOnUiThread(() -> {
+            if (shimmerStats != null) {
+                shimmerStats.stopShimmer();
+                shimmerStats.setVisibility(View.GONE);
+            }
+            if (layoutRealStats != null) {
+                layoutRealStats.setVisibility(View.VISIBLE);
+            }
+
             uiManager.updateCounters(reservasCount, canceladasCount, viajesCount);
 
             // Log informativo si hay reservas activas
@@ -413,9 +462,9 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
     @Override
     public void onSchedulesLoaded(List<Horario> nataga, List<Horario> laPlata) {
         runOnUiThread(() -> {
-            if (shimmerLayout != null) {
-                shimmerLayout.stopShimmer();
-                shimmerLayout.setVisibility(View.GONE);
+            if (shimmerSchedules != null) {
+                shimmerSchedules.stopShimmer();
+                shimmerSchedules.setVisibility(View.GONE);
                 viewPagerHorarios.setVisibility(View.VISIBLE);
             }
             pagerAdapter.actualizarDatos(nataga, laPlata);  // Actualizar el adaptador con los nuevos datos
@@ -434,47 +483,6 @@ public class InicioUsuariosActivity extends AppCompatActivity implements
         runOnUiThread(() -> {
             Toast.makeText(this, "Error al cargar horarios: " + error, Toast.LENGTH_SHORT).show();
         });
-    }
-
-    // ============================================================
-    // Implementación de DashboardUIManager.UIActionsListener
-    // (Eventos de interacción del usuario con la UI)
-    // ============================================================
-
-    /**
-     * Evento cuando el usuario hace click en "Refresh" (actualizar).
-     * Muestra un mensaje y recarga los datos.
-     */
-    @Override
-    public void onRefreshClicked() {
-        uiManager.showRefreshMessage();
-        dashboardManager.refreshData();     // Recargar datos del usuario y contadores
-        scheduleManager.loadSchedules();    // Recargar horarios
-    }
-
-    /**
-     * Evento cuando el usuario selecciona la opción de "Perfil" en el menú.
-     * Navega a la actividad de perfil si el usuario está logueado.
-     */
-    @Override
-    public void onProfileMenuItemClicked() {
-        if (validateLogin()) {
-            Intent intent = new Intent(this, PerfilUsuarioActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    /**
-     * Valida si el usuario está logueado antes de realizar acciones que lo requieran.
-     * @return true si el usuario está logueado, false en caso contrario.
-     */
-    private boolean validateLogin() {
-        if (!MyApp.isUserLoggedIn()) {
-            Toast.makeText(this, "Debes iniciar sesión", Toast.LENGTH_SHORT).show();
-            // Aquí se podría redirigir a la pantalla de login si es necesario
-            return false;
-        }
-        return true;
     }
 
     // ============================================================

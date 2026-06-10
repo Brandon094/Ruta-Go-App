@@ -7,24 +7,19 @@ import androidx.appcompat.widget.Toolbar;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.analytics.DashboardAnalyticsHelper;
 import com.chopcode.rutago.app.models.Usuario;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.List;
 
 public class DashboardUIManager {
 
     private final DashboardAnalyticsHelper analyticsHelper;
 
     // UI References
-    private TextView tvUserName, tvWelcome, tvReservasCount, tvViajesCount, tvCanceladasCount;
-    private MaterialButton btnRefresh;
+    private TextView tvUserName, tvWelcome, tvReservasCount, tvTotalCount, tvCanceladasCount;
 
     // Callbacks
     public interface UIActionsListener {
-        void onRefreshClicked();
-        void onProfileMenuItemClicked();
+        // Otros eventos de interacción pueden ir aquí
     }
 
     private UIActionsListener listener;
@@ -39,61 +34,37 @@ public class DashboardUIManager {
 
     public void setViewReferences(
             TextView tvUserName, TextView tvWelcome,
-            TextView tvReservasCount, TextView tvCanceladasCount, TextView tvViajesCount,
-            MaterialButton btnRefresh) {
+            TextView tvReservasCount, TextView tvCanceladasCount, TextView tvTotalCount) {
 
         this.tvUserName = tvUserName;
         this.tvWelcome = tvWelcome;
         this.tvReservasCount = tvReservasCount;
         this.tvCanceladasCount = tvCanceladasCount;
-        this.tvViajesCount = tvViajesCount;
-        this.btnRefresh = btnRefresh;
+        this.tvTotalCount = tvTotalCount;
     }
 
     public void setupToolbar(Toolbar toolbar) {
         toolbar.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_perfil) {
-                analyticsHelper.logMenuItemClick("perfil");
-                if (listener != null) {
-                    listener.onProfileMenuItemClicked();
-                }
-                return true;
-            }
+            // Manejo de otros items del menú si los hubiera en el futuro
             return false;
-        });
-    }
-
-    public void setupButtonListeners() {
-        btnRefresh.setOnClickListener(view -> {
-            analyticsHelper.logButtonClick("actualizar");
-            if (listener != null) {
-                listener.onRefreshClicked();
-            }
         });
     }
 
     public void updateUserInfo(Usuario usuario) {
         if (usuario != null && usuario.getNombre() != null) {
             tvUserName.setText(usuario.getNombre());
-
-            String firstName = usuario.getNombre().split(" ")[0];
             tvWelcome.setText("¡Bienvenido!");
         }
     }
 
-    public void updateCounters(int reservasCount, int canceladasCount, int viajesCount) {
-        tvReservasCount.setText(String.valueOf(reservasCount));
-        tvCanceladasCount.setText(String.valueOf(canceladasCount));
-        tvViajesCount.setText(String.valueOf(viajesCount));
+    public void updateCounters(int reservasCount, int canceladasCount, int totalCount) {
+        if (tvReservasCount != null) tvReservasCount.setText(String.valueOf(reservasCount));
+        if (tvCanceladasCount != null) tvCanceladasCount.setText(String.valueOf(canceladasCount));
+        if (tvTotalCount != null) tvTotalCount.setText(String.valueOf(totalCount));
     }
 
     public void showRefreshMessage() {
-        // Este método se llamaría desde la Activity
-        // Toast.makeText(context, "Actualizando información...", Toast.LENGTH_SHORT).show();
-    }
-
-    public void showErrorMessage(String message) {
-        // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        // Opcional: mostrar un Toast o Snackbar de actualización
     }
 
     public void setupTabLayout(TabLayout tabLayout, androidx.viewpager2.widget.ViewPager2 viewPager) {

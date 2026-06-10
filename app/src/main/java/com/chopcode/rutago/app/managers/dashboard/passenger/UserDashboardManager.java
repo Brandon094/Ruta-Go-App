@@ -1,6 +1,7 @@
 package com.chopcode.rutago.app.managers.dashboard.passenger;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -41,10 +42,39 @@ public class UserDashboardManager {
         this.context = context;
         this.analyticsHelper = analyticsHelper;
         this.userService = new UserService();
+        
+        // Cargar nombre e ID de la caché si existen
+        loadCachedUser();
+    }
+
+    private void loadCachedUser() {
+        SharedPreferences prefs = context.getSharedPreferences("RutaGoCache", Context.MODE_PRIVATE);
+        String name = prefs.getString("user_name", null);
+        String photo = prefs.getString("user_photo", null);
+        
+        if (name != null) {
+            usuarioActual = new Usuario();
+            usuarioActual.setNombre(name);
+            usuarioActual.setPhotoUrl(photo);
+            Log.d(TAG, "📦 Usuario cargado desde caché: " + name);
+        }
+    }
+
+    private void saveUserToCache(Usuario usuario) {
+        if (usuario == null) return;
+        SharedPreferences.Editor editor = context.getSharedPreferences("RutaGoCache", Context.MODE_PRIVATE).edit();
+        editor.putString("user_name", usuario.getNombre());
+        editor.putString("user_photo", usuario.getPhotoUrl());
+        editor.apply();
+        Log.d(TAG, "💾 Usuario guardado en caché");
     }
 
     public void setDashboardListener(DashboardListener listener) {
         this.listener = listener;
+        // Si ya tenemos usuario en caché, notificar al listener inmediatamente
+        if (usuarioActual != null && listener != null) {
+            listener.onUserDataLoaded(usuarioActual);
+        }
     }
 
     public void loadUserData() {
@@ -64,6 +94,7 @@ public class UserDashboardManager {
             public void onUserDataLoaded(Usuario usuario) {
                 Log.d(TAG, "✅ Datos de usuario cargados exitosamente");
                 usuarioActual = usuario;
+                saveUserToCache(usuario); // Guardar en caché para la próxima vez
                 analyticsHelper.logUserLoaded(usuario);
 
                 if (listener != null) {

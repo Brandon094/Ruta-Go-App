@@ -5,363 +5,157 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_chip_background"
     tools:context=".activities.passenger.InicioUsuariosActivity">
 
-    <!-- AppBar con efecto de scroll -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/primary_500"
         android:elevation="0dp">
 
+        <!-- Toolbar Fijo -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/secondary_900"
-            app:title="@string/horarios"
-            app:titleTextColor="@color/primary_500"
-            app:menu="@menu/menu_inicio_usuarios"
-            app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+            style="@style/Widget.MaterialComponents.Toolbar.Primary">
 
-        <!-- Header Rediseñado - Estilo Premium -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="left"
+                android:src="@drawable/logo_icon"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/app_name" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
+        <!-- Contenedor Colapsable (Avatar + Estadísticas) -->
+        <!-- Usamos app:layout_scrollFlags="scroll" para que solo vuelva al llegar al top -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primary_500"
-            android:padding="24dp"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed">
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll">
 
-            <!-- Avatar más grande y elegante -->
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/ivUserAvatar"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:src="@drawable/ic_person"
-                app:civ_border_color="@color/secondary_900"
-                app:civ_border_width="3dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:orientation="vertical"
-                app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
-                app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
-                app:layout_constraintStart_toEndOf="@id/ivUserAvatar"
-                app:layout_constraintEnd_toStartOf="@id/statusBadge">
-
-                <TextView
-                    android:id="@+id/tvWelcome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/bienvenida"
-                    android:textColor="@color/secondary_900"
-                    android:textSize="14sp"
-                    android:alpha="0.8" />
-
-                <TextView
-                    android:id="@+id/tvUserName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/cargando"
-                    android:textColor="@color/secondary_900"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-            </LinearLayout>
-
-            <!-- Badge de estado estilizado -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/statusBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/secondary_900"
-                app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
-                app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="14dp"
-                    android:paddingVertical="6dp"
-                    android:text="@string/activo"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Seccion para contadores y leyenda -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardStatsContainer"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headerContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/secondary_800"
-                app:strokeColor="@color/secondary_700"
-                app:strokeWidth="1dp"
-                app:layout_constraintTop_toBottomOf="@id/ivUserAvatar">
+                android:background="@color/primary_500"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivUserAvatar"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:src="@drawable/ic_person"
+                    app:civ_border_color="@color/secondary_900"
+                    app:civ_border_width="2dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
+                    app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
+                    app:layout_constraintStart_toEndOf="@id/ivUserAvatar"
+                    app:layout_constraintEnd_toStartOf="@id/statusBadge">
+
+                    <TextView
+                        android:id="@+id/tvWelcome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bienvenida"
+                        android:textColor="@color/secondary_900"
+                        android:textSize="13sp"
+                        android:alpha="0.8" />
+
+                    <TextView
+                        android:id="@+id/tvUserName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cargando"
+                        android:textColor="@color/secondary_900"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/statusBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/secondary_900"
+                    app:layout_constraintTop_toTopOf="@id/ivUserAvatar"
+                    app:layout_constraintBottom_toBottomOf="@id/ivUserAvatar"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:text="@string/activo"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Estadísticas Rapidas -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingVertical="16dp">
+                    android:layout_marginTop="20dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/secondary_800"
+                    app:strokeColor="@color/secondary_700"
+                    app:strokeWidth="1dp"
+                    app:layout_constraintTop_toBottomOf="@id/ivUserAvatar">
 
-                    <!-- Título con icono -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_stast"
-                            app:tint="@color/primary_500"
-                            android:layout_marginEnd="12dp"
-                            android:contentDescription="@string/desc_stats_icon" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/estad_sticas_r_pidas"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/chip_text" />
-                    </LinearLayout>
-
-                    <!-- Contador rápido -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:weightSum="3"
-                        android:paddingHorizontal="16dp"
-                        android:layout_marginBottom="20dp">
-
-                        <!-- Contador con icono confirmadas -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/secondary_800"
-                            app:strokeColor="@color/secondary_700"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="12dp">
-
-                                <ImageView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:src="@drawable/ic_check"
-                                    app:tint="@color/primary_500"
-                                    android:layout_marginBottom="8dp"
-                                    android:contentDescription="@string/desc_check_icon" />
-
-                                <TextView
-                                    android:id="@+id/tvReservasCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cont_reservas"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="20sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginBottom="4dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/reservas_confirmadas"
-                                    android:textSize="9sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <!-- Contador con icono canceladas -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/secondary_800"
-                            app:strokeColor="@color/secondary_700"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="12dp">
-
-                                <ImageView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:src="@drawable/ic_cancel"
-                                    app:tint="@color/error"
-                                    android:layout_marginBottom="8dp"
-                                    android:contentDescription="@string/desc_cancel_icon" />
-
-                                <TextView
-                                    android:id="@+id/tvCanceladasCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cont_canceladas"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="20sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginBottom="4dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/canceladas"
-                                    android:textSize="9sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <!-- Contador con icono total -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="2dp"
-                            app:cardBackgroundColor="@color/secondary_800"
-                            app:strokeColor="@color/secondary_700"
-                            app:strokeWidth="1dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="12dp">
-
-                                <ImageView
-                                    android:layout_width="28dp"
-                                    android:layout_height="28dp"
-                                    android:src="@drawable/ic_checklist"
-                                    app:tint="@color/success"
-                                    android:layout_marginBottom="8dp"
-                                    android:contentDescription="@string/desc_total_icon" />
-
-                                <TextView
-                                    android:id="@+id/tvTotalCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cont_total"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="20sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginBottom="4dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/total"
-                                    android:textSize="9sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-
-                    <!-- Separador -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/surface_3"
-                        android:layout_marginHorizontal="16dp"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Header de la leyenda (cliclable) -->
-                    <RelativeLayout
-                        android:id="@+id/legendHeader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="16dp"
-                        android:paddingBottom="8dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?selectableItemBackground">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/contador_leyenda"
-                                android:textSize="11sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:gravity="center" />
-
-                            <ImageView
-                                android:id="@+id/legendExpandIcon"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_expand_more"
-                                app:tint="@color/primary_500"
-                                android:contentDescription="@string/desc_expand_icon" />
-                        </LinearLayout>
-                    </RelativeLayout>
-
-                    <!-- Leyenda con iconos representativos (contenido expandible) -->
-                    <LinearLayout
-                        android:id="@+id/legendContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:paddingHorizontal="16dp"
-                        android:paddingBottom="16dp"
-                        android:visibility="gone">
+                        android:paddingVertical="12dp">
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer_stats"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:shimmer_auto_start="true">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingHorizontal="12dp"
+                                android:weightSum="3">
+                                <include layout="@layout/skeleton_stat_item" />
+                                <include layout="@layout/skeleton_stat_item" />
+                                <include layout="@layout/skeleton_stat_item" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
 
                         <LinearLayout
+                            android:id="@+id/layout_real_stats"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center"
+                            android:paddingHorizontal="12dp"
+                            android:visibility="gone"
                             android:weightSum="3">
 
                             <!-- Confirmadas -->
@@ -370,42 +164,26 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="4dp">
-
-                                <LinearLayout
+                                android:gravity="center">
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/ic_check"
+                                    app:tint="@color/primary_500" />
+                                <TextView
+                                    android:id="@+id/tvReservasCount"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical"
-                                    android:layout_marginBottom="4dp">
-
-                                    <ImageView
-                                        android:layout_width="12dp"
-                                        android:layout_height="12dp"
-                                        android:src="@drawable/ic_check"
-                                        app:tint="@color/primary_500"
-                                        android:layout_marginEnd="4dp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/leyenda_confirmadas_titulo"
-                                        android:textSize="9sp"
-                                        android:textStyle="bold"
-                                        android:textColor="@color/primary_500" />
-                                </LinearLayout>
-
+                                    android:text="0"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/leyenda_confirmadas_desc"
+                                    android:text="@string/confirmadas"
                                     android:textSize="8sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center"
-                                    android:lineSpacingExtra="1dp" />
+                                    android:textColor="@color/text_secondary" />
                             </LinearLayout>
 
                             <!-- Canceladas -->
@@ -414,42 +192,26 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="4dp">
-
-                                <LinearLayout
+                                android:gravity="center">
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/ic_cancel"
+                                    app:tint="@color/error" />
+                                <TextView
+                                    android:id="@+id/tvCanceladasCount"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical"
-                                    android:layout_marginBottom="4dp">
-
-                                    <ImageView
-                                        android:layout_width="12dp"
-                                        android:layout_height="12dp"
-                                        android:src="@drawable/ic_cancel"
-                                        app:tint="@color/error"
-                                        android:layout_marginEnd="4dp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/leyenda_canceladas_titulo"
-                                        android:textSize="9sp"
-                                        android:textStyle="bold"
-                                        android:textColor="@color/error" />
-                                </LinearLayout>
-
+                                    android:text="0"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/leyenda_canceladas_desc"
+                                    android:text="@string/canceladas"
                                     android:textSize="8sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center"
-                                    android:lineSpacingExtra="1dp" />
+                                    android:textColor="@color/text_secondary" />
                             </LinearLayout>
 
                             <!-- Total -->
@@ -458,155 +220,239 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="4dp">
-
-                                <LinearLayout
+                                android:gravity="center">
+                                <ImageView
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:src="@drawable/ic_checklist"
+                                    app:tint="@color/success" />
+                                <TextView
+                                    android:id="@+id/tvTotalCount"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical"
-                                    android:layout_marginBottom="4dp">
-
-                                    <ImageView
-                                        android:layout_width="12dp"
-                                        android:layout_height="12dp"
-                                        android:src="@drawable/ic_checklist"
-                                        app:tint="@color/success"
-                                        android:layout_marginEnd="4dp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/leyenda_total_titulo"
-                                        android:textSize="9sp"
-                                        android:textStyle="bold"
-                                        android:textColor="@color/success" />
-                                </LinearLayout>
-
+                                    android:text="0"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/leyenda_total_desc"
+                                    android:text="@string/total"
                                     android:textSize="8sp"
+                                    android:textColor="@color/text_secondary" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Leyenda Expandible -->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/secondary_700"
+                            android:layout_marginTop="8dp" />
+
+                        <RelativeLayout
+                            android:id="@+id/legendHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackground">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/contador_leyenda"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="10sp"
+                                android:textStyle="bold"
+                                android:layout_centerVertical="true" />
+
+                            <ImageView
+                                android:id="@+id/legendExpandIcon"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                app:tint="@color/text_secondary"
+                                android:contentDescription="@string/desc_expand_icon" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:id="@+id/legendContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingBottom="8dp"
+                            android:visibility="gone">
+
+                            <!-- Confirmadas -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center_vertical">
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_circle_logout"
+                                    android:backgroundTint="@color/primary_500" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/leyenda_confirmadas_titulo"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:text="@string/leyenda_confirmadas_desc"
                                     android:textColor="@color/text_secondary"
-                                    android:gravity="center"
-                                    android:maxLines="2"
-                                    android:textAlignment="center"
-                                    android:lineSpacingExtra="1dp" />
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+                            <!-- Canceladas -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center_vertical">
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_circle_logout"
+                                    android:backgroundTint="@color/error" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/leyenda_canceladas_titulo"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:text="@string/leyenda_canceladas_desc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+                            <!-- Total -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center_vertical">
+                                <View
+                                    android:layout_width="8dp"
+                                    android:layout_height="8dp"
+                                    android:background="@drawable/bg_circle_logout"
+                                    android:backgroundTint="@color/success" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/leyenda_total_titulo"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:text="@string/leyenda_total_desc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="10sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
-    <!-- Contenido principal simplificado -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="56dp"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:cardBackgroundColor="@color/dark_chip_background">
-
+        <!-- Sección Fija (Sticky): Título y Pestañas -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:background="@color/dark_chip_background"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="12dp">
 
-            <!-- Título de horarios -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-
+                android:layout_marginBottom="8dp">
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:src="@drawable/ic_schedule"
-                    android:tint="@color/primary_500"
-                    android:contentDescription="@string/desc_schedule_icon" />
-
+                    app:tint="@color/primary_500" />
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
+                    android:layout_marginStart="8dp"
                     android:text="@string/horarios_disponibles"
                     android:textColor="@color/chip_text"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
-
-                <!-- Convertir este boton en un solo icono sin texto -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRefresh"
-                    style="@style/AppButton.Text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:icon="@drawable/ic_refresh"
-                    app:iconGravity="textStart"
-                    android:contentDescription="@string/tooltip_actualizar" />
             </LinearLayout>
 
-            <!-- Pestañas para las rutas -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="4dp"
                 app:tabBackground="@drawable/tab_selector_light"
                 app:tabTextColor="@color/text_primary"
                 app:tabSelectedTextColor="@color/text_on_primary"
                 app:tabIndicatorColor="@color/primary_500"
                 app:tabIndicatorHeight="3dp"
-                app:tabMode="fixed"
-                app:tabRippleColor="@color/primary_100">
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nataga" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/laPlata" />
-            </com.google.android.material.tabs.TabLayout>
-
-            <!-- ViewPager2 -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPagerHorarios"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone" />
-
-            <!-- Shimmer para Carga -->
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmer_inicio_usuarios"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:shimmer_auto_start="true">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <include layout="@layout/skeleton_item_historial" />
-                    <include layout="@layout/skeleton_item_historial" />
-                    <include layout="@layout/skeleton_item_historial" />
-                </LinearLayout>
-            </com.facebook.shimmer.ShimmerFrameLayout>
-
+                app:tabMode="fixed" />
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- EL VIEWPORT PRINCIPAL -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerHorarios"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_inicio_usuarios"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+        android:paddingHorizontal="16dp"
+        app:shimmer_auto_start="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include layout="@layout/skeleton_item_historial" />
+            <include layout="@layout/skeleton_item_historial" />
+            <include layout="@layout/skeleton_item_historial" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <FrameLayout
         android:id="@+id/bottom_nav_container"
         android:layout_width="match_parent"
