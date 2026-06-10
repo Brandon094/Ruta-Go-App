@@ -140,14 +140,17 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
      * Configura el texto del checkbox para que tenga enlaces clicables
      */
     private void setupTermsAndConditionsLink() {
-        String fullText = "Acepto los Términos y Condiciones y la Política de Privacidad";
+        String textTerms = "Términos y Condiciones";
+        String textPrivacy = "Política de Privacidad";
+        String fullText = "Acepto los " + textTerms + " y la " + textPrivacy;
+        
         SpannableString ss = new SpannableString(fullText);
 
         // Click para "Términos y Condiciones"
         ClickableSpan termsClick = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                showPrivacyPolicyDialog();
+                showLegalDialog(R.raw.terms_conditions, "Términos y Condiciones");
             }
 
             @Override
@@ -162,7 +165,7 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
         ClickableSpan privacyClick = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                showPrivacyPolicyDialog();
+                showLegalDialog(R.raw.privacy_policy, "Política de Privacidad");
             }
 
             @Override
@@ -173,26 +176,38 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
             }
         };
 
-        // Definir los rangos de los enlaces (ajustar si el texto cambia)
-        ss.setSpan(termsClick, 11, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), 11, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // Encontrar índices dinámicamente para evitar cortes de letras
+        int startTerms = fullText.indexOf(textTerms);
+        int endTerms = startTerms + textTerms.length();
+        
+        int startPrivacy = fullText.indexOf(textPrivacy);
+        int endPrivacy = startPrivacy + textPrivacy.length();
 
-        ss.setSpan(privacyClick, 36, 60, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), 36, 60, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        // Aplicar Spans a Términos
+        if (startTerms != -1) {
+            ss.setSpan(termsClick, startTerms, endTerms, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), startTerms, endTerms, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        // Aplicar Spans a Privacidad
+        if (startPrivacy != -1) {
+            ss.setSpan(privacyClick, startPrivacy, endPrivacy, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), startPrivacy, endPrivacy, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         checkboxTerms.setText(ss);
         checkboxTerms.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**
-     * Muestra un diálogo con el contenido HTML de las políticas de privacidad
+     * Muestra un diálogo con el contenido HTML legal solicitado
      */
-    private void showPrivacyPolicyDialog() {
+    private void showLegalDialog(int rawResourceId, String title) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_privacy_policy, null);
         WebView webView = dialogView.findViewById(R.id.webViewPrivacy);
 
         try {
-            InputStream is = getResources().openRawResource(R.raw.privacy_policy);
+            InputStream is = getResources().openRawResource(rawResourceId);
             Scanner s = new Scanner(is).useDelimiter("\\A");
             String htmlContent = s.hasNext() ? s.next() : "";
             is.close();
@@ -200,15 +215,15 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
             webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null);
 
             new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                    .setTitle("Política de Privacidad")
+                    .setTitle(title)
                     .setView(dialogView)
                     .setPositiveButton("He leído y acepto", (dialog, which) -> checkboxTerms.setChecked(true))
                     .setNegativeButton("Cerrar", null)
                     .show();
 
         } catch (Exception e) {
-            Log.e(TAG, "❌ Error cargando políticas: " + e.getMessage());
-            Toast.makeText(this, "No se pudieron cargar las políticas", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "❌ Error cargando documento legal: " + e.getMessage());
+            Toast.makeText(this, "No se pudo cargar el documento", Toast.LENGTH_SHORT).show();
         }
     }
 
