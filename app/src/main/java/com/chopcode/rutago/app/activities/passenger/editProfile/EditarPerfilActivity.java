@@ -14,6 +14,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Usuario;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class EditarPerfilActivity extends AppCompatActivity {
     private Button btnGuardar, btnCancelar;
     private EditText etNombre, etTelefono, etCorreo;
     private TextView tvNombreActual, tvTelefonoActual, tvCorreoActual;
+    private MaterialToolbar topAppBar;
     private UserService userService;
     private AuthManager authManager;
 
@@ -81,6 +83,8 @@ public class EditarPerfilActivity extends AppCompatActivity {
         tvTelefonoActual = findViewById(R.id.tvTelefonoActual);
         tvCorreoActual = findViewById(R.id.tvCorreoActual);
 
+        topAppBar = findViewById(R.id.topAppBar);
+
         btnGuardar = findViewById(R.id.btnGuardarCambios);
         btnCancelar = findViewById(R.id.btnCancelar);
 
@@ -89,6 +93,10 @@ public class EditarPerfilActivity extends AppCompatActivity {
 
     private void configurarListeners() {
         Log.d(TAG, "🔧 Configurando listeners...");
+
+        if (topAppBar != null) {
+            topAppBar.setNavigationOnClickListener(v -> onBackPressed());
+        }
 
         btnGuardar.setOnClickListener(view -> {
             Log.d(TAG, "🎯 Click en botón Guardar");

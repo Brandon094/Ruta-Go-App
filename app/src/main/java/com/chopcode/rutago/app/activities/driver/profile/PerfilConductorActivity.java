@@ -37,6 +37,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
     private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
     private ImageView ivProfilePicture;
     private View cardInicio; 
+    private com.google.android.material.card.MaterialCardView btnChangePhoto;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private UserService userService;
     private StorageService storageService;
@@ -129,9 +130,12 @@ public class PerfilConductorActivity extends AppCompatActivity {
     private void inicializarVistas() {
         // ImageView
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
-        if (ivProfilePicture != null) {
-            ivProfilePicture.setOnClickListener(v -> {
-                Log.d(TAG, "📸 Clic en foto de perfil - Abriendo galería");
+
+        // Botón cambio de foto (icono de edición)
+        btnChangePhoto = findViewById(R.id.btnChangePhoto);
+        if (btnChangePhoto != null) {
+            btnChangePhoto.setOnClickListener(v -> {
+                Log.d(TAG, "📸 Clic en botón de edición de foto - Abriendo galería");
                 imagePickerLauncher.launch("image/*");
             });
         }

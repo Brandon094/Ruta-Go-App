@@ -18,8 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/historial_reservas"
-            app:titleTextColor="@color/text_on_primary"
-            app:navigationIcon="@drawable/ic_arrow_back" />
+            app:titleTextColor="@color/text_on_primary" />
 
         <!-- ChipGroup con Scroll Horizontal para filtros rápidos -->
         <HorizontalScrollView

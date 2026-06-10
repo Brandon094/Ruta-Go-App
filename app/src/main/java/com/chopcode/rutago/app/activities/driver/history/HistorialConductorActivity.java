@@ -121,11 +121,9 @@ public class HistorialConductorActivity extends AppCompatActivity {
     private void configurarToolbar() {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
         }
-
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void configurarChips() {

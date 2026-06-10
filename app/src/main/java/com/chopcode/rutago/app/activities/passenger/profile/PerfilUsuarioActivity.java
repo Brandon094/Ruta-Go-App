@@ -14,10 +14,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.activities.passenger.history.HistorialReservasActivity;
-import com.chopcode.rutago.app.activities.passenger.InicioUsuariosActivity;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
@@ -36,7 +33,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     private TextView tvNombre, tvCorreo, tvTelefono;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
     private ImageView ivProfilePicture;
-    private MaterialCardView cardPremiumStats, cardPerfil;
+    private MaterialCardView cardPremiumStats, cardPerfil, btnChangePhoto;
     private View headerContent;
     private ShimmerFrameLayout shimmerHeader, shimmerCard, shimmerPremium;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
@@ -50,12 +47,15 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
+                    Log.d(TAG, "📸 Imagen seleccionada correctamente: " + uri.toString());
                     subirFotoDePerfil(uri);
+                } else {
+                    Log.w(TAG, "⚠️ Selección de imagen cancelada por el usuario");
                 }
             }
     );
 
-    // ✅ NUEVO: Tag para logs
+    // ✅ TAG para logs
     private static final String TAG = "PerfilUsuario";
 
     @Override
@@ -63,31 +63,20 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Iniciando actividad de perfil de usuario");
 
-        // ✅ Registrar evento analítico de inicio de pantalla
-        registrarEventoAnalitico("pantalla_perfil_usuario_inicio", null, null);
-
         setContentView(R.layout.activity_perfil_pasajero);
-        Log.d(TAG, "✅ Layout inflado correctamente");
 
         // Inicializar servicios
         authManager = AuthManager.getInstance();
         userService = new UserService();
         storageService = new StorageService();
         passengerReservationService = new PassengerReservationService();
-        Log.d(TAG, "✅ Servicios inicializados");
 
-        // Verificar si el usuario está logueado usando MyApp
+        // Verificar si el usuario está logueado
         if (!authManager.isUserLoggedIn()) {
-            Log.w(TAG, "⚠️ Usuario no autenticado - redirigiendo a login");
-
-            // ✅ Registrar evento de redirección
-            registrarEventoAnalitico("redireccion_login_no_autenticado", null, null);
-
             authManager.redirectToLogin(this);
             finish();
             return;
         }
-        Log.d(TAG, "✅ Usuario autenticado validado");
 
         // Referencias a elementos de la UI
         inicializarVistas();
@@ -97,8 +86,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
         // Configurar navegación
         setupBottomNavigation();
-
-        Log.d(TAG, "✅ Configuración completa - Actividad lista");
     }
 
     private void setupBottomNavigation() {
@@ -118,14 +105,17 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         // Content Views
         headerContent = findViewById(R.id.headerContent);
         cardPerfil = findViewById(R.id.cardPerfil);
-
-        // ImageView
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
-        if (ivProfilePicture != null) {
-            ivProfilePicture.setOnClickListener(v -> {
-                Log.d(TAG, "📸 Clic en foto de perfil - Abriendo galería");
+
+        // Botón cambio de foto (ahora en el icono de edición)
+        btnChangePhoto = findViewById(R.id.btnChangePhoto);
+        if (btnChangePhoto != null) {
+            btnChangePhoto.setOnClickListener(v -> {
+                Log.d(TAG, "📸 Clic en botón de edición de foto - Abriendo galería");
                 imagePickerLauncher.launch("image/*");
             });
+        } else {
+            Log.e(TAG, "❌ Error: No se encontró el botón btnChangePhoto en el layout");
         }
 
         // TextViews
@@ -148,8 +138,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         if (btnDeleteAccount != null) {
             btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
         }
-
-        Log.d(TAG, "✅ Todas las vistas inicializadas correctamente");
     }
 
     private void mostrarDialogoConfirmacionBorrado() {
@@ -160,7 +148,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .create();
 
-        // Configurar botones del layout inflado
         com.google.android.material.button.MaterialButton btnConfirm = dialogView.findViewById(R.id.btnConfirmDelete);
         com.google.android.material.button.MaterialButton btnCancel = dialogView.findViewById(R.id.btnCancelDelete);
 
@@ -183,10 +170,8 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     }
 
     private void procesarSolicitudBorrado() {
-        String userId = MyApp.getCurrentUserId();
+        String userId = authManager.getUserId();
         if (userId == null) return;
-
-        registrarEventoAnalitico("solicitud_borrado_cuenta_confirmada", null, null);
 
         userService.requestAccountDeletion(userId, new UserService.UserUpdateCallback() {
             @Override
@@ -195,8 +180,6 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     Toast.makeText(PerfilUsuarioActivity.this, 
                         "Solicitud enviada. Tu cuenta será revisada para su eliminación.", 
                         Toast.LENGTH_LONG).show();
-                    
-                    // Cerrar sesión después de solicitar el borrado
                     authManager.signOut(PerfilUsuarioActivity.this);
                     finish();
                 });
@@ -204,11 +187,7 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> {
-                    Toast.makeText(PerfilUsuarioActivity.this, 
-                        "Error al enviar la solicitud: " + error, 
-                        Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -219,21 +198,27 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
     }
 
     private void subirFotoDePerfil(Uri uri) {
-        String userId = MyApp.getCurrentUserId();
-        if (userId == null) return;
+        String userId = authManager.getUserId();
+        if (userId == null) {
+            Log.e(TAG, "❌ No se puede subir foto: UserId es null");
+            return;
+        }
 
-        Log.d(TAG, "📤 Subiendo nueva foto de perfil...");
-        Toast.makeText(this, "Subiendo foto...", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "📤 subirFotoDePerfil - Iniciando subida a Storage...");
+        
+        runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Subiendo foto...", Toast.LENGTH_SHORT).show());
 
         storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
             @Override
             public void onSuccess(String downloadUrl) {
-                // Actualizar en Database
+                Log.d(TAG, "✅ Imagen subida a Storage. URL: " + downloadUrl);
+                
+                // Actualizar enlace en el nodo de usuarios
                 userService.updateProfilePicture(userId, downloadUrl, "usuarios", new UserService.UserUpdateCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(() -> {
-                            Log.d(TAG, "✅ Foto actualizada en DB y UI");
+                            Log.d(TAG, "✅ DB actualizada. Cargando nueva foto en UI.");
                             ImageUtils.loadProfilePhoto(PerfilUsuarioActivity.this, downloadUrl, ivProfilePicture);
                             Toast.makeText(PerfilUsuarioActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
                         });
@@ -241,51 +226,32 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(String error) {
-                        runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
+                        Log.e(TAG, "❌ Error actualizando photoUrl en DB: " + error);
+                        runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error DB: " + error, Toast.LENGTH_SHORT).show());
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error al subir: " + error, Toast.LENGTH_SHORT).show());
+                Log.e(TAG, "❌ Error en StorageService: " + error);
+                runOnUiThread(() -> Toast.makeText(PerfilUsuarioActivity.this, "Error subida: " + error, Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onProgress(double progress) {
-                // Podrías mostrar un progreso si quieres
+                Log.v(TAG, "⏳ Progreso de subida: " + progress + "%");
             }
         });
     }
 
-    /**
-     * Método para obtener la información del usuario usando loadUserData
-     */
     private void cargarInfoUsuario() {
-        Log.d(TAG, "🔍 Cargando información del usuario...");
-
-        // ✅ Usar MyApp para obtener el ID del usuario
-        String userId = MyApp.getCurrentUserId();
-
-        if (userId == null) {
-            Log.e(TAG, "❌ UserId es null - no se pueden cargar datos");
-
-            // ✅ Registrar evento de error
-            registrarEventoAnalitico("error_userid_null", null, null);
-
-            Toast.makeText(this, "Error: Usuario no autenticado", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.d(TAG, "👤 Cargando datos para userId usando MyApp: " + userId);
-
-        // ✅ Registrar evento de inicio de carga
-        registrarEventoAnalitico("carga_datos_usuario_inicio", null, null);
+        String userId = authManager.getUserId();
+        if (userId == null) return;
 
         userService.loadUserData(userId, new UserService.UserDataCallback() {
             @Override
             public void onUserDataLoaded(Usuario usuario) {
-                // Actualizar la UI con los datos del usuario
                 runOnUiThread(() -> {
                     if (shimmerHeader != null) {
                         shimmerHeader.stopShimmer();
@@ -298,47 +264,17 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     if (headerContent != null) headerContent.setVisibility(View.VISIBLE);
                     if (cardPerfil != null) cardPerfil.setVisibility(View.VISIBLE);
 
-                    if (usuario.getNombre() != null) {
-                        tvNombre.setText(usuario.getNombre());
-                    } else {
-                        tvNombre.setText("Nombre no disponible");
-                        Log.w(TAG, "⚠️ Nombre del usuario no disponible");
-                    }
+                    tvNombre.setText(usuario.getNombre() != null ? usuario.getNombre() : "Usuario");
+                    tvTelefono.setText(usuario.getTelefono() != null ? usuario.getTelefono() : "No disponible");
+                    tvCorreo.setText(usuario.getEmail() != null ? usuario.getEmail() : "No disponible");
 
-                    if (usuario.getTelefono() != null) {
-                        tvTelefono.setText(usuario.getTelefono());
-                    } else {
-                        tvTelefono.setText("Teléfono no disponible");
-                        Log.w(TAG, "⚠️ Teléfono del usuario no disponible");
-                    }
-
-                    if (usuario.getEmail() != null) {
-                        tvCorreo.setText(usuario.getEmail());
-                    } else {
-                        tvCorreo.setText("Email no disponible");
-                        Log.w(TAG, "⚠️ Email del usuario no disponible");
-                    }
-
-                    // ✅ CARGAR FOTO DE PERFIL CENTRALIZADA
                     ImageUtils.loadProfilePhoto(PerfilUsuarioActivity.this, usuario.getPhotoUrl(), ivProfilePicture);
-
-                    // ✅ CARGAR ESTADÍSTICAS PREMIUM DESPUÉS DE CARGAR USUARIO
                     cargarEstadisticasPremium(userId);
-
-                    Log.d(TAG, "✅ UI actualizada con datos del usuario");
                 });
             }
 
             @Override
             public void onError(String error) {
-                Log.e(TAG, "❌ Error cargando datos de usuario: " + error);
-
-                // ✅ Usar MyApp para logging de errores
-                MyApp.logError(new Exception("Error cargando datos usuario perfil: " + error));
-
-                // ✅ Registrar evento de error
-                registrarEventoAnalitico("error_carga_datos_usuario", null, null);
-
                 runOnUiThread(() -> {
                     if (shimmerHeader != null) {
                         shimmerHeader.stopShimmer();
@@ -350,29 +286,13 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
                     }
                     if (headerContent != null) headerContent.setVisibility(View.VISIBLE);
                     if (cardPerfil != null) cardPerfil.setVisibility(View.VISIBLE);
-
-                    Toast.makeText(PerfilUsuarioActivity.this, "Error cargando datos: " + error, Toast.LENGTH_SHORT).show();
-
-                    // Mostrar datos por defecto en caso de error
-                    tvNombre.setText("Usuario");
-                    tvTelefono.setText("Teléfono no disponible");
-
-                    // ✅ Usar MyApp para obtener email del usuario actual
-                    String userEmail = "Email no disponible";
-                    if (MyApp.getCurrentUser() != null && MyApp.getCurrentUser().getEmail() != null) {
-                        userEmail = MyApp.getCurrentUser().getEmail();
-                    }
-                    tvCorreo.setText(userEmail);
-
-                    Log.w(TAG, "⚠️ Mostrando datos por defecto debido a error");
+                    Toast.makeText(PerfilUsuarioActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
 
     private void cargarEstadisticasPremium(String usuarioId) {
-        Log.d(TAG, "💰 Cargando estadísticas premium para: " + usuarioId);
-
         passengerReservationService.obtenerEstadisticasPremium(usuarioId, new PassengerReservationService.PremiumStatsCallback() {
             @Override
             public void onStatsCalculated(Map<String, Object> stats) {
@@ -384,30 +304,21 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
                     if (cardPremiumStats != null) {
                         cardPremiumStats.setVisibility(View.VISIBLE);
-                        
                         Double gastado = (Double) stats.get("totalGastado");
                         tvTotalGastadoPremium.setText(formatearPrecio(gastado != null ? gastado : 0.0));
-                        
-                        Object puntos = stats.get("puntosLealtad");
-                        tvPuntosLealtad.setText((puntos != null ? puntos.toString() : "0") + " pts");
-                        
-                        String favorita = (String) stats.get("rutaMasFrecuente");
-                        tvRutaFavorita.setText("Ruta favorita: " + (favorita != null ? favorita : "Calculando..."));
-                        
-                        Log.d(TAG, "✅ Estadísticas premium actualizadas en UI");
+                        tvPuntosLealtad.setText(stats.get("puntosLealtad") + " pts");
+                        tvRutaFavorita.setText("Ruta favorita: " + stats.get("rutaMasFrecuente"));
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                Log.e(TAG, "❌ Error cargando estadísticas premium: " + error);
                 runOnUiThread(() -> {
                     if (shimmerPremium != null) {
                         shimmerPremium.stopShimmer();
                         shimmerPremium.setVisibility(View.GONE);
                     }
-                    if (cardPremiumStats != null) cardPremiumStats.setVisibility(View.GONE);
                 });
             }
         });
@@ -419,91 +330,15 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "📱 onBackPressed - Volviendo atrás");
-
-        // ✅ Registrar evento de navegación con back button
-        registrarEventoAnalitico("navegar_back_button", null, null);
-
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        Log.d(TAG, "✅ Animación de retroceso aplicada");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "📱 onStart - Actividad visible");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "📱 onResume - Actividad en primer plano");
-
-        // ✅ Registrar evento analítico de resumen
-        registrarEventoAnalitico("pantalla_perfil_usuario_resume", null, null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "📱 onPause - Actividad en segundo plano");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "📱 onStop - Actividad no visible");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "📱 onDestroy - Actividad destruida");
-    }
-
-    /**
-     * ✅ MÉTODO AUXILIAR: Registrar eventos analíticos usando MyApp
-     */
-    private void registrarEventoAnalitico(String evento, Integer count, Integer count2) {
-        try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("user_id", MyApp.getCurrentUserId());
-            params.put("pantalla", "PerfilUsuario");
-
-            if (count != null) {
-                params.put("count", count);
-            }
-            if (count2 != null) {
-                params.put("count2", count2);
-            }
-
-            params.put("timestamp", System.currentTimeMillis());
-
-            MyApp.logEvent(evento, params);
-            Log.d(TAG, "📊 Evento analítico registrado: " + evento);
-        } catch (Exception e) {
-            Log.e(TAG, "❌ Error registrando evento analítico: " + e.getMessage());
-        }
-    }
-
-    /**
-     * ✅ MÉTODO AUXILIAR: Registrar usuario cargado usando MyApp
-     */
-    private void registrarUsuarioCargadoAnalitico(Usuario usuario) {
-        try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("user_id", MyApp.getCurrentUserId());
-            params.put("user_nombre", usuario.getNombre());
-            params.put("user_email", usuario.getEmail());
-            params.put("user_telefono", usuario.getTelefono() != null ? usuario.getTelefono() : "N/A");
-            params.put("timestamp", System.currentTimeMillis());
-            params.put("pantalla", "PerfilUsuario");
-
-            MyApp.logEvent("usuario_cargado_perfil", params);
-            Log.d(TAG, "📊 Usuario cargado en perfil registrado en analytics");
-        } catch (Exception e) {
-            Log.e(TAG, "❌ Error registrando usuario cargado: " + e.getMessage());
+        if (authManager.isUserLoggedIn()) {
+            cargarInfoUsuario();
         }
     }
 }

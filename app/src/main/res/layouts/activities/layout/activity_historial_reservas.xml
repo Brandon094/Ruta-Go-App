@@ -18,9 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Historial de Viajes"
-            app:titleTextColor="@color/secondary_900"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/secondary_900" />
+            app:titleTextColor="@color/secondary_900" />
 
         <!-- ChipGroup con Scroll Horizontal para filtros rápidos -->
         <HorizontalScrollView
