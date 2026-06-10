@@ -52,7 +52,6 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         obtenerDatosIntent();
         inicializarViews();
         setupManagers();
-        setupBottomNavigation();
         
         cargarDatosAsientos();
     }
@@ -94,11 +93,7 @@ public class GestionarAsientosActivity extends AppCompatActivity implements Seat
         reservaService = new ReservaService();
     }
 
-    private void setupBottomNavigation() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true))
-                .commit();
-    }
+
 
     private void cargarDatosAsientos() {
         if (horarioId == null) return;

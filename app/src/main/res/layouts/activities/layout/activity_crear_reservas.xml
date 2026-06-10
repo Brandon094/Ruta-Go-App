@@ -29,6 +29,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,26 +38,23 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- SECCIÓN DE INFORMACIÓN DEL VIAJE SELECCIONADO (PLEGABLE) -->
+            <!-- INFO VIAJE (Plegable) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/infoViajeCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="6dp"
+                app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/secondary_800"
                 app:strokeColor="@color/secondary_700"
                 app:strokeWidth="1dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- HEADER PLEGABLE - SIEMPRE VISIBLE -->
                     <RelativeLayout
                         android:id="@+id/headerInfo"
                         android:layout_width="match_parent"
@@ -65,7 +64,6 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                        <!-- Título e ícono a la izquierda -->
                         <LinearLayout
                             android:id="@+id/titleContainer"
                             android:layout_width="wrap_content"
@@ -74,264 +72,70 @@
                             android:layout_centerVertical="true"
                             android:orientation="horizontal"
                             android:gravity="center_vertical">
-
-                            <ImageView
-                                android:id="@+id/iconExpandCollapse"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_expand_more"
-                                android:tint="@color/primary_500"
-                                android:layout_marginEnd="12dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/infoReserva"
-                                android:textAppearance="?attr/textAppearanceHeadline6"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
+                            <ImageView android:id="@+id/iconExpandCollapse" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_expand_more" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/infoReserva" android:textAppearance="?attr/textAppearanceTitleMedium" android:textStyle="bold" android:textColor="@color/text_primary" />
                         </LinearLayout>
 
-                        <!-- Información resumida (visible cuando está colapsado) -->
                         <LinearLayout
                             android:id="@+id/resumenInfo"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_toEndOf="@id/titleContainer"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:gravity="center_vertical|end"
                             android:orientation="horizontal">
-
-                            <!-- Columna de iconos -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:layout_marginEnd="8dp">
-
-                                <ImageView
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:src="@drawable/ic_route"
-                                    android:tint="@color/primary_500" />
-
-                                <ImageView
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:src="@drawable/ic_time"
-                                    android:tint="@color/primary_500"
-                                    android:layout_marginTop="4dp" />
-
-                            </LinearLayout>
-
-                            <!-- Columna de texto -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:gravity="end">
-
-                                <TextView
-                                    android:id="@+id/tvRutaResumen"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/hora"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textStyle="bold"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:id="@+id/tvHorarioResumen"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/hora"
-                                    android:textAppearance="?attr/textAppearanceCaption"
-                                    android:maxLines="1"
-                                    android:ellipsize="end"
-                                    android:textColor="@color/text_secondary" />
-
-                            </LinearLayout>
-
+                            <TextView android:id="@+id/tvRutaResumen" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nat - LP" android:textAppearance="?attr/textAppearanceBody2" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginEnd="8dp" />
+                            <TextView android:id="@+id/tvHorarioResumen" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:00 AM" android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" />
                         </LinearLayout>
-
                     </RelativeLayout>
 
-                    <!-- CONTENIDO PLEGABLE (inicialmente visible) -->
                     <LinearLayout
                         android:id="@+id/contenidoExpandible"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="20dp"
-                        android:paddingTop="0dp">
+                        android:paddingHorizontal="20dp"
+                        android:paddingBottom="20dp"
+                        android:visibility="gone">
 
-                        <!-- Información de Ruta -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_route"
-                                app:tint="@color/primary_500"
-                                android:layout_marginEnd="12dp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/tvRutaSeleccionada"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceSubtitle1"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:id="@+id/tvDescripcionRuta"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_secondary" />
+                        <!-- Ruta con Icono -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_route" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:id="@+id/tvRutaSeleccionada" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceSubtitle2" android:textStyle="bold" android:textColor="@color/text_primary" />
+                                <TextView android:id="@+id/tvDescripcionRuta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Información de Horario -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_schedule"
-                                app:tint="@color/primary_500"
-                                android:layout_marginEnd="12dp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/tvHorarioSeleccionado"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/hora"
-                                    android:textAppearance="?attr/textAppearanceSubtitle1"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:id="@+id/tvFechaViaje"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_secondary" />
+                        <!-- Horario con Icono -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_time" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:id="@+id/tvHorarioSeleccionado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textAppearance="?attr/textAppearanceSubtitle2" android:textStyle="bold" android:textColor="@color/text_primary" />
+                                <TextView android:id="@+id/tvFechaViaje" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Información del Vehículo -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_bus"
-                                app:tint="@color/primary_500"
-                                android:layout_marginEnd="12dp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/tvVehiculoInfo"
+                        <!-- Vehículo con Icono -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="12dp">
+                            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_bus" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:id="@+id/tvVehiculoInfo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceSubtitle2" android:textStyle="bold" android:textColor="@color/text_primary" />
+                                <TextView android:id="@+id/tvCapacidadInfo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" />
+                                <TextView android:id="@+id/tvCapacidadDispo"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/cargando"
-                                    android:textStyle="bold"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:id="@+id/tvCapacidadInfo"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_secondary" />
-
-                                <TextView
-                                    android:id="@+id/tvCapacidadDispo"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_secondary" />
+                                    android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
 
-                        <!-- Información del Conductor -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_driver"
-                                app:tint="@color/primary_500"
-                                android:layout_marginEnd="12dp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/conductor"
-                                    android:textAppearance="?attr/textAppearanceSubtitle2"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:id="@+id/tvNombreConductor"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/cargando"
-                                    android:textAppearance="?attr/textAppearanceBody2"
-                                    android:textColor="@color/text_secondary" />
+                        <!-- Conductor con Icono -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_driver" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Conductor" android:textAppearance="?attr/textAppearanceCaption" android:textColor="@color/text_secondary" />
+                                <TextView android:id="@+id/tvNombreConductor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textAppearance="?attr/textAppearanceSubtitle2" android:textStyle="bold" android:textColor="@color/text_primary" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -339,554 +143,150 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SECCIÓN AGRUPADA: INSTRUCCIÓN + LEGENDA -->
+            <!-- MAPA DEL BUS -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/grupoInstruccionLeyenda"
+                android:id="@+id/busCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/secondary_800"
                 app:strokeColor="@color/secondary_700"
                 app:strokeWidth="1dp"
-                app:layout_constraintTop_toBottomOf="@id/infoViajeCardView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- INSTRUCCIÓN DE SELECCIÓN -->
-                    <LinearLayout
-                        android:id="@+id/instruccionContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:background="@color/secondary_900"
-                        android:paddingVertical="16dp"
-                        android:paddingHorizontal="20dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_info"
-                            app:tint="@color/primary_500"
-                            android:layout_marginEnd="12dp" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/seleccionaAsiento"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="@color/white"
-                            android:lineSpacingExtra="4dp" />
-                    </LinearLayout>
-
-                    <!-- LÍNEA DIVISORIA -->
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/outline" />
-
-                    <!-- LEGENDA DE ESTADOS -->
-                    <LinearLayout
-                        android:id="@+id/leyendaContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <!-- Título de la leyenda -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Estados de los asientos"
-                            android:textAppearance="?attr/textAppearanceTitleSmall"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginBottom="16dp"
-                            android:layout_gravity="center_horizontal" />
-
-                        <!-- Contenedor de estados -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center">
-
-                            <!-- Disponible -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:paddingHorizontal="8dp">
-
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    app:cardCornerRadius="12dp"
-                                    app:cardElevation="1dp"
-                                    app:cardBackgroundColor="@color/secondary_900"
-                                    app:strokeColor="@color/secondary_700"
-                                    app:strokeWidth="1dp">
-
-                                    <ImageView
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/asiento_disponible" />
-                                </com.google.android.material.card.MaterialCardView>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:text="Disponible"
-                                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                                    android:textColor="@color/text_primary" />
-                            </LinearLayout>
-
-                            <!-- Seleccionado -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:paddingHorizontal="8dp">
-
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    app:cardCornerRadius="12dp"
-                                    app:cardElevation="2dp"
-                                    app:strokeColor="@color/primary_700"
-                                    app:strokeWidth="2dp">
-
-                                    <ImageView
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/asiento_seleccionado" />
-                                </com.google.android.material.card.MaterialCardView>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:text="Seleccionado"
-                                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                                    android:textColor="@color/text_primary" />
-                            </LinearLayout>
-
-                            <!-- Ocupado -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:paddingHorizontal="8dp">
-
-                                <com.google.android.material.card.MaterialCardView
-                                    android:layout_width="56dp"
-                                    android:layout_height="56dp"
-                                    app:cardCornerRadius="12dp"
-                                    app:cardElevation="1dp"
-                                    app:cardBackgroundColor="@color/secondary_900"
-                                    app:strokeColor="@color/secondary_700"
-                                    app:strokeWidth="1dp">
-
-                                    <ImageView
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:layout_gravity="center"
-                                        android:src="@drawable/asiento_ocupado" />
-                                </com.google.android.material.card.MaterialCardView>
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:text="Ocupado"
-                                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                                    android:textColor="@color/text_primary" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- SECCIÓN DE ASIENTOS (CABINA) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cabinaCardView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/secondary_800"
-                app:strokeColor="@color/secondary_700"
-                app:strokeWidth="1dp"
-                app:layout_constraintTop_toBottomOf="@id/grupoInstruccionLeyenda"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/infoViajeCardView">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cabina"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="16dp"
-                        android:layout_gravity="center_horizontal" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cabina" android:textAppearance="?attr/textAppearanceTitleSmall" android:textColor="@color/text_tertiary" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" />
 
-                    <!-- Layout de cabina: Conductor + Asientos 1-5 -->
                     <GridLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:columnCount="3"
-                        android:rowCount="2"
-                        android:alignmentMode="alignMargins"
-                        android:columnOrderPreserved="false"
-                        android:rowOrderPreserved="false">
-
-                        <!-- Fila 1: Conductor y Asientos 1-2 -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnConductor"
-                            style="@style/AsientoButtonStyle.Conductor"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/ic_driver" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAsiento1"
-                            style="@style/AsientoButtonStyle.Disponible"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/asiento_disponible" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAsiento2"
-                            style="@style/AsientoButtonStyle.Disponible"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/asiento_disponible" />
-
-                        <!-- Fila 2: Asientos 3-5 -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAsiento3"
-                            style="@style/AsientoButtonStyle.Disponible"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/asiento_disponible" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAsiento4"
-                            style="@style/AsientoButtonStyle.Disponible"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/asiento_disponible" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAsiento5"
-                            style="@style/AsientoButtonStyle.Disponible"
-                            android:layout_margin="4dp"
-                            app:icon="@drawable/asiento_disponible" />
+                        android:alignmentMode="alignMargins">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnConductor" style="@style/AsientoButtonStyle.Conductor" android:layout_margin="4dp" app:icon="@drawable/ic_driver" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento1" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="1" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento2" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="2" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento3" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="3" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento4" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="4" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento5" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="5" app:icon="@drawable/asiento_disponible" />
                     </GridLayout>
+
+                    <View android:layout_width="60dp" android:layout_height="1dp" android:background="@color/outline" android:layout_gravity="center_horizontal" android:layout_marginVertical="24dp" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Zona Trasera" android:textAppearance="?attr/textAppearanceTitleSmall" android:textColor="@color/text_tertiary" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" />
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_horizontal">
+                        <GridLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:columnCount="2" android:layout_marginEnd="12dp">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="6" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="7" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="8" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="9" app:icon="@drawable/asiento_disponible" />
+                        </GridLayout>
+                        <View android:layout_width="15dp" android:layout_height="match_parent" />
+                        <GridLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:columnCount="2" android:layout_marginStart="12dp">
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="10" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="11" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="12" app:icon="@drawable/asiento_disponible" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="13" app:icon="@drawable/asiento_disponible" />
+                        </GridLayout>
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SECCIÓN DE ASIENTOS TRASEROS -->
+            <!-- LEYENDA (Al Final) -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/traserosCardView"
+                android:id="@+id/leyendaCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
                 app:cardBackgroundColor="@color/secondary_800"
                 app:strokeColor="@color/secondary_700"
                 app:strokeWidth="1dp"
-                app:layout_constraintTop_toBottomOf="@id/cabinaCardView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Zona Trasera"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary"
-                        android:layout_marginBottom="16dp"
-                        android:layout_gravity="center_horizontal" />
-
-                    <!-- Contenedor principal para las dos columnas -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_horizontal"
-                        android:paddingHorizontal="8dp">
-
-                        <!-- Columna izquierda - 2 filas de 2 asientos mirando hacia el frente -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_marginEnd="20dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Izquierda"
-                                android:textAppearance="?attr/textAppearanceBodySmall"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginBottom="12dp" />
-
-                            <!-- Fila superior izquierda -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="16dp">
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento6"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    android:layout_marginEnd="12dp"
-                                    app:icon="@drawable/asiento_disponible" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento7"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    app:icon="@drawable/asiento_disponible" />
-                            </LinearLayout>
-
-                            <!-- Fila inferior izquierda -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento8"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    android:layout_marginEnd="12dp"
-                                    app:icon="@drawable/asiento_disponible" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento9"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    app:icon="@drawable/asiento_disponible" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <!-- Separador vertical más corto -->
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="140dp"
-                            android:background="@color/outline"
-                            android:layout_marginHorizontal="4dp" />
-
-                        <!-- Columna derecha - 2 filas de 2 asientos mirando hacia la izquierda -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:layout_marginStart="20dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Derecha"
-                                android:textAppearance="?attr/textAppearanceBodySmall"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginBottom="12dp" />
-
-                            <!-- Fila superior derecha -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="16dp">
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento10"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    android:layout_marginEnd="12dp"
-                                    app:icon="@drawable/asiento_disponible" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento11"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    app:icon="@drawable/asiento_disponible" />
-                            </LinearLayout>
-
-                            <!-- Fila inferior derecha -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal">
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento12"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    android:layout_marginEnd="12dp"
-                                    app:icon="@drawable/asiento_disponible" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btnAsiento13"
-                                    style="@style/AsientoButtonStyle.Disponible"
-                                    app:icon="@drawable/asiento_disponible" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-
+                app:layout_constraintTop_toBottomOf="@id/busCardView">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:padding="16dp" android:weightSum="3">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/asiento_disponible" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libre" android:textSize="10sp" android:textColor="@color/text_secondary" android:layout_marginTop="4dp" />
                     </LinearLayout>
-
-                    <!-- Indicadores de orientación -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center"
-                        android:layout_marginTop="16dp"
-                        android:paddingHorizontal="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Mirando a la derecha"
-                            android:textAppearance="?attr/textAppearanceBodySmall"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginEnd="24dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Mirando a la izquierda"
-                            android:textAppearance="?attr/textAppearanceBodySmall"
-                            android:textColor="@color/text_secondary" />
-
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/asiento_seleccionado" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tuyo" android:textSize="10sp" android:textColor="@color/text_secondary" android:layout_marginTop="4dp" />
                     </LinearLayout>
-
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/asiento_ocupado" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ocupado" android:textSize="10sp" android:textColor="@color/text_secondary" android:layout_marginTop="4dp" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- INDICADOR DE ASIENTO SELECCIONADO -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/selectedSeatCardView"
+            <!-- BOTONES DE ACCIÓN (FIX VISIBILIDAD) -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="@color/secondary_900"
-                app:strokeColor="@color/primary_500"
-                app:strokeWidth="2dp"
-                app:layout_constraintTop_toBottomOf="@id/traserosCardView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_check"
-                        android:tint="@color/primary_600"
-                        android:layout_marginEnd="12dp" />
-
-                    <TextView
-                        android:id="@+id/tvSelectedSeat"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Asiento seleccionado: "
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCambiarAsiento"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cambiar"
-                        style="?attr/materialButtonOutlinedStyle"
-                        app:backgroundTint="@android:color/transparent"
-                        app:strokeColor="@color/primary_500"
-                        app:strokeWidth="1dp"
-                        app:rippleColor="@color/ripple_primary" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- CONTENEDOR PARA BOTONES DE CONFIRMAR Y CANCELAR -->
-            <LinearLayout
-                android:id="@+id/botonesLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="32dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/selectedSeatCardView"
-                app:layout_constraintWidth_percent="0.9">
+                android:weightSum="2"
+                app:layout_constraintTop_toBottomOf="@id/leyendaCardView">
 
-                <!-- Botón Cancelar (Secondary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonCancelar"
                     style="@style/AppButton.Secondary"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:text="@string/cancelar"
+                    android:text="Cancelar"
+                    android:textSize="14sp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:icon="@drawable/ic_cancel"
                     app:iconGravity="textStart" />
 
-                <!-- Botón Confirmar Reserva (Primary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonConfirmar"
                     style="@style/AppButton.Primary"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="@string/confirmarReserva"
+                    android:text="Confirmar"
+                    android:textSize="14sp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:icon="@drawable/ic_check"
                     app:iconGravity="textStart" />
-
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- INDICADOR DE SELECCIÓN FLOTANTE (ESTILO CHIP) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/selectedSeatCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="@color/secondary_900"
+        app:strokeColor="@color/primary_500"
+        app:strokeWidth="1.5dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="12dp" android:gravity="center_vertical">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check" app:tint="@color/primary_500" android:layout_marginEnd="12dp" />
+            <TextView android:id="@+id/tvSelectedSeat" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Asiento: 5" android:textColor="@color/text_primary" android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/btnCambiarAsiento" style="@style/AppButton.Text.Small" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cambiar" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
