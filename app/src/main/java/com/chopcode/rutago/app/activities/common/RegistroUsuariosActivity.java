@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.activities.common;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,16 +12,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.config.MyApp; // ✅ NUEVO IMPORT
+import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
 import com.chopcode.rutago.app.services.auth.RegistroService;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference; // ✅ NUEVO IMPORT
+import com.google.firebase.database.DatabaseReference;
 
-import java.util.HashMap; // ✅ NUEVO IMPORT
-import java.util.Map; // ✅ NUEVO IMPORT
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.webkit.WebView;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class RegistroUsuariosActivity extends AppCompatActivity {
 
@@ -31,6 +46,7 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
     private Button buttonRegistrar;
     private TextView buttonIniciarSesion;
     private MaterialToolbar topAppBar;
+    private MaterialCheckBox checkboxTerms;
     private RegistroService registroService;
 
     // ✅ NUEVO: NotificationManager
@@ -56,6 +72,9 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
 
         // Inicializar vistas del layout
         initViews();
+
+        // Configurar enlaces en el checkbox de términos
+        setupTermsAndConditionsLink();
 
         // Configurar la toolbar
         setupToolbar();
@@ -112,8 +131,85 @@ public class RegistroUsuariosActivity extends AppCompatActivity {
         buttonRegistrar = findViewById(R.id.buttonRegistrar);
         buttonIniciarSesion = findViewById(R.id.buttonIniciarSesion);
         topAppBar = findViewById(R.id.topAppBar);
+        checkboxTerms = findViewById(R.id.checkboxTerms);
 
         Log.d(TAG, "✅ Vistas inicializadas correctamente");
+    }
+
+    /**
+     * Configura el texto del checkbox para que tenga enlaces clicables
+     */
+    private void setupTermsAndConditionsLink() {
+        String fullText = "Acepto los Términos y Condiciones y la Política de Privacidad";
+        SpannableString ss = new SpannableString(fullText);
+
+        // Click para "Términos y Condiciones"
+        ClickableSpan termsClick = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                showPrivacyPolicyDialog();
+            }
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(true);
+                ds.setFakeBoldText(true);
+            }
+        };
+
+        // Click para "Política de Privacidad"
+        ClickableSpan privacyClick = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                showPrivacyPolicyDialog();
+            }
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(true);
+                ds.setFakeBoldText(true);
+            }
+        };
+
+        // Definir los rangos de los enlaces (ajustar si el texto cambia)
+        ss.setSpan(termsClick, 11, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), 11, 31, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ss.setSpan(privacyClick, 36, 60, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ss.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.primary_500)), 36, 60, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        checkboxTerms.setText(ss);
+        checkboxTerms.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    /**
+     * Muestra un diálogo con el contenido HTML de las políticas de privacidad
+     */
+    private void showPrivacyPolicyDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_privacy_policy, null);
+        WebView webView = dialogView.findViewById(R.id.webViewPrivacy);
+
+        try {
+            InputStream is = getResources().openRawResource(R.raw.privacy_policy);
+            Scanner s = new Scanner(is).useDelimiter("\\A");
+            String htmlContent = s.hasNext() ? s.next() : "";
+            is.close();
+
+            webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null);
+
+            new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
+                    .setTitle("Política de Privacidad")
+                    .setView(dialogView)
+                    .setPositiveButton("He leído y acepto", (dialog, which) -> checkboxTerms.setChecked(true))
+                    .setNegativeButton("Cerrar", null)
+                    .show();
+
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error cargando políticas: " + e.getMessage());
+            Toast.makeText(this, "No se pudieron cargar las políticas", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

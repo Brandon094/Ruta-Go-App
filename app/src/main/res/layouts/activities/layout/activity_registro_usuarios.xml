@@ -188,16 +188,17 @@
                             android:textColor="@color/text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Checkbox de términos -->
+                    <!-- Checkbox de términos con enlace -->
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/checkboxTerms"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="20dp"
-                        android:text="@string/acepto_terminos"
-                        android:textSize="14sp"
+                        android:text="Acepto los Términos y Condiciones y la Política de Privacidad"
+                        android:textSize="13sp"
                         app:buttonTint="@color/primary_500"
-                        android:textColor="@color/text_secondary"/>
+                        android:textColor="@color/text_secondary"
+                        android:lineSpacingExtra="2dp"/>
 
                     <!-- Botón Registrar "Melo" -->
                     <com.google.android.material.button.MaterialButton
