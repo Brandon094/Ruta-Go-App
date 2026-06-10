@@ -39,13 +39,13 @@
             android:padding="16dp"
             android:paddingTop="8dp">
 
-            <!-- BANNER DE CONFIRMACIÓN MEJORADO -->
+            <!-- BANNER DE CONFIRMACIÓN COMPACTO -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/secondary_800"
                 app:strokeColor="@color/primary_500"
                 app:strokeWidth="1dp">
@@ -55,14 +55,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="20dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:src="@drawable/ic_check"
                         app:tint="@color/primary_500"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="12dp" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -74,7 +74,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/revisa_confirma_reserva"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold"
                             android:textColor="@color/primary_500" />
 
@@ -82,21 +82,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/verifica_info_reserva"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
                             android:textColor="@color/text_secondary"
-                            android:layout_marginTop="4dp" />
+                            android:layout_marginTop="2dp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SECCIÓN: DETALLES DEL VIAJE MEJORADA -->
+            <!-- SECCIÓN: DETALLES DEL VIAJE COMPACTO -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardViaje"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/surface"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="1dp">
@@ -105,19 +105,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="16dp">
 
-                    <!-- Header con indicador de sección -->
+                    <!-- Header -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="24dp">
+                        android:layout_marginBottom="16dp">
 
                         <LinearLayout
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
                             android:background="@drawable/bg_circle_primary"
                             android:gravity="center"
                             android:backgroundTint="@color/primary_500">
@@ -127,7 +127,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/_1"
                                 android:textColor="@color/white"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -135,20 +135,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/detalles_viaje"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
-                            android:layout_marginStart="12dp" />
+                            android:layout_marginStart="10dp" />
                     </LinearLayout>
 
-                    <!-- Línea de tiempo del viaje - Mejorada visualmente -->
+                    <!-- Línea de tiempo -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center"
-                        android:layout_marginBottom="28dp"
-                        android:paddingVertical="16dp"
+                        android:layout_marginBottom="20dp"
+                        android:paddingVertical="12dp"
                         android:background="@drawable/bg_timeline">
 
                         <LinearLayout
@@ -163,7 +163,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/cargando"
-                                android:textSize="18sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/primary_500"
                                 android:maxLines="1"
@@ -173,17 +173,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/origen"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textColor="@color/text_tertiary"
-                                android:layout_marginTop="6dp" />
+                                android:layout_marginTop="4dp" />
                         </LinearLayout>
 
                         <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:src="@drawable/ic_arrow_right"
                             app:tint="@color/primary_500"
-                            android:layout_marginHorizontal="12dp" />
+                            android:layout_marginHorizontal="8dp" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -197,7 +197,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/cargando"
-                                android:textSize="18sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/primary_500"
                                 android:maxLines="1"
@@ -207,22 +207,21 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/destino"
-                                android:textSize="12sp"
+                                android:textSize="11sp"
                                 android:textColor="@color/text_tertiary"
-                                android:layout_marginTop="6dp" />
+                                android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Grid de detalles - Mejorado visualmente -->
+                    <!-- Grid de detalles -->
                     <androidx.gridlayout.widget.GridLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:columnCount="2"
                         android:rowCount="2"
                         android:columnOrderPreserved="false"
-                        android:layout_marginBottom="24dp">
+                        android:layout_marginBottom="16dp">
 
-                        <!-- Fecha -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -230,28 +229,12 @@
                             app:layout_column="0"
                             app:layout_row="0"
                             app:layout_columnWeight="1"
-                            android:layout_marginEnd="12dp"
-                            android:layout_marginBottom="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/fecha"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_tertiary" />
-
-                            <TextView
-                                android:id="@+id/tvFecha"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="4dp" />
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fecha" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:id="@+id/tvFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
-                        <!-- Hora -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -259,27 +242,11 @@
                             app:layout_column="1"
                             app:layout_row="0"
                             app:layout_columnWeight="1"
-                            android:layout_marginBottom="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/hora_salida"
-                                android:textColor="@color/text_tertiary"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:id="@+id/tvHora"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/hora"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="4dp" />
+                            android:layout_marginBottom="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora_salida" android:textColor="@color/text_tertiary" android:textSize="11sp" />
+                            <TextView android:id="@+id/tvHora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
-                        <!-- Duración -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -287,27 +254,11 @@
                             app:layout_column="0"
                             app:layout_row="1"
                             app:layout_columnWeight="1"
-                            android:layout_marginEnd="12dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/duracion"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_tertiary" />
-
-                            <TextView
-                                android:id="@+id/tvTiempoEstimado"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="4dp" />
+                            android:layout_marginEnd="8dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/duracion" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:id="@+id/tvTiempoEstimado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
                         </LinearLayout>
 
-                        <!-- Asiento -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -315,86 +266,37 @@
                             app:layout_column="1"
                             app:layout_row="1"
                             app:layout_columnWeight="1">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/asiento"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_tertiary" />
-
-                            <TextView
-                                android:id="@+id/tvAsiento"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:background="@drawable/bg_chip_primary"
-                                android:backgroundTint="@color/secondary_700"
-                                android:textColor="@color/primary_500"
-                                android:paddingHorizontal="16dp"
-                                android:paddingVertical="8dp"
-                                android:layout_marginTop="4dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/asiento" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:id="@+id/tvAsiento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="14sp" android:textStyle="bold" android:background="@drawable/bg_chip_primary" android:backgroundTint="@color/secondary_700" android:textColor="@color/primary_500" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:layout_marginTop="2dp" />
                         </LinearLayout>
-
                     </androidx.gridlayout.widget.GridLayout>
 
-                    <!-- Precio destacado - Mejorado -->
+                    <!-- Precio -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:background="@drawable/bg_price_highlight"
-                        android:padding="24dp"
-                        android:paddingVertical="20dp"
+                        android:padding="16dp"
                         app:cornerRadius="12dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/total_pagar"
-                            android:textSize="16sp"
-                            android:textColor="@color/text_secondary" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <TextView
-                                android:id="@+id/tvPrecio"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="28sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/primary_500" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/moneda_cop"
-                                android:textSize="12sp"
-                                android:textColor="@color/primary_500"
-                                android:layout_marginStart="4dp"
-                                android:layout_marginTop="8dp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/total_pagar" android:textSize="15sp" android:textColor="@color/text_secondary" />
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:id="@+id/tvPrecio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/primary_500" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/moneda_cop" android:textSize="11sp" android:textColor="@color/primary_500" android:layout_marginStart="4dp" android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SECCIÓN: CONTACTOS MEJORADA -->
+            <!-- SECCIÓN: CONTACTOS COMPACTO -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardContactos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/surface"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="1dp">
@@ -403,184 +305,64 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="16dp">
 
-                    <!-- Header con indicador -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="24dp">
-
-                        <LinearLayout
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_circle_primary"
-                            android:gravity="center"
-                            android:backgroundTint="@color/primary_500">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_2"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                        android:layout_marginBottom="16dp">
+                        <LinearLayout android:layout_width="28dp" android:layout_height="28dp" android:background="@drawable/bg_circle_primary" android:gravity="center" android:backgroundTint="@color/primary_500">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/_2" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/info_contacto"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:layout_marginStart="12dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/info_contacto" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginStart="10dp" />
                     </LinearLayout>
 
-                    <!-- Tarjeta del Pasajero - Mejorada visualmente -->
+                    <!-- Pasajero -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="20dp"
-                        android:background="@drawable/bg_contact_card"
-                        android:backgroundTint="@color/surface_variant"
-                        android:layout_marginBottom="16dp"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:padding="12dp" android:background="@drawable/bg_contact_card"
+                        android:backgroundTint="@color/surface_variant" android:layout_marginBottom="12dp"
                         app:cornerRadius="12dp">
-
-                        <LinearLayout
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:background="@drawable/bg_circle_primary"
-                            android:backgroundTint="@color/secondary_900"
-                            android:gravity="center">
-
-                            <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
-                                android:src="@drawable/ic_person"
-                                app:tint="@color/primary_500" />
+                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_900" android:gravity="center">
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_person" app:tint="@color/primary_500" />
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/tu"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_tertiary" />
-
-                            <TextView
-                                android:id="@+id/tvUsuario"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-
-                            <TextView
-                                android:id="@+id/tvTelefonoP"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="6dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tu" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:id="@+id/tvUsuario" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                            <TextView android:id="@+id/tvTelefonoP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
                         </LinearLayout>
-
                     </LinearLayout>
 
-                    <!-- Tarjeta del Conductor - Mejorada visualmente -->
+                    <!-- Conductor -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="20dp"
-                        android:background="@drawable/bg_contact_card"
-                        android:backgroundTint="@color/surface_variant"
-                        app:cornerRadius="12dp">
-
-                        <LinearLayout
-                            android:layout_width="56dp"
-                            android:layout_height="56dp"
-                            android:background="@drawable/bg_circle_primary"
-                            android:backgroundTint="@color/secondary_900"
-                            android:gravity="center">
-
-                            <ImageView
-                                android:layout_width="28dp"
-                                android:layout_height="28dp"
-                                android:src="@drawable/ic_driver"
-                                app:tint="@color/primary_500" />
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:padding="12dp" android:background="@drawable/bg_contact_card"
+                        android:backgroundTint="@color/surface_variant" app:cornerRadius="12dp">
+                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_900" android:gravity="center">
+                            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_driver" app:tint="@color/primary_500" />
                         </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:layout_marginStart="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/conductor"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_tertiary" />
-
-                            <TextView
-                                android:id="@+id/tvConductor"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary"
-                                android:layout_marginTop="2dp" />
-
-                            <TextView
-                                android:id="@+id/tvPlaca"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="4dp" />
-
-                            <TextView
-                                android:id="@+id/tvTelefonoC"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cargando"
-                                android:textSize="14sp"
-                                android:textColor="@color/text_secondary"
-                                android:layout_marginTop="2dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/conductor" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:id="@+id/tvConductor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                            <TextView android:id="@+id/tvPlaca" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                            <TextView android:id="@+id/tvTelefonoC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" />
                         </LinearLayout>
-
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- SECCIÓN: PAGO MEJORADA -->
+            <!-- SECCIÓN: PAGO COMPACTO -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardPago"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="@color/surface"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="1dp">
@@ -589,281 +371,108 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="16dp">
 
-                    <!-- Header con indicador -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="24dp">
-
-                        <LinearLayout
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="@drawable/bg_circle_primary"
-                            android:gravity="center"
-                            android:backgroundTint="@color/primary_500">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/_3"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:textStyle="bold" />
+                        android:layout_marginBottom="16dp">
+                        <LinearLayout android:layout_width="28dp" android:layout_height="28dp" android:background="@drawable/bg_circle_primary" android:gravity="center" android:backgroundTint="@color/primary_500">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/_3" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/metodoPago"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_primary"
-                            android:layout_marginStart="12dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/metodoPago" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginStart="10dp" />
                     </LinearLayout>
 
-                    <!-- Opciones de pago - Mejoradas visualmente -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardEfectivo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:layout_marginBottom="12dp"
                         android:backgroundTint="@color/secondary_900"
                         app:strokeColor="@color/primary_500"
                         app:strokeWidth="2dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:padding="20dp">
-
-                            <LinearLayout
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:background="@drawable/bg_circle_primary"
-                                android:backgroundTint="@color/secondary_800"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/ic_cash"
-                                    app:tint="@color/primary_500" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp">
+                            <LinearLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_800" android:gravity="center">
+                                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_cash" app:tint="@color/primary_500" />
                             </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="16dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/pago_efectivo"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/primary_500" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/pago_efectivo_desc"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:layout_marginTop="2dp" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pago_efectivo" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/primary_500" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pago_efectivo_desc" android:textSize="11sp" android:textColor="@color/text_secondary" />
                             </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/checkIconEfectivo"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_check"
-                                app:tint="@color/primary_500"
-                                android:visibility="visible" />
+                            <ImageView android:id="@+id/checkIconEfectivo" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check" app:tint="@color/primary_500" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/cardTransferencia"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:backgroundTint="@color/surface"
-                        app:strokeColor="@color/outline"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:padding="20dp">
-
-                            <LinearLayout
-                                android:layout_width="48dp"
-                                android:layout_height="48dp"
-                                android:background="@drawable/bg_circle_primary"
-                                android:backgroundTint="@color/neutral_100"
-                                android:gravity="center">
-
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:src="@drawable/ic_transfer"
-                                    android:tint="@color/text_secondary" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="16dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/pago_transferencia"
-                                    android:textSize="16sp"
-                                    android:textColor="@color/text_primary" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/pago_transferencia_desc"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/text_secondary"
-                                    android:layout_marginTop="2dp" />
-                            </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/checkIconTransferencia"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_check"
-                                android:tint="@color/primary_600"
-                                android:visibility="gone" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView> -->
-
-                    <!-- Información adicional de pago -->
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:background="@drawable/bg_info_card"
-                        android:backgroundTint="@color/secondary_900"
-                        android:padding="16dp"
-                        android:layout_marginTop="16dp"
-                        app:cornerRadius="12dp">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@drawable/ic_info"
-                            app:tint="@color/primary_500"
-                            android:layout_marginEnd="12dp" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/info_pago_efectivo"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary"
-                            android:lineSpacingExtra="4dp" />
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:gravity="center_vertical"
+                        android:background="@drawable/bg_info_card" android:backgroundTint="@color/secondary_900"
+                        android:padding="12dp" android:layout_marginTop="12dp" app:cornerRadius="12dp">
+                        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_info" app:tint="@color/primary_500" android:layout_marginEnd="10dp" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/info_pago_efectivo" android:textSize="11sp" android:textColor="@color/text_secondary" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- BOTONES DE ACCIÓN MEJORADOS -->
+            <!-- BOTONES DE ACCIÓN "MELOS" -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="32dp">
+                android:layout_marginBottom="24dp">
 
-                <!-- Botón Confirmar mejorado (Primary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnConfirmar"
                     style="@style/AppButton.Primary"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/confirmarReserva"
-                    android:paddingVertical="18dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:icon="@drawable/ic_check"
-                    app:iconSize="20dp"
-                    app:iconPadding="8dp" />
+                    app:iconGravity="textStart" />
 
-                <!-- Botón Cancelar mejorado (Secondary) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancelar"
                     style="@style/AppButton.Secondary"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="52dp"
                     android:text="@string/cancelar"
-                    android:paddingVertical="16dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     app:icon="@drawable/ic_cancel"
-                app:iconSize="20dp"
-                app:iconPadding="8dp" />
+                    app:iconGravity="textStart" />
             </LinearLayout>
 
-            <!-- INFORMACIÓN ADICIONAL MEJORADA -->
+            <!-- INFORMACIÓN ADICIONAL -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="16dp"
                 android:background="@drawable/bg_info_card"
                 android:backgroundTint="@color/surface_1"
-                app:cornerRadius="12dp">
-                <!-- ===== SECCIÓN INFORMACIÓN IMPORTANTE ===== -->
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_info"
-                        android:tint="@color/info_600"
-                        android:layout_marginEnd="12dp" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/info_importante"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                    android:layout_marginBottom="12dp">
+                    <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_info" app:tint="@color/info_600" android:layout_marginEnd="10dp" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/info_importante" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary" />
                 </LinearLayout>
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/info_confirmacion_reserva"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"
-                    android:lineSpacingExtra="8dp" />
+                    android:lineSpacingExtra="4dp" />
             </LinearLayout>
 
         </LinearLayout>
