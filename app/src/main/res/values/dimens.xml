@@ -1,7 +1,7 @@
 <resources>
     <!-- Snackbar dimensions -->
-    <dimen name="snackbar_margin">24dp</dimen>
-    <dimen name="snackbar_max_width">400dp</dimen>
+    <dimen name="snackbar_margin">16dp</dimen>
+    <dimen name="snackbar_max_width">320dp</dimen>
     <dimen name="snackbar_elevation">6dp</dimen>
     <dimen name="snackbar_corner_radius">12dp</dimen>
     <dimen name="snackbar_padding_vertical">16dp</dimen> <!-- Para hacerlo más alto -->

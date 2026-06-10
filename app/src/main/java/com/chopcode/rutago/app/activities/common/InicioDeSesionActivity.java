@@ -456,7 +456,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             ocultarOverlay();
         });
 
-        snackbar.setActionTextColor(getResources().getColor(R.color.surface));
+        snackbar.setActionTextColor(getResources().getColor(R.color.primary_500));
 
         // Configurar callback para cuando el Snackbar se cierra automáticamente
         snackbar.addCallback(new Snackbar.Callback() {
@@ -468,16 +468,24 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         });
 
         View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(getResources().getColor(R.color.snackbar_primary));
+        snackbarView.setBackgroundColor(getResources().getColor(R.color.secondary_800));
 
-        // Centrar texto
+        // Centrar texto y ajustar botón
         TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        Button actionButton = snackbarView.findViewById(com.google.android.material.R.id.snackbar_action);
+
         if (textView != null) {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setGravity(android.view.Gravity.CENTER);
-            textView.setTextSize(16);
-            textView.setMaxLines(5);
+            textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+            textView.setMaxLines(3);
             textView.setTextColor(getResources().getColor(android.R.color.white));
+        }
+
+        if (actionButton != null) {
+            actionButton.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+            actionButton.setAllCaps(true);
+            actionButton.setTypeface(null, android.graphics.Typeface.BOLD);
         }
 
         // Centrar Snackbar
@@ -546,6 +554,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setGravity(android.view.Gravity.CENTER);
             textView.setTextColor(getResources().getColor(android.R.color.white));
+            textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
             textView.setMaxLines(5);
         }
 
@@ -642,17 +651,12 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ INICIAR RECUPERACIÓN DE CONTRASEÑA
+     * ✅ INICIAR RECUPERACIÓN DE CONTRASEÑA (Navegar a la actividad dedicada)
      */
     private void iniciarRecuperacionContrasena(String email) {
-        MyApp.getFirebaseAuthInstance().sendPasswordResetEmail(email)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        mostrarSnackbarCentrado("📧 Se envió un email de recuperación a " + email, false);
-                    } else {
-                        mostrarSnackbarCentrado("Error al enviar email de recuperación", true);
-                    }
-                });
+        Intent intent = new Intent(this, RecuperarContrasenaActivity.class);
+        intent.putExtra("email", email);
+        startActivity(intent);
     }
 
     /**

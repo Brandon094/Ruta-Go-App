@@ -1,14 +1,10 @@
 package com.chopcode.rutago.app.activities.common;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.chopcode.rutago.app.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class RecuperarContrasenaActivity extends AppCompatActivity {
@@ -25,11 +22,10 @@ public class RecuperarContrasenaActivity extends AppCompatActivity {
     private TextInputEditText etEmail;
     private TextInputLayout tilEmail;
     private Button btnRecuperar, btnEntendido;
-    private ImageButton btnBack;
+    private MaterialToolbar topAppBar;
     private ProgressBar progressBar;
-    private LinearLayout layoutSuccess;
-    private TextView tvTitle, tvSubtitle;
-    private ImageView logo;
+    private View formCardView, layoutSuccess;
+    private TextView tvSubtitle;
     private FirebaseAuth mAuth;
 
     @Override
@@ -42,11 +38,14 @@ public class RecuperarContrasenaActivity extends AppCompatActivity {
         // Inicializar vistas
         initViews();
         
-        // Aplicar animación al logo
-        Animation anim = AnimationUtils.loadAnimation(this, R.anim.splash_animation);
-        logo.startAnimation(anim);
+        setupToolbar();
 
-        btnBack.setOnClickListener(v -> onBackPressed());
+        // Si venimos del login con un correo ya ingresado, lo ponemos
+        String emailPrelleno = getIntent().getStringExtra("email");
+        if (emailPrelleno != null && !emailPrelleno.isEmpty()) {
+            etEmail.setText(emailPrelleno);
+        }
+
         btnEntendido.setOnClickListener(v -> finish());
 
         btnRecuperar.setOnClickListener(v -> {
@@ -58,13 +57,19 @@ public class RecuperarContrasenaActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.et_email);
         tilEmail = findViewById(R.id.til_email);
         btnRecuperar = findViewById(R.id.btn_recuperar);
-        btnBack = findViewById(R.id.btn_back);
+        topAppBar = findViewById(R.id.topAppBar);
         progressBar = findViewById(R.id.pb_loading);
+        formCardView = findViewById(R.id.formCardView);
         layoutSuccess = findViewById(R.id.layout_success);
-        tvTitle = findViewById(R.id.tv_title);
         tvSubtitle = findViewById(R.id.tv_subtitle);
         btnEntendido = findViewById(R.id.btn_entendido);
-        logo = findViewById(R.id.logo_small);
+    }
+
+    private void setupToolbar() {
+        if (topAppBar != null) {
+            setSupportActionBar(topAppBar);
+            topAppBar.setNavigationOnClickListener(v -> onBackPressed());
+        }
     }
 
     private void validarYEnviarCorreo() {
@@ -88,33 +93,45 @@ public class RecuperarContrasenaActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         btnRecuperar.setEnabled(false);
 
+        Log.d("RecuperarPass", "intentando enviar correo a: " + email);
+
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(task -> {
                     progressBar.setVisibility(View.GONE);
                     
                     if (task.isSuccessful()) {
+                        Log.d("RecuperarPass", "✅ Firebase reportó éxito en el envío");
                         mostrarEstadoExito();
                     } else {
                         btnRecuperar.setEnabled(true);
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
+                        Log.e("RecuperarPass", "❌ Error de Firebase: " + errorMsg);
+                        
                         Toast.makeText(RecuperarContrasenaActivity.this,
-                                getString(R.string.error_envio_correo),
-                                Toast.LENGTH_SHORT).show();
+                                "No se pudo enviar: " + errorMsg,
+                                Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
     private void mostrarEstadoExito() {
-        // Ocultar elementos de entrada
-        tilEmail.setVisibility(View.GONE);
-        btnRecuperar.setVisibility(View.GONE);
+        // Ocultar formulario y subtítulo
+        formCardView.setVisibility(View.GONE);
         tvSubtitle.setVisibility(View.GONE);
         
-        // Cambiar título
-        tvTitle.setText(getString(R.string.todo_listo));
+        // Cambiar título del Toolbar si es necesario (opcional)
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(getString(R.string.todo_listo));
+        }
         
-        // Mostrar layout de éxito con una pequeña animación
+        // Mostrar layout de éxito con una animación fluida
         layoutSuccess.setVisibility(View.VISIBLE);
         layoutSuccess.setAlpha(0f);
-        layoutSuccess.animate().alpha(1f).setDuration(500).start();
+        layoutSuccess.setTranslationY(50f);
+        layoutSuccess.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(600)
+                .start();
     }
 }
