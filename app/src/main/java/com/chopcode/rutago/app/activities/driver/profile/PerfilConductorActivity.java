@@ -14,12 +14,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
-import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.activities.driver.history.HistorialConductorActivity;
 import com.chopcode.rutago.app.activities.driver.InicioConductorActivity;
 import com.chopcode.rutago.app.activities.driver.editProfile.EditarPerfilConductorActivity;
-import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Vehiculo;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
@@ -28,15 +25,13 @@ import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehiculoService;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.viewmodels.driver.PerfilViewModel;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 public class PerfilConductorActivity extends AppCompatActivity {
-    private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
+    private TextView tvConductor, tvEmail, tvTelefono, tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo, tvPlacaVehiculoHeader;
     private ImageView ivProfilePicture;
-    private View cardInicio; 
+    private View headerContent, layoutInfoReal;
+    private ShimmerFrameLayout shimmerHeader, shimmerCard;
     private com.google.android.material.card.MaterialCardView btnChangePhoto;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
     private UserService userService;
@@ -82,19 +77,40 @@ public class PerfilConductorActivity extends AppCompatActivity {
     }
 
     private void setupObservers() {
-        // Observar datos del conductor (la "fuente de verdad")
+        // Observar datos del conductor
         perfilViewModel.getConductorLiveData().observe(this, conductor -> {
             if (conductor != null) {
                 actualizarUI(conductor);
             }
         });
 
-        // Observar errores usando la base del ViewModel
+        // Observar errores
         perfilViewModel.getErrorLiveData().observe(this, error -> {
             if (error != null && !error.isEmpty()) {
                 runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, error, Toast.LENGTH_SHORT).show());
+                detenerShimmer();
             }
         });
+
+        // Observar estado de carga
+        perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
+            if (isLoading != null && !isLoading) {
+                detenerShimmer();
+            }
+        });
+    }
+
+    private void detenerShimmer() {
+        if (shimmerHeader != null) {
+            shimmerHeader.stopShimmer();
+            shimmerHeader.setVisibility(View.GONE);
+        }
+        if (shimmerCard != null) {
+            shimmerCard.stopShimmer();
+            shimmerCard.setVisibility(View.GONE);
+        }
+        if (headerContent != null) headerContent.setVisibility(View.VISIBLE);
+        if (layoutInfoReal != null) layoutInfoReal.setVisibility(View.VISIBLE);
     }
 
     private void cargarDatos() {
@@ -108,9 +124,12 @@ public class PerfilConductorActivity extends AppCompatActivity {
         tvConductor.setText(conductor.getNombre() != null ? conductor.getNombre() : "Conductor");
         tvEmail.setText(conductor.getEmail() != null ? conductor.getEmail() : "No disponible");
         tvTelefono.setText(conductor.getTelefono() != null ? conductor.getTelefono() : "No disponible");
-        tvPlaca.setText(conductor.getPlacaVehiculo() != null ? conductor.getPlacaVehiculo() : "No asignado");
+        
+        String placa = conductor.getPlacaVehiculo() != null ? conductor.getPlacaVehiculo() : "No asignado";
+        tvPlaca.setText(placa);
+        tvPlacaVehiculoHeader.setText("🚗 PLACA: " + placa);
 
-        // ✅ CARGAR FOTO CENTRALIZADA USANDO EL VIEWMODEL
+        // Cargar foto
         ImageUtils.loadProfilePhoto(this, conductor.getPhotoUrl(), ivProfilePicture);
 
         // Cargar detalles del vehículo si tiene placa
@@ -128,44 +147,39 @@ public class PerfilConductorActivity extends AppCompatActivity {
     }
 
     private void inicializarVistas() {
-        // ImageView
-        ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        // Shimmers
+        shimmerHeader = findViewById(R.id.shimmer_header);
+        shimmerCard = findViewById(R.id.shimmer_card);
+        headerContent = findViewById(R.id.headerContent);
+        layoutInfoReal = findViewById(R.id.layoutInfoReal);
 
-        // Botón cambio de foto (icono de edición)
+        // Image & Edit Button
+        ivProfilePicture = findViewById(R.id.ivProfilePicture);
         btnChangePhoto = findViewById(R.id.btnChangePhoto);
         if (btnChangePhoto != null) {
-            btnChangePhoto.setOnClickListener(v -> {
-                Log.d(TAG, "📸 Clic en botón de edición de foto - Abriendo galería");
-                imagePickerLauncher.launch("image/*");
-            });
+            btnChangePhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         }
 
-        // TextViews de información personal
+        // Info TextViews
         tvConductor = findViewById(R.id.tvNombreUsuario);
         tvEmail = findViewById(R.id.tvEmail);
         tvTelefono = findViewById(R.id.tvPhone);
+        tvPlacaVehiculoHeader = findViewById(R.id.tvPlacaVehiculoHeader);
 
-        // TextViews de información del vehículo
+        // Vehicle Info Grid
         tvPlaca = findViewById(R.id.tvPlacaVehiculo);
         tvModVehiculo = findViewById(R.id.tvModeloVehiculo);
         tvCapacidad = findViewById(R.id.tvCapacidadVehiculo);
         tvAnioVehiculo = findViewById(R.id.tvAnioVehiculo);
 
-        // Botones y acciones
-        cardInicio = findViewById(R.id.cardInicio);
+        // Action Buttons
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
-
-        if (cardInicio != null) cardInicio.setOnClickListener(view -> irInicioConductor());
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irEditarPerfil());
 
-        // Botón Borrar Cuenta
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
         if (btnDeleteAccount != null) {
             btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
         }
-
-        // Configurar navegación
-        setupBottomNavigation();
     }
 
     private void mostrarDialogoConfirmacionBorrado() {
@@ -185,7 +199,6 @@ public class PerfilConductorActivity extends AppCompatActivity {
                 procesarSolicitudBorrado();
             });
         }
-
         if (btnCancel != null) {
             btnCancel.setOnClickListener(v -> dialog.dismiss());
         }
@@ -193,7 +206,6 @@ public class PerfilConductorActivity extends AppCompatActivity {
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
-
         dialog.show();
     }
 
@@ -205,10 +217,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 runOnUiThread(() -> {
-                    Toast.makeText(PerfilConductorActivity.this, 
-                        "Solicitud enviada. Tu cuenta será revisada para su eliminación.", 
-                        Toast.LENGTH_LONG).show();
-                    
+                    Toast.makeText(PerfilConductorActivity.this, "Solicitud enviada.", Toast.LENGTH_LONG).show();
                     authManager.signOut(PerfilConductorActivity.this);
                     finish();
                 });
@@ -216,11 +225,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> {
-                    Toast.makeText(PerfilConductorActivity.this, 
-                        "Error al enviar la solicitud: " + error, 
-                        Toast.LENGTH_SHORT).show();
-                });
+                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
             }
         });
     }
@@ -231,36 +236,18 @@ public class PerfilConductorActivity extends AppCompatActivity {
             public void onVehiculoCargado(Vehiculo vehiculo) {
                 runOnUiThread(() -> {
                     if (vehiculo != null) {
-                        tvPlaca.setText(vehiculo.getPlaca() != null ? vehiculo.getPlaca() : "No disponible");
-                        tvModVehiculo.setText(vehiculo.getModelo() != null ? vehiculo.getModelo() : "No disponible");
+                        tvModVehiculo.setText(vehiculo.getModelo() != null ? vehiculo.getModelo() : "N/A");
                         tvCapacidad.setText(String.valueOf(vehiculo.getCapacidad()));
-
-                        if (vehiculo.getAno() != null && !vehiculo.getAno().isEmpty()) {
-                            tvAnioVehiculo.setText(vehiculo.getAno());
-                        } else {
-                            tvAnioVehiculo.setText("N/A");
-                        }
-                    } else {
-                        mostrarVehiculoBasico(placa);
+                        tvAnioVehiculo.setText(vehiculo.getAno() != null ? vehiculo.getAno() : "N/A");
                     }
                 });
             }
 
             @Override
             public void onError(String error) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "Error cargando vehículo: " + error);
-                    mostrarVehiculoBasico(placa);
-                });
+                Log.e(TAG, "Error cargando vehículo: " + error);
             }
         });
-    }
-
-    private void mostrarVehiculoBasico(String placa) {
-        tvPlaca.setText(placa);
-        tvModVehiculo.setText("Información no disponible");
-        tvCapacidad.setText("N/A");
-        tvAnioVehiculo.setText("N/A");
     }
 
     private void mostrarVehiculoNoDisponible() {
@@ -271,44 +258,30 @@ public class PerfilConductorActivity extends AppCompatActivity {
     }
 
     public void irEditarPerfil(){
-        Intent intent = new Intent(PerfilConductorActivity.this, EditarPerfilConductorActivity.class);
+        Intent intent = new Intent(this, EditarPerfilConductorActivity.class);
         startActivity(intent);
     }
-
-    public void irInicioConductor(){
-        Intent intent = new Intent(PerfilConductorActivity.this, InicioConductorActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish();
-    }
-
-    // --- MÉTODOS ELIMINADOS POR LA REFACTORIZACIÓN DEL VIEWMODEL ---
-    // (cargarInfoConductorCompleta, cargarDatosUsuarioYCompletar, actualizarUICompleta, etc.)
 
     private void subirFotoDePerfil(Uri uri) {
         String userId = authManager.getUserId();
         if (userId == null) return;
 
-        Log.d(TAG, "📤 Subiendo nueva foto de perfil conductor...");
         Toast.makeText(this, "Subiendo foto...", Toast.LENGTH_SHORT).show();
 
         storageService.uploadProfilePicture(userId, uri, new StorageService.UploadCallback() {
             @Override
             public void onSuccess(String downloadUrl) {
-                // ✅ Simplificado: El servicio ya se encarga de actualizar ambos nodos (conductores y usuarios)
                 userService.updateProfilePicture(userId, downloadUrl, "conductores", new UserService.UserUpdateCallback() {
                     @Override
                     public void onSuccess() {
                         runOnUiThread(() -> {
-                            Log.d(TAG, "✅ Foto actualizada exitosamente");
                             ImageUtils.loadProfilePhoto(PerfilConductorActivity.this, downloadUrl, ivProfilePicture);
-                            Toast.makeText(PerfilConductorActivity.this, "Foto de perfil actualizada", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PerfilConductorActivity.this, "Foto actualizada", Toast.LENGTH_SHORT).show();
                         });
                     }
 
                     @Override
                     public void onError(String error) {
-                        Log.e(TAG, "❌ Error actualizando enlace: " + error);
                         runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
                     }
                 });
@@ -316,8 +289,7 @@ public class PerfilConductorActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                Log.e(TAG, "❌ Error en Storage: " + error);
-                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error al subir imagen: " + error, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(PerfilConductorActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show());
             }
 
             @Override
