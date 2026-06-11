@@ -7,6 +7,7 @@ public class Reserva {
     private long fechaReserva;
     private double precio;
     private int puestoReservado = -1;
+    private boolean calificada = false;
 
     // Constructor vacío (OBLIGATORIO para Firebase)
     public Reserva() {
@@ -135,6 +136,15 @@ public class Reserva {
     public void setNombreRuta(String idNombreRuta) {
         this.nombreRuta = idNombreRuta;
     }
+
+    public boolean isCalificada() {
+        return calificada;
+    }
+
+    public void setCalificada(boolean calificada) {
+        this.calificada = calificada;
+    }
+
     // 🔥 MÉTODO CONVENCENCIA: Verificar si el asiento está asignado
     public boolean isAsientoAsignado() {
         return puestoReservado > 0;

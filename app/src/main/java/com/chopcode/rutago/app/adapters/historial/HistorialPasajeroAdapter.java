@@ -18,18 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.managers.ratings.RatingManager;
 import com.chopcode.rutago.app.models.Reserva;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasajeroAdapter.ViewHolder> {
 
@@ -106,9 +104,11 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
                 tvPuesto.setText("Puesto " + reserva.getPuestoReservado());
                 tvPrecio.setText(String.format("$%,.0f", reserva.getPrecio()));
 
-                // Solo mostrar calificar si está confirmada o completada y NO tiene calificación aún
-                // Por ahora asumimos que si está Confirmada/Completada se puede calificar
-                if ("Confirmada".equalsIgnoreCase(estado) || "Completada".equalsIgnoreCase(estado)) {
+                // ✅ MEJORADO: Mostrar calificar solo si está Confirmada/Completada Y NO ha sido calificada
+                boolean puedeCalificar = ("Confirmada".equalsIgnoreCase(estado) || "Completada".equalsIgnoreCase(estado)) 
+                                        && !reserva.isCalificada();
+
+                if (puedeCalificar) {
                     layoutAcciones.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setText("Calificar Viaje");
@@ -149,41 +149,20 @@ public class HistorialPasajeroAdapter extends RecyclerView.Adapter<HistorialPasa
         }
 
         private void guardarCalificacion(Reserva reserva, float rating, String comentario) {
-            String conductorId = reserva.getConductorId();
-            if (conductorId == null) {
-                Toast.makeText(itemView.getContext(), "Error: ID del conductor no encontrado", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            Log.d("HistorialPasajero", "⭐ Iniciando calificación vía RatingManager Singleton");
 
-            DatabaseReference ratingsRef = MyApp.getDatabaseReference("calificaciones_conductores")
-                    .child(conductorId)
-                    .push();
-
-            Map<String, Object> calificacion = new HashMap<>();
-            calificacion.put("pasajeroId", MyApp.getCurrentUserId());
-            calificacion.put("pasajeroNombre", reserva.getNombre());
-            calificacion.put("rating", rating);
-            calificacion.put("comentario", comentario);
-            calificacion.put("fecha", System.currentTimeMillis());
-            calificacion.put("reservaId", reserva.getIdReserva());
-            calificacion.put("ruta", reserva.getNombreRuta());
-
-            ratingsRef.setValue(calificacion).addOnSuccessListener(aVoid -> {
-                Toast.makeText(itemView.getContext(), "¡Gracias por tu calificación!", Toast.LENGTH_SHORT).show();
-                
-                // Opcional: Marcar la reserva como calificada en la base de datos
-                if (reserva.getIdReserva() != null) {
-                    MyApp.getDatabaseReference("reservas")
-                        .child(reserva.getIdReserva())
-                        .child("calificada")
-                        .setValue(true);
+            RatingManager.getInstance().calificarViaje(reserva, rating, comentario, new RatingManager.RatingCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(itemView.getContext(), "¡Gracias por tu calificación!", Toast.LENGTH_SHORT).show();
+                    // Ocultar el botón después de calificar exitosamente
+                    layoutAcciones.setVisibility(View.GONE);
                 }
-                
-                // Ocultar el botón después de calificar
-                layoutAcciones.setVisibility(View.GONE);
-                
-            }).addOnFailureListener(e -> {
-                Toast.makeText(itemView.getContext(), "Error al guardar calificación", Toast.LENGTH_SHORT).show();
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(itemView.getContext(), "Error al calificar: " + error, Toast.LENGTH_SHORT).show();
+                }
             });
         }
 
