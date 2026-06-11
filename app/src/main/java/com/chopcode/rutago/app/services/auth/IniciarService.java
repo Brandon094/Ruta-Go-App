@@ -342,37 +342,35 @@ public class IniciarService {
      * Inicia sesión usando correo y contraseña.
      */
     public void iniciarSesionCorreo(String correo, String password, @NonNull LoginCallback callback) {
-        Log.d(TAG, "🔐 Iniciando sesión con email: " + correo);
+        Log.d(TAG, "🔑 [LOGIN_EMAIL] Iniciando proceso para: " + correo);
 
         auth.signInWithEmailAndPassword(correo, password)
                 .addOnCompleteListener(activity, task -> {
                     if (task.isSuccessful()) {
-                        Log.d(TAG, "✅ Autenticación con email exitosa");
+                        Log.d(TAG, "✅ [LOGIN_EMAIL] Autenticación Firebase exitosa");
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
-                            Log.d(TAG, "👤 Usuario Firebase obtenido: " + user.getUid());
+                            Log.d(TAG, "👤 [LOGIN_EMAIL] Usuario UID: " + user.getUid());
                             detectarTipoUsuario(user, new TipoUsuarioCallback() {
                                 @Override
                                 public void onTipoDetectado(String tipo) {
-                                    Log.d(TAG, "🎯 Tipo de usuario detectado: " + tipo);
+                                    Log.d(TAG, "🎯 [LOGIN_EMAIL] Rol detectado: " + tipo);
                                     callback.onLoginSuccess(tipo);
                                 }
 
                                 @Override
                                 public void onError(String error) {
-                                    Log.e(TAG, "❌ Error detectando tipo de usuario: " + error);
-                                    // ✅ MEJORADO: Usar error traducido
+                                    Log.e(TAG, "❌ [LOGIN_EMAIL] Error en detectarTipoUsuario: " + error);
                                     callback.onLoginFailure("Error al verificar usuario: " + error);
                                 }
                             });
                         } else {
-                            Log.e(TAG, "❌ Usuario Firebase es null después de login exitoso");
+                            Log.e(TAG, "❌ [LOGIN_EMAIL] FirebaseUser es null después de éxito");
                             callback.onLoginFailure("Error al obtener datos del usuario");
                         }
                     } else {
                         String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
-                        Log.e(TAG, "❌ Error en autenticación con email: " + errorMsg);
-                        // ✅ MEJORADO: Traducir el error antes de enviarlo
+                        Log.e(TAG, "❌ [LOGIN_EMAIL] Fallo en signIn: " + errorMsg);
                         callback.onLoginFailure(traducirErrorFirebase(errorMsg, correo));
                     }
                 });
@@ -382,125 +380,81 @@ public class IniciarService {
      * Inicia sesión con Google usando One Tap Sign-In.
      */
     public void iniciarSesionGoogle(@NonNull LoginCallback callback) {
-        Log.d(TAG, "🔐 Iniciando flujo de Google Sign-In");
+        Log.d(TAG, "🔑 [LOGIN_GOOGLE] Iniciando flujo One Tap");
 
         oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(activity, result -> {
-                    Log.d(TAG, "✅ Google Sign-In request exitoso - iniciando intent sender");
+                    Log.d(TAG, "✅ [LOGIN_GOOGLE] Request exitoso, lanzando UI selector");
                     try {
                         activity.startIntentSenderForResult(
                                 result.getPendingIntent().getIntentSender(),
                                 REQ_ONE_TAP,
                                 null, 0, 0, 0, null);
-                        Log.d(TAG, "✅ Intent sender iniciado - REQ_ONE_TAP: " + REQ_ONE_TAP);
                     } catch (IntentSender.SendIntentException e) {
-                        Log.e(TAG, "❌ Error en IntentSender: " + e.getMessage(), e);
-                        // ✅ MEJORADO: Error más amigable
-                        callback.onLoginFailure("Error al iniciar Google Sign-In. Intenta de nuevo.");
+                        Log.e(TAG, "❌ [LOGIN_GOOGLE] Error en IntentSender: " + e.getMessage());
+                        callback.onLoginFailure("Error al iniciar Google Sign-In.");
                     }
                 })
                 .addOnFailureListener(activity, e -> {
-                    Log.e(TAG, "❌ Error en Google Sign-In request: " + e.getMessage(), e);
-                    // ✅ MEJORADO: Detectar tipo de error
-                    String errorMsg = e.getMessage();
-                    if (errorMsg != null && errorMsg.contains("16")) {
-                        callback.onLoginFailure("Google Play Services no está disponible");
-                    } else {
-                        callback.onLoginFailure("Error al conectar con Google. Verifica tu conexión.");
-                    }
+                    Log.e(TAG, "❌ [LOGIN_GOOGLE] Fallo en One Tap request: " + e.getMessage());
+                    callback.onLoginFailure("Error al conectar con Google.");
                 });
     }
 
     /** 🔥 Maneja el inicio de sesión con Google y guarda el usuario en Firebase si no existe.
      */
     public void manejarResultadoGoogle(Intent data, @NonNull LoginCallback callback) {
-        Log.d(TAG, "🔄 Procesando resultado de Google Sign-In");
+        Log.d(TAG, "🔄 [LOGIN_GOOGLE] Procesando actividad devuelta");
 
         try {
             SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
             String idToken = credential.getGoogleIdToken();
 
             if (idToken != null) {
-                Log.d(TAG, "✅ Token Google obtenido - autenticando con Firebase");
+                Log.d(TAG, "✅ [LOGIN_GOOGLE] Token ID obtenido, vinculando con Firebase...");
                 AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
                 auth.signInWithCredential(firebaseCredential)
                         .addOnCompleteListener(activity, task -> {
                             if (task.isSuccessful()) {
-                                Log.d(TAG, "✅ Autenticación Firebase con Google exitosa");
+                                Log.d(TAG, "✅ [LOGIN_GOOGLE] Login en Firebase Auth exitoso");
                                 FirebaseUser user = auth.getCurrentUser();
                                 if (user != null) {
-                                    Log.d(TAG, "👤 Usuario Google autenticado: " + user.getUid());
-
                                     detectarTipoUsuario(user, new TipoUsuarioCallback() {
                                         @Override
                                         public void onTipoDetectado(String tipo) {
-                                            Log.d(TAG, "✅ Usuario Google ya registrado como: " + tipo);
-                                            
-                                            // ✅ SOLUCIÓN: Solo actualizar foto si NO tiene una ya guardada
-                                            String nodo = tipo.equals("conductor") ? "conductores" : "usuarios";
-                                            DatabaseReference userRef = MyApp.getDatabaseReference(nodo + "/" + user.getUid());
-                                            
-                                            userRef.child("photoUrl").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    // Si no existe foto en la DB, ponemos la de Google por defecto
-                                                    if (!snapshot.exists() && user.getPhotoUrl() != null) {
-                                                        userRef.child("photoUrl").setValue(user.getPhotoUrl().toString());
-                                                    }
-                                                }
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {}
-                                            });
-
+                                            Log.d(TAG, "🎯 [LOGIN_GOOGLE] Rol detectado: " + tipo);
                                             callback.onLoginSuccess(tipo);
                                         }
 
                                         @Override
                                         public void onError(String error) {
-                                            Log.w(TAG, "⚠️ Usuario Google no encontrado en BD - registrando como pasajero");
-
+                                            Log.w(TAG, "⚠️ [LOGIN_GOOGLE] No se encontró rol en BD, forzando registro como pasajero");
                                             registroService.guardarUsuarioSiNoExiste(user, new RegistroService.RegistroCallback() {
                                                 @Override
                                                 public void onSuccess() {
-                                                    Log.d(TAG, "✅ Usuario Google registrado exitosamente como pasajero");
                                                     callback.onLoginSuccess("pasajero");
                                                 }
-
                                                 @Override
                                                 public void onFailure(String error) {
-                                                    Log.e(TAG, "❌ Error registrando usuario Google: " + error);
-                                                    // ✅ MEJORADO: Error más específico
-                                                    callback.onLoginFailure("Autenticación exitosa pero no se pudo completar el registro");
+                                                    callback.onLoginFailure("Fallo registro forzado: " + error);
                                                 }
                                             });
                                         }
                                     });
-                                } else {
-                                    Log.e(TAG, "❌ Usuario Firebase es null después de Google Sign-In");
-                                    callback.onLoginFailure("Error al obtener datos del usuario");
                                 }
                             } else {
                                 String errorMsg = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
-                                Log.e(TAG, "❌ Error en autenticación Firebase con Google: " + errorMsg);
-                                // ✅ MEJORADO: Traducir error
-                                callback.onLoginFailure(traducirErrorFirebase(errorMsg, null));
+                                Log.e(TAG, "❌ [LOGIN_GOOGLE] Error vinculando credencial Google: " + errorMsg);
+                                if (task.getException() != null) {
+                                    task.getException().printStackTrace();
+                                }
+                                callback.onLoginFailure("Error al autenticar con Firebase: " + errorMsg);
                             }
                         });
-            } else {
-                Log.e(TAG, "❌ Token Google es null");
-                callback.onLoginFailure("No se pudo obtener la información de Google");
-            }
-        } catch (ApiException e) {
-            Log.e(TAG, "❌ ApiException en Google Sign-In: " + e.getMessage(), e);
-            // ✅ MEJORADO: Mensajes específicos para códigos de error comunes
-            if (e.getStatusCode() == 12501) {
-                callback.onLoginFailure("Inicio de sesión cancelado por el usuario");
-            } else {
-                callback.onLoginFailure("Error en la autenticación con Google");
             }
         } catch (Exception e) {
-            Log.e(TAG, "❌ Error inesperado en Google Sign-In: " + e.getMessage(), e);
-            callback.onLoginFailure("Error inesperado. Intenta de nuevo.");
+            Log.e(TAG, "❌ [LOGIN_GOOGLE] Error crítico: " + e.getMessage());
+            callback.onLoginFailure("Error inesperado en Google Login");
         }
     }
 }
