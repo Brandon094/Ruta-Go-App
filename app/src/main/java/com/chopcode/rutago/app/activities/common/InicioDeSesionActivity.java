@@ -1,50 +1,56 @@
 package com.chopcode.rutago.app.activities.common;
 
 import static com.chopcode.rutago.app.managers.permissions.PermissionManager.requestNotificationPermission;
-import static com.chopcode.rutago.app.services.auth.IniciarService.traducirErrorFirebase;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.InicioConductorActivity;
-import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CrearReservasActivity;
 import com.chopcode.rutago.app.activities.passenger.InicioUsuariosActivity;
+import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CrearReservasActivity;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
 import com.chopcode.rutago.app.managers.permissions.PermissionManager;
 import com.chopcode.rutago.app.services.auth.IniciarService;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+/**
+ * Actividad para el inicio de sesión de los usuarios.
+ */
 public class InicioDeSesionActivity extends AppCompatActivity {
 
     private TextInputEditText editTextUsuario, editTextPassword;
@@ -54,13 +60,13 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     private TextView buttonRegistro, olvidasteContraseña;
     private View overlay;
 
-    // ✅ Constantes para SharedPreferences
+    // Constantes para SharedPreferences
     private static final String PREFS_NAME = "UserPrefs";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_TYPE = "user_type";
     private DatabaseReference rtdb;
 
-    // ✅ NUEVO: Tag para logs
+    // Tag para logs
     private static final String TAG = "InicioDeSesion";
 
     @Override
@@ -77,7 +83,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         overlay = findViewById(R.id.overlay);
 
         // Inicializar Firebase - SOLO Realtime Database
-        rtdb = MyApp.getDatabaseReference(""); // Referencia raiz a la base de datos
+        rtdb = MyApp.getDatabaseReference(""); // Referencia raíz a la base de datos
 
         // Inicializar IniciarService, pasando la actividad actual
         iniciarService = new IniciarService(this);
@@ -103,7 +109,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MOSTRAR OVERLAY (FONDO OSCURO)
+     * MOSTRAR OVERLAY (FONDO OSCURO)
      */
     private void mostrarOverlay() {
         if (overlay != null) {
@@ -113,7 +119,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                     .alpha(1f)
                     .setDuration(300)
                     .withEndAction(() -> {
-                        // Evitar clicks en el contenido mientras está el overlay
+                        // Evitar clics en el contenido mientras está el overlay
                         overlay.setClickable(true);
                     })
                     .start();
@@ -121,7 +127,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ OCULTAR OVERLAY
+     * OCULTAR OVERLAY
      */
     private void ocultarOverlay() {
         if (overlay != null) {
@@ -151,27 +157,31 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         TextInputLayout passwordInputLayout = findViewById(R.id.passwordInputLayout);
 
-        // Establecer el icono inicial (contraseña oculta)
-        passwordInputLayout.setEndIconDrawable(R.drawable.ic_visibility_off);
+        if (passwordInputLayout != null) {
+            // Establecer el icono inicial (contraseña oculta)
+            passwordInputLayout.setEndIconDrawable(ContextCompat.getDrawable(this, R.drawable.ic_visibility_off));
 
-        // Manejar clic en el icono de visibilidad
-        passwordInputLayout.setEndIconOnClickListener(v -> {
-            if (editTextPassword.getTransformationMethod() instanceof PasswordTransformationMethod) {
-                // Si está oculta, mostrarla
-                editTextPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                passwordInputLayout.setEndIconDrawable(R.drawable.ic_visibility_on);
-                Log.d(TAG, "👁️ Contraseña visible");
-            } else {
-                // Si está visible, ocultarla
-                editTextPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                passwordInputLayout.setEndIconDrawable(R.drawable.ic_visibility_off);
-                Log.d(TAG, "👁️ Contraseña oculta");
-            }
-            // Mover cursor al final
-            editTextPassword.setSelection(editTextPassword.getText().length());
-        });
+            // Manejar clic en el icono de visibilidad
+            passwordInputLayout.setEndIconOnClickListener(v -> {
+                if (editTextPassword.getTransformationMethod() instanceof PasswordTransformationMethod) {
+                    // Si está oculta, mostrarla
+                    editTextPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    passwordInputLayout.setEndIconDrawable(ContextCompat.getDrawable(this, R.drawable.ic_visibility_on));
+                    Log.d(TAG, "👁️ Contraseña visible");
+                } else {
+                    // Si está visible, ocultarla
+                    editTextPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    passwordInputLayout.setEndIconDrawable(ContextCompat.getDrawable(this, R.drawable.ic_visibility_off));
+                    Log.d(TAG, "👁️ Contraseña oculta");
+                }
+                // Mover cursor al final
+                if (editTextPassword.getText() != null) {
+                    editTextPassword.setSelection(editTextPassword.getText().length());
+                }
+            });
+        }
 
-        // ✅ NUEVO: Configurar "Olvidaste contraseña"
+        // Configurar "Olvidaste contraseña"
         if (olvidasteContraseña != null) {
             olvidasteContraseña.setOnClickListener(v -> {
                 Log.d(TAG, "🔑 Usuario solicitó recuperar contraseña");
@@ -191,33 +201,34 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         String savedUserId = prefs.getString(KEY_USER_ID, null);
         String savedUserType = prefs.getString(KEY_USER_TYPE, null);
 
-        if (savedUserId != null && savedUserType != null) {
-            Log.d(TAG, "📱 Sesión existente encontrada - UserId: " + savedUserId + ", Tipo: " + savedUserType);
+        Log.d(TAG, "🔍 [SESSION_CHECK] Buscando sesión local...");
 
-            // Verificar con Firebase Auth también
+        if (savedUserId != null && savedUserType != null) {
+            Log.d(TAG, "📱 [SESSION_CHECK] Sesión encontrada en SharedPreferences: " + savedUserId + " (Rol: " + savedUserType + ")");
+
             FirebaseUser currentUser = MyApp.getCurrentUser();
             if (currentUser != null && currentUser.getUid().equals(savedUserId)) {
-                Log.d(TAG, "✅ Sesión Firebase válida, redirigiendo automáticamente...");
+                Log.d(TAG, "✅ [SESSION_CHECK] Sesión Firebase coincide. Autologin...");
 
-                // ✅ VERIFICAR PERMISOS ANTES DE REDIRIGIR
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    boolean tienePermiso = PermissionManager.isNotificationPermissionGranted(this);
-                    if (!tienePermiso) {
-                        Log.d(TAG, "🔔 Usuario no tiene permiso de notificaciones, solicitando...");
+                    if (!PermissionManager.isNotificationPermissionGranted(this)) {
+                        Log.d(TAG, "🔔 [SESSION_CHECK] Sin permiso notif, solicitando...");
                         requestNotificationPermission(this);
                     }
                 }
 
                 redirigirSegunTipoUsuario(savedUserType);
             } else {
-                Log.d(TAG, "⚠️ Sesión en SharedPreferences pero no en Firebase, limpiando...");
+                Log.w(TAG, "⚠️ [SESSION_CHECK] Inconsistencia: SharedPreferences dice " + savedUserId + " pero Firebase dice " + (currentUser != null ? currentUser.getUid() : "NULL"));
                 limpiarSesionGuardada();
             }
+        } else {
+            Log.d(TAG, "ℹ️ [SESSION_CHECK] No hay sesión previa guardada");
         }
     }
 
     /**
-     * ✅ NUEVO: Limpiar sesión guardada
+     * Limpiar sesión guardada
      */
     private void limpiarSesionGuardada() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -232,64 +243,50 @@ public class InicioDeSesionActivity extends AppCompatActivity {
      * Configura el login con email y contraseña - VERSIÓN MEJORADA CON UX PROFESIONAL
      */
     private void setupEmailLogin() {
-        Log.d(TAG, "🔧 Configurando login con email...");
+        Log.d(TAG, "🔧 [UI_SETUP] Configurando botón de ingreso con email");
 
         buttonIngresar.setOnClickListener(v -> {
-            String correo = editTextUsuario.getText().toString().trim();
-            String password = editTextPassword.getText().toString().trim();
+            String correo = editTextUsuario != null && editTextUsuario.getText() != null ? editTextUsuario.getText().toString().trim() : "";
+            String password = editTextPassword != null && editTextPassword.getText() != null ? editTextPassword.getText().toString().trim() : "";
 
-            Log.d(TAG, "📧 Intentando login con email: " + correo);
-            Log.d(TAG, "🔐 Longitud de contraseña: " + password.length());
+            Log.d(TAG, "🎯 [CLICK_LOGIN] Intento con email: " + correo);
 
-            // ✅ 1. VALIDACIÓN CON FEEDBACK VISUAL INMEDIATO
             if (!validarCamposLogin(correo, password)) {
+                Log.w(TAG, "⚠️ [CLICK_LOGIN] Validación de campos falló");
                 return;
             }
 
-            // ✅ 2. DESHABILITAR BOTÓN Y MOSTRAR PROGRESO
             buttonIngresar.setEnabled(false);
-            buttonIngresar.setText("Iniciando sesión...");
-
-            // ✅ 3. MOSTRAR INDICADOR DE PROGRESO (OPCIONAL PERO RECOMENDADO)
+            buttonIngresar.setText("Cargando...");
             mostrarProgreso(true);
 
-            Log.d(TAG, "🔄 Llamando a iniciarSesionCorreo...");
             iniciarService.iniciarSesionCorreo(correo, password, new IniciarService.LoginCallback() {
                 @Override
                 public void onLoginSuccess(String tipoUsuario) {
-                    Log.d(TAG, "✅ Login exitoso con email. Tipo recibido: " + tipoUsuario);
+                    Log.d(TAG, "✅ [LOGIN_RESULT] Éxito. Rol: " + tipoUsuario);
 
                     FirebaseUser user = MyApp.getCurrentUser();
                     if (user != null) {
-                        Log.d(TAG, "👤 Usuario Firebase obtenido: " + user.getUid());
-
                         guardarUsuarioEnPrefs(user.getUid(), tipoUsuario);
-
-                        // ✅ OCULTAR PROGRESO ANTES DE REDIRIGIR
                         mostrarProgreso(false);
 
                         if (tipoUsuario.equals("conductor")) {
-                            Log.d(TAG, "🚗 Redirigiendo a InicioConductor");
+                            Log.d(TAG, "🚀 [NAVIGATION] Hacia Dashboard Conductor");
                             irAInicioConductor();
                         } else {
-                            Log.d(TAG, "👤 Redirigiendo a InicioUsuarios");
+                            Log.d(TAG, "🚀 [NAVIGATION] Hacia Dashboard Pasajero");
                             irAInicioUsuarios();
                         }
                     } else {
-                        Log.e(TAG, "❌ Usuario Firebase es null después de login exitoso");
+                        Log.e(TAG, "❌ [LOGIN_RESULT] Fallo crítico: FirebaseUser es NULL");
                         restaurarBotonLogin();
-                        mostrarSnackbarCentrado("No se pudo obtener la información del usuario. Por favor, intenta de nuevo.", true);
                     }
                 }
 
                 @Override
                 public void onLoginFailure(String error) {
-                    Log.e(TAG, "❌ Error en login con email: " + error);
-
-                    // ✅ RESTAURAR BOTÓN Y OCULTAR PROGRESO
+                    Log.e(TAG, "❌ [LOGIN_RESULT] Error recibido: " + error);
                     restaurarBotonLogin();
-
-                    // ✅ MOSTRAR ERROR DE FORMA INTELIGENTE SEGÚN EL TIPO
                     manejarErrorLogin(error, correo);
                 }
             });
@@ -297,32 +294,31 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ VALIDACIÓN MEJORADA CON FEEDBACK VISUAL
+     * VALIDACIÓN MEJORADA CON FEEDBACK VISUAL
      */
     private boolean validarCamposLogin(String correo, String password) {
         boolean esValido = true;
 
-        // ✅ CORREGIDO: Usar los IDs correctos del layout
         TextInputLayout layoutCorreo = findViewById(R.id.emailInputLayout);
         TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
 
         // Limpiar errores anteriores
-        layoutCorreo.setError(null);
-        layoutPassword.setError(null);
+        if (layoutCorreo != null) layoutCorreo.setError(null);
+        if (layoutPassword != null) layoutPassword.setError(null);
 
         if (correo.isEmpty()) {
-            layoutCorreo.setError("El correo es requerido");
+            if (layoutCorreo != null) layoutCorreo.setError("El correo es requerido");
             esValido = false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            layoutCorreo.setError("Ingresa un correo válido");
+            if (layoutCorreo != null) layoutCorreo.setError("Ingresa un correo válido");
             esValido = false;
         }
 
         if (password.isEmpty()) {
-            layoutPassword.setError("La contraseña es requerida");
+            if (layoutPassword != null) layoutPassword.setError("La contraseña es requerida");
             esValido = false;
         } else if (password.length() < 6) {
-            layoutPassword.setError("La contraseña debe tener al menos 6 caracteres");
+            if (layoutPassword != null) layoutPassword.setError("La contraseña debe tener al menos 6 caracteres");
             esValido = false;
         }
 
@@ -330,7 +326,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ RESTAURAR BOTÓN DE LOGIN
+     * RESTAURAR BOTÓN DE LOGIN
      */
     private void restaurarBotonLogin() {
         buttonIngresar.setEnabled(true);
@@ -339,10 +335,9 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MOSTRAR/OCULTAR PROGRESO
+     * MOSTRAR/OCULTAR PROGRESO
      */
     private void mostrarProgreso(boolean mostrar) {
-        // Puedes implementar un ProgressBar en tu layout
         ProgressBar progressBar = findViewById(R.id.progressBar);
         if (progressBar != null) {
             progressBar.setVisibility(mostrar ? View.VISIBLE : View.GONE);
@@ -350,38 +345,28 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MANEJAR ERRORES DE LOGIN DE FORMA INTELIGENTE
+     * MANEJAR ERRORES DE LOGIN DE FORMA INTELIGENTE
      */
     private void manejarErrorLogin(String error, String correo) {
-        String errorTraducido = error; // Ya viene traducido del Service
-        String errorLower = error.toLowerCase();
-
-        Log.d(TAG, "🔍 Manejando error - Traducido: " + errorTraducido);
+        Log.d(TAG, "🔍 Manejando error: " + error);
 
         TextInputLayout layoutCorreo = findViewById(R.id.emailInputLayout);
         TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
 
-        // Error de conexión
-        if (errorTraducido.contains("Error de conexión")) {
+        // Error de conexión o interno
+        if (error.contains("Error de conexión") || error.contains("Error interno")) {
             mostrarErrorConexionDialog();
         }
 
-        // Error interno
-        else if (errorTraducido.contains("Error interno")) {
-            mostrarErrorConexionDialog();
-        }
+        // Credenciales incorrectas o contraseña específica
+        else if (error.equals("Credenciales incorrectas") || error.contains("Contraseña incorrecta")) {
+            Log.d(TAG, "📌 Detectado: Error de credenciales");
 
-        // Credenciales incorrectas (caso especial)
-        else if (errorTraducido.equals("Credenciales incorrectas")) {
-            Log.d(TAG, "📌 Detectado: Credenciales incorrectas");
-
-            // Verificar si el correo tiene formato válido
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-                layoutCorreo.setError("Correo electrónico inválido");
+                if (layoutCorreo != null) layoutCorreo.setError("Correo electrónico inválido");
                 animarCampoError(editTextUsuario);
             } else {
-                // Asumimos que es error de contraseña
-                layoutPassword.setError("Contraseña incorrecta");
+                if (layoutPassword != null) layoutPassword.setError("Contraseña incorrecta");
                 animarCampoError(editTextPassword);
 
                 mostrarSnackbarConAccion(
@@ -392,23 +377,10 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             }
         }
 
-        // Error de contraseña específico
-        else if (errorTraducido.contains("Contraseña incorrecta")) {
-            Log.d(TAG, "📌 Detectado: Error de contraseña");
-            layoutPassword.setError("Contraseña incorrecta");
-            animarCampoError(editTextPassword);
-
-            mostrarSnackbarConAccion(
-                    "¿Olvidaste tu contraseña?",
-                    "Recuperar",
-                    v -> iniciarRecuperacionContrasena(correo)
-            );
-        }
-
         // Correo no registrado
-        else if (errorTraducido.contains("Correo no registrado")) {
+        else if (error.contains("Correo no registrado")) {
             Log.d(TAG, "📌 Detectado: Usuario no registrado");
-            layoutCorreo.setError("Correo no registrado");
+            if (layoutCorreo != null) layoutCorreo.setError("Correo no registrado");
             animarCampoError(editTextUsuario);
 
             mostrarSnackbarConAccion(
@@ -418,29 +390,30 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             );
         }
 
-        // Email inválido
-        else if (errorTraducido.contains("Correo electrónico inválido")) {
-            Log.d(TAG, "📌 Detectado: Email inválido");
-            layoutCorreo.setError("Correo electrónico inválido");
+        // Correo electrónico inválido
+        else if (error.contains("Correo electrónico inválido")) {
+            if (layoutCorreo != null) layoutCorreo.setError("Correo electrónico inválido");
             animarCampoError(editTextUsuario);
         }
 
         // Otros errores
         else {
-            mostrarSnackbarCentrado(errorTraducido, true); // 👈 Usar Snackbar animado
+            mostrarSnackbarCentrado(error, true);
         }
     }
 
     /**
-     * ✅ ANIMAR CAMPO CON ERROR
+     * ANIMAR CAMPO CON ERROR
      */
     private void animarCampoError(View view) {
-        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        view.startAnimation(shake);
+        if (view != null) {
+            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+            view.startAnimation(shake);
+        }
     }
 
     /**
-     * ✅ MOSTRAR SNACKBAR CON ACCIÓN - CON FONDO OSCURO
+     * MOSTRAR SNACKBAR CON ACCIÓN - CON FONDO OSCURO
      */
     private void mostrarSnackbarConAccion(String mensaje, String accion, View.OnClickListener listener) {
         mostrarOverlay(); // Mostrar fondo oscuro
@@ -456,9 +429,8 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             ocultarOverlay();
         });
 
-        snackbar.setActionTextColor(getResources().getColor(R.color.primary_500));
+        snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.primary_500));
 
-        // Configurar callback para cuando el Snackbar se cierra automáticamente
         snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -468,30 +440,28 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         });
 
         View snackbarView = snackbar.getView();
-        snackbarView.setBackgroundColor(getResources().getColor(R.color.secondary_800));
+        snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.secondary_800));
 
-        // Centrar texto y ajustar botón
         TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
         Button actionButton = snackbarView.findViewById(com.google.android.material.R.id.snackbar_action);
 
         if (textView != null) {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            textView.setGravity(android.view.Gravity.CENTER);
-            textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             textView.setMaxLines(3);
-            textView.setTextColor(getResources().getColor(android.R.color.white));
+            textView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         }
 
         if (actionButton != null) {
-            actionButton.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+            actionButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             actionButton.setAllCaps(true);
-            actionButton.setTypeface(null, android.graphics.Typeface.BOLD);
+            actionButton.setTypeface(null, Typeface.BOLD);
         }
 
-        // Centrar Snackbar
         if (snackbarView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
-            params.gravity = android.view.Gravity.CENTER;
+            params.gravity = Gravity.CENTER;
             params.width = getResources().getDimensionPixelSize(R.dimen.snackbar_max_width);
             params.height = FrameLayout.LayoutParams.WRAP_CONTENT;
 
@@ -500,7 +470,6 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             snackbarView.setLayoutParams(params);
         }
 
-        // Animación del Snackbar
         snackbarView.setAlpha(0f);
         snackbarView.setScaleX(0.8f);
         snackbarView.setScaleY(0.8f);
@@ -516,7 +485,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MOSTRAR SNACKBAR CENTRADO - CON FONDO OSCURO
+     * MOSTRAR SNACKBAR CENTRADO - CON FONDO OSCURO
      */
     private void mostrarSnackbarCentrado(String mensaje, boolean esError) {
         mostrarOverlay(); // Mostrar fondo oscuro
@@ -530,7 +499,6 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 duracion
         );
 
-        // Configurar callback para ocultar overlay
         snackbar.addCallback(new Snackbar.Callback() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -541,27 +509,24 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         View snackbarView = snackbar.getView();
 
-        // Color según tipo
         if (esError) {
-            snackbarView.setBackgroundColor(getResources().getColor(R.color.error_500));
+            snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.error_500));
         } else {
-            snackbarView.setBackgroundColor(getResources().getColor(R.color.primary_500));
+            snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.primary_500));
         }
 
-        // Centrar texto
         TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
         if (textView != null) {
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            textView.setGravity(android.view.Gravity.CENTER);
-            textView.setTextColor(getResources().getColor(android.R.color.white));
-            textView.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             textView.setMaxLines(5);
         }
 
-        // Centrar Snackbar
         if (snackbarView.getLayoutParams() instanceof FrameLayout.LayoutParams) {
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) snackbarView.getLayoutParams();
-            params.gravity = android.view.Gravity.CENTER;
+            params.gravity = Gravity.CENTER;
             params.width = getResources().getDimensionPixelSize(R.dimen.snackbar_max_width);
 
             int margin = getResources().getDimensionPixelSize(R.dimen.snackbar_margin);
@@ -569,7 +534,6 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             snackbarView.setLayoutParams(params);
         }
 
-        // Animación
         snackbarView.setScaleX(0.8f);
         snackbarView.setScaleY(0.8f);
         snackbarView.setAlpha(0f);
@@ -585,7 +549,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MOSTRAR DIALOG DE ERROR DE CONEXIÓN PERSONALIZADO
+     * MOSTRAR DIALOG DE ERROR DE CONEXIÓN PERSONALIZADO
      */
     private void mostrarErrorConexionDialog() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_error_connection, null);
@@ -595,23 +559,20 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .create();
 
-        com.google.android.material.button.MaterialButton btnRetry = dialogView.findViewById(R.id.btnRetryConnection);
+        MaterialButton btnRetry = dialogView.findViewById(R.id.btnRetryConnection);
         if (btnRetry != null) {
-            btnRetry.setOnClickListener(v -> {
-                dialog.dismiss();
-                // Opcional: Reintentar la última acción o simplemente cerrar
-            });
+            btnRetry.setOnClickListener(v -> dialog.dismiss());
         }
 
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
         dialog.show();
     }
 
     /**
-     * ✅ MOSTRAR DIALOG DE ERROR DINÁMICO (Layout XML)
+     * MOSTRAR DIALOG DE ERROR DINÁMICO (Layout XML)
      */
     private void mostrarErrorDynamicDialog(String titulo, String mensaje) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_error_generic, null);
@@ -623,7 +584,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         TextView tvTitle = dialogView.findViewById(R.id.errorTitle);
         TextView tvMessage = dialogView.findViewById(R.id.errorMessage);
-        com.google.android.material.button.MaterialButton btnAction = dialogView.findViewById(R.id.btnErrorAction);
+        MaterialButton btnAction = dialogView.findViewById(R.id.btnErrorAction);
 
         if (tvTitle != null) tvTitle.setText(titulo);
         if (tvMessage != null) tvMessage.setText(mensaje);
@@ -632,26 +593,14 @@ public class InicioDeSesionActivity extends AppCompatActivity {
         }
 
         if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
 
         dialog.show();
     }
 
     /**
-     * ✅ MOSTRAR DIALOG DE ERROR GENÉRICO (Deprecado - Usar mostrarErrorDynamicDialog)
-     */
-    private void mostrarErrorDialog(String titulo, String mensaje) {
-        new AlertDialog.Builder(this)
-                .setTitle(titulo)
-                .setMessage(mensaje)
-                .setPositiveButton("Entendido", null)
-                .setIcon(R.drawable.ic_cancel)
-                .show();
-    }
-
-    /**
-     * ✅ INICIAR RECUPERACIÓN DE CONTRASEÑA (Navegar a la actividad dedicada)
+     * INICIAR RECUPERACIÓN DE CONTRASEÑA (Navegar a la actividad dedicada)
      */
     private void iniciarRecuperacionContrasena(String email) {
         Intent intent = new Intent(this, RecuperarContrasenaActivity.class);
@@ -660,7 +609,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ IR A REGISTRO
+     * IR A REGISTRO
      */
     private void irARegistro() {
         startActivity(new Intent(this, RegistroUsuariosActivity.class));
@@ -670,28 +619,22 @@ public class InicioDeSesionActivity extends AppCompatActivity {
      * Configura el login con Google
      */
     private void setupGoogleLogin() {
-        Log.d(TAG, "🔧 Configurando login con Google...");
+        Log.d(TAG, "🔧 [UI_SETUP] Configurando botón de Google");
 
         btnGoogleSignIn.setOnClickListener(v -> {
-            Log.d(TAG, "🔄 Iniciando login con Google...");
-            // ✅ DESHABILITAR BOTÓN DURANTE LOGIN
+            Log.d(TAG, "🎯 [CLICK_GOOGLE] Iniciando flujo One Tap");
             btnGoogleSignIn.setEnabled(false);
 
             iniciarService.iniciarSesionGoogle(new IniciarService.LoginCallback() {
                 @Override
-                public void onLoginSuccess(String tipoUsuario) { // ✅ tipoUsuario YA VIENE DEL SERVICIO
-                    Log.d(TAG, "✅ Login con Google exitoso. Tipo recibido: " + tipoUsuario);
-
+                public void onLoginSuccess(String tipoUsuario) {
+                    Log.d(TAG, "✅ [GOOGLE_RESULT] Éxito. Rol: " + tipoUsuario);
                     FirebaseUser user = MyApp.getCurrentUser();
                     if (user != null) {
-                        // ✅ CORREGIDO: Usar el tipoUsuario que YA VIENE del servicio
                         guardarUsuarioEnPrefs(user.getUid(), tipoUsuario);
-
                         if (tipoUsuario.equals("conductor")) {
-                            Log.d(TAG, "🚗 Redirigiendo a InicioConductor (Google)");
                             irAInicioConductor();
                         } else {
-                            Log.d(TAG, "👤 Redirigiendo a InicioUsuarios (Google)");
                             irAInicioUsuarios();
                         }
                     }
@@ -699,15 +642,9 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
                 @Override
                 public void onLoginFailure(String error) {
-                    Log.e(TAG, "❌ Error en login con Google: " + error);
+                    Log.e(TAG, "❌ [GOOGLE_RESULT] Error: " + error);
                     btnGoogleSignIn.setEnabled(true);
-                    
-                    // Si el error es de cancelación, no mostramos diálogo invasivo, solo snackbar
-                    if (error.contains("cancelado")) {
-                        mostrarSnackbarCentrado(error, true);
-                    } else {
-                        mostrarErrorDynamicDialog("Error de Google", error);
-                    }
+                    mostrarSnackbarCentrado(error, true);
                 }
             });
         });
@@ -725,13 +662,11 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 Intent intent = new Intent(InicioDeSesionActivity.this, RegistroUsuariosActivity.class);
                 startActivity(intent);
             });
-        } else {
-            Log.w(TAG, "⚠️ buttonRegistro es null");
         }
     }
 
     /**
-     *  Recibir el resultado del One Tap Sign-In de Google
+     * Recibir el resultado del One Tap Sign-In de Google
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -742,12 +677,11 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             Log.d(TAG, "🔍 Procesando resultado de Google Sign-In...");
             iniciarService.manejarResultadoGoogle(data, new IniciarService.LoginCallback() {
                 @Override
-                public void onLoginSuccess(String tipoUsuario) { // ✅ tipoUsuario YA VIENE DEL SERVICIO
+                public void onLoginSuccess(String tipoUsuario) {
                     Log.d(TAG, "✅ Google Sign-In exitoso desde onActivityResult. Tipo recibido: " + tipoUsuario);
 
                     FirebaseUser user = MyApp.getCurrentUser();
                     if (user != null) {
-                        // ✅ CORREGIDO: Usar el tipoUsuario que YA VIENE del servicio
                         guardarUsuarioEnPrefs(user.getUid(), tipoUsuario);
 
                         if (tipoUsuario.equals("conductor")) {
@@ -772,13 +706,11 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                     }
                 }
             });
-        } else {
-            Log.d(TAG, "ℹ️ requestCode no manejado: " + requestCode);
         }
     }
 
     /**
-     * ✅ MÉTODO MEJORADO: Guardar userId y tipo de usuario en SharedPreferences
+     * Guardar userId y tipo de usuario en SharedPreferences
      */
     private void guardarUsuarioEnPrefs(String userId, String tipoUsuario) {
         try {
@@ -787,7 +719,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString(KEY_USER_ID, userId);
-            editor.putString(KEY_USER_TYPE, tipoUsuario); // Guardar el tipo de usuario
+            editor.putString(KEY_USER_TYPE, tipoUsuario);
             boolean saved = editor.commit();
 
             if (saved) {
@@ -804,7 +736,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ CORREGIDO: Guardar token FCM en Realtime Database de forma redundante para asegurar notificaciones
+     * Guardar token FCM en Realtime Database de forma redundante para asegurar notificaciones
      */
     private void guardarTokenFCMEnRealtimeDatabase(String userId, String tipoUsuario) {
         Log.d(TAG, "🔑 Intentando registrar Token FCM para usuario: " + userId);
@@ -840,35 +772,17 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 });
     }
 
-    private void guardarTokenDirectamenteEnRTDB(String userId, String tipoUsuario, String token) {
-        try {
-            if (userId == null || userId.isEmpty() || token == null || token.isEmpty()) {
-                Log.e(TAG, "❌ Datos inválidos para guardar token");
-                return;
-            }
-
-            Log.d(TAG, "💾 Guardando token FCM para usuario: " + userId + ", Tipo: " + tipoUsuario);
-
-            // ✅ NUEVA LÓGICA: Determinar nodo basado en datos REALES, no solo en tipoUsuario
-            determinarNodoCorrecto(userId, tipoUsuario, token);
-
-        } catch (Exception e) {
-            Log.e(TAG, "❌ Error crítico en guardarTokenDirectamenteEnRTDB: " + e.getMessage());
-            MyApp.logError(e);
-        }
-    }
-
     /**
-     * ✅ NUEVO MÉTODO: Determinar el nodo correcto basado en datos reales
+     * Determinar el nodo correcto basado en datos reales
      */
     private void determinarNodoCorrecto(String userId, String tipoUsuario, String token) {
         // Verificar en qué nodo existe REALMENTE el usuario
         rtdb.child("conductores").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot conductorSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot conductorSnapshot) {
                 rtdb.child("usuarios").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot usuarioSnapshot) {
+                    public void onDataChange(@NonNull DataSnapshot usuarioSnapshot) {
                         boolean esConductorReal = esConductorRealEnRTDB(conductorSnapshot);
                         boolean esUsuarioReal = esUsuarioRealEnRTDB(usuarioSnapshot);
 
@@ -880,15 +794,12 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                         String nodoFinal;
 
                         if (esConductorReal) {
-                            // ✅ Es conductor REAL - guardar en conductores
                             nodoFinal = "conductores";
                             Log.d(TAG, "👨‍✈️ Usuario es CONDUCTOR REAL - Guardando en 'conductores'");
                         } else if (esUsuarioReal) {
-                            // ✅ Es usuario REAL - guardar en usuarios
                             nodoFinal = "usuarios";
                             Log.d(TAG, "👤 Usuario es USUARIO REAL - Guardando en 'usuarios'");
                         } else {
-                            // ❌ No existe en ningún lado - usar el tipoUsuario recibido
                             nodoFinal = "conductor".equals(tipoUsuario) ? "conductores" : "usuarios";
                             Log.w(TAG, "⚠️ Usuario no existe en RTDB - Usando tipoUsuario recibido: " + nodoFinal);
                         }
@@ -902,9 +813,8 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {
+                    public void onCancelled(@NonNull DatabaseError error) {
                         Log.e(TAG, "❌ Error verificando usuarios: " + error.getMessage());
-                        // Fallback al tipoUsuario recibido
                         String nodoFinal = "conductor".equals(tipoUsuario) ? "conductores" : "usuarios";
                         guardarTokenEnNodo(userId, nodoFinal, token);
                     }
@@ -912,9 +822,8 @@ public class InicioDeSesionActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 Log.e(TAG, "❌ Error verificando conductores: " + error.getMessage());
-                // Fallback al tipoUsuario recibido
                 String nodoFinal = "conductor".equals(tipoUsuario) ? "conductores" : "usuarios";
                 guardarTokenEnNodo(userId, nodoFinal, token);
             }
@@ -922,7 +831,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ Verificar si es conductor REAL en RTDB
+     * Verificar si es conductor REAL en RTDB
      */
     private boolean esConductorRealEnRTDB(DataSnapshot snapshot) {
         if (!snapshot.exists()) return false;
@@ -932,7 +841,6 @@ public class InicioDeSesionActivity extends AppCompatActivity {
 
         if (tieneNombre) {
             String nombre = snapshot.child("nombre").getValue(String.class);
-            // Verificar que el nombre no sea genérico
             boolean nombreValido = nombre != null &&
                     !nombre.contains("Conductor") &&
                     !nombre.equals("No disponible");
@@ -943,95 +851,34 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ Verificar si es usuario REAL en RTDB
+     * Verificar si es usuario REAL en RTDB
      */
     private boolean esUsuarioRealEnRTDB(DataSnapshot snapshot) {
         if (!snapshot.exists()) return false;
-
         return snapshot.hasChild("nombre") || snapshot.hasChild("email");
     }
 
     /**
-     * ✅ Guardar token en nodo específico
+     * Guardar token en nodo específico
      */
     private void guardarTokenEnNodo(String userId, String nodo, String token) {
         rtdb.child(nodo).child(userId).child("tokenFCM")
                 .setValue(token)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Token FCM guardado en '" + nodo + "/" + userId + "/tokenFCM'");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error guardando token en " + nodo + ": " + e.getMessage());
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "✅ Token FCM guardado en '" + nodo + "/" + userId + "/tokenFCM'"))
+                .addOnFailureListener(e -> Log.e(TAG, "❌ Error guardando token en " + nodo + ": " + e.getMessage()));
     }
 
     /**
-     * ✅ Limpiar token del nodo incorrecto
+     * Limpiar token del nodo incorrecto
      */
     private void limpiarTokenDelNodoIncorrecto(String userId, String nodoIncorrecto) {
         rtdb.child(nodoIncorrecto).child(userId).child("tokenFCM").removeValue()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Token eliminado del nodo incorrecto '" + nodoIncorrecto + "'");
-                })
-                .addOnFailureListener(e -> {
-                    // Esto es normal si no existía
-                    Log.d(TAG, "ℹ️ No había token en '" + nodoIncorrecto + "'");
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "✅ Token eliminado del nodo incorrecto '" + nodoIncorrecto + "'"))
+                .addOnFailureListener(e -> Log.d(TAG, "ℹ️ No había token en '" + nodoIncorrecto + "'"));
     }
 
     /**
-     * ✅ NUEVO: Limpiar entrada en nodo incorrecto
-     */
-    private void limpiarEntradaEnNodoIncorrecto(String userId, String nodoCorrecto) {
-        String otroNodo = nodoCorrecto.equals("conductores") ? "usuarios" : "conductores";
-
-        // Verificar si existe una entrada en el nodo incorrecto
-        rtdb.child(otroNodo).child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // ❌ Existe en el nodo incorrecto
-                    Log.w(TAG, "⚠️ Usuario " + userId + " también existe en '" + otroNodo + "'");
-
-                    // Verificar si es una entrada VÁLIDA o solo un tokenFCM
-                    boolean esEntradaValida = dataSnapshot.hasChildren();
-                    boolean soloTieneToken = dataSnapshot.getChildrenCount() == 1 &&
-                            dataSnapshot.child("tokenFCM").exists();
-
-                    if (soloTieneToken) {
-                        // Es solo un tokenFCM vacío - ELIMINAR COMPLETAMENTE
-                        Log.w(TAG, "🔍 Es una entrada vacía con solo tokenFCM - Eliminando completamente");
-                        rtdb.child(otroNodo).child(userId).removeValue()
-                                .addOnSuccessListener(aVoid -> {
-                                    Log.d(TAG, "✅ Entrada vacía eliminada de '" + otroNodo + "'");
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e(TAG, "❌ Error eliminando entrada vacía: " + e.getMessage());
-                                });
-                    } else if (esEntradaValida) {
-                        // Es una entrada válida (conductor o usuario) - Solo eliminar tokenFCM
-                        Log.w(TAG, "⚠️ Es una entrada válida en el nodo incorrecto - Eliminando solo token");
-                        if (dataSnapshot.child("tokenFCM").exists()) {
-                            rtdb.child(otroNodo).child(userId).child("tokenFCM").removeValue()
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d(TAG, "✅ Token eliminado del nodo incorrecto");
-                                    });
-                        }
-                    }
-                } else {
-                    Log.d(TAG, "✅ Usuario no existe en el nodo incorrecto '" + otroNodo + "'");
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "❌ Error verificando nodo incorrecto: " + databaseError.getMessage());
-            }
-        });
-    }
-
-    /**
-     * ✅ NUEVO: Guardar token localmente como backup
+     * Guardar token localmente como backup
      */
     private void guardarTokenLocalmente(String token) {
         try {
@@ -1044,7 +891,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ MANEJAR RESULTADO DE SOLICITUD DE PERMISOS
+     * MANEJAR RESULTADO DE SOLICITUD DE PERMISOS
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -1059,13 +906,11 @@ public class InicioDeSesionActivity extends AppCompatActivity {
                 Log.d(TAG, "✅ Permiso de notificaciones CONCEDIDO por el usuario");
                 Toast.makeText(this, "Notificaciones habilitadas", Toast.LENGTH_SHORT).show();
 
-                // ✅ Opcional: Registrar token FCM inmediatamente
                 registrarTokenFCMDespuesDePermiso();
 
             } else {
                 Log.w(TAG, "❌ Permiso de notificaciones DENEGADO por el usuario");
 
-                // Mostrar mensaje informativo
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     Toast.makeText(this,
                             "Las notificaciones están desactivadas. Puedes activarlas en Configuración > Aplicaciones",
@@ -1076,12 +921,11 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ Registrar token FCM después de que se concede el permiso
+     * Registrar token FCM después de que se concede el permiso
      */
     private void registrarTokenFCMDespuesDePermiso() {
         FirebaseUser currentUser = MyApp.getCurrentUser();
         if (currentUser != null) {
-            // Verificar el tipo de usuario actual
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             String userType = prefs.getString(KEY_USER_TYPE, null);
 
@@ -1092,7 +936,7 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     }
 
     /**
-     * ✅ NUEVO: Redirigir según tipo de usuario (para sesión existente)
+     * Redirigir según tipo de usuario (para sesión existente)
      */
     private void redirigirSegunTipoUsuario(String tipoUsuario) {
         if (tipoUsuario.equals("conductor")) {
@@ -1110,17 +954,14 @@ public class InicioDeSesionActivity extends AppCompatActivity {
     private void irAInicioUsuarios() {
         Log.d(TAG, "🎯 Ejecutando irAInicioUsuarios");
 
-        // Verificar si el usuario intentó hacer una reserva antes de iniciar sesión
         boolean volverAReserva = getIntent().getBooleanExtra("volverAReserva", false);
         Log.d(TAG, "📋 volverAReserva: " + volverAReserva);
 
         if (volverAReserva) {
-            // Si vino de intentar reservar, llevarlo directamente a reservas
             Log.d(TAG, "🎫 Redirigiendo a CrearReservas (volver a reserva)");
             Intent intent = new Intent(InicioDeSesionActivity.this, CrearReservasActivity.class);
             startActivity(intent);
         } else {
-            // Caso normal: ir a la pantalla principal
             Log.d(TAG, "🏠 Redirigiendo a InicioUsuarios (caso normal)");
             Intent intent = new Intent(InicioDeSesionActivity.this, InicioUsuariosActivity.class);
             startActivity(intent);
