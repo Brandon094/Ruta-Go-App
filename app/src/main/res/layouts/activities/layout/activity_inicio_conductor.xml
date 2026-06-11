@@ -187,7 +187,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:paddingBottom="120dp">
+            android:paddingBottom="500dp">
 
             <!-- 🔄 SHIMMER PARA CARGA -->
             <com.facebook.shimmer.ShimmerFrameLayout
@@ -488,13 +488,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:layout_marginBottom="110dp"
+        android:layout_marginBottom="150dp"
         android:text="@string/vender_pasaje"
         android:textColor="@color/white"
         app:icon="@drawable/ic_add"
         app:iconTint="@color/white"
+        app:layout_anchor="@id/bottom_nav_container"
         app:backgroundTint="@color/primary_500"
-        app:layout_anchor="@id/nestedScrollView"
         app:layout_anchorGravity="bottom|end" />
 
     <FrameLayout

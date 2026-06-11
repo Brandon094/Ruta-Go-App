@@ -76,30 +76,30 @@ public class NotificationService extends FirebaseMessagingService {
             Log.d(TAG, "📝 Procesando datos - Mensaje: " + message);
             Log.d(TAG, "📝 Procesando datos - Tipo: " + type);
 
-            // Si no hay título/mensaje en la notificación, usar los datos
-            if (title != null && message != null) {
-                sendNotification(title, message, data);
-            }
-
-            // Handle different notification types
+            // Handle different notification types with custom inviting messages
             if (type != null) {
                 switch (type) {
+                    case "reserva_confirmada":
+                        handleReservaConfirmada(data);
+                        return; // Evitar duplicar
+                    case "nueva_reserva":
+                        handleNuevaReserva(data);
+                        return;
+                    case "promotion":
+                        handlePromotionNotification(data);
+                        return;
                     case "alert":
                         handleAlertNotification(data);
                         break;
                     case "update":
                         handleUpdateNotification(data);
                         break;
-                    case "promotion":
-                        handlePromotionNotification(data);
-                        break;
-                    case "reserva_confirmada":
-                        handleReservaConfirmada(data);
-                        break;
-                    case "nueva_reserva":
-                        handleNuevaReserva(data);
-                        break;
                 }
+            }
+
+            // Si no hay tipo específico pero tiene título y mensaje, usar los datos
+            if (title != null && message != null) {
+                sendNotification(title, message, data);
             }
 
         } catch (Exception e) {
@@ -117,16 +117,23 @@ public class NotificationService extends FirebaseMessagingService {
 
     private void handlePromotionNotification(Map<String, String> data) {
         Log.d(TAG, "🔄 Processing promotion notification");
+        String title = data.get("title") != null ? data.get("title") : "¡Mira esto! ✨";
+        String message = data.get("message") != null ? data.get("message") : "Tenemos algo nuevo para ti en RutaGo. ¡Ven a verlo!";
+        sendNotification(title, message, data);
     }
 
     private void handleReservaConfirmada(Map<String, String> data) {
         Log.d(TAG, "✅ Processing reserva confirmada notification");
-        // Lógica específica para reservas confirmadas
+        String title = "¡Reserva Confirmada! ✅";
+        String message = "Tu cupo en RutaGo ya está asegurado. ¡Entra para ver los detalles de tu viaje!";
+        sendNotification(title, message, data);
     }
 
     private void handleNuevaReserva(Map<String, String> data) {
         Log.d(TAG, "🚗 Processing nueva reserva notification");
-        // Lógica específica para nuevas reservas
+        String title = "¡Nueva Reserva Recibida! 🚗";
+        String message = "Un pasajero ha solicitado un puesto. ¡Entra ahora para gestionar tu próxima ruta!";
+        sendNotification(title, message, data);
     }
 
     private void sendNotification(String title, String messageBody, Map<String, String> data) {
@@ -149,17 +156,23 @@ public class NotificationService extends FirebaseMessagingService {
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            // ✅ CORREGIDO: Usar ícono por defecto de Android si no tienes ic_notification
-            int smallIcon = R.drawable.ic_launcher_foreground;
-            if (smallIcon == 0) {
-                smallIcon = android.R.drawable.ic_dialog_info; // Ícono por defecto
-            }
+            // ✅ PERSONALIZACIÓN PROFESIONAL:
+            // 1. Ícono pequeño (debe ser blanco sobre transparente)
+            int smallIcon = R.drawable.ic_notification;
+            
+            // 2. Ícono grande (Logo de la app a color)
+            android.graphics.Bitmap largeIcon = android.graphics.BitmapFactory.decodeResource(
+                    getResources(), R.drawable.logo_main);
 
             NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat.Builder(this, CHANNEL_ID)
                             .setSmallIcon(smallIcon)
+                            .setLargeIcon(largeIcon) // 👈 Tu logo a color
+                            .setColor(getResources().getColor(R.color.primary_500)) // 👈 Color naranja RutaGo
                             .setContentTitle(title != null ? title : getString(R.string.app_name))
                             .setContentText(messageBody)
+                            .setStyle(new NotificationCompat.BigTextStyle() // 👈 Para que se vea todo el texto si es largo
+                                    .bigText(messageBody))
                             .setAutoCancel(true)
                             .setSound(defaultSoundUri)
                             .setContentIntent(pendingIntent)
