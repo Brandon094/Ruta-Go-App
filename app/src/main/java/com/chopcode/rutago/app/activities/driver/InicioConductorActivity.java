@@ -65,7 +65,7 @@ public class InicioConductorActivity extends AppCompatActivity {
     private ImageView ivConductorAvatar;
     private ShimmerFrameLayout shimmerLayout;
     private ProgressBar progressBar;
-    private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabVentaFisica;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton fabVentaFisica;
 
     // Views de estadísticas
     private TextView tvReservasConfirmadas, tvAsientosDisponibles, tvTotalIngresos;
@@ -296,21 +296,6 @@ public class InicioConductorActivity extends AppCompatActivity {
                     mostrarSelectorDeRuta();
                 }
             });
-
-            // Controlar el shrink/extend al hacer scroll
-            androidx.core.widget.NestedScrollView scrollView = findViewById(R.id.nestedScrollView);
-            if (scrollView != null) {
-                scrollView.setOnScrollChangeListener((androidx.core.widget.NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                    if (scrollY > oldScrollY + 10 && fabVentaFisica.isExtended()) {
-                        fabVentaFisica.shrink();
-                    } else if (scrollY < oldScrollY - 10 && !fabVentaFisica.isExtended()) {
-                        fabVentaFisica.extend();
-                    }
-                    if (scrollY == 0) {
-                        fabVentaFisica.extend();
-                    }
-                });
-            }
         }
 
         Log.d(TAG, "✅ Botones configurados");
