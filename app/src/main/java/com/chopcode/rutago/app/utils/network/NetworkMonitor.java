@@ -24,24 +24,27 @@ public class NetworkMonitor extends LiveData<Boolean> {
     private final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
         @Override
         public void onAvailable(@NonNull Network network) {
-            // Si vuelve el internet, cancelamos cualquier alerta de desconexión pendiente
+            // Al detectar una red, cancelamos desconexiones pero no confirmamos internet aún
+            // Esperamos a onCapabilitiesChanged para confirmar la validación real
             cancelPendingDisconnect();
-            postValue(true);
         }
 
         @Override
         public void onLost(@NonNull Network network) {
-            // No avisar inmediatamente. Esperar por si es un micro-corte (cambio WiFi/Datos)
             scheduleDisconnectCheck();
         }
 
         @Override
         public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
-            boolean hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+            // VERIFICACIÓN REAL: Internet presente Y validado por el sistema
+            boolean hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+            
             if (hasInternet) {
                 cancelPendingDisconnect();
                 postValue(true);
             } else {
+                // Si la red existe pero no está validada (ej: portal cautivo o sin datos), chequear desconexión
                 scheduleDisconnectCheck();
             }
         }
@@ -57,6 +60,7 @@ public class NetworkMonitor extends LiveData<Boolean> {
         checkCurrentNetwork();
         NetworkRequest networkRequest = new NetworkRequest.Builder()
                 .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) // Añadido para mayor precisión
                 .build();
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
     }
@@ -93,6 +97,8 @@ public class NetworkMonitor extends LiveData<Boolean> {
         Network network = connectivityManager.getActiveNetwork();
         if (network == null) return false;
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-        return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        return capabilities != null 
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
     }
 }
