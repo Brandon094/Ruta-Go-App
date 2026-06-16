@@ -230,15 +230,82 @@ public class UserService {
     }
 
     private void buscarCapacidadVehiculo(com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
-        DatabaseReference vehiculoRef = MyApp.getDatabaseReference("vehiculos/" + conductor.getVehiculoId());
-        vehiculoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference vehiculosRef = MyApp.getDatabaseReference("vehiculos");
+        
+        // Primero intentamos búsqueda directa por vehiculoId (más rápido)
+        String vId = conductor.getVehiculoId();
+        if (vId != null && !vId.isEmpty()) {
+            vehiculosRef.child(vId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        Integer capacidad = snapshot.child("capacidad").getValue(Integer.class);
+                        if (capacidad != null && capacidad > 0) {
+                            conductor.setCapacidadVehiculo(capacidad);
+                            Log.d("UserService", "🚌 Capacidad encontrada por ID: " + capacidad);
+                            procesarCargaConductor(conductor.getId(), conductor, callback);
+                            return;
+                        }
+                    }
+                    // Si no lo encuentra por ID, intentamos búsqueda por propiedad conductorId
+                    buscarVehiculoPorDuenio(conductor, callback);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    buscarVehiculoPorDuenio(conductor, callback);
+                }
+            });
+        } else {
+            buscarVehiculoPorDuenio(conductor, callback);
+        }
+    }
+
+    private void buscarVehiculoPorDuenio(com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
+        DatabaseReference vehiculosRef = MyApp.getDatabaseReference("vehiculos");
+        
+        // Buscamos en todos los vehículos cuál tiene el conductorId de este usuario
+        vehiculosRef.orderByChild("conductorId").equalTo(conductor.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    // Tomamos el primer vehículo que coincida
+                    DataSnapshot vehiculoSnap = snapshot.getChildren().iterator().next();
+                    Integer capacidad = vehiculoSnap.child("capacidad").getValue(Integer.class);
+                    if (capacidad != null && capacidad > 0) {
+                        conductor.setCapacidadVehiculo(capacidad);
+                        Log.d("UserService", "🚌 Capacidad encontrada por dueño: " + capacidad);
+                        procesarCargaConductor(conductor.getId(), conductor, callback);
+                        return;
+                    }
+                }
+                
+                // ÚLTIMO RECURSO: Sacar capacidad de la disponibilidad de su primer horario
+                if (conductor.getHorariosAsignados() != null && !conductor.getHorariosAsignados().isEmpty()) {
+                    buscarCapacidadEnDisponibilidad(conductor.getHorariosAsignados().get(0), conductor, callback);
+                } else {
+                    procesarCargaConductor(conductor.getId(), conductor, callback);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                procesarCargaConductor(conductor.getId(), conductor, callback);
+            }
+        });
+    }
+
+    private void buscarCapacidadEnDisponibilidad(String horarioId, com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
+        DatabaseReference dispRef = MyApp.getDatabaseReference("disponibilidadAsientos/" + horarioId + "/totalAsientos");
+        dispRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Integer capacidad = snapshot.child("capacidad").getValue(Integer.class);
-                    if (capacidad != null && capacidad > 0) {
-                        conductor.setCapacidadVehiculo(capacidad);
-                        Log.d("UserService", "🚌 Capacidad real encontrada para " + conductor.getVehiculoId() + ": " + capacidad);
+                    Integer total = snapshot.getValue(Integer.class);
+                    if (total != null && total > 0) {
+                        conductor.setCapacidadVehiculo(total);
+                        Log.d("UserService", "💡 Capacidad recuperada de disponibilidadAsientos/" + horarioId + ": " + total);
                     }
                 }
                 procesarCargaConductor(conductor.getId(), conductor, callback);
