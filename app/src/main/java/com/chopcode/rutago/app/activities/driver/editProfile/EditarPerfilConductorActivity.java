@@ -218,6 +218,8 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
                     vehiculoActual.setModelo(getStringSafely(snapshot.child("modelo")));
                     vehiculoActual.setColor(getStringSafely(snapshot.child("color")));
                     vehiculoActual.setAno(getStringSafely(snapshot.child("ano")));
+                    vehiculoActual.setConductorId(userId); // ✅ Asegurar que el dueño esté cargado
+                    vehiculoActual.setEstado(getStringSafely(snapshot.child("estado")));
                     
                     Object cap = snapshot.child("capacidad").getValue();
                     if (cap instanceof Number) {
@@ -467,6 +469,7 @@ public class EditarPerfilConductorActivity extends AppCompatActivity {
             vehiculoActual.setColor(color);
             vehiculoActual.setCapacidad(capacidad);
             vehiculoActual.setAno(anio);
+            vehiculoActual.setConductorId(userId); // ✅ Crítico para cumplir las reglas de seguridad
             vehiculoActual.setEstado("activo");
 
             vehiculoRef.child(vehiculoId).setValue(vehiculoActual)
