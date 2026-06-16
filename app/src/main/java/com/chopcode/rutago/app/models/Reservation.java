@@ -5,17 +5,29 @@ import com.google.firebase.database.PropertyName;
 
 @IgnoreExtraProperties
 public class Reservation {
-    private String idReservation, userId, scheduleId, driverId, vehicleId, routeId, routeName;
-    private String driver, origin, destination, estimatedTime, paymentMethod;
-    private String reservationStatus, name, phone, phoneC, email;
-    private long reservationDate;
-    private double price;
-    private int reservedSeat = -1;
-    private boolean rated = false;
+    public String idReservation;
+    public String userId;
+    public String scheduleId;
+    public String driverId;
+    public String vehicleId;
+    public String routeId;
+    public String routeName;
+    public String driver;
+    public String origin;
+    public String destination;
+    public String estimatedTime;
+    public String paymentMethod;
+    public String reservationStatus;
+    public String name;
+    public String phone;
+    public String phoneC;
+    public String email;
+    public long reservationDate;
+    public double price;
+    public int reservedSeat = -1;
+    public boolean rated = false;
 
-    public Reservation() {
-        this.reservedSeat = -1;
-    }
+    public Reservation() { }
 
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
                        String driver, String driverId, String phoneC, String vehicleId, double price,
@@ -44,142 +56,85 @@ public class Reservation {
         this.routeName = routeName;
     }
 
-    @PropertyName("idReservation")
-    public String getIdReservation() { return idReservation; }
-    @PropertyName("idReservation")
-    public void setIdReservation(String idReservation) { this.idReservation = idReservation; }
+    // Setters para compatibilidad con Español
     @PropertyName("idReserva")
-    public void setIdReserva(String val) { this.idReservation = val; }
-
-    @PropertyName("userId")
-    public String getUserId() { return userId; }
-    @PropertyName("userId")
-    public void setUserId(String userId) { this.userId = userId; }
+    public void setIdReserva(String val) { if (val != null) this.idReservation = val; }
     @PropertyName("usuarioId")
-    public void setUsuarioId(String val) { this.userId = val; }
-
-    @PropertyName("scheduleId")
-    public String getScheduleId() { return scheduleId; }
-    @PropertyName("scheduleId")
-    public void setScheduleId(String scheduleId) { this.scheduleId = scheduleId; }
+    public void setUsuarioId(String val) { if (val != null) this.userId = val; }
     @PropertyName("horarioId")
-    public void setHorarioId(String val) { this.scheduleId = val; }
-
-    @PropertyName("driverId")
-    public String getDriverId() { return driverId; }
-    @PropertyName("driverId")
-    public void setDriverId(String driverId) { this.driverId = driverId; }
+    public void setHorarioId(String val) { if (val != null) this.scheduleId = val; }
     @PropertyName("conductorId")
-    public void setConductorId(String val) { this.driverId = val; }
-
-    @PropertyName("reservedSeat")
-    public int getReservedSeat() { return reservedSeat; }
-    @PropertyName("reservedSeat")
-    public void setReservedSeat(int reservedSeat) { this.reservedSeat = reservedSeat; }
+    public void setConductorId(String val) { if (val != null) this.driverId = val; }
     @PropertyName("puestoReservado")
-    public void setPuestoReservado(int val) { this.reservedSeat = val; }
-
-    @PropertyName("driver")
-    public String getDriver() { return driver; }
-    @PropertyName("driver")
-    public void setDriver(String driver) { this.driver = driver; }
+    public void setPuestoReservado(int val) { if (val != -1) this.reservedSeat = val; }
     @PropertyName("conductor")
-    public void setConductor(String val) { this.driver = val; }
-
-    @PropertyName("reservationStatus")
-    public String getReservationStatus() { return reservationStatus; }
-    @PropertyName("reservationStatus")
-    public void setReservationStatus(String reservationStatus) { this.reservationStatus = reservationStatus; }
+    public void setConductor(String val) { if (val != null) this.driver = val; }
     @PropertyName("estadoReserva")
-    public void setEstadoReserva(String val) { this.reservationStatus = val; }
-
-    @PropertyName("reservationDate")
-    public long getReservationDate() { return reservationDate; }
-    @PropertyName("reservationDate")
-    public void setReservationDate(long reservationDate) { this.reservationDate = reservationDate; }
+    public void setEstadoReserva(String val) { if (val != null) this.reservationStatus = val; }
     @PropertyName("fechaReserva")
-    public void setFechaReserva(long val) { this.reservationDate = val; }
-
-    @PropertyName("name")
-    public String getName() { return name; }
-    @PropertyName("name")
-    public void setName(String name) { this.name = name; }
+    public void setFechaReserva(long val) { if (val != 0) this.reservationDate = val; }
     @PropertyName("nombre")
-    public void setNombre(String val) { this.name = val; }
-
-    @PropertyName("phone")
-    public String getPhone() { return phone; }
-    @PropertyName("phone")
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setNombre(String val) { if (val != null) this.name = val; }
     @PropertyName("telefono")
-    public void setTelefono(String val) { this.phone = val; }
-
-    @PropertyName("phoneC")
-    public String getPhoneC() { return phoneC; }
-    @PropertyName("phoneC")
-    public void setPhoneC(String phoneC) { this.phoneC = phoneC; }
+    public void setTelefono(String val) { if (val != null) this.phone = val; }
     @PropertyName("telefonoC")
-    public void setTelefonoC(String val) { this.phoneC = val; }
-
-    @PropertyName("paymentMethod")
-    public String getPaymentMethod() { return paymentMethod; }
-    @PropertyName("paymentMethod")
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public void setTelefonoC(String val) { if (val != null) this.phoneC = val; }
     @PropertyName("metodoPago")
-    public void setMetodoPago(String val) { this.paymentMethod = val; }
-
-    @PropertyName("origin")
-    public String getOrigin() { return origin; }
-    @PropertyName("origin")
-    public void setOrigin(String origin) { this.origin = origin; }
+    public void setMetodoPago(String val) { if (val != null) this.paymentMethod = val; }
     @PropertyName("origen")
-    public void setOrigen(String val) { this.origin = val; }
-
-    @PropertyName("destination")
-    public String getDestination() { return destination; }
-    @PropertyName("destination")
-    public void setDestination(String destination) { this.destination = destination; }
+    public void setOrigen(String val) { if (val != null) this.origin = val; }
     @PropertyName("destino")
-    public void setDestino(String val) { this.destination = val; }
-
-    @PropertyName("price")
-    public double getPrice() { return price; }
-    @PropertyName("price")
-    public void setPrice(double price) { this.price = price; }
+    public void setDestino(String val) { if (val != null) this.destination = val; }
     @PropertyName("precio")
-    public void setPrecio(double val) { this.price = val; }
-
-    @PropertyName("estimatedTime")
-    public String getEstimatedTime() { return estimatedTime; }
-    @PropertyName("estimatedTime")
-    public void setEstimatedTime(String estimatedTime) { this.estimatedTime = estimatedTime; }
+    public void setPrecio(double val) { if (val != 0) this.price = val; }
     @PropertyName("tiempoEstimado")
-    public void setTiempoEstimado(String val) { this.estimatedTime = val; }
-
-    @PropertyName("rated")
-    public boolean isRated() { return rated; }
-    @PropertyName("rated")
-    public void setRated(boolean rated) { this.rated = rated; }
+    public void setTiempoEstimado(String val) { if (val != null) this.estimatedTime = val; }
     @PropertyName("calificada")
     public void setCalificada(boolean val) { this.rated = val; }
-
-    @PropertyName("vehicleId")
-    public String getVehicleId() { return vehicleId; }
-    @PropertyName("vehicleId")
-    public void setVehicleId(String vehicleId) { this.vehicleId = vehicleId; }
     @PropertyName("vehiculoId")
-    public void setVehiculoId(String val) { this.vehicleId = val; }
+    public void setVehiculoId(String val) { if (val != null) this.vehicleId = val; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    // Getters explícitos para compatibilidad con código existente
+    public String getIdReservation() { return idReservation; }
+    public void setIdReservation(String idReservation) { this.idReservation = idReservation; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public String getScheduleId() { return scheduleId; }
+    public void setScheduleId(String scheduleId) { this.scheduleId = scheduleId; }
+    public String getDriverId() { return driverId; }
+    public void setDriverId(String driverId) { this.driverId = driverId; }
+    public String getVehicleId() { return vehicleId; }
+    public void setVehicleId(String vehicleId) { this.vehicleId = vehicleId; }
     public String getRouteId() { return routeId; }
     public void setRouteId(String routeId) { this.routeId = routeId; }
     public String getRouteName() { return routeName; }
     public void setRouteName(String routeName) { this.routeName = routeName; }
-
-    public boolean isSeatAssigned() { return getReservedSeat() > 0; }
-    public String getSeatDescription() {
-        int seat = getReservedSeat();
-        return seat > 0 ? "Seat " + seat : "Seat not assigned";
-    }
+    public String getDriver() { return driver; }
+    public void setDriver(String driver) { this.driver = driver; }
+    public String getOrigin() { return origin; }
+    public void setOrigin(String origin) { this.origin = origin; }
+    public String getDestination() { return destination; }
+    public void setDestination(String destination) { this.destination = destination; }
+    public String getEstimatedTime() { return estimatedTime; }
+    public void setEstimatedTime(String estimatedTime) { this.estimatedTime = estimatedTime; }
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public String getReservationStatus() { return reservationStatus; }
+    public void setReservationStatus(String reservationStatus) { this.reservationStatus = reservationStatus; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public String getPhoneC() { return phoneC; }
+    public void setPhoneC(String phoneC) { this.phoneC = phoneC; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public long getReservationDate() { return reservationDate; }
+    public void setReservationDate(long reservationDate) { this.reservationDate = reservationDate; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+    public int getReservedSeat() { return reservedSeat; }
+    public void setReservedSeat(int reservedSeat) { this.reservedSeat = reservedSeat; }
+    public boolean isRated() { return rated; }
+    public void setRated(boolean rated) { this.rated = rated; }
 }

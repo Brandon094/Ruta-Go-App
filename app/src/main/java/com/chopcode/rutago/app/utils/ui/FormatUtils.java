@@ -176,4 +176,17 @@ public class FormatUtils {
         }
         return hora24;
     }
+
+    /**
+     * Normaliza un texto para comparaciones (quita tildes, minúsculas, espacios)
+     */
+    public static String normalizarTexto(String texto) {
+        if (texto == null) return "";
+        return texto.toLowerCase()
+                .replace("á", "a").replace("é", "e")
+                .replace("í", "i").replace("ó", "o")
+                .replace("ú", "u")
+                .replace("ñ", "n")
+                .trim();
+    }
 }

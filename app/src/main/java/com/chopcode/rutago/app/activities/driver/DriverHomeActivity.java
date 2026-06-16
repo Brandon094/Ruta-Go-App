@@ -223,13 +223,19 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
-            Log.d(TAG, "Assigned schedules changed: " + (horarios != null ? horarios.size() : "null"));
+            Log.d(TAG, "Assigned schedules changed: " + (horarios != null ? horarios.size() : "null") + " -> " + horarios);
             if (horarios != null && !horarios.isEmpty()) {
                 rutasViewModel.loadRoutes(horarios);
                 reservasViewModel.setHorariosAsignados(horarios);
                 reservasViewModel.cargarReservasPendientes();
-                estadisticasViewModel.setHorariosAsignados(horarios);
+                
+                estadisticasViewModel.setHorariosAsignados(new ArrayList<>(horarios));
+                String userId = MyApp.getCurrentUserId();
+                if (userId != null) {
+                    estadisticasViewModel.setConductorActual(userId);
+                }
                 estadisticasViewModel.refreshStatistics();
+
                 tvEmptyRutas.setVisibility(View.GONE);
             } else {
                 tvEmptyRutas.setVisibility(View.VISIBLE);
