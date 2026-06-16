@@ -118,7 +118,7 @@
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <activity
-            android:name=".activities.driver.GestionarAsientosActivity"
+            android:name=".activities.driver.manager.GestionarAsientosActivity"
             android:exported="false"
             android:label="Gestionar Asientos"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />

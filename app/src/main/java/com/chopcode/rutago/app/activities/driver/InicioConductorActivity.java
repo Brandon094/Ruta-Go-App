@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+
+import com.chopcode.rutago.app.activities.driver.manager.GestionarAsientosActivity;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.profile.PerfilConductorActivity;
 import com.chopcode.rutago.app.adapters.reservas.ReservaAdapter;
@@ -27,7 +28,6 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.adapters.rutas.SelectRouteAdapter;
 import com.chopcode.rutago.app.models.Reserva;
-import com.chopcode.rutago.app.models.Ruta;
 import com.chopcode.rutago.app.models.Ruta;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.viewmodels.driver.EstadisticasViewModel;
@@ -39,10 +39,7 @@ import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -197,35 +194,6 @@ public class InicioConductorActivity extends AppCompatActivity {
         // Actualizar tiempo de actualización
         actualizarTiempoActualizacion();
     }
-
-    /**
-     * Versión con la misma firma que en PerfilConductor (parámetros count opcionales)
-     */
-    private void mostrarDialogoConfirmacion() {
-        Log.d(TAG, "💬 Mostrando diálogo de confirmación de cierre de sesión");
-        registrarEventoAnalitico("dialogo_cerrar_sesion_mostrado", null, null);
-
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null);
-
-        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                .setView(dialogView)
-                .setPositiveButton("Cerrar Sesión", (dialog, which) -> {
-                    Log.d(TAG, "✅ Usuario confirmó cierre de sesión");
-                    registrarEventoAnalitico("cerrar_sesion_confirmado", null, null);
-
-                    cleanupResources();
-                    authManager.signOut(this);
-                    Toast.makeText(this, getString(R.string.sesion_cerrada_exito), Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .setNegativeButton("Volver", (dialog, which) -> {
-                    Log.d(TAG, "❌ Usuario canceló cierre de sesión");
-                    registrarEventoAnalitico("cerrar_sesion_cancelado", null, null);
-                    dialog.dismiss();
-                })
-                .show();
-    }
-
     /**
      * Registrar evento analítico con la misma firma que en PerfilConductor
      */
@@ -394,6 +362,22 @@ public class InicioConductorActivity extends AppCompatActivity {
             } else {
                 tvPlacaVehiculo.setText("Placa no asignada");
                 Log.w(TAG, "⚠️ Placa del vehículo no disponible");
+            }
+        });
+
+        // ✅ OBSERVAR CAPACIDAD DEL VEHÍCULO Y PASAR A ESTADÍSTICAS
+        perfilViewModel.getCapacidadVehiculoLiveData().observe(this, capacidad -> {
+            if (capacidad != null && capacidad > 0) {
+                Log.d(TAG, "🚌 Capacidad del vehículo obtenida: " + capacidad);
+                estadisticasViewModel.setCapacidadVehiculo(capacidad);
+            }
+        });
+
+        // ✅ OBSERVAR CAPACIDAD DEL VEHÍCULO Y PASAR A ESTADÍSTICAS
+        perfilViewModel.getCapacidadVehiculoLiveData().observe(this, capacidad -> {
+            if (capacidad != null && capacidad > 0) {
+                Log.d(TAG, "🚌 Capacidad del vehículo obtenida: " + capacidad);
+                estadisticasViewModel.setCapacidadVehiculo(capacidad);
             }
         });
 

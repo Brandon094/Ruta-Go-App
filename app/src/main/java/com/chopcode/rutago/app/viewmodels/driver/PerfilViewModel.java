@@ -20,6 +20,7 @@ public class PerfilViewModel extends BaseViewModel {
     // LiveData para información del conductor
     private final MutableLiveData<String> conductorNombreLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> placaVehiculoLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> capacidadVehiculoLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<String>> horariosAsignadosLiveData = new MutableLiveData<>();
     private final MutableLiveData<com.chopcode.rutago.app.models.Conductor> conductorLiveData = new MutableLiveData<>();
 
@@ -48,6 +49,10 @@ public class PerfilViewModel extends BaseViewModel {
 
     public MutableLiveData<String> getPlacaVehiculoLiveData() {
         return placaVehiculoLiveData;
+    }
+
+    public MutableLiveData<Integer> getCapacidadVehiculoLiveData() {
+        return capacidadVehiculoLiveData;
     }
 
     public MutableLiveData<List<String>> getHorariosAsignadosLiveData() {
@@ -87,6 +92,7 @@ public class PerfilViewModel extends BaseViewModel {
                 // Actualizar LiveData para UI
                 conductorNombreLiveData.postValue(conductorNombreActual);
                 placaVehiculoLiveData.postValue(placaVehiculoActual);
+                capacidadVehiculoLiveData.postValue(conductor.getCapacidadVehiculo());
                 horariosAsignadosLiveData.postValue(horariosAsignadosActual);
                 conductorLiveData.postValue(conductor);
 

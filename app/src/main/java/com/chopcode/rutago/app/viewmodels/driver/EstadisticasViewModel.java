@@ -43,8 +43,8 @@ public class EstadisticasViewModel extends BaseViewModel {
 
     private static final String TAG = "EstadisticasViewModel";
 
-    // CONSTANTES DE CAPACIDAD
-    private static final int MAX_ASIENTOS_POR_RUTA = 13;
+    // CAPACIDAD POR DEFECTO (Se actualiza dinámicamente)
+    private int capacidadPorRuta = 13;
 
     // =========================================================================
     // CONSTANTES Y VARIABLES DE INSTANCIA
@@ -126,11 +126,11 @@ public class EstadisticasViewModel extends BaseViewModel {
         // INICIALIZAR TODOS LOS LiveData
         nombreRuta1LiveData.setValue("Nataga → La Plata");
         reservasRuta1LiveData.setValue(0);
-        asientosRuta1LiveData.setValue(MAX_ASIENTOS_POR_RUTA); // 13 asientos disponibles
+        asientosRuta1LiveData.setValue(capacidadPorRuta); // 13 asientos disponibles (por defecto)
 
         nombreRuta2LiveData.setValue("La Plata → Nataga");
         reservasRuta2LiveData.setValue(0);
-        asientosRuta2LiveData.setValue(MAX_ASIENTOS_POR_RUTA); // 13 asientos disponibles
+        asientosRuta2LiveData.setValue(capacidadPorRuta); // 13 asientos disponibles (por defecto)
     }
 
     // =========================================================================
@@ -153,6 +153,21 @@ public class EstadisticasViewModel extends BaseViewModel {
     public void setHorariosAsignados(List<String> horarios) {
         this.horariosAsignados = horarios;
         Log.d(TAG, "🕐 Horarios asignados para estadísticas: " + (horarios != null ? horarios.size() : 0));
+    }
+
+    /**
+     * Establece la capacidad real del vehículo.
+     */
+    public void setCapacidadVehiculo(int capacidad) {
+        if (capacidad > 0) {
+            this.capacidadPorRuta = capacidad;
+            Log.d(TAG, "🚌 Capacidad del vehículo establecida: " + capacidad);
+            
+            // Si ya tenemos datos de rutas, refrescar para actualizar asientos disponibles
+            if (conductorActual != null && !conductorActual.isEmpty()) {
+                calculateRouteStatistics();
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -263,7 +278,7 @@ public class EstadisticasViewModel extends BaseViewModel {
      * @see DriverReservationService#obtenerEstadisticasCompletas
      */
     private void loadDriverStatisticsFromFirebase() {
-        Log.d(TAG, "🚀 Cargando estadísticas COMPLETAS (solo hoy) desde Firebase (1 consulta) para: " + conductorActual);
+        Log.d(TAG, "🚀 Cargando estadísticas para: " + conductorActual + " | Horarios: " + (horariosAsignados != null ? horariosAsignados.size() : "N/A"));
         setLoading(true);
 
         driverReservationService.obtenerEstadisticasCompletas(conductorActual, horariosAsignados,
@@ -272,12 +287,7 @@ public class EstadisticasViewModel extends BaseViewModel {
                     public void onCompleteStatsLoaded(
                             DriverReservationService.CompleteDriverStats stats) {
 
-                        Log.d(TAG, "✅ Todas las reservas cargadas (1 consulta):");
-                        Log.d(TAG, "   - Total reservas históricas: " + stats.totalReservas);
-                        Log.d(TAG, "   - Confirmadas históricas: " + stats.reservasConfirmadas +
-                                " (lista: " + stats.reservasConfirmadasList.size() + ")");
-                        Log.d(TAG, "   - Pendientes históricas: " + stats.reservasPendientes +
-                                " (lista: " + stats.reservasPendientesList.size() + ")");
+                        Log.d(TAG, "✅ " + stats.todasLasReservas.size() + " reservas totales encontradas en Firebase para este conductor");
 
                         // 🔥 FILTRAR SOLO RESERVAS DEL DÍA ACTUAL
                         List<Reserva> reservasConfirmadasHoy = filtrarReservasDelDia(stats.reservasConfirmadasList);
@@ -319,9 +329,9 @@ public class EstadisticasViewModel extends BaseViewModel {
                                     });
                         }
 
-                        // 2. Calcular asientos disponibles HOY (Dinámico según rutas asignadas)
-                        int numRutas = (horariosAsignados != null) ? horariosAsignados.size() : 2;
-                        int capacidadTotalConductor = numRutas * MAX_ASIENTOS_POR_RUTA;
+        // 2. Calcular asientos disponibles HOY (Dinámico según rutas asignadas y capacidad real)
+                        int numRutas = (horariosAsignados != null && !horariosAsignados.isEmpty()) ? horariosAsignados.size() : 2;
+                        int capacidadTotalConductor = numRutas * capacidadPorRuta;
                         
                         int asientosOcupadosHoy = reservasConfirmadasHoyCount + reservasPendientesHoyCount;
                         int asientosDisponiblesHoy = Math.max(0, capacidadTotalConductor - asientosOcupadosHoy);
@@ -366,8 +376,9 @@ public class EstadisticasViewModel extends BaseViewModel {
         long hoyMedianoche = obtenerTimestampMedianocheActual();
         long mananaMedianoche = hoyMedianoche + (24 * 60 * 60 * 1000); // 24 horas después
 
-        Log.d(TAG, "⏰ Filtro de fecha - Hoy: " + hoyMedianoche +
-                " (" + new java.util.Date(hoyMedianoche) + ")");
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault());
+        Log.d(TAG, "⏰ Rango de filtro hoy: " + sdf.format(new java.util.Date(hoyMedianoche)) + 
+                   " hasta " + sdf.format(new java.util.Date(mananaMedianoche)));
 
         for (Reserva reserva : reservas) {
             long fechaReserva = reserva.getFechaReserva();
@@ -375,13 +386,15 @@ public class EstadisticasViewModel extends BaseViewModel {
             // Verificar si la reserva está en el rango de hoy
             if (fechaReserva >= hoyMedianoche && fechaReserva < mananaMedianoche) {
                 reservasDelDia.add(reserva);
-                Log.v(TAG, "   ✓ Reserva del día: " + reserva.getIdReserva() +
-                        " - Fecha: " + new java.util.Date(fechaReserva));
+                Log.d(TAG, "   ✅ Incluida reserva: " + reserva.getIdReserva() + 
+                           " | Pasajero: " + reserva.getNombre() + 
+                           " | Fecha: " + sdf.format(new java.util.Date(fechaReserva)));
+            } else {
+                Log.v(TAG, "   ❌ Excluida (fuera de rango): " + reserva.getIdReserva() + " - " + sdf.format(new java.util.Date(fechaReserva)));
             }
         }
 
-        Log.d(TAG, "📅 Filtrado completado: " + reservasDelDia.size() +
-                " de " + reservas.size() + " reservas son de hoy");
+        Log.d(TAG, "📅 Filtrado completado: " + reservasDelDia.size() + " de " + reservas.size() + " reservas son de hoy");
 
         return reservasDelDia;
     }
@@ -440,8 +453,9 @@ public class EstadisticasViewModel extends BaseViewModel {
     private void processReservationsForDetailedStatsOptimized(List<Reserva> reservasConfirmadas,
                                                               List<Reserva> reservasPendientes) {
 
-        Log.d(TAG, "📊 Procesando " + reservasConfirmadas.size() + " confirmadas y " +
-                reservasPendientes.size() + " pendientes para análisis por ruta");
+        Log.d(TAG, "📊 Analizando desglose por ruta para " + 
+                   reservasConfirmadas.size() + " confirmadas y " +
+                   reservasPendientes.size() + " pendientes");
 
         // Agrupar reservas por ruta/origen-destino
         Map<String, Integer> reservasPorRuta = new HashMap<>();
@@ -450,8 +464,10 @@ public class EstadisticasViewModel extends BaseViewModel {
 
         // Procesar reservas CONFIRMADAS
         for (Reserva reserva : reservasConfirmadas) {
-            String rutaKey = reserva.getOrigen() + "|" + reserva.getDestino();
-            String nombreRuta = reserva.getOrigen() + " → " + reserva.getDestino();
+            String origen = (reserva.getOrigen() != null) ? reserva.getOrigen() : "N/A";
+            String destino = (reserva.getDestino() != null) ? reserva.getDestino() : "N/A";
+            String rutaKey = origen + "|" + destino;
+            String nombreRuta = origen + " → " + destino;
 
             if (!nombresRutas.containsKey(rutaKey)) {
                 nombresRutas.put(rutaKey, nombreRuta);
@@ -470,8 +486,10 @@ public class EstadisticasViewModel extends BaseViewModel {
 
         // Procesar reservas PENDIENTES (solo para asientos ocupados)
         for (Reserva reserva : reservasPendientes) {
-            String rutaKey = reserva.getOrigen() + "|" + reserva.getDestino();
-            String nombreRuta = reserva.getOrigen() + " → " + reserva.getDestino();
+            String origen = (reserva.getOrigen() != null) ? reserva.getOrigen() : "N/A";
+            String destino = (reserva.getDestino() != null) ? reserva.getDestino() : "N/A";
+            String rutaKey = origen + "|" + destino;
+            String nombreRuta = origen + " → " + destino;
 
             if (!nombresRutas.containsKey(rutaKey)) {
                 nombresRutas.put(rutaKey, nombreRuta);
@@ -484,13 +502,9 @@ public class EstadisticasViewModel extends BaseViewModel {
             asientosOcupadosPorRuta.put(rutaKey, ocupados + 1);
         }
 
-        Log.d(TAG, "📊 Análisis detallado completado:");
-        Log.d(TAG, "   - Rutas diferentes encontradas: " + nombresRutas.size());
-        for (Map.Entry<String, String> entry : nombresRutas.entrySet()) {
-            String rutaKey = entry.getKey();
-            Log.d(TAG, "   - Ruta: " + entry.getValue() +
-                    " - Confirmadas: " + reservasPorRuta.getOrDefault(rutaKey, 0) +
-                    " - Ocupados: " + asientosOcupadosPorRuta.getOrDefault(rutaKey, 0));
+        Log.d(TAG, "📊 Conteo por ruta completado. Rutas detectadas: " + nombresRutas.size());
+        for (String key : nombresRutas.keySet()) {
+            Log.d(TAG, "   📍 Ruta: " + nombresRutas.get(key) + " | Confirmadas: " + reservasPorRuta.get(key));
         }
 
         // Procesar estadísticas por ruta
@@ -535,7 +549,7 @@ public class EstadisticasViewModel extends BaseViewModel {
             String rutaId = entry.getKey();
             int reservasEnRuta = entry.getValue();
             int asientosOcupadosEnRuta = asientosOcupadosPorRuta.getOrDefault(rutaId, 0);
-            int asientosDisponiblesEnRuta = Math.max(0, MAX_ASIENTOS_POR_RUTA - asientosOcupadosEnRuta);
+            int asientosDisponiblesEnRuta = Math.max(0, capacidadPorRuta - asientosOcupadosEnRuta);
             String nombreRuta = nombresRutas.get(rutaId);
 
             if (nombreRuta == null) {
@@ -581,14 +595,14 @@ public class EstadisticasViewModel extends BaseViewModel {
             Log.d(TAG, "   ℹ️ No se encontró Ruta 1, estableciendo valores por defecto");
             nombreRuta1LiveData.postValue("Nataga → La Plata");
             reservasRuta1LiveData.postValue(0);
-            asientosRuta1LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
+            asientosRuta1LiveData.postValue(capacidadPorRuta);
         }
 
         if (!encontradaRuta2) {
             Log.d(TAG, "   ℹ️ No se encontró Ruta 2, estableciendo valores por defecto");
             nombreRuta2LiveData.postValue("La Plata → Nataga");
             reservasRuta2LiveData.postValue(0);
-            asientosRuta2LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
+            asientosRuta2LiveData.postValue(capacidadPorRuta);
         }
     }
 
@@ -600,10 +614,10 @@ public class EstadisticasViewModel extends BaseViewModel {
         Log.d(TAG, "⚙️ Estableciendo valores por defecto para rutas");
         nombreRuta1LiveData.postValue("N/A → N/A");
         reservasRuta1LiveData.postValue(0);
-        asientosRuta1LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
+        asientosRuta1LiveData.postValue(capacidadPorRuta);
         nombreRuta2LiveData.postValue("N/A → N/A");
         reservasRuta2LiveData.postValue(0);
-        asientosRuta2LiveData.postValue(MAX_ASIENTOS_POR_RUTA);
+        asientosRuta2LiveData.postValue(capacidadPorRuta);
     }
 
     // =========================================================================

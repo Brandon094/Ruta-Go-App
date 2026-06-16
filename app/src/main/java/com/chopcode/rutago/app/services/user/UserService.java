@@ -4,6 +4,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Horario;
 import com.chopcode.rutago.app.models.Ruta;
 import com.chopcode.rutago.app.models.Usuario;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -203,24 +204,20 @@ public class UserService {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    // Extraer datos del conductor del snapshot de forma segura
                     com.chopcode.rutago.app.models.Conductor conductor = snapshot.getValue(com.chopcode.rutago.app.models.Conductor.class);
                     if (conductor != null) {
                         conductor.setId(userId);
                         
-                        // ✅ FALLBACK: Si el nombre está vacío o es genérico, buscar en el nodo de usuarios
-                        if (conductor.getNombre() == null || conductor.getNombre().isEmpty() || 
-                            conductor.getNombre().equalsIgnoreCase("No disponible") || 
-                            conductor.getNombre().contains("Conductor ")) {
-                            buscarNombreEnUsuarios(userId, conductor, callback);
+                        // Si tiene un vehículo asignado, buscar su capacidad real
+                        if (conductor.getVehiculoId() != null && !conductor.getVehiculoId().isEmpty()) {
+                            buscarCapacidadVehiculo(conductor, callback);
                         } else {
-                            callback.onDriverDataLoaded(conductor);
+                            procesarCargaConductor(userId, conductor, callback);
                         }
                     } else {
                         callback.onError("Error al parsear datos del conductor");
                     }
                 } else {
-                    // Si no existe en conductores, intentar en usuarios por si acaso
                     buscarNombreEnUsuarios(userId, new com.chopcode.rutago.app.models.Conductor(), callback);
                 }
             }
@@ -230,6 +227,39 @@ public class UserService {
                 callback.onError(error.getMessage());
             }
         });
+    }
+
+    private void buscarCapacidadVehiculo(com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
+        DatabaseReference vehiculoRef = MyApp.getDatabaseReference("vehiculos/" + conductor.getVehiculoId());
+        vehiculoRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer capacidad = snapshot.child("capacidad").getValue(Integer.class);
+                    if (capacidad != null && capacidad > 0) {
+                        conductor.setCapacidadVehiculo(capacidad);
+                        Log.d("UserService", "🚌 Capacidad real encontrada para " + conductor.getVehiculoId() + ": " + capacidad);
+                    }
+                }
+                procesarCargaConductor(conductor.getId(), conductor, callback);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                procesarCargaConductor(conductor.getId(), conductor, callback);
+            }
+        });
+    }
+
+    private void procesarCargaConductor(String userId, com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {
+        // Lógica de fallback de nombre que ya tenías
+        if (conductor.getNombre() == null || conductor.getNombre().isEmpty() || 
+            conductor.getNombre().equalsIgnoreCase("No disponible") || 
+            conductor.getNombre().contains("Conductor ")) {
+            buscarNombreEnUsuarios(userId, conductor, callback);
+        } else {
+            callback.onDriverDataLoaded(conductor);
+        }
     }
 
     private void buscarNombreEnUsuarios(String userId, com.chopcode.rutago.app.models.Conductor conductor, DriverDataCallback callback) {

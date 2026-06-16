@@ -1,12 +1,10 @@
-package com.chopcode.rutago.app.activities.driver;
+package com.chopcode.rutago.app.activities.driver.manager;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.chopcode.rutago.app.R;
@@ -14,7 +12,6 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
 import com.chopcode.rutago.app.managers.seats.SeatManager;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
-import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.models.Reserva;
 import com.chopcode.rutago.app.services.reservations.ReservaService;
 import com.google.android.material.appbar.MaterialToolbar;

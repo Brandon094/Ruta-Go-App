@@ -41,6 +41,14 @@ public class DriverReservationService {
         void onError(String error);
     }
 
+    /**
+     * Listener para actualizaciones en tiempo real de estadísticas
+     */
+    public interface RealTimeStatsListener {
+        void onStatsUpdated(CompleteDriverStats stats);
+        void onError(String error);
+    }
+
     public interface FrequentCustomersCallback {
         void onCustomersLoaded(List<Map<String, Object>> clientes);
         void onError(String error);
@@ -137,6 +145,80 @@ public class DriverReservationService {
                 callback.onError(error.getMessage());
             }
         });
+    }
+
+    /**
+     * Escucha las estadísticas completas en tiempo real
+     */
+    public ValueEventListener escucharEstadisticasCompletas(String conductorUID, @Nullable List<String> schedules, RealTimeStatsListener listener) {
+        DatabaseReference reservasRef = MyApp.getDatabaseReference("reservas");
+        
+        ValueEventListener valueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                CompleteDriverStats stats = new CompleteDriverStats();
+                List<Reserva> todas = new ArrayList<>();
+                
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Reserva reserva = dataSnapshot.getValue(Reserva.class);
+                    if (reserva != null) {
+                        reserva.setIdReserva(dataSnapshot.getKey());
+                        
+                        // Filtrado riguroso por Conductor
+                        String conductorIdReserva = reserva.getConductorId();
+                        if (conductorIdReserva == null) {
+                            conductorIdReserva = dataSnapshot.child("conductorId").getValue(String.class);
+                        }
+                        
+                        boolean esDelConductor = false;
+                        
+                        if (conductorIdReserva != null && !conductorIdReserva.isEmpty()) {
+                            // Si tiene ConductorId, debe coincidir exactamente
+                            esDelConductor = conductorUID.equals(conductorIdReserva);
+                        } else if (schedules != null) {
+                            // Fallback SOLO si no hay ConductorId: verificar si el horario le pertenece
+                            String hId = reserva.getHorarioId();
+                            if (hId == null) hId = dataSnapshot.child("horarioId").getValue(String.class);
+                            esDelConductor = hId != null && schedules.contains(hId);
+                            
+                            if (esDelConductor) {
+                                Log.d(TAG, "♻️ Vinculando reserva sin UID por HorarioId: " + reserva.getIdReserva());
+                            }
+                        }
+
+                        if (esDelConductor) {
+                            todas.add(reserva);
+                            String estado = reserva.getEstadoReserva();
+                            Double precio = reserva.getPrecio();
+                            
+                            stats.totalReservas++;
+                            if ("Confirmada".equalsIgnoreCase(estado)) {
+                                stats.reservasConfirmadas++;
+                                stats.ingresosTotales += (precio != null ? precio : 0.0);
+                                stats.reservasConfirmadasList.add(reserva);
+                            } else if ("Cancelada".equalsIgnoreCase(estado)) {
+                                stats.reservasCanceladas++;
+                                stats.reservasCanceladasList.add(reserva);
+                            } else if ("Por confirmar".equalsIgnoreCase(estado)) {
+                                stats.reservasPendientes++;
+                                stats.reservasPendientesList.add(reserva);
+                            }
+                        }
+                    }
+                }
+                stats.todasLasReservas = todas;
+                listener.onStatsUpdated(stats);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                listener.onError(error.getMessage());
+            }
+        };
+        
+        // Filtramos por conductorId para que la escucha sea eficiente
+        reservasRef.orderByChild("conductorId").equalTo(conductorUID).addValueEventListener(valueListener);
+        return valueListener;
     }
 
     /**
