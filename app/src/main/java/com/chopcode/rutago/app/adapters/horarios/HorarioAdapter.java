@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Horario;
-import com.chopcode.rutago.app.services.reservations.ReservaService;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ public class HorarioAdapter extends RecyclerView.Adapter<HorarioAdapter.ViewHold
     private static final String TAG = "HorarioAdapter";
     private List<Horario> horarios;
     private OnReservarClickListener listener;
-    private final ReservaService reservaService;
 
     // Interface para el click listener
     public interface OnReservarClickListener {
@@ -30,7 +29,6 @@ public class HorarioAdapter extends RecyclerView.Adapter<HorarioAdapter.ViewHold
     public HorarioAdapter(List<Horario> horarios, OnReservarClickListener listener) {
         this.horarios = (horarios != null) ? new ArrayList<>(horarios) : new ArrayList<>();
         this.listener = listener;
-        this.reservaService = new ReservaService();
         Log.d(TAG, "Adapter creado con " + this.horarios.size() + " horarios y listener: " +
                 (listener != null ? "presente" : "NULO"));
 
@@ -52,7 +50,7 @@ public class HorarioAdapter extends RecyclerView.Adapter<HorarioAdapter.ViewHold
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_horario, parent, false);
         Log.d(TAG, "View inflado exitosamente");
-        return new ViewHolder(view, reservaService);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -130,11 +128,9 @@ public class HorarioAdapter extends RecyclerView.Adapter<HorarioAdapter.ViewHold
         private static final String TAG = "HorarioViewHolder";
         public TextView tvHora, tvAmPm, tvRuta, tvAsientos, tvPrecio;
         public FloatingActionButton btnReservar;
-        private final ReservaService reservaService;
 
-        public ViewHolder(@NonNull View itemView, ReservaService reservaService) {
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.reservaService = reservaService;
             Log.d(TAG, "ViewHolder creado para posición: " + getAdapterPosition());
 
             tvHora = itemView.findViewById(R.id.tvHora);
@@ -164,63 +160,41 @@ public class HorarioAdapter extends RecyclerView.Adapter<HorarioAdapter.ViewHold
                     ", Hora: " + horario.getHora() + ", Ruta: " + horario.getRuta());
 
             try {
-                // Formato esperado: "06:00 AM" o "06:00 PM"
-                String[] horaParts = separarHoraYAmPm(horario.getHora());
+                // Usar utilidades centralizadas para el formato
+                String[] horaParts = FormatUtils.separarHoraYAmPm(horario.getHora());
                 if (tvHora != null) {
-                    tvHora.setText(horaParts[0]); // "06:00"
-                    Log.v(TAG, "Hora establecida: " + horaParts[0]);
+                    tvHora.setText(horaParts[0]); 
                 }
                 if (tvAmPm != null) {
-                    tvAmPm.setText(horaParts[1]); // "AM" o "PM"
-                    Log.v(TAG, "AM/PM establecido: " + horaParts[1]);
+                    tvAmPm.setText(horaParts[1]);
                 }
 
                 // Ruta
                 String ruta = horario.getRuta() != null ? horario.getRuta() : "Ruta no disponible";
                 if (tvRuta != null) {
                     tvRuta.setText(ruta);
-                    Log.v(TAG, "Ruta establecida: " + ruta);
                 }
 
-                // Asientos disponibles - Carga en tiempo real
-                if (horario.getId() != null) {
-                    if (tvAsientos != null) tvAsientos.setText("...");
-                    reservaService.obtenerAsientosOcupados(horario.getId(), new ReservaService.AsientosCallback() {
-                        @Override
-                        public void onAsientosObtenidos(int[] asientosOcupados) {
-                            // Capacidad por defecto de 13 si no está definida
-                            int capacidadTotal = horario.getCapacidadTotal() > 0 ? horario.getCapacidadTotal() : 13;
-                            int disponibles = capacidadTotal - asientosOcupados.length;
-
-                            // Actualizar el modelo
-                            horario.setAsientosDisponibles(disponibles);
-
-                            String textoAsientos = disponibles + " asientos disponibles";
-                            if (tvAsientos != null) {
-                                tvAsientos.setText(textoAsientos);
-                                actualizarColoresSegunDisponibilidad(disponibles);
-                            }
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.e(TAG, "Error cargando asientos para " + horario.getId() + ": " + error);
-                            if (tvAsientos != null) tvAsientos.setText("Error");
-                        }
-                    });
+                // Asientos disponibles - AHORA REACTIVOS desde el modelo
+                int disponibles = horario.getAsientosDisponibles();
+                if (disponibles <= 0 && horario.getCapacidadTotal() <= 0) {
+                    disponibles = 13; // Fallback inicial
+                }
+                
+                String textoAsientos = disponibles + " asientos disponibles";
+                if (tvAsientos != null) {
+                    tvAsientos.setText(textoAsientos);
+                    actualizarColoresSegunDisponibilidad(disponibles);
                 }
 
-                // Precio
-                String precio = horario.getPrecio() != null ?
-                        formatearPrecio(horario.getPrecio()) : "$12.000";
+                // Precio usando utilidades centralizadas
+                String precio = FormatUtils.formatearPrecio(horario.getPrecio());
                 if (tvPrecio != null) {
                     tvPrecio.setText(precio);
-                    Log.v(TAG, "Precio establecido: " + precio);
                 }
 
                 // Cambiar colores según disponibilidad usando el valor actual del modelo
-                actualizarColoresSegunDisponibilidad(horario.getAsientosDisponibles() > 0 ? 
-                        horario.getAsientosDisponibles() : 13);
+                actualizarColoresSegunDisponibilidad(disponibles);
 
                 // Configurar el click listener SOLO en el botón
                 if (btnReservar != null) {

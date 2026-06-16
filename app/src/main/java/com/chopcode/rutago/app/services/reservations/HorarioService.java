@@ -21,8 +21,40 @@ public class HorarioService {
         void onError(String error);
     }
 
+    public interface AsientosGlobalCallback {
+        void onAsientosActualizados(java.util.Map<String, Integer> disponibilidades);
+    }
+
     public HorarioService() {
         this.databaseReference = MyApp.getDatabaseReference("horarios");
+    }
+
+    /**
+     * Escucha cambios en la disponibilidad de asientos de forma global
+     */
+    public ValueEventListener escucharDisponibilidadGlobal(AsientosGlobalCallback callback) {
+        DatabaseReference dispRef = MyApp.getDatabaseReference("disponibilidadAsientos");
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                java.util.Map<String, Integer> mapa = new java.util.HashMap<>();
+                for (DataSnapshot hSnap : snapshot.getChildren()) {
+                    String hId = hSnap.getKey();
+                    Integer disponibles = hSnap.child("asientosDisponibles").getValue(Integer.class);
+                    if (hId != null && disponibles != null) {
+                        mapa.put(hId, disponibles);
+                    }
+                }
+                callback.onAsientosActualizados(mapa);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "❌ Error escuchando disponibilidad global: " + error.getMessage());
+            }
+        };
+        dispRef.addValueEventListener(listener);
+        return listener;
     }
 
     /**

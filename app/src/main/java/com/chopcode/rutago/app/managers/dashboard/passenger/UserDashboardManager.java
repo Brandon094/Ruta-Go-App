@@ -26,6 +26,8 @@ public class UserDashboardManager {
     // Database Reference para listeners en tiempo real
     private DatabaseReference reservasRef;
     private ValueEventListener reservasListener;
+    private DatabaseReference userProfileRef;
+    private ValueEventListener userProfileListener;
 
     // Callbacks
     public interface DashboardListener {
@@ -78,7 +80,7 @@ public class UserDashboardManager {
     }
 
     public void loadUserData() {
-        Log.d(TAG, "🔍 Cargando datos del usuario...");
+        Log.d(TAG, "🔍 Iniciando carga reactiva de datos del usuario...");
         analyticsHelper.logScreenLoad();
 
         String userId = MyApp.getCurrentUserId();
@@ -89,38 +91,55 @@ public class UserDashboardManager {
             return;
         }
 
-        userService.loadUserData(userId, new UserService.UserDataCallback() {
+        // Configurar listener en tiempo real para el perfil del usuario
+        setupRealTimeProfile(userId);
+        
+        // Configurar listener en tiempo real para contadores
+        setupRealTimeCounters(userId);
+    }
+
+    private void setupRealTimeProfile(String userId) {
+        Log.d(TAG, "👤 Configurando perfil en tiempo real para: " + userId);
+        
+        if (userProfileRef != null && userProfileListener != null) {
+            userProfileRef.removeEventListener(userProfileListener);
+        }
+
+        userProfileRef = MyApp.getDatabaseReference("usuarios/" + userId);
+        userProfileListener = new ValueEventListener() {
             @Override
-            public void onUserDataLoaded(Usuario usuario) {
-                Log.d(TAG, "✅ Datos de usuario cargados exitosamente");
-                usuarioActual = usuario;
-                saveUserToCache(usuario); // Guardar en caché para la próxima vez
-                analyticsHelper.logUserLoaded(usuario);
-
-                if (listener != null) {
-                    listener.onUserDataLoaded(usuario);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    try {
+                        Usuario usuario = new Usuario();
+                        usuario.setId(userId);
+                        usuario.setNombre(String.valueOf(snapshot.child("nombre").getValue()));
+                        usuario.setEmail(String.valueOf(snapshot.child("email").getValue()));
+                        usuario.setPhotoUrl(snapshot.hasChild("photoUrl") ? 
+                                String.valueOf(snapshot.child("photoUrl").getValue()) : null);
+                        usuario.setTelefono(snapshot.hasChild("telefono") ? 
+                                String.valueOf(snapshot.child("telefono").getValue()) : "");
+                        
+                        usuarioActual = usuario;
+                        saveUserToCache(usuario);
+                        Log.d(TAG, "✅ Perfil actualizado en tiempo real: " + usuario.getNombre());
+                        
+                        if (listener != null) {
+                            listener.onUserDataLoaded(usuario);
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "❌ Error procesando datos de perfil: " + e.getMessage());
+                    }
                 }
-
-                // Configurar listener en tiempo real para contadores
-                setupRealTimeCounters(userId);
             }
 
             @Override
-            public void onError(String error) {
-                Log.e(TAG, "❌ Error cargando datos de usuario: " + error);
-                analyticsHelper.logError("carga_usuario", error);
-
-                if (listener != null) {
-                    listener.onUserDataError(error);
-                }
-
-                // Intentar configurar contadores incluso si falla la carga del usuario
-                String currentUserId = MyApp.getCurrentUserId();
-                if (currentUserId != null) {
-                    setupRealTimeCounters(currentUserId);
-                }
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "❌ Error en listener de perfil: " + error.getMessage());
             }
-        });
+        };
+
+        userProfileRef.addValueEventListener(userProfileListener);
     }
 
     private void setupRealTimeCounters(String userId) {
@@ -171,7 +190,11 @@ public class UserDashboardManager {
     private void removeRealTimeListeners() {
         if (reservasRef != null && reservasListener != null) {
             reservasRef.removeEventListener(reservasListener);
-            Log.d(TAG, "🗑️ Listener en tiempo real removido");
+            Log.d(TAG, "🗑️ Listener de reservas removido");
+        }
+        if (userProfileRef != null && userProfileListener != null) {
+            userProfileRef.removeEventListener(userProfileListener);
+            Log.d(TAG, "🗑️ Listener de perfil removido");
         }
     }
 

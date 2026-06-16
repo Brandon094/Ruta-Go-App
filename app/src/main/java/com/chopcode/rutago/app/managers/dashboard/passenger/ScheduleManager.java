@@ -19,6 +19,8 @@ public class ScheduleManager {
 
     private List<Horario> listaNataga = new ArrayList<>();
     private List<Horario> listaLaPlata = new ArrayList<>();
+    
+    private com.google.firebase.database.ValueEventListener availabilityListener;
 
     // Callbacks
     public interface ScheduleListener {
@@ -31,6 +33,32 @@ public class ScheduleManager {
     public ScheduleManager(DashboardAnalyticsHelper analyticsHelper) {
         this.analyticsHelper = analyticsHelper;
         this.horarioService = new HorarioService();
+        setupAvailabilityListener();
+    }
+
+    private void setupAvailabilityListener() {
+        availabilityListener = horarioService.escucharDisponibilidadGlobal(disponibilidades -> {
+            Log.d(TAG, "📡 Actualización global de disponibilidad recibida");
+            actualizarDisponibilidadEnListas(disponibilidades);
+            if (listener != null && !listaNataga.isEmpty()) {
+                listener.onSchedulesLoaded(new ArrayList<>(listaNataga), new ArrayList<>(listaLaPlata));
+            }
+        });
+    }
+
+    private void actualizarDisponibilidadEnListas(java.util.Map<String, Integer> disponibilidades) {
+        for (Horario h : listaNataga) {
+            Integer disp = disponibilidades.get(h.getId());
+            if (disp != null) {
+                h.setAsientosDisponibles(disp);
+            }
+        }
+        for (Horario h : listaLaPlata) {
+            Integer disp = disponibilidades.get(h.getId());
+            if (disp != null) {
+                h.setAsientosDisponibles(disp);
+            }
+        }
     }
 
     public void setScheduleListener(ScheduleListener listener) {
@@ -67,6 +95,12 @@ public class ScheduleManager {
                 }
             }
         });
+    }
+
+    public void cleanup() {
+        if (availabilityListener != null) {
+            MyApp.getDatabaseReference("disponibilidadAsientos").removeEventListener(availabilityListener);
+        }
     }
 
     public List<Horario> getNatagaSchedules() {
