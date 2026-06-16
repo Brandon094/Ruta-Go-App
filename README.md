@@ -21,7 +21,7 @@ Esta versión reducida permite a los usuarios:
 
 ## 📌 Modelos Principales
 
-- **👤 Usuario (Pasajero y Conductor):**
+- **👤 User (Pasajero y Conductor):**
   - Representa la información de los usuarios, con dos roles:
     - **🚶 Pasajero**
     - **👨‍✈️ Conductor**
@@ -48,7 +48,7 @@ Transporte-Nataga---La-Plata/
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/chopcode/transportenataga_laplata/
-│   │   │   │   ├── models/         # 📌 Modelos: Usuario, Pasajero, Conductor, Ruta, Horario, Reserva, DisponibilidadAsientos, Vehiculo
+│   │   │   │   ├── models/         # 📌 Modelos: User, Pasajero, Conductor, Ruta, Horario, Reserva, DisponibilidadAsientos, Vehiculo
 │   │   │   │   ├── activities/     # 🎨 Interfaces gráficas y actividades
 │   │   │   │   ├── services/       # 🔧 Lógica de negocio y servicios
 │   │   │   └── res/                # 🖼️ Recursos (layouts, imágenes, etc.)

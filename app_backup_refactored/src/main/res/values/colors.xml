@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ==================== -->
+    <!-- COLORES BASE ECOSISTEMA SERVICARGA (DARK THEME) -->
+    <!-- ==================== -->
+    <color name="helper_gray">#99FFFFFF</color>
+
+    <color name="snackbar_primary">@color/secondary_500</color>
+
+    <!-- NARANJA PRINCIPAL (Accent ServiCarga) -->
+    <color name="primary_50">#FFF3E0</color>
+    <color name="primary_100">#FFE0B2</color>
+    <color name="primary_200">#FFCC80</color>
+    <color name="primary_300">#FFB74D</color>
+    <color name="primary_400">#FFA726</color>
+    <color name="primary_500">#FF7A1A</color>  <!-- Naranja ServiCarga -->
+    <color name="primary_600">#F57C00</color>
+    <color name="primary_700">#E65100</color>
+    <color name="primary_800">#BF360C</color>
+    <color name="primary_900">#8D3A00</color>
+
+    <!-- NAVY SECUNDARIO (Background Principal ServiCarga) -->
+    <color name="secondary_50">#E1E8EB</color>
+    <color name="secondary_100">#B5C5CD</color>
+    <color name="secondary_200">#839FAD</color>
+    <color name="secondary_300">#51798D</color>
+    <color name="secondary_400">#2C5C76</color>
+    <color name="secondary_500">#0B2B3F</color>  <!-- Navy Intermedio -->
+    <color name="secondary_600">#0A2639</color>
+    <color name="secondary_700">#081F31</color>
+    <color name="secondary_800">#061929</color>  <!-- Navy Oscuro para Cards -->
+    <color name="secondary_900">#061426</color>  <!-- Navy Fondo de Pantalla -->
+
+    <!-- VERDE ÉXITO -->
+    <color name="success_50">#E8F5E9</color>
+    <color name="success_100">#C8E6C9</color>
+    <color name="success_600">#1B7E35</color>
+    <color name="success_700">#156A2E</color>
+    <color name="success_500">#1F8F3C</color>
+
+    <!-- AMARILLO ADVERTENCIA -->
+    <color name="warning_50">#FFF9E6</color>
+    <color name="warning_100">#FFEFBF</color>
+    <color name="warning_600">#D9860A</color>
+    <color name="warning_700">#B36D08</color>
+    <color name="warning_500">#F59E0B</color>
+
+    <!-- ROJO ERROR -->
+    <color name="error_50">#FFEBEE</color>
+    <color name="error_100">#FFCDD2</color>
+    <color name="error_300">#E57373</color>
+    <color name="error_500">#EF4444</color>
+
+    <!-- AZUL INFORMACIÓN -->
+    <color name="info_50">#E3F2FD</color>
+    <color name="info_100">#BBDEFB</color>
+    <color name="info_600">#2563EB</color>
+    <color name="info_700">#1D4ED8</color>
+    <color name="info_500">#3B82F6</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- ==================== -->
+    <!-- ASIGNACIÓN DE SUPERFICIES (ESTILO SERVICARGA) -->
+    <!-- ==================== -->
+    <color name="background">@color/secondary_900</color> <!-- Fondo Navy Muy Oscuro -->
+    <color name="surface">@color/secondary_800</color>    <!-- Superficie Navy Oscuro -->
+    <color name="surface_variant">@color/secondary_700</color>
+    <color name="surface_1">@color/secondary_800</color>
+    <color name="surface_2">@color/secondary_700</color>
+    <color name="surface_3">@color/secondary_600</color>
+
+    <!-- NEUTRALES -->
+    <color name="neutral_300">#E0E0E0</color>
+    <color name="neutral_500">#9E9E9E</color>
+    <color name="neutral_700">#616161</color>
+
+    <!-- TEXTOS PARA TEMA OSCURO -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="primary_text">#FFFFFF</color>
+    <color name="text_secondary">#B5C5CD</color> <!-- Navy claro -->
+    <color name="secondary_text">#B5C5CD</color>
+    <color name="text_tertiary">#839FAD</color>
+    <color name="text_disabled">#51798D</color>
+    <color name="text_on_primary">@color/secondary_900</color>
+    <color name="text_on_secondary">#FFFFFF</color>
+    <color name="text_on_success">#FFFFFF</color>
+    <color name="text_on_warning">#212121</color>
+    <color name="text_on_error">#FFFFFF</color>
+
+    <color name="divider">#1AFFFFFF</color>
+    <color name="outline">#33FFFFFF</color>
+    <color name="overlay">#CC000000</color>
+    <color name="shadow">#66000000</color>
+
+    <!-- Efectos de ripple -->
+    <color name="ripple_color">#33FFFFFF</color>
+    <color name="ripple_primary">#33FF7A1A</color>
+    <color name="ripple_success">#331F8F3C</color>
+
+    <!-- Chips -->
+    <color name="chip_background">@color/secondary_700</color>
+    <color name="chip_background_selected">@color/primary_500</color>
+    <color name="chip_text">#FFFFFF</color>
+    <color name="chip_text_selected">#FFFFFF</color>
+
+    <!-- Dark Chips (Fallback) -->
+    <color name="dark_chip_background">@color/secondary_600</color>
+
+    <!-- ==================== -->
+    <!-- ESTADOS DE COMPONENTES -->
+    <!-- ==================== -->
+    <color name="seat_available">@color/success_500</color>
+    <color name="seat_selected">@color/primary_500</color>
+    <color name="seat_booked">@color/secondary_400</color>
+    <color name="seat_disabled">@color/secondary_700</color>
+
+    <color name="status_confirmed">@color/success_500</color>
+    <color name="status_pending">@color/warning_500</color>
+    <color name="status_cancelled">@color/error_500</color>
+
+    <!-- Variantes claras para contraste en fondos oscuros (baja opacidad) -->
+    <color name="status_confirmed_light">#261F8F3C</color>
+    <color name="status_pending_light">#26F59E0B</color>
+    <color name="status_cancelled_light">#26EF4444</color>
+    <color name="success_light">#261F8F3C</color>
+
+    <!-- ==================== -->
+    <!-- ALIAS PARA CONSISTENCIA -->
+    <!-- ==================== -->
+    <color name="primary_color">@color/primary_500</color>
+    <color name="secondary_color">@color/secondary_500</color>
+    <color name="success_color">@color/success_500</color>
+    <color name="warning_color">@color/warning_500</color>
+    <color name="error_color">@color/error_500</color>
+    <color name="info_color">@color/primary_400</color>
+
+    <color name="background_color">@color/background</color>
+    <color name="card_background">@color/surface</color>
+
+    <color name="success">@color/success_500</color>
+    <color name="warning">@color/warning_500</color>
+    <color name="info">@color/primary_400</color>
+    <color name="error">@color/error_500</color>
+    <!-- Brand Colors -->
+    <color name="rutago_blue_dark">#0D1B2A</color>  <!-- Fondo principal -->
+    <color name="rutago_orange">#FF7D00</color>     <!-- Color de acción -->
+    <color name="rutago_white">#FFFFFF</color>
+    
+    <!-- Functional Colors (Material Design) -->
+    <color name="colorPrimary">@color/rutago_blue_dark</color>
+    <color name="colorSecondary">@color/rutago_orange</color>
+
+    
+    <!-- UI Elements -->
+    <!-- <color name="background">@color/rutago_blue_dark</color> -->
+
+    <!-- <color name="surface">#1B263B</color> -->
+ <!-- Azul ligeramente más claro para tarjetas -->
+    <!-- <color name="text_primary">@color/rutago_white</color> -->
+
+    <!-- <color name="text_secondary">#A0A0A0</color> -->
+
+    
+    <!-- Status Colors -->
+    <!-- <color name="success">#4CAF50</color> -->
+
+    <!-- <color name="error">#E53935</color> -->
+
+    <!-- <color name="warning">#FFB300</color> -->
+</resources>
