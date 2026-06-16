@@ -98,11 +98,24 @@ public class UserService {
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     Driver driver = snapshot.getValue(Driver.class);
-                    if (driver != null) {
-                        driver.setId(userId);
-                        if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) fetchVehicleCapacity(driver, callback);
-                        else processDriverLoad(userId, driver, callback);
-                    } else callback.onError("Error parsing driver data");
+                    if (driver == null) { callback.onError("Error parsing driver data"); return; }
+                    driver.setId(userId);
+                    
+                    // Asegurar horariosAsignados manualmente si el mapeo falló
+                    if (driver.getAssignedSchedules() == null) {
+                        List<String> schedules = new ArrayList<>();
+                        DataSnapshot hSnap = snapshot.child("horariosAsignados");
+                        if (hSnap.exists()) {
+                            for (DataSnapshot s : hSnap.getChildren()) {
+                                String val = String.valueOf(s.getValue());
+                                if (val != null && !val.equals("null")) schedules.add(val);
+                            }
+                        }
+                        driver.setAssignedSchedules(schedules);
+                    }
+
+                    if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) fetchVehicleCapacity(driver, callback);
+                    else processDriverLoad(userId, driver, callback);
                 } else fetchNameFromUsers(userId, new Driver(), callback);
             }
             @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
@@ -196,24 +209,41 @@ public class UserService {
     }
 
     public void loadAssignedRoutes(List<String> assignedSchedules, RoutesCallback callback) {
-        if (assignedSchedules.isEmpty()) { callback.onRoutesLoaded(new ArrayList<>()); return; }
+        if (assignedSchedules == null || assignedSchedules.isEmpty()) { 
+            callback.onRoutesLoaded(new ArrayList<>()); 
+            return; 
+        }
+        
         DatabaseReference ref = MyApp.getDatabaseReference("horarios");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 List<Route> routesList = new ArrayList<>();
+                if (!snapshot.exists()) {
+                    callback.onRoutesLoaded(routesList);
+                    return;
+                }
+
                 for (String scheduleId : assignedSchedules) {
+                    if (scheduleId == null) continue;
                     DataSnapshot hSnap = snapshot.child(scheduleId);
                     if (hSnap.exists()) {
-                        String time = hSnap.child("hora").getValue(String.class);
-                        String routeName = hSnap.child("ruta").getValue(String.class);
-                        if (time != null && routeName != null) {
+                        String time = getStringSafely(hSnap.child("hora"));
+                        if (time.isEmpty()) time = getStringSafely(hSnap.child("time"));
+                        
+                        String routeName = getStringSafely(hSnap.child("ruta"));
+                        if (routeName.isEmpty()) routeName = getStringSafely(hSnap.child("route"));
+                        
+                        if (!time.isEmpty() && !routeName.isEmpty()) {
                             Schedule schedule = new Schedule();
                             schedule.setId(scheduleId);
                             schedule.setTime(time);
                             schedule.setRoute(routeName);
-                            String origin = routeName.contains("Natagá") ? "Natagá" : "La Plata";
+                            
+                            String lowRoute = routeName.toLowerCase();
+                            String origin = lowRoute.contains("natag") ? "Natagá" : "La Plata";
                             String destination = origin.equals("Natagá") ? "La Plata" : "Natagá";
+                            
                             Route route = new Route(scheduleId, origin, destination, 12000);
                             route.setTime(schedule);
                             route.setScheduleId(scheduleId);
@@ -221,8 +251,10 @@ public class UserService {
                         }
                     }
                 }
+
                 Collections.sort(routesList, (r1, r2) -> {
-                    if (r1.getTime() != null && r2.getTime() != null) return r1.getTime().getTime().compareTo(r2.getTime().getTime());
+                    if (r1.getTime() != null && r2.getTime() != null && r1.getTime().getTime() != null && r2.getTime().getTime() != null) 
+                        return r1.getTime().getTime().compareTo(r2.getTime().getTime());
                     return 0;
                 });
                 callback.onRoutesLoaded(routesList);

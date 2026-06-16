@@ -65,6 +65,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         }
 
         public void bind(Route route) {
+            Log.d("RouteAdapter", "Binding route: " + route.getOrigin() + " to " + route.getDestination());
             tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : "N/A");
             tvDestination.setText(route.getDestination() != null ? route.getDestination() : "N/A");
             if (route.getTime() != null && route.getTime().getTime() != null) {

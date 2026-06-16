@@ -63,6 +63,9 @@ public class DriverProfileViewModel extends BaseViewModel {
         userService.loadDriverData(driverUID, new UserService.DriverDataCallback() {
             @Override
             public void onDriverDataLoaded(Driver driver) {
+                Log.d(TAG, "Driver data loaded: " + driver.getNombre());
+                Log.d(TAG, "Assigned schedules: " + (driver.getAssignedSchedules() != null ? driver.getAssignedSchedules().toString() : "NULL"));
+
                 driverNameLiveData.postValue(driver.getNombre());
                 vehiclePlateLiveData.postValue(driver.getVehiclePlate());
                 vehicleCapacityLiveData.postValue(driver.getVehicleCapacity());

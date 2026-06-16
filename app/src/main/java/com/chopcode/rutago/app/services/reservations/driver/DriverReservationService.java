@@ -88,13 +88,14 @@ public class DriverReservationService {
                         r.setIdReservation(ds.getKey());
                         String driverIdRes = getDriverId(ds, r, isUID);
                         String scheduleIdRes = getScheduleId(ds, r);
+                        
                         boolean isFromDriver = false;
-
-                        if (isUID && driverIdRes == null) {
-                            if (assignedSchedules != null && scheduleIdRes != null) {
-                                isFromDriver = assignedSchedules.contains(scheduleIdRes);
-                            }
-                        } else isFromDriver = driverIdentifier.equals(driverIdRes);
+                        if (isUID) {
+                            if (driverIdRes != null) isFromDriver = driverIdentifier.equals(driverIdRes);
+                            else if (assignedSchedules != null && scheduleIdRes != null) isFromDriver = assignedSchedules.contains(scheduleIdRes);
+                        } else {
+                            isFromDriver = driverIdentifier.equalsIgnoreCase(driverIdRes);
+                        }
 
                         boolean statusMatches = applyStatusFilter(r.getReservationStatus(), statusFilter);
                         boolean scheduleMatches = applyScheduleFilter(scheduleIdRes, assignedSchedules);
@@ -120,23 +121,20 @@ public class DriverReservationService {
                     Reservation r = ds.getValue(Reservation.class);
                     if (r != null) {
                         r.setIdReservation(ds.getKey());
-                        String dId = r.getDriverId();
-                        if (dId == null) dId = ds.child("conductorId").getValue(String.class);
-                        boolean isFromDriver = false;
-                        if (dId != null && !dId.isEmpty()) isFromDriver = driverUID.equals(dId);
-                        else if (schedules != null) {
-                            String hId = r.getScheduleId();
-                            if (hId == null) hId = ds.child("horarioId").getValue(String.class);
-                            isFromDriver = hId != null && schedules.contains(hId);
-                        }
+                        String dId = getDriverId(ds, r, true);
+                        String sId = getScheduleId(ds, r);
+
+                        boolean isFromDriver = (dId != null && driverUID.equals(dId));
+                        if (!isFromDriver && schedules != null && sId != null) isFromDriver = schedules.contains(sId);
+
                         if (isFromDriver) {
                             all.add(r);
                             String status = r.getReservationStatus();
-                            Double price = r.getPrice();
+                            double price = r.getPrice();
                             stats.totalReservations++;
                             if ("Confirmada".equalsIgnoreCase(status)) {
                                 stats.confirmedReservations++;
-                                stats.totalEarnings += (price != null ? price : 0.0);
+                                stats.totalEarnings += price;
                                 stats.confirmedReservationsList.add(r);
                             } else if ("Cancelada".equalsIgnoreCase(status)) {
                                 stats.canceledReservations++;
@@ -153,7 +151,7 @@ public class DriverReservationService {
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { listener.onError(error.getMessage()); }
         };
-        ref.orderByChild("conductorId").equalTo(driverUID).addValueEventListener(valueListener);
+        ref.addValueEventListener(valueListener);
         return valueListener;
     }
 
@@ -166,22 +164,18 @@ public class DriverReservationService {
                 stats.totalReservations = all.size();
                 for (Reservation r : all) {
                     String status = r.getReservationStatus();
-                    Double price = r.getPrice();
+                    double price = r.getPrice();
                     if (status != null) {
-                        switch (status) {
-                            case "Confirmada":
-                                stats.confirmedReservations++;
-                                stats.totalEarnings += (price != null ? price : 0.0);
-                                stats.confirmedReservationsList.add(r);
-                                break;
-                            case "Cancelada":
-                                stats.canceledReservations++;
-                                stats.canceledReservationsList.add(r);
-                                break;
-                            case "Por confirmar":
-                                stats.pendingReservations++;
-                                stats.pendingReservationsList.add(r);
-                                break;
+                        if ("Confirmada".equalsIgnoreCase(status)) {
+                            stats.confirmedReservations++;
+                            stats.totalEarnings += price;
+                            stats.confirmedReservationsList.add(r);
+                        } else if ("Cancelada".equalsIgnoreCase(status)) {
+                            stats.canceledReservations++;
+                            stats.canceledReservationsList.add(r);
+                        } else if ("Por confirmar".equalsIgnoreCase(status)) {
+                            stats.pendingReservations++;
+                            stats.pendingReservationsList.add(r);
                         }
                     }
                 }
@@ -230,20 +224,16 @@ public class DriverReservationService {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    String pId = snapshot.child("userId").getValue(String.class);
-                    String dName = snapshot.child("driver").getValue(String.class);
-                    String route = snapshot.child("origin").getValue(String.class) + " -> " + snapshot.child("destination").getValue(String.class);
-                    String time = snapshot.child("estimatedTime").getValue(String.class);
-                    Integer seat = snapshot.child("reservedSeat").getValue(Integer.class);
-                    String plate = snapshot.child("vehicleId").getValue(String.class);
-                    if (pId != null) {
+                    Reservation r = snapshot.getValue(Reservation.class);
+                    if (r != null && r.getUserId() != null) {
                         com.chopcode.rutago.app.managers.notificactions.NotificationManager nm = com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(context);
                         com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback cb = new com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback() {
                             @Override public void onSuccess() {}
                             @Override public void onError(String error) {}
                         };
-                        if ("confirmed".equals(type)) nm.notificarReservaConfirmadaAlPasajero(pId, dName, route, time, seat != null ? seat : 0, plate, "", cb);
-                        else nm.notificarReservaCanceladaAlPasajero(pId, dName, route, "Canceled by driver", cb);
+                        String route = r.getOrigin() + " -> " + r.getDestination();
+                        if ("confirmed".equals(type)) nm.notificarReservaConfirmadaAlPasajero(r.getUserId(), r.getDriver(), route, r.getEstimatedTime(), r.getReservedSeat(), r.getVehicleId(), "", cb);
+                        else nm.notificarReservaCanceladaAlPasajero(r.getUserId(), r.getDriver(), route, "Canceled by driver", cb);
                     }
                 }
             }
@@ -278,7 +268,14 @@ public class DriverReservationService {
                 if (uid != null) r.setDriverId(uid);
             }
             return uid;
-        } else return r.getDriver();
+        } else {
+            String name = r.getDriver();
+            if (name == null && ds.hasChild("conductor")) {
+                name = ds.child("conductor").getValue(String.class);
+                if (name != null) r.setDriver(name);
+            }
+            return name;
+        }
     }
 
     private String getScheduleId(DataSnapshot ds, Reservation r) {

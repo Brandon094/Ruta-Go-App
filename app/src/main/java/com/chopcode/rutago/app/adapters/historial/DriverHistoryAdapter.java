@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Reservation;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 tvPhone.setText(reservation.getPhone());
                 tvRoute.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
                 tvSeat.setText("Seat " + reservation.getReservedSeat());
-                tvPrice.setText(String.format("$%,.0f", reservation.getPrice()));
+                tvPrice.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
                 actionsLayout.setVisibility(View.GONE);
 

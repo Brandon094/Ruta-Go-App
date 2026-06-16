@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.ratings.RatingManager;
 import com.chopcode.rutago.app.models.Reservation;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -89,7 +90,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 if (routeDesc == null || routeDesc.isEmpty()) routeDesc = reservation.getOrigin() + " -> " + reservation.getDestination();
                 tvRuta.setText(routeDesc);
                 tvPuesto.setText("Seat " + reservation.getReservedSeat());
-                tvPrecio.setText(String.format("$%,.0f", reservation.getPrice()));
+                tvPrecio.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
                 boolean canRate = ("Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status)) && !reservation.isRated();
                 if (canRate) {

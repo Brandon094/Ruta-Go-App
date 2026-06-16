@@ -28,6 +28,7 @@ import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverStatsViewModel;
 import com.chopcode.rutago.app.viewmodels.driver.DriverProfileViewModel;
@@ -207,9 +208,9 @@ public class DriverHomeActivity extends AppCompatActivity {
         perfilViewModel.getConductorNombreLiveData().observe(this, nombre -> {
             if (nombre != null && !nombre.isEmpty()) {
                 tvConductor.setText(nombre);
-                reservasViewModel.inicializarConNombreConductor(nombre);
                 String userId = MyApp.getCurrentUserId();
                 if (userId != null) {
+                    reservasViewModel.inicializarConIdConductor(userId);
                     estadisticasViewModel.setConductorActual(userId);
                     estadisticasViewModel.refreshStatistics();
                 }
@@ -222,12 +223,14 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
+            Log.d(TAG, "Assigned schedules changed: " + (horarios != null ? horarios.size() : "null"));
             if (horarios != null && !horarios.isEmpty()) {
                 rutasViewModel.loadRoutes(horarios);
                 reservasViewModel.setHorariosAsignados(horarios);
                 reservasViewModel.cargarReservasPendientes();
                 estadisticasViewModel.setHorariosAsignados(horarios);
                 estadisticasViewModel.refreshStatistics();
+                tvEmptyRutas.setVisibility(View.GONE);
             } else {
                 tvEmptyRutas.setVisibility(View.VISIBLE);
             }
@@ -252,10 +255,11 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         rutasViewModel.getRutasLiveData().observe(this, routes -> {
+            Log.d(TAG, "Routes received: " + (routes != null ? routes.size() : "null"));
             if (routes != null && !routes.isEmpty()) {
                 routeList.clear();
                 routeList.addAll(routes);
-                if (routeAdapter != null) routeAdapter.actualizarRutas(routes);
+                if (routeAdapter != null) routeAdapter.actualizarRutas(new ArrayList<>(routes));
                 updateRoutesUI();
                 tvContadorRutas.setText(getString(R.string.contador_rutas, routes.size()));
                 if (!reservationList.isEmpty()) estadisticasViewModel.calculateRouteStatistics();
@@ -276,10 +280,19 @@ public class DriverHomeActivity extends AppCompatActivity {
 
         estadisticasViewModel.getIngresosLiveData().observe(this, ingresos -> {
             if (ingresos != null) {
-                tvTotalIngresos.setText("$" + String.format(Locale.getDefault(), "%.0f", ingresos));
+                tvTotalIngresos.setText(FormatUtils.formatearPrecio(ingresos));
                 actualizarTiempoActualizacion();
             }
         });
+
+        // Detailed route stats
+        estadisticasViewModel.getNombreRuta1LiveData().observe(this, name -> ((TextView)findViewById(R.id.tvNombreRutaReservas)).setText(name));
+        estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvReservasRuta)).setText(String.valueOf(count)));
+        estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvAsientosRuta)).setText(String.valueOf(count)));
+
+        estadisticasViewModel.getNombreRuta2LiveData().observe(this, name -> ((TextView)findViewById(R.id.tvNombreRutaReservas2)).setText(name));
+        estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvReservasRuta2)).setText(String.valueOf(count)));
+        estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvAsientosRuta2)).setText(String.valueOf(count)));
     }
 
     private void setupRecyclerView() {

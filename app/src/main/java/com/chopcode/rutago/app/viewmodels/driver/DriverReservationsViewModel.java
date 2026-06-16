@@ -27,7 +27,7 @@ public class DriverReservationsViewModel extends BaseViewModel {
     private final MutableLiveData<Reservation> processingReservationLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> reservationProcessedLiveData = new MutableLiveData<>();
 
-    private String currentDriverName;
+    private String currentDriverId;
     private List<String> currentAssignedSchedules;
 
     private boolean isRealTimeListenerSetup = false;
@@ -46,48 +46,48 @@ public class DriverReservationsViewModel extends BaseViewModel {
     public LiveData<Reservation> getReservaEnProcesoLiveData() { return processingReservationLiveData; }
     public LiveData<Boolean> getReservaProcesadaLiveData() { return reservationProcessedLiveData; }
 
-    public void inicializarConNombreConductor(String driverName) {
-        if (driverName == null || driverName.isEmpty()) return;
-        this.currentDriverName = driverName;
+    public void inicializarConIdConductor(String driverId) {
+        if (driverId == null || driverId.isEmpty()) return;
+        this.currentDriverId = driverId;
         cargarReservasPendientes();
         configurarListenerTiempoReal();
     }
 
     public void setHorariosAsignados(List<String> schedules) {
         this.currentAssignedSchedules = schedules != null ? new ArrayList<>(schedules) : new ArrayList<>();
-        if (currentDriverName != null && !currentAssignedSchedules.isEmpty()) {
+        if (currentDriverId != null) {
             cargarReservasPendientes();
         }
     }
 
     public void cargarReservasPendientes() {
-        if (currentDriverName == null || currentDriverName.isEmpty()) return;
+        if (currentDriverId == null) return;
         setLoading(true);
 
-        if (currentAssignedSchedules != null && !currentAssignedSchedules.isEmpty()) {
-            driverReservationService.cargarReservasPendientes(
-                    currentDriverName,
-                    currentAssignedSchedules,
-                    new DriverReservationService.ReservationsCallback() {
-                        @Override
-                        public void onReservationsLoaded(List<Reservation> reservations) {
-                            procesarReservasCargadas(reservations);
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            setError(error);
-                            setLoading(false);
-                        }
+        driverReservationService.cargarReservasConductorFiltradas(
+                currentDriverId,
+                currentAssignedSchedules,
+                "Por confirmar",
+                true,
+                new DriverReservationService.ReservationsCallback() {
+                    @Override
+                    public void onReservationsLoaded(List<Reservation> reservations) {
+                        procesarReservasCargadas(reservations);
                     }
-            );
-        }
+
+                    @Override
+                    public void onError(String error) {
+                        setError(error);
+                        setLoading(false);
+                    }
+                }
+        );
     }
 
     private void procesarReservasCargadas(List<Reservation> reservations) {
         List<Reservation> filtered = new ArrayList<>();
         for (Reservation r : reservations) {
-            if ("Por confirmar".equals(r.getReservationStatus())) {
+            if ("Por confirmar".equalsIgnoreCase(r.getReservationStatus())) {
                 filtered.add(r);
             }
         }
@@ -164,49 +164,22 @@ public class DriverReservationsViewModel extends BaseViewModel {
     }
 
     public void refrescarReservas() {
-        if (currentDriverName != null) cargarReservasPendientes();
+        if (currentDriverId != null) cargarReservasPendientes();
     }
 
     private void configurarListenerTiempoReal() {
-        if (currentDriverName == null || isRealTimeListenerSetup) return;
+        if (currentDriverId == null || isRealTimeListenerSetup) return;
         try {
             limpiarListenerTiempoReal();
             reservationsRef = com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas");
             reservationsListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    List<Reservation> newOnes = new ArrayList<>();
-                    List<Reservation> currentOnes = pendingReservationsLiveData.getValue();
-                    if (currentOnes == null) currentOnes = new ArrayList<>();
-
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Reservation r = snapshot.getValue(Reservation.class);
-                        if (r != null && currentDriverName.equals(r.getDriver()) && "Por confirmar".equals(r.getReservationStatus())) {
-                            r.setIdReservation(snapshot.getKey());
-                            boolean exists = false;
-                            for (Reservation existing : currentOnes) {
-                                if (existing.getIdReservation() != null && existing.getIdReservation().equals(r.getIdReservation())) {
-                                    exists = true;
-                                    break;
-                                }
-                            }
-                            if (!exists) {
-                                if (currentAssignedSchedules == null || currentAssignedSchedules.isEmpty() ||
-                                        (r.getScheduleId() != null && currentAssignedSchedules.contains(r.getScheduleId()))) {
-                                    newOnes.add(r);
-                                }
-                            }
-                        }
-                    }
-                    if (!newOnes.isEmpty()) {
-                        currentOnes.addAll(newOnes);
-                        pendingReservationsLiveData.postValue(currentOnes);
-                        reservationsCountLiveData.postValue(currentOnes.size());
-                    }
+                    cargarReservasPendientes(); 
                 }
                 @Override public void onCancelled(DatabaseError databaseError) { isRealTimeListenerSetup = false; }
             };
-            reservationsRef.addValueEventListener(reservationsListener);
+            reservationsRef.orderByChild("driverId").equalTo(currentDriverId).addValueEventListener(reservationsListener);
             isRealTimeListenerSetup = true;
         } catch (Exception e) { isRealTimeListenerSetup = false; }
     }
@@ -217,7 +190,7 @@ public class DriverReservationsViewModel extends BaseViewModel {
     }
 
     public void reanudarActualizacionesTiempoReal() {
-        if (currentDriverName != null && !isRealTimeListenerSetup) configurarListenerTiempoReal();
+        if (currentDriverId != null && !isRealTimeListenerSetup) configurarListenerTiempoReal();
     }
 
     private void eliminarReservaDeLista(Reservation reservation) {

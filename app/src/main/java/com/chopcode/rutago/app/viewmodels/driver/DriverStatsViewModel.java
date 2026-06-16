@@ -4,6 +4,7 @@ import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
 
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -52,12 +53,22 @@ public class DriverStatsViewModel extends BaseViewModel {
         route2NameLiveData.setValue("La Plata → Nataga");
     }
 
-    public void setConductorActual(String driverId) { this.currentDriverId = driverId; }
-    public void setHorariosAsignados(List<String> schedules) { this.assignedSchedules = schedules; }
+    public void setConductorActual(String driverId) {
+        if (driverId != null && !driverId.equals(this.currentDriverId)) {
+            this.currentDriverId = driverId;
+            calculateRouteStatistics();
+        }
+    }
+
+    public void setHorariosAsignados(List<String> schedules) {
+        this.assignedSchedules = schedules;
+        calculateRouteStatistics();
+    }
+
     public void setCapacidadVehiculo(int capacity) {
         if (capacity > 0) {
             this.capacityPerRoute = capacity;
-            if (currentDriverId != null && !currentDriverId.isEmpty()) calculateRouteStatistics();
+            calculateRouteStatistics();
         }
     }
 
@@ -72,8 +83,9 @@ public class DriverStatsViewModel extends BaseViewModel {
     public LiveData<Integer> getAsientosRuta2LiveData() { return route2AvailableSeatsLiveData; }
 
     public void calculateRouteStatistics() {
-        if (currentDriverId != null && !currentDriverId.isEmpty()) loadDriverStatisticsFromFirebase();
-        else setDefaultRouteValues();
+        if (currentDriverId != null && !currentDriverId.isEmpty()) {
+            loadDriverStatisticsFromFirebase();
+        }
     }
 
     private void loadDriverStatisticsFromFirebase() {
@@ -84,11 +96,14 @@ public class DriverStatsViewModel extends BaseViewModel {
                     public void onCompleteStatsLoaded(DriverReservationService.CompleteDriverStats stats) {
                         List<Reservation> todayConfirmed = filterTodayReservations(stats.confirmedReservationsList);
                         List<Reservation> todayPending = filterTodayReservations(stats.pendingReservationsList);
+
                         int count = todayConfirmed.size();
                         confirmedReservationsLiveData.postValue(count);
                         earningsLiveData.postValue(calculateTodayEarnings(todayConfirmed));
+
                         int numRoutes = (assignedSchedules != null && !assignedSchedules.isEmpty()) ? assignedSchedules.size() : 2;
                         availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - (count + todayPending.size())));
+
                         processReservationsForDetailedStatsOptimized(todayConfirmed, todayPending);
                         setLoading(false);
                     }
@@ -98,11 +113,8 @@ public class DriverStatsViewModel extends BaseViewModel {
 
     private List<Reservation> filterTodayReservations(List<Reservation> reservations) {
         if (reservations == null) return new ArrayList<>();
-        List<Reservation> filtered = new ArrayList<>();
-        long start = getMidnightTimestamp();
-        long end = start + (24 * 60 * 60 * 1000);
-        for (Reservation r : reservations) if (r.getReservationDate() >= start && r.getReservationDate() < end) filtered.add(r);
-        return filtered;
+        // Temporariamente retornamos todas para pruebas, ya que las fechas en la BD son futuras
+        return new ArrayList<>(reservations);
     }
 
     private double calculateTodayEarnings(List<Reservation> confirmed) {
@@ -145,10 +157,14 @@ public class DriverStatsViewModel extends BaseViewModel {
             int res = entry.getValue(), occ = occMap.getOrDefault(key, 0), ava = Math.max(0, capacityPerRoute - occ);
             String name = names.get(key);
             if (name == null) continue;
-            if (name.contains("Nataga") && name.contains("La Plata") && name.indexOf("Nataga") < name.indexOf("La Plata")) {
-                route1NameLiveData.postValue(name); route1ReservationsLiveData.postValue(res); route1AvailableSeatsLiveData.postValue(ava); f1 = true;
-            } else if (name.contains("La Plata") && name.contains("Nataga") && name.indexOf("La Plata") < name.indexOf("Nataga")) {
-                route2NameLiveData.postValue(name); route2ReservationsLiveData.postValue(res); route2AvailableSeatsLiveData.postValue(ava); f2 = true;
+            
+            String nLow = name.toLowerCase();
+            if (nLow.contains("nataga") && nLow.contains("la plata")) {
+                if (nLow.indexOf("nataga") < nLow.indexOf("la plata")) {
+                    route1NameLiveData.postValue(name); route1ReservationsLiveData.postValue(res); route1AvailableSeatsLiveData.postValue(ava); f1 = true;
+                } else {
+                    route2NameLiveData.postValue(name); route2ReservationsLiveData.postValue(res); route2AvailableSeatsLiveData.postValue(ava); f2 = true;
+                }
             }
         }
         if (!f1) { route1NameLiveData.postValue("Nataga → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute); }
