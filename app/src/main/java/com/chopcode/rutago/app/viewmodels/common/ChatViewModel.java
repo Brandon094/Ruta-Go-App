@@ -22,6 +22,8 @@ public class ChatViewModel extends ViewModel {
     private final ChatService chatService;
     private ValueEventListener chatListener;
     private String currentReservationId;
+    private String receiverId;
+    private String senderName;
 
     public ChatViewModel() {
         this.chatService = new ChatService();
@@ -30,11 +32,17 @@ public class ChatViewModel extends ViewModel {
     public LiveData<List<ChatMessage>> getMessages() { return messages; }
     public LiveData<String> getError() { return error; }
 
-    public void startChat(String reservationId) {
-        if (reservationId == null) return;
+    public void initChat(String reservationId, String receiverId, String senderName) {
         this.currentReservationId = reservationId;
+        this.receiverId = receiverId;
+        this.senderName = senderName;
+        startListening();
+    }
+
+    private void startListening() {
+        if (currentReservationId == null) return;
         
-        chatListener = chatService.listenMessages(reservationId, new ChatService.MessagesCallback() {
+        chatListener = chatService.listenMessages(currentReservationId, new ChatService.MessagesCallback() {
             @Override
             public void onMessagesUpdated(List<ChatMessage> list) {
                 messages.postValue(list);
@@ -46,8 +54,8 @@ public class ChatViewModel extends ViewModel {
 
     public void sendMessage(String text) {
         String uid = MyApp.getCurrentUserId();
-        if (uid != null && currentReservationId != null) {
-            chatService.sendMessage(currentReservationId, uid, text);
+        if (uid != null && currentReservationId != null && receiverId != null) {
+            chatService.sendMessage(currentReservationId, uid, senderName, receiverId, text);
         }
     }
 

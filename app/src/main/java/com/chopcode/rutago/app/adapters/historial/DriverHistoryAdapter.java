@@ -97,6 +97,8 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                     intent.putExtra("price", reservation.getPrice());
                     intent.putExtra("passengerName", reservation.getName());
                     intent.putExtra("driverName", reservation.getDriver());
+                    intent.putExtra("userId", reservation.getUserId());
+                    intent.putExtra("driverId", reservation.getDriverId());
                     intent.putExtra("vehiclePlate", reservation.getVehicleId());
                     intent.putExtra("vehicleModel", reservation.getVehicleModel());
                     intent.putExtra("reservationId", reservation.getIdReservation());

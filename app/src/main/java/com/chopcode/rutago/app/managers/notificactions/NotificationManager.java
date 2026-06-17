@@ -190,6 +190,24 @@ public class NotificationManager {
         });
     }
 
+    /**
+     * 4. NOTIFICACIÓN DE MENSAJE DE CHAT
+     */
+    public void notificarNuevoMensaje(String receptorId, String emisorNombre, String mensaje, String reservaId, NotificationCallback callback) {
+        String title = context.getString(R.string.notif_chat_title, emisorNombre);
+        String body = mensaje.length() > 50 ? mensaje.substring(0, 47) + "..." : mensaje;
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "chat_message");
+        data.put("title", title);
+        data.put("message", body);
+        data.put("reservationId", reservaId);
+        data.put("target_activity", "chat");
+        data.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
+        enviarPushV1(receptorId, title, body, data, callback);
+    }
+
     private void enviarPushV1(String userId, String title, String body,
                              Map<String, Object> data, NotificationCallback callback) {
         

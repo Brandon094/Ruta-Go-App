@@ -77,6 +77,13 @@ public class TicketActivity extends AppCompatActivity {
         findViewById(R.id.btnChatTicket).setOnClickListener(v -> {
             Intent chatIntent = new Intent(this, ChatActivity.class);
             chatIntent.putExtra("reservationId", reservationId);
+            
+            // Lógica de identidad para el chat
+            String currentUid = com.chopcode.rutago.app.config.MyApp.getCurrentUserId();
+            boolean isPassenger = currentUid != null && currentUid.equals(intent.getStringExtra("userId"));
+            
+            chatIntent.putExtra("receiverId", isPassenger ? intent.getStringExtra("driverId") : intent.getStringExtra("userId"));
+            chatIntent.putExtra("senderName", isPassenger ? passengerName : driverName);
             startActivity(chatIntent);
         });
 

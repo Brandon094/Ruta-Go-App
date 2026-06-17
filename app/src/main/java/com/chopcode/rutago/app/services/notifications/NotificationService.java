@@ -102,6 +102,9 @@ public class NotificationService extends FirebaseMessagingService {
                         title = getString(R.string.notif_cancelada_title);
                         message = getString(R.string.notif_cancelada_body, data.get("ruta_nombre"));
                         break;
+                    case "chat_message":
+                        // El título ya viene formateado desde NotificationManager
+                        break;
                 }
             }
 

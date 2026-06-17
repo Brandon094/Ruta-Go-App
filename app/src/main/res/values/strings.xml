@@ -269,6 +269,8 @@
     <string name="notif_promotion_body">Tenemos algo nuevo para ti en RutaGo. ¡Ven a verlo!</string>
     <string name="notif_nueva_reserva_driver_title">🚗 ¡Nueva Reserva Recibida!</string>
     <string name="notif_nueva_reserva_driver_body">Un pasajero ha solicitado un puesto. ¡Entra ahora para gestionar tu próxima ruta!</string>
+    <string name="notif_chat_title">💬 Mensaje nuevo de %s</string>
+    <string name="notif_chat_body">%s</string>
 
     <!-- ========================================================================= -->
     <!-- 💳 PAYMENT & UTILS                                                        -->

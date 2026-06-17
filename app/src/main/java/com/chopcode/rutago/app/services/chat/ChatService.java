@@ -28,16 +28,22 @@ public class ChatService {
     }
 
     /**
-     * Envía un nuevo mensaje a la conversación.
+     * Envía un nuevo mensaje y dispara notificación al receptor.
      */
-    public void sendMessage(String reservationId, String senderId, String text) {
+    public void sendMessage(String reservationId, String senderId, String senderName, String receiverId, String text) {
         if (reservationId == null || text.trim().isEmpty()) return;
 
         DatabaseReference ref = chatsRef.child(reservationId).child("mensajes").push();
         String messageId = ref.getKey();
         ChatMessage message = new ChatMessage(messageId, senderId, text, System.currentTimeMillis());
 
-        ref.setValue(message).addOnFailureListener(e -> Log.e(TAG, "Error sending message: " + e.getMessage()));
+        ref.setValue(message).addOnSuccessListener(aVoid -> {
+            // Disparar notificación push al receptor
+            if (receiverId != null && !receiverId.isEmpty()) {
+                com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(MyApp.getAppContext())
+                        .notificarNuevoMensaje(receiverId, senderName, text, reservationId, null);
+            }
+        }).addOnFailureListener(e -> Log.e(TAG, "Error sending message: " + e.getMessage()));
     }
 
     /**

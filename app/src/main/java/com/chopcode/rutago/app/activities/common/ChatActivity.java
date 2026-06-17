@@ -33,6 +33,9 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         reservationId = getIntent().getStringExtra("reservationId");
+        String receiverId = getIntent().getStringExtra("receiverId");
+        String senderName = getIntent().getStringExtra("senderName");
+        
         if (reservationId == null) { finish(); return; }
 
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
@@ -41,7 +44,7 @@ public class ChatActivity extends AppCompatActivity {
         setupRecyclerView();
         setupObservers();
         
-        viewModel.startChat(reservationId);
+        viewModel.initChat(reservationId, receiverId, senderName);
     }
 
     private void initViews() {
