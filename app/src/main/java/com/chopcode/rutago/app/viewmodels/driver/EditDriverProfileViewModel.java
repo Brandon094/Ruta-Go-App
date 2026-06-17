@@ -20,7 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ViewModel for editing driver profile and vehicle.
+ * 📝 Edit Driver Profile ViewModel
+ * 
+ * Gestiona el proceso masivo de actualización de perfil y vehículo.
+ * Responsabilidades:
+ * - Cargar datos actuales del conductor y su vehículo en paralelo.
+ * - Ejecutar actualizaciones atómicas en los nodos /conductores/ y /vehiculos/.
+ * - Disparar la sincronización de capacidad técnica hacia los horarios operativos (syncVehicleCapacityToSchedules).
+ * - Garantizar la integridad de datos entre las pestañas de edición.
  */
 public class EditDriverProfileViewModel extends ViewModel {
     private static final String TAG = "EditDriverProfileVM";

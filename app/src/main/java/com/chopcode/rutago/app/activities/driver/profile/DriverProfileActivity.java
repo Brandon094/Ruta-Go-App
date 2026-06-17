@@ -23,6 +23,13 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 
 /**
  * 👤 Driver Profile Activity
+ * 
+ * Punto de gestión de identidad para el conductor.
+ * Responsabilidades:
+ * - Visualizar la información personal y técnica del vehículo asignado.
+ * - Permitir la actualización de la foto de perfil mediante Firebase Storage.
+ * - Proveer acceso directo a la edición de datos del vehículo.
+ * - Gestionar la navegación de la sección de perfil mediante el Bottom Navigation.
  */
 public class DriverProfileActivity extends AppCompatActivity {
     

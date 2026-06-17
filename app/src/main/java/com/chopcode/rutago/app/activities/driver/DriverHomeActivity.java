@@ -45,6 +45,16 @@ import java.util.Locale;
 
 /**
  * 🏠 Driver Home Activity
+ * 
+ * Centro de control principal para el conductor.
+ * Responsabilidades:
+ * - Mostrar un resumen reactivo de estadísticas (Ingresos, Reservas, Asientos).
+ * - Listar reservas pendientes para acción inmediata (Confirmar/Cancelar).
+ * - Visualizar el itinerario del día con acceso a la gestión de asientos.
+ * - Monitorear el estado de la red para garantizar la sincronización de datos.
+ * 
+ * Implementa una arquitectura multi-ViewModel para separar responsabilidades de perfil, 
+ * reservas, estadísticas y rutas.
  */
 public class DriverHomeActivity extends AppCompatActivity {
     private static final String TAG = "DriverHomeActivity";

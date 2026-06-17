@@ -11,7 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ViewModel to manage assigned driver routes.
+ * 🛣️ Driver Routes ViewModel
+ * 
+ * Gestiona el itinerario de rutas asignadas al conductor.
+ * Responsabilidades:
+ * - Cargar el catálogo de horarios en los que el conductor debe operar hoy.
+ * - Identificar y exponer la información de la "Próxima Ruta" para acceso rápido.
+ * - Sincronizar la lista de horarios con los servicios de obtención de datos.
  */
 public class DriverRoutesViewModel extends BaseViewModel {
     private final RouteManager routeManager;

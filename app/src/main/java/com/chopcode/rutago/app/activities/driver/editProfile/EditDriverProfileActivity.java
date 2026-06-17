@@ -23,12 +23,12 @@ import com.google.android.material.textfield.TextInputEditText;
 /**
  * 📝 Edit Driver Profile Activity
  * 
+ * Permite al conductor gestionar su identidad y la información técnica de su vehículo.
  * Responsabilidades:
- * - Allow driver to update personal data.
- * - Manage vehicle technical information.
- * - Validate driverId inclusion for Firebase rules.
- * 
- * Architecture: MVVM.
+ * - Actualizar datos de contacto (Nombre, Teléfono).
+ * - Gestionar especificaciones del vehículo (Placa, Modelo, Marca, Capacidad, Año).
+ * - Validar campos de entrada para asegurar integridad en Firebase.
+ * - Disparar la sincronización de capacidad hacia los horarios tras guardar cambios.
  */
 public class EditDriverProfileActivity extends AppCompatActivity {
 

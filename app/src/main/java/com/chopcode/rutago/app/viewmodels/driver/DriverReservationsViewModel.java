@@ -14,7 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ViewModel to manage driver's pending reservations.
+ * 🎫 Driver Reservations ViewModel
+ * 
+ * Gestiona el flujo operativo de reservas "Por confirmar".
+ * Responsabilidades:
+ * - Mantener una escucha activa en tiempo real sobre nuevas reservas entrantes.
+ * - Proveer acciones para confirmar o cancelar reservas directamente desde el Dashboard.
+ * - Orquestar la liberación de asientos en Firebase cuando una reserva es rechazada.
  */
 public class DriverReservationsViewModel extends BaseViewModel {
 

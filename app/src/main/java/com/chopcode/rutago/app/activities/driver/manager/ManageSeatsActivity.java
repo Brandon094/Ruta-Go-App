@@ -21,12 +21,12 @@ import java.util.Set;
 /**
  * 💺 Manage Seats Activity (Driver)
  * 
+ * Interfaz interactiva para el control de asientos del vehículo.
  * Responsabilidades:
- * - Show real-time seat status.
- * - Allow manual seat blocking (Physical sale).
- * - Visually differentiate between App reservations and manual sales.
- * 
- * Architecture: MVVM.
+ * - Visualizar en tiempo real qué asientos están ocupados por la App (Rojo) y cuáles por venta física (Naranja).
+ * - Permitir al conductor bloquear asientos manualmente para pasajeros que pagan en efectivo sin usar la App.
+ * - Liberar asientos bloqueados físicamente.
+ * - Sincronizar automáticamente la capacidad visual con el modelo técnico del vehículo asignado.
  */
 public class ManageSeatsActivity extends AppCompatActivity implements SeatManager.SeatSelectionListener {
 

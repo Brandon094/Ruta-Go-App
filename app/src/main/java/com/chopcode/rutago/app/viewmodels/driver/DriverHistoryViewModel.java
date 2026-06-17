@@ -13,7 +13,14 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * ViewModel to manage driver reservation history.
+ * 📊 Driver History ViewModel
+ * 
+ * Orquesta la lógica del historial de viajes para el conductor.
+ * Responsabilidades:
+ * - Cargar reservas históricas filtradas por el UID del conductor.
+ * - Implementar lógica de filtrado por estado, búsqueda textual y rangos de fecha.
+ * - Calcular contadores acumulados para la vista de resumen.
+ * - Gestionar la liberación de asientos en caso de cancelaciones desde el historial.
  */
 public class DriverHistoryViewModel extends ViewModel {
     private final MutableLiveData<List<Reservation>> filteredReservations = new MutableLiveData<>(new ArrayList<>());

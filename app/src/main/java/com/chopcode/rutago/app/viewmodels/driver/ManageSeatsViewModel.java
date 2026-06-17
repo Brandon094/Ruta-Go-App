@@ -18,7 +18,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * ViewModel to manage real-time seat status for drivers.
+ * 💺 Manage Seats ViewModel (Driver)
+ * 
+ * Motor de lógica para la gestión técnica de asientos de un viaje.
+ * Responsabilidades:
+ * - Escuchar simultáneamente las reservas de la App y el estado de disponibilidad en Firebase.
+ * - Diferenciar visualmente los tipos de ocupación para el conductor.
+ * - Procesar bloqueos manuales (Venta física) y liberaciones.
+ * - Exponer la capacidad total dinámica basada en la sincronización del vehículo.
  */
 public class ManageSeatsViewModel extends ViewModel {
     private static final String TAG = "ManageSeatsViewModel";

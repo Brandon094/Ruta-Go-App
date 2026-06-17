@@ -29,6 +29,13 @@ import java.util.ArrayList;
 
 /**
  * 📊 Driver History Activity
+ * 
+ * Bitácora de viajes realizados y cancelados para el conductor.
+ * Responsabilidades:
+ * - Listar todas las reservas procesadas por el conductor logueado.
+ * - Permitir el filtrado por estado (Confirmadas/Canceladas) y por fecha (Hoy).
+ * - Proporcionar un buscador por nombre de pasajero.
+ * - Visualizar métricas rápidas del historial (Total, Confirmadas, Canceladas).
  */
 public class DriverHistoryActivity extends AppCompatActivity {
 
