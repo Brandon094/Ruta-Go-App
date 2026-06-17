@@ -14,9 +14,14 @@
     <string name="no_disponible">N/A</string>
     <string name="error_prefijo">Error: %s</string>
     <string name="error_no_internet">Sin conexión a internet</string>
+    <string name="error_actualizar">Error al actualizar: %s</string>
+    <string name="error_cargar_usuario">Error al cargar usuario: %s</string>
     <string name="network_error">Sin conexión a internet. Los datos pueden no estar actualizados.</string>
     <string name="network_error_driver">Sin conexión a internet. No se podrán confirmar reservas.</string>
     <string name="network_restored">Conexión restablecida</string>
+    <string name="powered_by">Powered by</string>
+    <string name="chop_code">ChopCode</string>
+    <string name="activo">Activo</string>
 
     <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
@@ -29,6 +34,9 @@
     <string name="registrate">Regístrate</string>
     <string name="cerrarSesion">Cerrar sesión</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="titulo_cerrar_sesion">¿Cerrar Sesión?</string>
+    <string name="mensaje_cerrar_sesion">Estás a punto de salir de tu cuenta. ¿Confirmas que deseas finalizar la sesión actual?</string>
+    <string name="desc_icono_logout">Icono de cerrar sesión</string>
     <string name="crearCuenta">Crear cuenta</string>
     <string name="nombreCompleto">Nombre completo</string>
     <string name="correo">Correo electrónico</string>
@@ -38,11 +46,22 @@
     <string name="registrarse">Registrarse</string>
     <string name="yaTieneCuenta">¿Ya tienes cuenta?</string>
     <string name="iniciaSesion">Inicia sesión aquí</string>
+    <string name="recuperar_contrasena_title">Recuperar Contraseña</string>
+    <string name="instrucciones_recuperar">Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña.</string>
+    <string name="enviar_instrucciones">Enviar Instrucciones</string>
+    <string name="correo_enviado">¡Correo Enviado!</string>
+    <string name="correo_enviado_detalle">Revisa tu bandeja de entrada y sigue los pasos para restablecer tu cuenta.</string>
+    <string name="entendido">Entendido</string>
+    <string name="requisitos_contrasena">Mínimo 8 caracteres, 1 número y 1 letra</string>
+    <string name="crear_mi_cuenta">Crear mi cuenta</string>
     <string name="usuario_no_autenticado">Usuario no autenticado</string>
     <string name="debe_iniciar_sesion">Debe iniciar sesión primero</string>
     <string name="inicie_sesion_reservar">Por favor inicia sesión para reservar</string>
     <string name="nombre_obligatorio">El nombre es obligatorio</string>
     <string name="telefono_obligatorio">El teléfono es obligatorio</string>
+    <string name="correo_obligatorio">El correo es obligatorio</string>
+    <string name="correo_valido">Ingresa un correo válido</string>
+    <string name="todo_listo">¡Todo listo!</string>
 
     <!-- ========================================================================= -->
     <!-- 🏠 PASSENGER DASHBOARD & ROUTES                                          -->
@@ -57,6 +76,8 @@
     <string name="nueva_reserva">NUEVA\nRESERVA</string>
     <string name="no_hay_rutas">No hay rutas programadas</string>
     <string name="asientos_disponibles_label_adapter">%d asientos disponibles</string>
+    <string name="contador_rutas">%d</string>
+    <string name="contador_reservas">%d</string>
 
     <!-- ========================================================================= -->
     <!-- 💺 RESERVATION PROCESS (PASSENGER)                                        -->
@@ -66,6 +87,8 @@
     <string name="confirmar_reserva_btn">Confirmar Reserva</string>
     <string name="seleccionaAsiento">Selecciona tu asiento</string>
     <string name="infoReserva">Detalles de reserva</string>
+    <string name="hora_salida">Hora de salida</string>
+    <string name="hora">--:--</string>
     <string name="horaSalida">Hora de salida: %s</string>
     <string name="asientoReservado">Asiento: %s</string>
     <string name="precio">Precio:</string>
@@ -83,6 +106,7 @@
     <string name="total_pagar">Total a pagar</string>
     <string name="moneda_cop">COP</string>
     <string name="info_contacto">Información de Contacto</string>
+    <string name="tu">Tú</string>
     <string name="pago_efectivo_desc">Paga directamente al conductor</string>
     <string name="pago_transferencia_desc">Pago anticipado</string>
     <string name="info_pago_efectivo">Paga en efectivo al conductor al momento del viaje. Asegúrate de tener el cambio exacto.</string>
@@ -94,6 +118,14 @@
     <string name="ruta_directa_tiempo">Ruta Directa - Tiempo est.: %s</string>
     <string name="error_datos_incompletos">Error: Datos de reserva incompletos</string>
     <string name="ayuda_mensaje">¿En qué podemos ayudarte?</string>
+    <string name="como_fue_viaje">¿Cómo fue tu viaje?</string>
+    <string name="califica_conductor">Califica a tu conductor</string>
+    <string name="comentarios_opcional">Comentarios (Opcional)</string>
+    <string name="calificar_viaje_btn">Calificar Viaje</string>
+    <string name="conductor_label">Conductor: %s</string>
+    <string name="enviar_calificacion">Enviar Calificación</string>
+    <string name="seleccione_puntuacion">Por favor selecciona una puntuación</string>
+    <string name="gracias_calificacion">¡Gracias por tu calificación!</string>
 
     <!-- ========================================================================= -->
     <!-- 🚛 DRIVER DASHBOARD & STATS                                               -->
@@ -126,6 +158,14 @@
     <string name="cancelar_reserva_pregunta">¿Cancelar reserva de %s?</string>
     <string name="reserva_procesada_exito">Reserva procesada exitosamente</string>
     <string name="venta_fisica_mayus">VENTA FÍSICA</string>
+    <string name="vender_pasaje">Vender Pasaje</string>
+    <string name="error_parsing_driver_data">Error al procesar datos del conductor</string>
+    <string name="driver_data_not_found">Datos del conductor no encontrados</string>
+    <string name="error_node_drivers">Error en nodo conductores: %s</string>
+    <string name="error_node_vehicles">Error en nodo vehículos: %s</string>
+    <string name="seleccionar_ruta">Selecciona la Ruta</string>
+    <string name="desc_seleccionar_ruta">Elige el trayecto para realizar la venta física</string>
+    <string name="desc_seleccionar">Seleccionar</string>
 
     <!-- ========================================================================= -->
     <!-- 💺 SEAT MANAGEMENT (DRIVER)                                              -->
@@ -138,6 +178,8 @@
     <string name="bloquear_asiento_pregunta">¿Bloquear asiento %d manualmente?</string>
     <string name="liberar_asiento_pregunta">¿Liberar asiento %d bloqueado manualmente?</string>
     <string name="ocupado_por_app">Ocupado por la App (No editable)</string>
+    <string name="error_reserva_puesto">Error al reservar: %s</string>
+    <string name="error_liberacion_puesto">Error al liberar el asiento: %s</string>
     <string name="bloquear_btn">Bloquear</string>
     <string name="liberar_btn">Liberar</string>
 
@@ -153,6 +195,18 @@
     <string name="hoy">Hoy</string>
     <string name="semana">Esta semana</string>
     <string name="mes">Este mes</string>
+    <string name="buscar">Buscar</string>
+    <string name="actualizar">Actualizar</string>
+    <string name="canceladas">Canceladas</string>
+    <string name="total">Total</string>
+    <string name="contador_leyenda">Significado de cada contador</string>
+    <string name="desc_expand_icon">Icono de expandir</string>
+    <string name="leyenda_confirmadas_titulo">Confirmadas</string>
+    <string name="leyenda_confirmadas_desc">Validadas por el conductor</string>
+    <string name="leyenda_canceladas_titulo">Canceladas</string>
+    <string name="leyenda_canceladas_desc">Anuladas por el conductor</string>
+    <string name="leyenda_total_titulo">Total</string>
+    <string name="leyenda_total_desc">Suma de confirmadas + canceladas</string>
     <string name="estadisticas">Estadísticas</string>
     <string name="total_reservas">Total</string>
     <string name="reservas_confirmadas">Confirmadas</string>
@@ -218,7 +272,10 @@
     <!-- ========================================================================= -->
     <!-- 🧪 API KEYS & INTERNAL                                                    -->
     <!-- ========================================================================= -->
+    <string name="_0">0</string>
     <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
     <string name="_13">13</string>
     <string name="_26">26</string>
 </resources>
