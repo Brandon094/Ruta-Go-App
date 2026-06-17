@@ -84,7 +84,10 @@ public class GoogleLoginService {
                                 }
                             });
                         }
-                    } else callback.onLoginFailure(task.getException() != null ? task.getException().getMessage() : "Unknown error");
+                    } else {
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : MyApp.getAppContext().getString(R.string.error_carga_datos);
+                        callback.onLoginFailure(errorMsg);
+                    }
                 });
             }
         } catch (Exception e) { callback.onLoginFailure(e.getMessage()); }

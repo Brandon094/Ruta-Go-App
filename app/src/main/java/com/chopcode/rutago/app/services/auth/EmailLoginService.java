@@ -2,6 +2,7 @@ package com.chopcode.rutago.app.services.auth;
 
 import android.app.Activity;
 import androidx.annotation.NonNull;
+import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,7 +42,8 @@ public class EmailLoginService {
                             });
                         } else callback.onLoginFailure("Error obtaining user data");
                     } else {
-                        callback.onLoginFailure(task.getException() != null ? task.getException().getMessage() : "Unknown error");
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : MyApp.getAppContext().getString(R.string.error_carga_datos);
+                        callback.onLoginFailure(errorMsg);
                     }
                 });
     }

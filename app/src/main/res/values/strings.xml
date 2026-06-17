@@ -13,6 +13,7 @@
     <string name="bienvenida">¡Bienvenido!</string>
     <string name="no_disponible">N/A</string>
     <string name="error_prefijo">Error: %s</string>
+    <string name="error_carga_datos">Error al intentar cargar los datos</string>
     <string name="error_no_internet">Sin conexión a internet</string>
     <string name="network_error">Sin conexión a internet. Los datos pueden no estar actualizados.</string>
     <string name="network_error_driver">Sin conexión a internet. No se podrán confirmar reservas.</string>
@@ -248,6 +249,7 @@
     <string name="solicitud_enviada_revision">Solicitud enviada. Tu cuenta será revisada.</string>
     <string name="error_actualizar">Error al actualizar: %s</string>
     <string name="error_cargar_usuario">Error al cargar usuario: %s</string>
+    <string name="error_session_not_found">Error: No se encontró la sesión tras el login</string>
     <string name="calificar_viaje_btn">Calificar Viaje</string>
     <string name="conductor_label">Conductor: %s</string>
     <string name="enviar_calificacion">Enviar Calificación</string>

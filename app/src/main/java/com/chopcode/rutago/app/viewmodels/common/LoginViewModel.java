@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.services.auth.EmailLoginService;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.google.firebase.auth.FirebaseUser;
@@ -80,7 +81,7 @@ public class LoginViewModel extends ViewModel {
         FirebaseUser user = MyApp.getCurrentUser();
         if (user == null) {
             isLoading.postValue(false);
-            loginError.postValue("Error: Session not found after login");
+            loginError.postValue(MyApp.getAppContext().getString(R.string.error_session_not_found));
             return;
         }
 
