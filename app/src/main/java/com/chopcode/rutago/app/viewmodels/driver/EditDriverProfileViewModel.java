@@ -10,6 +10,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,8 +30,10 @@ public class EditDriverProfileViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
+    private final SeatsDataProcessor seatsDataProcessor;
 
     public EditDriverProfileViewModel() {
+        this.seatsDataProcessor = new SeatsDataProcessor();
     }
 
     public LiveData<Driver> getConductorData() { return driverData; }
@@ -47,19 +50,18 @@ public class EditDriverProfileViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Driver driver = new Driver();
-                    driver.setId(userId);
-                    driver.setNombre(getStringSafely(snapshot.child("nombre")));
-                    driver.setTelefono(getStringSafely(snapshot.child("telefono")));
-                    driver.setEmail(getStringSafely(snapshot.child("email")));
-                    driver.setVehicleId(getStringSafely(snapshot.child("vehiculoId")));
-                    driver.setVehiclePlate(getStringSafely(snapshot.child("placaVehiculo")));
-                    
-                    driverData.postValue(driver);
+                    Driver driver = snapshot.getValue(Driver.class);
+                    if (driver != null) {
+                        driver.setId(userId);
+                        driverData.postValue(driver);
 
-                    if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) {
-                        loadVehiculo(driver.getVehicleId());
+                        if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) {
+                            loadVehiculo(driver.getVehicleId());
+                        } else {
+                            isLoading.postValue(false);
+                        }
                     } else {
+                        error.postValue("Error parsing driver data");
                         isLoading.postValue(false);
                     }
                 } else {
@@ -124,6 +126,11 @@ public class EditDriverProfileViewModel extends ViewModel {
             driver.setVehicleId(vehicle.getId());
             driver.setVehiclePlate(vehicle.getPlate());
             
+            // Sync capacity to schedules
+            if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty()) {
+                seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), vehicle.getCapacity());
+            }
+
             DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
             conductorRef.setValue(driver).addOnSuccessListener(aVoid2 -> {
                 

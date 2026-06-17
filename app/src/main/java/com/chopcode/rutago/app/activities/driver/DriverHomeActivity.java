@@ -222,6 +222,12 @@ public class DriverHomeActivity extends AppCompatActivity {
             if (placa != null) tvPlacaVehiculo.setText("Plate: " + placa);
         });
 
+        perfilViewModel.getCapacidadVehiculoLiveData().observe(this, capacity -> {
+            if (capacity != null && capacity > 0) {
+                estadisticasViewModel.setCapacidadVehiculo(capacity);
+            }
+        });
+
         perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
             Log.d(TAG, "Assigned schedules changed: " + (horarios != null ? horarios.size() : "null") + " -> " + horarios);
             if (horarios != null && !horarios.isEmpty()) {

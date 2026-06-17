@@ -151,7 +151,7 @@ public class DriverReservationService {
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { listener.onError(error.getMessage()); }
         };
-        ref.addValueEventListener(valueListener);
+        ref.orderByChild("conductorId").equalTo(driverUID).addValueEventListener(valueListener);
         return valueListener;
     }
 
@@ -248,13 +248,18 @@ public class DriverReservationService {
     }
 
     private void updateSimpleCounter(String scheduleId, ReservationUpdateCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("disponibilidadAsientos/" + scheduleId + "/asientosDisponibles");
+        DatabaseReference ref = MyApp.getDatabaseReference("disponibilidadAsientos/" + scheduleId);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Integer current = snapshot.getValue(Integer.class);
-                if (current != null && current < 13) snapshot.getRef().setValue(current + 1).addOnSuccessListener(aVoid -> callback.onSuccess()).addOnFailureListener(e -> callback.onSuccess());
-                else callback.onSuccess();
+                Integer current = snapshot.child("asientosDisponibles").getValue(Integer.class);
+                Integer total = snapshot.child("totalAsientos").getValue(Integer.class);
+                if (total == null) total = 13;
+                if (current != null && current < total) {
+                    snapshot.child("asientosDisponibles").getRef().setValue(current + 1)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess())
+                            .addOnFailureListener(e -> callback.onSuccess());
+                } else callback.onSuccess();
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onSuccess(); }
         });

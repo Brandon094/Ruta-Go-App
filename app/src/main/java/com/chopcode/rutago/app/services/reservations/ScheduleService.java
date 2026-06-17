@@ -22,7 +22,7 @@ public class ScheduleService {
     }
 
     public interface GlobalSeatsCallback {
-        void onSeatsUpdated(java.util.Map<String, Integer> availabilities);
+        void onSeatsUpdated(java.util.Map<String, Integer> availabilities, java.util.Map<String, Integer> totals);
     }
 
     public ScheduleService() {
@@ -34,13 +34,18 @@ public class ScheduleService {
         ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                java.util.Map<String, Integer> map = new java.util.HashMap<>();
+                java.util.Map<String, Integer> availMap = new java.util.HashMap<>();
+                java.util.Map<String, Integer> totalMap = new java.util.HashMap<>();
                 for (DataSnapshot hSnap : snapshot.getChildren()) {
                     String hId = hSnap.getKey();
                     Integer available = hSnap.child("asientosDisponibles").getValue(Integer.class);
-                    if (hId != null && available != null) map.put(hId, available);
+                    Integer total = hSnap.child("totalAsientos").getValue(Integer.class);
+                    if (hId != null) {
+                        if (available != null) availMap.put(hId, available);
+                        if (total != null) totalMap.put(hId, total);
+                    }
                 }
-                callback.onSeatsUpdated(map);
+                callback.onSeatsUpdated(availMap, totalMap);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "Error listening global availability: " + error.getMessage()); }
         };

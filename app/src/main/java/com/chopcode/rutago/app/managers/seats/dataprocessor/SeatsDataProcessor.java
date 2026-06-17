@@ -7,15 +7,14 @@ import com.google.firebase.database.*;
 
 import java.util.*;
 
-    /**
-     * Manager dedicado a manejar la lógica de base de datos de los asientos
-     * Complementa al SeatManager que maneja la interfaz
-     */
+/**
+ * Manager dedicado a manejar la lógica de base de datos de los asientos.
+ * Ahora soporta capacidad dinámica vinculada al vehículo.
+ */
 public class SeatsDataProcessor {
     private static final String TAG = "SeatsDataManager";
-    private DatabaseReference databaseReference;
+    private final DatabaseReference databaseReference;
 
-    // Interfaces para callbacks
     public interface SeatsDataCallback {
         void onSeatsDataLoaded(Set<Integer> occupiedSeats, int availableSeats);
         void onError(String error);
@@ -36,32 +35,18 @@ public class SeatsDataProcessor {
         Log.d(TAG, "✅ SeatsDataManager inicializado");
     }
 
-    /**
-     * 🔥 MÉTODO PRINCIPAL: Obtiene los asientos ocupados y disponibles de Firebase
-     */
     public void loadSeatsDataForSchedule(String horarioId, SeatsDataCallback callback) {
-        Log.d(TAG, "🔍 Cargando datos de asientos para horario: " + horarioId);
-
-        // Referencia a disponibilidad
-        DatabaseReference scheduleRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId);
+        DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
 
         scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()) {
-                    Log.w(TAG, "⚠️ Schedule no encontrado en disponibilidad: " + horarioId + ". Reparando...");
-                    // Si no existe, lo reparamos/creamos en background
-                    repairSeatStructure(horarioId);
-                    
-                    // Pero retornamos éxito con valores por defecto para que la app no falle
                     callback.onSeatsDataLoaded(new HashSet<>(), 13);
                     return;
                 }
 
                 try {
-                    // Obtener asientos ocupados
                     Set<Integer> occupiedSeats = new HashSet<>();
                     DataSnapshot occupiedSnapshot = snapshot.child("asientosOcupados");
 
@@ -70,351 +55,126 @@ public class SeatsDataProcessor {
                             try {
                                 String seatKey = seatSnapshot.getKey();
                                 Boolean isOccupied = seatSnapshot.getValue(Boolean.class);
-
                                 if (seatKey != null && isOccupied != null && isOccupied) {
-                                    int seatNumber = Integer.parseInt(seatKey);
-                                    occupiedSeats.add(seatNumber);
-                                    Log.d(TAG, "   - Asiento ocupado encontrado: " + seatNumber);
+                                    occupiedSeats.add(Integer.parseInt(seatKey));
                                 }
-                            } catch (NumberFormatException e) {
-                                Log.e(TAG, "❌ Error parseando asiento: " + e.getMessage());
-                                MyApp.logError(e);
-                            }
+                            } catch (Exception ignored) {}
                         }
-                    } else {
-                        Log.w(TAG, "⚠️ Nodo 'asientosOcupados' no existe para horario: " + horarioId);
                     }
 
-                    // Obtener asientos disponibles
                     int availableSeats = 0;
                     DataSnapshot availableSnapshot = snapshot.child("asientosDisponibles");
-
                     if (availableSnapshot.exists()) {
                         Integer available = availableSnapshot.getValue(Integer.class);
                         availableSeats = available != null ? available : 0;
-                    } else {
-                        Log.w(TAG, "⚠️ Nodo 'asientosDisponibles' no encontrado, usando valor por defecto");
-                        availableSeats = 13; // Valor por defecto basado en tu DB
                     }
 
-                    Log.d(TAG, "✅ Datos cargados exitosamente:");
-                    Log.d(TAG, "   - Asientos ocupados: " + occupiedSeats.size());
-                    Log.d(TAG, "   - Asientos disponibles: " + availableSeats);
-
-                    // Registrar evento en Analytics
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("horario_id", horarioId);
-                    params.put("ocupados", occupiedSeats.size());
-                    params.put("disponibles", availableSeats);
-                    MyApp.logEvent("datos_asientos_cargados", params);
-
                     callback.onSeatsDataLoaded(occupiedSeats, availableSeats);
-
                 } catch (Exception e) {
-                    Log.e(TAG, "❌ Error procesando datos: " + e.getMessage());
-                    MyApp.logError(e);
-                    callback.onError("Error procesando datos: " + e.getMessage());
+                    callback.onError("Error processing data: " + e.getMessage());
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error cargando datos: " + error.getMessage());
-                MyApp.logError(error.toException());
-                callback.onError("Error cargando datos: " + error.getMessage());
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
-    /**
-     * Verifica si un asiento específico está disponible
-     */
     public void checkSeatAvailability(String horarioId, int seatNumber, SeatAvailabilityCallback callback) {
-        Log.d(TAG, "🔍 Verificando disponibilidad - Schedule: " + horarioId + ", Asiento: " + seatNumber);
-
-        DatabaseReference seatRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosOcupados")
-                .child(String.valueOf(seatNumber));
-
+        DatabaseReference seatRef = databaseReference.child("disponibilidadAsientos").child(horarioId).child("asientosOcupados").child(String.valueOf(seatNumber));
         seatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 boolean isOccupied = snapshot.exists() && Boolean.TRUE.equals(snapshot.getValue(Boolean.class));
-                boolean isAvailable = !isOccupied;
-
-                Log.d(TAG, "✅ Asiento " + seatNumber + " - " +
-                        (isAvailable ? "✅ DISPONIBLE" : "❌ OCUPADO"));
-
-                callback.onSeatAvailable(isAvailable);
+                callback.onSeatAvailable(!isOccupied);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error verificando asiento: " + error.getMessage());
-                MyApp.logError(error.toException());
-                callback.onError("Error verificando asiento: " + error.getMessage());
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
-    /**
-     * 🔥 MÉTODO CRÍTICO: Reservation un asiento (marca como ocupado y actualiza contador)
-     */
     public void reserveSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        Log.d(TAG, "🔄 Iniciando reserva de asiento - Schedule: " + horarioId + ", Asiento: " + seatNumber);
-
-        // Primero verificar si el asiento está disponible
         checkSeatAvailability(horarioId, seatNumber, new SeatAvailabilityCallback() {
             @Override
             public void onSeatAvailable(boolean available) {
-                if (!available) {
-                    Log.e(TAG, "❌ Asiento " + seatNumber + " ya está ocupado");
-                    callback.onError("El asiento ya está ocupado");
-                    return;
-                }
-
-                // Si está disponible, proceder con la reserva
+                if (!available) { callback.onError("Seat already occupied"); return; }
                 performSeatReservation(horarioId, seatNumber, callback);
             }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, "❌ Error verificando disponibilidad: " + error);
-                callback.onError("Error verificando disponibilidad: " + error);
-            }
+            @Override public void onError(String error) { callback.onError(error); }
         });
     }
 
     private void performSeatReservation(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        // ✅ MEJORADO: Marcar el asiento como ocupado de forma individual
-        // No intentamos actualizar el contador total aquí porque da Permission Denied a los pasajeros.
-        // El conductor actualizará el contador total al confirmar la reserva.
-        
-        DatabaseReference seatRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosOcupados")
-                .child(String.valueOf(seatNumber));
-
-        Log.d(TAG, "📡 Marcando asiento A" + seatNumber + " como OCUPADO...");
-
-        seatRef.setValue(true)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Asiento A" + seatNumber + " marcado exitosamente");
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Fallo al marcar asiento: " + e.getMessage());
-                    callback.onError("Error al reservar: " + e.getMessage());
-                });
+        DatabaseReference seatRef = databaseReference.child("disponibilidadAsientos").child(horarioId).child("asientosOcupados").child(String.valueOf(seatNumber));
+        seatRef.setValue(true).addOnSuccessListener(aVoid -> callback.onSuccess()).addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
-    /**
-     * Libera un asiento (para cancelaciones)
-     */
     public void freeSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        Log.d(TAG, "🔄 Liberando asiento - Schedule: " + horarioId + ", Asiento: " + seatNumber);
-
-        DatabaseReference seatRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosOcupados")
-                .child(String.valueOf(seatNumber));
-
-        DatabaseReference availableRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosDisponibles");
-
-        // Primero eliminar el asiento ocupado
-        seatRef.removeValue((error, ref) -> {
-            if (error != null) {
-                Log.e(TAG, "❌ Error liberando asiento: " + error.getMessage());
-                callback.onError("Error liberando asiento: " + error.getMessage());
-                return;
-            }
-
-            Log.d(TAG, "✅ Asiento " + seatNumber + " liberado, actualizando contador...");
-
-            // Luego incrementar el contador
-            availableRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
+        scheduleRef.child("asientosOcupados").child(String.valueOf(seatNumber)).removeValue().addOnSuccessListener(aVoid -> {
+            scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Integer currentAvailable = snapshot.getValue(Integer.class);
-                    if (currentAvailable == null) {
-                        currentAvailable = 0;
+                    Integer available = snapshot.child("asientosDisponibles").getValue(Integer.class);
+                    Integer total = snapshot.child("totalAsientos").getValue(Integer.class);
+                    if (total == null) total = 13;
+                    if (available != null && available < total) {
+                        scheduleRef.child("asientosDisponibles").setValue(available + 1).addOnSuccessListener(v -> callback.onSuccess());
+                    } else {
+                        callback.onSuccess();
                     }
-
-                    int newAvailable = Math.min(13, currentAvailable + 1);
-
-                    Integer finalCurrentAvailable = currentAvailable;
-                    availableRef.setValue(newAvailable)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "✅ Asiento liberado exitosamente:");
-                                Log.d(TAG, "   - Asiento: " + seatNumber);
-                                Log.d(TAG, "   - Disponibles antes: " + finalCurrentAvailable);
-                                Log.d(TAG, "   - Disponibles ahora: " + newAvailable);
-
-                                callback.onSuccess();
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "❌ Error actualizando contador: " + e.getMessage());
-                                callback.onError("Error actualizando contador: " + e.getMessage());
-                            });
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e(TAG, "❌ Error obteniendo contador: " + error.getMessage());
-                    callback.onError("Error obteniendo contador: " + error.getMessage());
-                }
+                @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
             });
-        });
+        }).addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     /**
-     * Verifica y repara la estructura de datos si es necesario
+     * 🔥 NUEVO: Sincroniza la capacidad del vehículo con los horarios asignados.
      */
-    public void repairSeatStructure(String horarioId) {
-        Log.d(TAG, "🔧 Verificando estructura para horario: " + horarioId);
+    public void syncVehicleCapacityToSchedules(List<String> schedules, int capacity) {
+        if (schedules == null || schedules.isEmpty() || capacity <= 0) return;
+        
+        Log.d(TAG, "Syncing capacity " + capacity + " to schedules: " + schedules);
+        DatabaseReference dispRef = databaseReference.child("disponibilidadAsientos");
+        
+        for (String hId : schedules) {
+            DatabaseReference scheduleRef = dispRef.child(hId);
+            scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    int occupiedCount = 0;
+                    if (snapshot.hasChild("asientosOcupados")) {
+                        for (DataSnapshot s : snapshot.child("asientosOcupados").getChildren()) {
+                            if (Boolean.TRUE.equals(s.getValue(Boolean.class))) occupiedCount++;
+                        }
+                    }
+                    
+                    Map<String, Object> updates = new HashMap<>();
+                    updates.put("totalAsientos", capacity);
+                    updates.put("asientosDisponibles", Math.max(0, capacity - occupiedCount));
+                    
+                    scheduleRef.updateChildren(updates);
+                }
+                @Override public void onCancelled(@NonNull DatabaseError error) {}
+            });
+        }
+    }
 
-        DatabaseReference scheduleRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId);
-
+    public void repairSeatStructure(String horarioId, int defaultCapacity) {
+        DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
         scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> updates = new HashMap<>();
-                boolean needsRepair = false;
-
-                // Verificar nodos esenciales
                 if (!snapshot.exists()) {
-                    // Si no existe el horario, crear toda la estructura
-                    updates.put("totalAsientos", 13);
-                    updates.put("asientosDisponibles", 13);
-                    updates.put("asientosOcupados", new HashMap<>());
-                    needsRepair = true;
-                    Log.d(TAG, "   - Creando estructura completa para horario nuevo");
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("totalAsientos", defaultCapacity);
+                    map.put("asientosDisponibles", defaultCapacity);
+                    map.put("asientosOcupados", new HashMap<>());
+                    scheduleRef.setValue(map);
                 } else {
-                    // Verificar cada nodo individualmente
-                    if (!snapshot.hasChild("asientosOcupados")) {
-                        updates.put("asientosOcupados", new HashMap<>());
-                        needsRepair = true;
-                        Log.d(TAG, "   - Agregando asientosOcupados");
-                    }
-
-                    if (!snapshot.hasChild("asientosDisponibles")) {
-                        updates.put("asientosDisponibles", 13);
-                        needsRepair = true;
-                        Log.d(TAG, "   - Agregando asientosDisponibles");
-                    }
-
-                    if (!snapshot.hasChild("totalAsientos")) {
-                        updates.put("totalAsientos", 13);
-                        needsRepair = true;
-                        Log.d(TAG, "   - Agregando totalAsientos");
-                    }
-                }
-
-                if (needsRepair) {
-                    scheduleRef.updateChildren(updates)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "✅ Estructura reparada para horario: " + horarioId);
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "❌ Error reparando estructura: " + e.getMessage());
-                            });
-                } else {
-                    Log.d(TAG, "✅ Estructura ya está correcta para horario: " + horarioId);
+                    if (!snapshot.hasChild("totalAsientos")) scheduleRef.child("totalAsientos").setValue(defaultCapacity);
+                    if (!snapshot.hasChild("asientosDisponibles")) scheduleRef.child("asientosDisponibles").setValue(defaultCapacity);
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error verificando estructura: " + error.getMessage());
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
-    }
-
-    /**
-     * 🔥 NUEVO: Reinicia todos los asientos de todos los horarios (Clean slate para el día)
-     */
-    public void reiniciarTodosLosAsientos(SeatReservationCallback callback) {
-        Log.d(TAG, "🧹 Reiniciando todos los asientos de todos los horarios...");
-
-        DatabaseReference dispRef = databaseReference.child("disponibilidadAsientos");
-
-        dispRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Map<String, Object> updates = new HashMap<>();
-
-                for (DataSnapshot horarioSnap : snapshot.getChildren()) {
-                    String hId = horarioSnap.getKey();
-                    if (hId != null) {
-                        // Limpiar asientos ocupados y resetear disponibles
-                        updates.put(hId + "/asientosOcupados", new HashMap<>());
-                        updates.put(hId + "/asientosDisponibles", 13);
-                    }
-                }
-
-                if (!updates.isEmpty()) {
-                    dispRef.updateChildren(updates)
-                            .addOnSuccessListener(aVoid -> {
-                                Log.d(TAG, "✅ Todos los asientos han sido reiniciados");
-                                if (callback != null) callback.onSuccess();
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "❌ Error reiniciando asientos: " + e.getMessage());
-                                if (callback != null) callback.onError(e.getMessage());
-                            });
-                } else {
-                    if (callback != null) callback.onSuccess();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                if (callback != null) callback.onError(error.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Crea el nodo asientosOcupados si no existe
-     */
-    private void createOccupiedSeatsNode(String horarioId) {
-        DatabaseReference occupiedRef = databaseReference
-                .child("disponibilidadAsientos")
-                .child(horarioId)
-                .child("asientosOcupados");
-
-        occupiedRef.setValue(new HashMap<>())
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Nodo asientosOcupados creado para: " + horarioId);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "❌ Error creando nodo asientosOcupados: " + e.getMessage());
-                });
-    }
-
-    /**
-     * Inicializa todos los horarios en la base de datos
-     */
-    public void initializeAllSchedules() {
-        Log.d(TAG, "🚀 Inicializando todos los horarios...");
-
-        // Lista de horarios de tu base de datos
-        String[] horarios = {"h001", "h002", "h003", "h004", "h005", "h006", "h007", "h008",
-                "h009", "h010", "h011", "h012", "h013", "h014", "h015", "h016", "h017", "h018"};
-
-        for (String horarioId : horarios) {
-            repairSeatStructure(horarioId);
-        }
-
-        Log.d(TAG, "✅ Inicialización de horarios completada");
     }
 }

@@ -35,7 +35,7 @@ public class PassengerReservationService {
 
     public void getBasicHistory(String userId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
-        ref.orderByChild("userId").equalTo(userId)
+        ref.orderByChild("usuarioId").equalTo(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {

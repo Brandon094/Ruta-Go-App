@@ -49,21 +49,26 @@ public class ScheduleViewModel extends ViewModel {
     private void setupAvailabilityListener() {
         availabilityListener = scheduleService.listenGlobalAvailability(new ScheduleService.GlobalSeatsCallback() {
             @Override
-            public void onSeatsUpdated(Map<String, Integer> availabilities) {
-                updateSeats(natagaSchedules, availabilities);
-                updateSeats(laPlataSchedules, availabilities);
+            public void onSeatsUpdated(Map<String, Integer> availabilities, Map<String, Integer> totals) {
+                updateSeats(natagaSchedules, availabilities, totals);
+                updateSeats(laPlataSchedules, availabilities, totals);
             }
         });
     }
 
-    private void updateSeats(MutableLiveData<List<Schedule>> liveData, Map<String, Integer> availabilities) {
+    private void updateSeats(MutableLiveData<List<Schedule>> liveData, Map<String, Integer> availabilities, Map<String, Integer> totals) {
         List<Schedule> current = liveData.getValue();
         if (current == null) return;
         boolean changed = false;
         for (Schedule s : current) {
             Integer available = availabilities.get(s.getId());
+            Integer total = totals.get(s.getId());
             if (available != null && s.getAvailableSeats() != available) {
                 s.setAvailableSeats(available);
+                changed = true;
+            }
+            if (total != null && s.getTotalCapacity() != total) {
+                s.setTotalCapacity(total);
                 changed = true;
             }
         }

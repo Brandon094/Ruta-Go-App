@@ -90,6 +90,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     private void setupObservers() {
         viewModel.getAppOccupiedSeats().observe(this, appSeats -> actualizarMapaAsientos());
         viewModel.getPhysicalOccupiedSeats().observe(this, physicalSeats -> actualizarMapaAsientos());
+        viewModel.getTotalCapacity().observe(this, capacity -> actualizarMapaAsientos());
         viewModel.getAvailableCount().observe(this, count -> tvAvailableSeatsInfo.setText("Available: " + count));
         viewModel.getError().observe(this, msg -> {
             if (msg != null) Snackbar.make(findViewById(android.R.id.content), "Error: " + msg, Snackbar.LENGTH_LONG).show();
@@ -99,10 +100,12 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     private void actualizarMapaAsientos() {
         Set<Integer> app = viewModel.getAppOccupiedSeats().getValue();
         Set<Integer> physical = viewModel.getPhysicalOccupiedSeats().getValue();
+        Integer total = viewModel.getTotalCapacity().getValue();
+        
         seatManager.actualizarEstadoAsientos(
                 app != null ? app : new HashSet<>(),
                 physical != null ? physical : new HashSet<>(),
-                13
+                total != null ? total : 13
         );
     }
 

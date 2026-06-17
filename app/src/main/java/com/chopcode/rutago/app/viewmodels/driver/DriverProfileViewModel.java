@@ -8,6 +8,7 @@ import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehicleService;
+import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final UserService userService;
     private final StorageService storageService;
     private final VehicleService vehicleService;
+    private final SeatsDataProcessor seatsDataProcessor;
 
     // LiveData
     private final MutableLiveData<String> driverNameLiveData = new MutableLiveData<>();
@@ -37,6 +39,7 @@ public class DriverProfileViewModel extends BaseViewModel {
         this.userService = new UserService();
         this.storageService = new StorageService();
         this.vehicleService = new VehicleService();
+        this.seatsDataProcessor = new SeatsDataProcessor();
 
         this.driverNameLiveData.setValue(null);
         this.vehiclePlateLiveData.setValue(null);
@@ -71,6 +74,11 @@ public class DriverProfileViewModel extends BaseViewModel {
                 vehicleCapacityLiveData.postValue(driver.getVehicleCapacity());
                 assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
                 driverLiveData.postValue(driver);
+
+                // Sync dynamic capacity to schedules
+                if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
+                    seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
+                }
 
                 if (driver.getVehiclePlate() != null && !driver.getVehiclePlate().isEmpty()) {
                     cargarVehiculo(driver.getVehiclePlate());

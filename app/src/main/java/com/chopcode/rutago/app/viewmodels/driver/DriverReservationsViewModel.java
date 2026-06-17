@@ -179,7 +179,7 @@ public class DriverReservationsViewModel extends BaseViewModel {
                 }
                 @Override public void onCancelled(DatabaseError databaseError) { isRealTimeListenerSetup = false; }
             };
-            reservationsRef.orderByChild("driverId").equalTo(currentDriverId).addValueEventListener(reservationsListener);
+            reservationsRef.orderByChild("conductorId").equalTo(currentDriverId).addValueEventListener(reservationsListener);
             isRealTimeListenerSetup = true;
         } catch (Exception e) { isRealTimeListenerSetup = false; }
     }

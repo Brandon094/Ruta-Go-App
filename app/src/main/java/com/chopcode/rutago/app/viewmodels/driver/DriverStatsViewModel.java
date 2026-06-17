@@ -9,16 +9,19 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Locale;
 
 /**
- * ViewModel specialized in calculating and managing driver statistics.
+ * ViewModel specialized in calculating and managing driver statistics reactively.
  */
 public class DriverStatsViewModel extends BaseViewModel {
+
+    private static final String TAG = "DriverStatsVM";
 
     private int capacityPerRoute = 13;
     private final DriverReservationService driverReservationService;
@@ -40,6 +43,7 @@ public class DriverStatsViewModel extends BaseViewModel {
 
     private String currentDriverId;
     private List<String> assignedSchedules;
+    private ValueEventListener statsListener;
 
     public DriverStatsViewModel() {
         this.driverReservationService = new DriverReservationService();
@@ -48,19 +52,19 @@ public class DriverStatsViewModel extends BaseViewModel {
     public void setConductorActual(String driverId) {
         if (driverId != null && !driverId.equals(this.currentDriverId)) {
             this.currentDriverId = driverId;
-            calculateRouteStatistics();
+            startRealTimeStats();
         }
     }
 
     public void setHorariosAsignados(List<String> schedules) {
         this.assignedSchedules = schedules;
-        calculateRouteStatistics();
+        startRealTimeStats();
     }
 
     public void setCapacidadVehiculo(int capacity) {
         if (capacity > 0) {
             this.capacityPerRoute = capacity;
-            calculateRouteStatistics();
+            refreshStatistics();
         }
     }
 
@@ -74,48 +78,54 @@ public class DriverStatsViewModel extends BaseViewModel {
     public LiveData<Integer> getReservasRuta2LiveData() { return route2ReservationsLiveData; }
     public LiveData<Integer> getAsientosRuta2LiveData() { return route2AvailableSeatsLiveData; }
 
-    public void calculateRouteStatistics() {
-        if (currentDriverId != null && !currentDriverId.isEmpty()) {
-            loadDriverStatisticsFromFirebase();
-        }
-    }
-
-    private void loadDriverStatisticsFromFirebase() {
-        setLoading(true);
-        driverReservationService.obtenerEstadisticasCompletas(currentDriverId, assignedSchedules,
-                new DriverReservationService.CompleteStatsCallback() {
+    private void startRealTimeStats() {
+        if (currentDriverId == null || currentDriverId.isEmpty()) return;
+        
+        stopRealTimeStats();
+        
+        Log.d(TAG, "Starting real-time stats for: " + currentDriverId);
+        statsListener = driverReservationService.escucharEstadisticasCompletas(currentDriverId, assignedSchedules,
+                new DriverReservationService.RealTimeStatsListener() {
                     @Override
-                    public void onCompleteStatsLoaded(DriverReservationService.CompleteDriverStats stats) {
-                        List<Reservation> todayConfirmed = filterTodayReservations(stats.confirmedReservationsList);
-                        List<Reservation> todayPending = filterTodayReservations(stats.pendingReservationsList);
-
-                        int confirmedCount = todayConfirmed.size();
-                        confirmedReservationsLiveData.postValue(confirmedCount);
-                        earningsLiveData.postValue(calculateTodayEarnings(todayConfirmed));
-
-                        int numRoutes = (assignedSchedules != null && !assignedSchedules.isEmpty()) ? assignedSchedules.size() : 2;
-                        availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - (confirmedCount + todayPending.size())));
-
-                        processReservationsForDetailedStatsOptimized(todayConfirmed, todayPending);
-                        setLoading(false);
+                    public void onStatsUpdated(DriverReservationService.CompleteDriverStats stats) {
+                        processStatsUpdate(stats);
                     }
-                    @Override public void onError(String error) { setError(error); setLoading(false); setDefaultRouteValues(); }
+
+                    @Override
+                    public void onError(String error) {
+                        setError(error);
+                    }
                 });
     }
 
-    private List<Reservation> filterTodayReservations(List<Reservation> reservations) {
-        if (reservations == null) return new ArrayList<>();
-        return new ArrayList<>(reservations);
+    private void stopRealTimeStats() {
+        if (statsListener != null) {
+            com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas").removeEventListener(statsListener);
+            statsListener = null;
+        }
     }
 
-    private double calculateTodayEarnings(List<Reservation> confirmed) {
-        double total = 0.0;
-        for (Reservation r : confirmed) total += r.getPrice();
-        return total;
+    private void processStatsUpdate(DriverReservationService.CompleteDriverStats stats) {
+        // En esta etapa del proyecto, las estadísticas son "históricas" (sin filtro de fecha)
+        // según lo solicitado anteriormente para pruebas.
+        
+        confirmedReservationsLiveData.postValue(stats.confirmedReservations);
+        earningsLiveData.postValue(stats.totalEarnings);
+
+        int numRoutes = (assignedSchedules != null && !assignedSchedules.isEmpty()) ? assignedSchedules.size() : 2;
+        int totalOccupied = stats.confirmedReservations + stats.pendingReservations;
+        availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - totalOccupied));
+
+        processReservationsForDetailedStats(stats.confirmedReservationsList, stats.pendingReservationsList);
     }
 
-    private void processReservationsForDetailedStatsOptimized(List<Reservation> confirmed, List<Reservation> pending) {
-        Log.d("DriverStatsVM", "Processing stats. Confirmed: " + confirmed.size() + ", Pending: " + pending.size());
+    public void calculateRouteStatistics() {
+        // En modo reactivo, esto ya se maneja por el listener.
+        // Pero si es llamado explícitamente, refrescamos.
+        refreshStatistics();
+    }
+
+    private void processReservationsForDetailedStats(List<Reservation> confirmed, List<Reservation> pending) {
         Map<String, Integer> resMap = new HashMap<>();
         Map<String, Integer> occMap = new HashMap<>();
         Map<String, String> names = new HashMap<>();
@@ -123,8 +133,6 @@ public class DriverStatsViewModel extends BaseViewModel {
         for (Reservation r : confirmed) {
             String origin = r.getOrigin();
             String dest = r.getDestination();
-            Log.d("DriverStatsVM", "Processing Confirmed: ID=" + r.getIdReservation() + ", Origin=" + origin + ", Dest=" + dest + ", Price=" + r.getPrice());
-            
             if (origin == null || origin.isEmpty()) origin = "N/A";
             if (dest == null || dest.isEmpty()) dest = "N/A";
             
@@ -137,21 +145,18 @@ public class DriverStatsViewModel extends BaseViewModel {
         for (Reservation r : pending) {
             String origin = r.getOrigin();
             String dest = r.getDestination();
-            Log.d("DriverStatsVM", "Processing Pending: ID=" + r.getIdReservation() + ", Origin=" + origin + ", Dest=" + dest);
-            
             if (origin == null || origin.isEmpty()) origin = "N/A";
             if (dest == null || dest.isEmpty()) dest = "N/A";
-
+            
             String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
             names.put(key, origin + " → " + dest);
             occMap.put(key, occMap.getOrDefault(key, 0) + 1);
         }
         
-        processRouteStatistics(resMap, occMap, names);
+        updateRouteDetails(resMap, occMap, names);
     }
 
-    private void processRouteStatistics(Map<String, Integer> resMap, Map<String, Integer> occMap, Map<String, String> names) {
-        Log.d("DriverStatsVM", "Grouping stats for " + names.size() + " routes");
+    private void updateRouteDetails(Map<String, Integer> resMap, Map<String, Integer> occMap, Map<String, String> names) {
         boolean f1 = false, f2 = false;
         
         for (String key : names.keySet()) {
@@ -160,28 +165,26 @@ public class DriverStatsViewModel extends BaseViewModel {
             int ava = Math.max(0, capacityPerRoute - occ);
             String name = names.get(key);
             
-            Log.d("DriverStatsVM", "Checking route key: [" + key + "] Name: " + name + " (Confirmed: " + res + ", Occupied: " + occ + ")");
-            
-            String k = key.toLowerCase();
-            if (k.contains("natag") && k.contains("la plata")) {
-                if (k.indexOf("natag") < k.indexOf("la plata")) {
-                    Log.d("DriverStatsVM", "Found Route 1 Match");
+            if (key.startsWith("nataga") && key.contains("la plata")) {
+                if (key.indexOf("nataga") < key.indexOf("la plata")) {
                     route1NameLiveData.postValue(name); route1ReservationsLiveData.postValue(res); route1AvailableSeatsLiveData.postValue(ava); f1 = true;
                 } else {
-                    Log.d("DriverStatsVM", "Found Route 2 Match");
                     route2NameLiveData.postValue(name); route2ReservationsLiveData.postValue(res); route2AvailableSeatsLiveData.postValue(ava); f2 = true;
                 }
             }
         }
         
-        if (!f1) { Log.d("DriverStatsVM", "Route 1 defaults"); route1NameLiveData.postValue("Natagá → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute); }
-        if (!f2) { Log.d("DriverStatsVM", "Route 2 defaults"); route2NameLiveData.postValue("La Plata → Natagá"); route2ReservationsLiveData.postValue(0); route2AvailableSeatsLiveData.postValue(capacityPerRoute); }
+        if (!f1) { route1NameLiveData.postValue("Natagá → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute); }
+        if (!f2) { route2NameLiveData.postValue("La Plata → Natagá"); route2ReservationsLiveData.postValue(0); route2AvailableSeatsLiveData.postValue(capacityPerRoute); }
     }
 
-    private void setDefaultRouteValues() {
-        route1NameLiveData.postValue("Natagá → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute);
-        route2NameLiveData.postValue("La Plata → Natagá"); route2ReservationsLiveData.postValue(0); route2AvailableSeatsLiveData.postValue(capacityPerRoute);
+    public void refreshStatistics() { 
+        if (currentDriverId != null) startRealTimeStats(); 
     }
 
-    public void refreshStatistics() { if (currentDriverId != null && !currentDriverId.isEmpty()) loadDriverStatisticsFromFirebase(); }
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        stopRealTimeStats();
+    }
 }

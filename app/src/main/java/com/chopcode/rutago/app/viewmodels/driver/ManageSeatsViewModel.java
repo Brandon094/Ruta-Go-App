@@ -26,6 +26,7 @@ public class ManageSeatsViewModel extends ViewModel {
     private final MutableLiveData<Set<Integer>> appOccupiedSeats = new MutableLiveData<>(new HashSet<>());
     private final MutableLiveData<Set<Integer>> physicalOccupiedSeats = new MutableLiveData<>(new HashSet<>());
     private final MutableLiveData<Integer> availableCount = new MutableLiveData<>(0);
+    private final MutableLiveData<Integer> totalCapacity = new MutableLiveData<>(13);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
@@ -42,6 +43,7 @@ public class ManageSeatsViewModel extends ViewModel {
     public LiveData<Set<Integer>> getAppOccupiedSeats() { return appOccupiedSeats; }
     public LiveData<Set<Integer>> getPhysicalOccupiedSeats() { return physicalOccupiedSeats; }
     public LiveData<Integer> getAvailableCount() { return availableCount; }
+    public LiveData<Integer> getTotalCapacity() { return totalCapacity; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getError() { return error; }
 
@@ -83,7 +85,11 @@ public class ManageSeatsViewModel extends ViewModel {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     Integer disp = snapshot.child("asientosDisponibles").getValue(Integer.class);
+                    Integer total = snapshot.child("totalAsientos").getValue(Integer.class);
+                    
                     availableCount.postValue(disp != null ? disp : 0);
+                    if (total != null && total > 0) totalCapacity.postValue(total);
+
                     Set<Integer> allOccupied = new HashSet<>();
                     for (DataSnapshot s : snapshot.child("asientosOcupados").getChildren()) {
                         if (Boolean.TRUE.equals(s.getValue(Boolean.class))) {

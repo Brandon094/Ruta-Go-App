@@ -116,7 +116,8 @@ public class SeatManager {
     }
 
     /**
-     * Actualiza el estado de los asientos diferenciando entre ocupados por App y Físicos
+     * Actualiza el estado de los asientos diferenciando entre ocupados por App y Físicos.
+     * Ahora también maneja la visibilidad basada en la capacidad real.
      */
     public void actualizarEstadoAsientos(Set<Integer> ocupadosApp, Set<Integer> ocupadosFisicos, int capacidadTotal) {
         this.asientosOcupados = new HashSet<>();
@@ -127,6 +128,12 @@ public class SeatManager {
             int numAsiento = entry.getKey();
             MaterialButton btn = entry.getValue();
 
+            if (numAsiento > capacidadTotal) {
+                btn.setVisibility(View.GONE);
+                continue;
+            }
+
+            btn.setVisibility(View.VISIBLE);
             if (ocupadosApp != null && ocupadosApp.contains(numAsiento)) {
                 marcarAsientoOcupado(btn);
             } else if (ocupadosFisicos != null && ocupadosFisicos.contains(numAsiento)) {
@@ -139,7 +146,7 @@ public class SeatManager {
         // Registrar evento analítico
         analyticsHelper.logAsientosCargados(this.asientosOcupados.size(), capacidadTotal, null);
 
-        Log.d("SeatManager", "✅ Estado de asientos actualizado. Total ocupados: " + this.asientosOcupados.size());
+        Log.d("SeatManager", "✅ Estado de asientos actualizado. Capacidad: " + capacidadTotal + ", Total ocupados: " + this.asientosOcupados.size());
     }
 
     /**
