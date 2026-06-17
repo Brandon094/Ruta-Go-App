@@ -203,7 +203,7 @@ public class NotificationManager {
         data.put("message", body);
         data.put("reservationId", reservaId);
         data.put("receiverId", emisorId); // El emisor original será el receptor de la respuesta
-        data.put("senderName", "User"); // Fallback, se puede mejorar cargando el perfil
+        data.put("senderName", emisorNombre); // Usar el nombre real del emisor
         data.put("target_activity", "chat");
         data.put("timestamp", String.valueOf(System.currentTimeMillis()));
 

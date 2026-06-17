@@ -44,17 +44,19 @@ public class ChatViewModel extends ViewModel {
         
         Log.d("ChatVM", "initChat - resId: " + reservationId + ", receiver: " + rId + ", sender: " + sName);
         
-        if (currentReservationId == null) return;
-        
-        // Corrección de identidad si el receptor es el mismo emisor
-        String myUid = MyApp.getCurrentUserId();
-        if (myUid != null && myUid.equals(receiverId)) {
-            Log.w("ChatVM", "Receiver ID is same as current user. Triggering auto-fix...");
-            receiverId = null; // Forzar recarga
+        if (currentReservationId == null) {
+            Log.e("ChatVM", "initChat failed: reservationId is null");
+            return;
         }
+        
+        String myUid = MyApp.getCurrentUserId();
+        Log.d("ChatVM", "Current User UID: " + myUid);
 
-        // Si faltan datos clave, los cargamos de la reserva
-        if (receiverId == null || senderName == null) {
+        // Si el receptor es el mismo que yo, o si faltan datos, forzamos carga de Firebase
+        boolean needsFix = (myUid != null && myUid.equals(receiverId)) || receiverId == null || senderName == null;
+        
+        if (needsFix) {
+            Log.w("ChatVM", "Identity issue detected. Triggering auto-fix (needsFix=" + needsFix + ")...");
             loadMissingData(reservationId);
         }
         
@@ -62,6 +64,7 @@ public class ChatViewModel extends ViewModel {
     }
 
     private void loadMissingData(String reservationId) {
+        Log.d("ChatVM", "Loading missing data for resId: " + reservationId);
         reservationService.getReservationById(reservationId, new ReservationService.HistoryCallback() {
             @Override
             public void onHistoryLoaded(List<Reservation> reservations) {
@@ -69,21 +72,28 @@ public class ChatViewModel extends ViewModel {
                     Reservation r = reservations.get(0);
                     String currentUid = MyApp.getCurrentUserId();
                     if (currentUid != null) {
+                        // Si soy el pasajero, el receptor es el conductor. Si soy el conductor, el receptor es el pasajero.
                         boolean isPassenger = currentUid.equals(r.getUserId());
                         receiverId = isPassenger ? r.getDriverId() : r.getUserId();
                         senderName = isPassenger ? r.getName() : r.getDriver();
-                        Log.d("ChatVM", "Auto-fixed data. I am " + (isPassenger ? "Passenger" : "Driver") + ". Receiver: " + receiverId);
+                        
+                        Log.d("ChatVM", "✅ Auto-fix success! I am " + (isPassenger ? "Passenger" : "Driver"));
+                        Log.d("ChatVM", "✅ Resolved -> Receiver: " + receiverId + ", SenderName: " + senderName);
                     }
+                } else {
+                    Log.w("ChatVM", "Reservation not found in active node, checking archive...");
+                    checkArchivedForMissingData(reservationId);
                 }
             }
             @Override public void onError(String err) { 
-                Log.e("ChatVM", "Error loading data from reservas: " + err);
+                Log.e("ChatVM", "Error loading from active node: " + err);
                 checkArchivedForMissingData(reservationId);
             }
         });
     }
 
     private void checkArchivedForMissingData(String reservationId) {
+        Log.d("ChatVM", "Checking archive for resId: " + reservationId);
         MyApp.getDatabaseReference("reservas_archivadas/" + reservationId)
                 .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                     @Override
@@ -96,38 +106,50 @@ public class ChatViewModel extends ViewModel {
                                     boolean isPassenger = currentUid.equals(r.getUserId());
                                     receiverId = isPassenger ? r.getDriverId() : r.getUserId();
                                     senderName = isPassenger ? r.getName() : r.getDriver();
-                                    Log.d("ChatVM", "Auto-fixed from ARCHIVE. Receiver: " + receiverId);
+                                    Log.d("ChatVM", "✅ Auto-fix ARCHIVE success! Receiver: " + receiverId);
                                 }
                             }
+                        } else {
+                            Log.e("ChatVM", "❌ FATAL: Reservation not found anywhere!");
                         }
                     }
-                    @Override public void onCancelled(@androidx.annotation.NonNull com.google.firebase.database.DatabaseError error) {}
+                    @Override public void onCancelled(@androidx.annotation.NonNull com.google.firebase.database.DatabaseError error) {
+                        Log.e("ChatVM", "Archive search cancelled: " + error.getMessage());
+                    }
                 });
     }
 
     private void startListening() {
         if (currentReservationId == null) return;
+        Log.d("ChatVM", "Started listening to messages for: " + currentReservationId);
         
         chatListener = chatService.listenMessages(currentReservationId, new ChatService.MessagesCallback() {
             @Override
             public void onMessagesUpdated(List<ChatMessage> list) {
+                Log.d("ChatVM", "Messages updated. Total: " + list.size());
                 messages.postValue(list);
             }
 
-            @Override public void onError(String err) { error.postValue(err); }
+            @Override public void onError(String err) { 
+                Log.e("ChatVM", "Chat Listener Error: " + err);
+                error.postValue(err); 
+            }
         });
     }
 
     public void sendMessage(String text) {
         String uid = MyApp.getCurrentUserId();
-        Log.d("ChatVM", "Attempting to send. uid: " + uid + ", resId: " + currentReservationId + ", receiver: " + receiverId);
+        Log.d("ChatVM", "--- ATTEMPTING SEND ---");
+        Log.d("ChatVM", "UID: " + uid);
+        Log.d("ChatVM", "ResId: " + currentReservationId);
+        Log.d("ChatVM", "ReceiverId: " + receiverId);
+        Log.d("ChatVM", "SenderName: " + senderName);
         
         if (uid != null && currentReservationId != null && receiverId != null) {
             String name = (senderName != null && !senderName.isEmpty()) ? senderName : "Usuario";
             chatService.sendMessage(currentReservationId, uid, name, receiverId, text);
         } else {
-            String errorMsg = "Error: Faltan datos del destinatario";
-            if (currentReservationId == null) errorMsg = "Error: Sesión de chat no válida";
+            String errorMsg = "Error: Faltan datos para enviar (Destinatario: " + (receiverId == null ? "NULL" : "OK") + ")";
             Log.e("ChatVM", errorMsg);
             error.postValue(errorMsg);
         }

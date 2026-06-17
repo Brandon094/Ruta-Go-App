@@ -113,6 +113,9 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                     intent.putExtra("reservationId", reservation.getIdReservation());
                     intent.putExtra("receiverId", reservation.getUserId());
                     intent.putExtra("senderName", reservation.getDriver());
+                    
+                    android.util.Log.d("DriverAdapter", "Chat clicked. resId=" + reservation.getIdReservation() + ", toPassenger=" + reservation.getUserId());
+
                     itemView.getContext().startActivity(intent);
                 });
 
