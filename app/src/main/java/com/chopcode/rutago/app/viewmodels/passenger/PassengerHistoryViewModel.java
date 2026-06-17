@@ -34,10 +34,12 @@ public class PassengerHistoryViewModel extends ViewModel {
 
     private final ReservationService reservationService;
     private List<Reservation> allReservations = new ArrayList<>();
+    private com.google.firebase.database.ValueEventListener historyListener;
     
     // Filter state
     private String filterType = "TODOS";
     private String searchQuery = "";
+    private String currentUserId;
 
     public PassengerHistoryViewModel() {
         this.reservationService = new ReservationService();
@@ -52,9 +54,11 @@ public class PassengerHistoryViewModel extends ViewModel {
 
     public void loadHistory(String userId) {
         if (userId == null || userId.isEmpty()) return;
+        this.currentUserId = userId;
 
+        stopListening();
         isLoading.setValue(true);
-        reservationService.getPassengerHistory(userId, new ReservationService.HistoryCallback() {
+        historyListener = reservationService.listenPassengerHistory(userId, new ReservationService.HistoryCallback() {
             @Override
             public void onHistoryLoaded(List<Reservation> reservations) {
                 allReservations = (reservations != null) ? reservations : new ArrayList<>();
@@ -70,6 +74,13 @@ public class PassengerHistoryViewModel extends ViewModel {
                 isLoading.postValue(false);
             }
         });
+    }
+
+    public void stopListening() {
+        if (historyListener != null && currentUserId != null) {
+            com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas").removeEventListener(historyListener);
+            historyListener = null;
+        }
     }
 
     public void setFilters(String type, String query) {

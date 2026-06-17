@@ -221,6 +221,7 @@
     <string name="datosVehiculo">Datos del vehículo</string>
     <string name="placaVehiculo">Placa: %s</string>
     <string name="placa_label_format">Placa: %s</string>
+    <string name="placa_modelo_format">Placa: %1$s - %2$s</string>
     <string name="nombreConductor">Conductor: %s</string>
     <string name="telefonoC">Teléfono: %s</string>
     <string name="pasajero">Pasajero: %s</string>

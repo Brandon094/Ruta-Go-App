@@ -75,7 +75,6 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
     private ReservationAnalyticsHelper analyticsHelper;
     private SeatManager seatManager;
     private ReservationDataProcessor reservationDataProcessor;
-    private DriverVehicleManager driverVehicleManager;
     private ReservationUserManager reservationUserManager;
     private ReservationNavigationManager reservationNavigationManager; 
     private CreateReservationViewModel viewModel;
@@ -92,12 +91,10 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
 
         seatManager = new SeatManager(this, analyticsHelper);
         seatManager.setSeatSelectionListener(this);
-        driverVehicleManager = new DriverVehicleManager(this, analyticsHelper, seatManager);
         reservationNavigationManager = new ReservationNavigationManager(this, analyticsHelper, seatManager);
 
         getIntentData();
         initViews();
-        driverVehicleManager.setUIReferences(tvDriverName, tvVehicleInfo, tvCapacityInfo);
         setupToolbar();
         setupBasicInfo();
         setupViewModelObservers();
@@ -107,7 +104,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         seatManager.configurarAsientos();
 
         if (scheduleId != null) {
-            loadDriverVehicleInfo();
+            viewModel.loadDriverAndVehicleInfo(scheduleId);
             viewModel.startListeningSeats(scheduleId);
         } else {
             finish();
@@ -127,7 +124,27 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             if (user != null) reservationUserManager.updateFromIntent(user.getId(), user.getNombre(), user.getTelefono());
         });
 
-        viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_SHORT).show(); });
+        viewModel.getCurrentDriver().observe(this, driver -> {
+            if (driver != null) {
+                driverId = driver.getId();
+                driverName = driver.getNombre();
+                driverPhone = driver.getTelefono();
+                tvDriverName.setText(driverName);
+            }
+        });
+
+        viewModel.getCurrentVehicle().observe(this, vehicle -> {
+            if (vehicle != null) {
+                vehiclePlate = vehicle.getPlate();
+                vehicleModel = vehicle.getModel();
+                vehicleCapacity = vehicle.getCapacity();
+                tvVehicleInfo.setText(getString(R.string.placa_modelo_format, vehiclePlate, vehicleModel));
+                tvCapacityInfo.setText(getString(R.string.capacidad, vehicleCapacity));
+                seatManager.actualizarEstadoAsientos(viewModel.getOccupiedSeats().getValue(), vehicleCapacity);
+            }
+        });
+
+        viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_SHORT).show(); });
     }
 
     private void getIntentData() {
@@ -195,33 +212,10 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
     }
 
     private void validateReservation() {
-        updateManagerData();
         String travelDate = FormatUtils.obtenerFechaViaje(scheduleTime);
         Intent intent = reservationDataProcessor.prepareReservationConfirmation(this, seatManager, selectedRoute, scheduleId, scheduleTime, driverName, driverPhone, driverId, vehiclePlate, vehicleModel, vehicleCapacity, reservationUserManager.getUserNombre(), reservationUserManager.getUserTelefono(), reservationUserManager.getUserId(), travelDate);
         if (intent != null) startActivity(intent);
         else Toast.makeText(this, getString(R.string.error_datos_incompletos), Toast.LENGTH_SHORT).show();
-    }
-
-    private void updateManagerData() {
-        if (driverVehicleManager != null) {
-            driverId = driverVehicleManager.getConductorId();
-            driverName = driverVehicleManager.getConductorNombre();
-            driverPhone = driverVehicleManager.getConductorTelefono();
-            vehiclePlate = driverVehicleManager.getPlacaVehiculo();
-            vehicleModel = driverVehicleManager.getModeloVehiculo();
-            vehicleCapacity = driverVehicleManager.getCapacidadVehiculo();
-        }
-    }
-
-    private void loadDriverVehicleInfo() {
-        driverVehicleManager.loadDriverVehicleInfo(scheduleId, new DriverVehicleManager.DriverVehicleCallback() {
-            @Override
-            public void onDriverVehicleLoaded(String cId, String cName, String cPhone, String vPlate, String vModel, Integer vCap) {
-                driverId = cId; driverName = cName; driverPhone = cPhone; vehiclePlate = vPlate; vehicleModel = vModel; vehicleCapacity = vCap;
-                tvAvailableCapacity.setText(getString(R.string.asientos_disponibles_count, seatManager.getCapacidadDisponible()));
-            }
-            @Override public void onError(String error) { Toast.makeText(CreateReservationActivity.this, getString(R.string.error_prefijo, error), Toast.LENGTH_SHORT).show(); }
-        });
     }
 
     @Override public void onSeatSelected(int seatNumber) {}
@@ -237,7 +231,6 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
     @Override protected void onDestroy() {
         super.onDestroy();
         if (seatManager != null) seatManager.cleanup();
-        if (driverVehicleManager != null) driverVehicleManager.cleanup();
         if (expandableSectionManager != null) expandableSectionManager.cleanup();
     }
 

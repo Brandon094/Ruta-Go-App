@@ -93,7 +93,7 @@ public class PassengerProfileViewModel extends ViewModel {
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "Counters error: " + error.getMessage()); }
         };
-        ref.orderByChild("usuarioId").equalTo(currentUserId).addValueEventListener(countersListener);
+        ref.orderByChild("userId").equalTo(currentUserId).addValueEventListener(countersListener);
     }
 
     @Override

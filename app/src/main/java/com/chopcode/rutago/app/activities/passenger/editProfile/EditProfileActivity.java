@@ -77,9 +77,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getUserData().observe(this, user -> {
             if (user != null) {
-                tvNombreActual.setText(user.getNombre() != null ? user.getNombre() : "N/A");
-                tvTelefonoActual.setText(user.getTelefono() != null ? user.getTelefono() : "N/A");
-                tvCorreoActual.setText(user.getEmail() != null ? user.getEmail() : "N/A");
+                tvNombreActual.setText(user.getNombre() != null ? user.getNombre() : getString(R.string.no_disponible));
+                tvTelefonoActual.setText(user.getTelefono() != null ? user.getTelefono() : getString(R.string.no_disponible));
+                tvCorreoActual.setText(user.getEmail() != null ? user.getEmail() : getString(R.string.no_disponible));
                 etCorreo.setText(user.getEmail());
             }
         });

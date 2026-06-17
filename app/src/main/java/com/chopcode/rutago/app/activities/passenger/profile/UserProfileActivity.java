@@ -111,9 +111,9 @@ public class UserProfileActivity extends AppCompatActivity {
                 headerContent.setVisibility(View.VISIBLE);
                 cardPerfil.setVisibility(View.VISIBLE);
 
-                tvNombre.setText(user.getNombre() != null ? user.getNombre() : "User");
-                tvCorreo.setText(user.getEmail() != null ? user.getEmail() : "N/A");
-                tvTelefono.setText(user.getTelefono() != null ? user.getTelefono() : "N/A");
+                tvNombre.setText(user.getNombre() != null ? user.getNombre() : getString(R.string.pasajero));
+                tvCorreo.setText(user.getEmail() != null ? user.getEmail() : getString(R.string.no_disponible));
+                tvTelefono.setText(user.getTelefono() != null ? user.getTelefono() : getString(R.string.no_disponible));
                 ImageUtils.loadProfilePhoto(this, user.getPhotoUrl(), ivProfilePicture);
             }
         });

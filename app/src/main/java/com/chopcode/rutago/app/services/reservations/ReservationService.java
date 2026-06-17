@@ -214,7 +214,7 @@ public class ReservationService {
 
     public void getPassengerHistory(String passengerId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
-        ref.orderByChild("usuarioId").equalTo(passengerId)
+        ref.orderByChild("userId").equalTo(passengerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -230,5 +230,30 @@ public class ReservationService {
                     }
                     @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
                 });
+    }
+
+    /**
+     * ⚡ Escucha reactiva del historial de un pasajero.
+     */
+    public ValueEventListener listenPassengerHistory(String passengerId, HistoryCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("reservas");
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Reservation> list = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Reservation r = ds.getValue(Reservation.class);
+                    if (r != null && passengerId.equals(r.getUserId())) {
+                        r.setIdReservation(ds.getKey());
+                        list.add(r);
+                    }
+                }
+                Collections.sort(list, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
+                callback.onHistoryLoaded(list);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        };
+        ref.orderByChild("userId").equalTo(passengerId).addValueEventListener(listener);
+        return listener;
     }
 }
