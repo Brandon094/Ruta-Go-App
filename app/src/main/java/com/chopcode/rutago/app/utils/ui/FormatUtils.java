@@ -197,4 +197,17 @@ public class FormatUtils {
                 .replace("ñ", "n")
                 .trim();
     }
+
+    /**
+     * Formatea un timestamp largo a hora 12h legible.
+     */
+    public static String formatearHora12hDeTimestamp(long timestamp) {
+        if (timestamp <= 0) return "--:--";
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            return sdf.format(new Date(timestamp));
+        } catch (Exception e) {
+            return "--:--";
+        }
+    }
 }

@@ -74,6 +74,12 @@ public class TicketActivity extends AppCompatActivity {
         tvRoute.setText(origin + " → " + dest);
         tvStatus.setText(status != null ? status.toUpperCase() : "N/A");
         
+        findViewById(R.id.btnChatTicket).setOnClickListener(v -> {
+            Intent chatIntent = new Intent(this, ChatActivity.class);
+            chatIntent.putExtra("reservationId", reservationId);
+            startActivity(chatIntent);
+        });
+
         if (timestamp > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", new Locale("es", "ES"));
             tvDate.setText(sdf.format(new Date(timestamp)));

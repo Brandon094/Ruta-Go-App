@@ -287,11 +287,23 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChatTicket"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:text="Chat con el conductor"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/primary_500"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_email"
+                app:iconTint="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnShareTicket"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/ticket_share"
                 android:textColor="@color/primary_500"
                 app:cornerRadius="12dp"

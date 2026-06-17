@@ -144,6 +144,12 @@
             android:label="Tiquete de Viaje"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
+        <activity
+            android:name=".activities.common.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
     </application>
 
 </manifest>
