@@ -66,7 +66,7 @@ public class ReservationService {
     public void updateSeatAvailability(Context context, String scheduleId, int selectedSeat,
                                                  String origin, String destination, String estimatedTime,
                                                  String paymentMethod, String reservationStatus,
-                                                 String plate, Double price,
+                                                 String plate, String model, Double price,
                                                  String driver, String driverId, String phoneC,
                                                  ReservationCallback callback) {
 
@@ -80,7 +80,7 @@ public class ReservationService {
                         }
                         getUserDataAndContinue(context, MyApp.getCurrentUserId(), scheduleId, selectedSeat,
                                 origin, destination, estimatedTime, paymentMethod, reservationStatus,
-                                plate, price, driver, driverId, phoneC, callback);
+                                plate, model, price, driver, driverId, phoneC, callback);
                     }
                     @Override public void onError(String error) { callback.onError(error); }
                 });
@@ -89,7 +89,7 @@ public class ReservationService {
     private void getUserDataAndContinue(Context context, String uid, String scheduleId, int selectedSeat,
                                                String origin, String destination, String estimatedTime,
                                                String paymentMethod, String reservationStatus,
-                                               String plate, Double price, String driver, 
+                                               String plate, String model, Double price, String driver, 
                                                String driverId, String phoneC,
                                                ReservationCallback callback) {
 
@@ -109,7 +109,7 @@ public class ReservationService {
                             public void onSuccess() {
                                 registerReservation(context, uid, name, phone, email, scheduleId, selectedSeat,
                                         origin, destination, estimatedTime, paymentMethod, reservationStatus,
-                                        plate, price, driver, driverId, phoneC, callback);
+                                        plate, model, price, driver, driverId, phoneC, callback);
                             }
                             @Override public void onError(String error) { callback.onError(error); }
                         });
@@ -128,14 +128,14 @@ public class ReservationService {
     private void registerReservation(Context context, String uid, String name, String phone, String email,
                                   String scheduleId, int selectedSeat, String origin, String destination,
                                   String estimatedTime, String paymentMethod, String reservationStatus,
-                                  String plate, double price, String driver, String driverId, String phoneC,
+                                  String plate, String model, double price, String driver, String driverId, String phoneC,
                                   ReservationCallback callback) {
         
         String idReservation = UUID.randomUUID().toString();
         long reservationDate = System.currentTimeMillis();
 
         Reservation reservation = new Reservation(
-                idReservation, uid, scheduleId, selectedSeat, driver, driverId, phoneC, plate, price,
+                idReservation, uid, scheduleId, selectedSeat, driver, driverId, phoneC, plate, model, price,
                 origin, destination, estimatedTime, paymentMethod, reservationStatus, reservationDate,
                 name, phone, email, null, null
         );

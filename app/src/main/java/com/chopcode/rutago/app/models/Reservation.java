@@ -21,6 +21,7 @@ public class Reservation {
     public String scheduleId;
     public String driverId;
     public String vehicleId;
+    public String vehicleModel; // ✅ Nuevo campo
     public String routeId;
     public String routeName;
     public String driver; // Nombre del conductor
@@ -44,7 +45,7 @@ public class Reservation {
      * Constructor completo para creación manual de reservas.
      */
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
-                       String driver, String driverId, String phoneC, String vehicleId, double price,
+                       String driver, String driverId, String phoneC, String vehicleId, String vehicleModel, double price,
                        String origin, String destination, String estimatedTime, String paymentMethod,
                        String reservationStatus, long reservationDate, String name, String phone,
                        String email, String routeId, String routeName) {
@@ -56,6 +57,7 @@ public class Reservation {
         this.driverId = driverId;
         this.phoneC = phoneC;
         this.vehicleId = vehicleId;
+        this.vehicleModel = vehicleModel;
         this.price = price;
         this.origin = origin;
         this.destination = destination;
@@ -74,8 +76,13 @@ public class Reservation {
     // 🌍 ESTRATEGIA DE COMPATIBILIDAD BILINGÜE (Mapeo Dual)
     // =========================================================================
     
-    // Estas funciones permiten que Firebase mapee llaves en español (ej: "idReserva")
-    // directamente a nuestras variables en inglés (idReservation).
+    // ... anteriores ...
+
+    @PropertyName("modeloVehiculo") // ✅ Mapeo ES
+    public void setModeloVehiculo(String val) { if (val != null) this.vehicleModel = val; }
+
+    @PropertyName("vehicleModel") // ✅ Mapeo EN
+    public void setVehicleModelEn(String val) { if (val != null) this.vehicleModel = val; }
 
     @PropertyName("idReserva")
     public void setIdReserva(String val) { if (val != null) this.idReservation = val; }
@@ -94,6 +101,9 @@ public class Reservation {
     
     @PropertyName("conductor")
     public void setConductor(String val) { if (val != null) this.driver = val; }
+
+    @PropertyName("driver") // ✅ Mapeo explícito para llaves en Inglés
+    public void setDriverName(String val) { if (val != null) this.driver = val; }
     
     @PropertyName("estadoReserva")
     public void setEstadoReserva(String val) { if (val != null) this.reservationStatus = val; }
@@ -103,6 +113,9 @@ public class Reservation {
     
     @PropertyName("nombre")
     public void setNombre(String val) { if (val != null) this.name = val; }
+
+    @PropertyName("name") // ✅ Mapeo explícito para llaves en Inglés
+    public void setPassengerName(String val) { if (val != null) this.name = val; }
     
     @PropertyName("telefono")
     public void setTelefono(String val) { if (val != null) this.phone = val; }

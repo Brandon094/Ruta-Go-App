@@ -83,12 +83,15 @@ public class ReservationDataProcessor {
         intent.putExtra("vehiculoModelo", vModel != null ? vModel : "N/A");
         intent.putExtra("vehiculoCapacidad", vCap != null ? vCap : seatManager.getCapacidadTotal());
 
-        intent.putExtra("usuarioNombre", uName != null ? uName : "User");
         intent.putExtra("usuarioTelefono", uPhone != null ? uPhone : "N/A");
         intent.putExtra("usuarioId", uId);
 
+        // ✅ CORRECCIÓN: Usar la flecha correcta (→) para separar origen y destino
         if (route != null) {
-            String[] parts = route.split(" -> ");
+            String separator = " → "; 
+            if (!route.contains(separator)) separator = " -> "; // Fallback por si acaso
+            
+            String[] parts = route.split(separator);
             if (parts.length == 2) {
                 intent.putExtra("origen", parts[0].trim());
                 intent.putExtra("destino", parts[1].trim());

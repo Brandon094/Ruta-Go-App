@@ -96,6 +96,7 @@ public class ConfirmReservationViewModel extends ViewModel {
                 method,
                 "Por confirmar",
                 (String) data.get("vehiculoPlaca"),
+                (String) data.get("vehiculoModelo"), // ✅ Pasar el modelo
                 (double) data.get("precio"),
                 (String) data.get("conductorNombre"),
                 (String) data.get("conductorId"),
