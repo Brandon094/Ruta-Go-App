@@ -9,7 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.services.auth.LoginService;
+import com.chopcode.rutago.app.services.auth.EmailLoginService;
+import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
@@ -17,11 +18,7 @@ import com.google.firebase.database.DatabaseReference;
  * 🔑 Login ViewModel
  * 
  * Gestiona la lógica de negocio para la autenticación de usuarios.
- * Responsabilidades:
- * - Orquestar el inicio de sesión mediante el LoginService.
- * - Sincronizar el token de Firebase Cloud Messaging (FCM) tras un login exitoso
- *   para habilitar notificaciones push.
- * - Manejar los estados de carga y reportar errores de credenciales a la UI.
+ * Refactorizado para separar responsabilidades entre Email y Google.
  */
 public class LoginViewModel extends ViewModel {
     private static final String TAG = "LoginViewModel";
@@ -30,39 +27,52 @@ public class LoginViewModel extends ViewModel {
     private final MutableLiveData<String> loginError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
-    private LoginService loginService;
+    private EmailLoginService emailLoginService;
+    private GoogleLoginService googleLoginService;
 
     public LiveData<String> getLoginSuccess() { return loginSuccess; }
     public LiveData<String> getLoginError() { return loginError; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void init(Activity activity) {
-        if (loginService == null) {
-            loginService = new LoginService(activity);
+        if (emailLoginService == null) {
+            emailLoginService = new EmailLoginService(activity);
+        }
+        if (googleLoginService == null) {
+            googleLoginService = new GoogleLoginService(activity);
         }
     }
 
     public void loginWithEmail(String email, String password) {
         isLoading.setValue(true);
-        loginService.loginWithEmail(email, password, new LoginService.LoginCallback() {
+        emailLoginService.login(email, password, new EmailLoginService.LoginCallback() {
             @Override public void onLoginSuccess(String userType) { syncFCMToken(userType); }
-            @Override public void onLoginFailure(String error) { isLoading.postValue(false); loginError.postValue(error); }
+            @Override public void onLoginFailure(String error) { 
+                isLoading.postValue(false); 
+                loginError.postValue(error); 
+            }
         });
     }
 
     public void loginWithGoogle() {
         isLoading.setValue(true);
-        loginService.loginWithGoogle(new LoginService.LoginCallback() {
+        googleLoginService.startSignInFlow(new GoogleLoginService.LoginCallback() {
             @Override public void onLoginSuccess(String userType) { syncFCMToken(userType); }
-            @Override public void onLoginFailure(String error) { isLoading.postValue(false); loginError.postValue(error); }
+            @Override public void onLoginFailure(String error) { 
+                isLoading.postValue(false); 
+                loginError.postValue(error); 
+            }
         });
     }
 
     public void handleGoogleResult(Intent data) {
         isLoading.setValue(true);
-        loginService.handleGoogleResult(data, new LoginService.LoginCallback() {
+        googleLoginService.handleSignInResult(data, new GoogleLoginService.LoginCallback() {
             @Override public void onLoginSuccess(String userType) { syncFCMToken(userType); }
-            @Override public void onLoginFailure(String error) { isLoading.postValue(false); loginError.postValue(error); }
+            @Override public void onLoginFailure(String error) { 
+                isLoading.postValue(false); 
+                loginError.postValue(error); 
+            }
         });
     }
 

@@ -33,7 +33,7 @@ import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CreateReservationActivity;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.permissions.PermissionManager;
-import com.chopcode.rutago.app.services.auth.LoginService;
+import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.chopcode.rutago.app.viewmodels.common.LoginViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -298,7 +298,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LoginService.REQ_ONE_TAP) {
+        if (requestCode == GoogleLoginService.REQ_ONE_TAP) {
             viewModel.handleGoogleResult(data);
         }
     }
