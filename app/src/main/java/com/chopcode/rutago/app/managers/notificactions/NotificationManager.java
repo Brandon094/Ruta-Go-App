@@ -98,6 +98,9 @@ public class NotificationManager {
         notificationData.put("title", title);
         notificationData.put("message", body);
         notificationData.put("type", "nueva_reserva");
+        notificationData.put("pasajero_nombre", pasajeroNombre);
+        notificationData.put("asiento_nombre", "A" + asiento);
+        notificationData.put("ruta_nombre", ruta);
         notificationData.put("reserva_asiento", "A" + asiento);
         notificationData.put("reserva_pasajero", pasajeroNombre);
         notificationData.put("target_activity", "driver_home");
@@ -136,6 +139,7 @@ public class NotificationManager {
         notificationData.put("type", "reserva_confirmada");
         notificationData.put("reserva_asiento", "A" + asiento);
         notificationData.put("conductor_nombre", conductorNombre);
+        notificationData.put("ruta_nombre", ruta);
         notificationData.put("target_activity", "passenger_history");
         notificationData.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
@@ -168,6 +172,7 @@ public class NotificationManager {
         notificationData.put("title", title);
         notificationData.put("message", body);
         notificationData.put("type", "reserva_cancelada");
+        notificationData.put("ruta_nombre", ruta);
         notificationData.put("motivo", motivo);
         notificationData.put("target_activity", "passenger_history");
         notificationData.put("timestamp", String.valueOf(System.currentTimeMillis()));

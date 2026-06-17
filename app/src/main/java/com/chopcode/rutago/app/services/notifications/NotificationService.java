@@ -19,6 +19,13 @@ import com.chopcode.rutago.app.R;
 
 import java.util.Map;
 
+/**
+ * 🔔 Notification Service
+ * 
+ * Centraliza la recepción de mensajes de Firebase (FCM).
+ * Implementa el estándar de estilo Premium para todas las notificaciones
+ * y gestiona el Deep Linking para dirigir al usuario a la pantalla correcta.
+ */
 public class NotificationService extends FirebaseMessagingService {
 
     private static final String TAG = "NotificationService";
@@ -31,31 +38,31 @@ public class NotificationService extends FirebaseMessagingService {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "🔄 Inicializando NotificationService");
-        // Crear el canal inmediatamente
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             android.app.NotificationManager notificationManager =
                     (android.app.NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             createNotificationChannel(notificationManager);
         }
     }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "📨 MENSAJE RECIBIDO DE: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload
+        // Prioridad 1: Si el mensaje contiene DATA, manejamos la lógica personalizada
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "📊 Datos del mensaje: " + remoteMessage.getData());
             handleDataMessage(remoteMessage.getData());
+            return; 
         }
 
-        // Check if message contains a notification payload
+        // Prioridad 2: Si es una notificación estándar (Notification Payload)
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "🔔 Notificación - Título: " + remoteMessage.getNotification().getTitle());
-            Log.d(TAG, "🔔 Notificación - Cuerpo: " + remoteMessage.getNotification().getBody());
+            Log.d(TAG, "🔔 Notificación estándar detectada");
             sendNotification(
                     remoteMessage.getNotification().getTitle(),
                     remoteMessage.getNotification().getBody(),
-                    remoteMessage.getData()
+                    null
             );
         }
     }
@@ -68,36 +75,37 @@ public class NotificationService extends FirebaseMessagingService {
 
     private void handleDataMessage(Map<String, String> data) {
         try {
+            String type = data.get("type");
             String title = data.get("title");
             String message = data.get("message");
-            String type = data.get("type");
 
-            Log.d(TAG, "📝 Procesando datos - Título: " + title);
-            Log.d(TAG, "📝 Procesando datos - Mensaje: " + message);
-            Log.d(TAG, "📝 Procesando datos - Tipo: " + type);
+            Log.d(TAG, "📝 Procesando mensaje de tipo: " + type);
 
-            // Handle different notification types with custom inviting messages
+            // Estandarización de contenidos según tipo (Clean Architecture)
             if (type != null) {
                 switch (type) {
                     case "reserva_confirmada":
-                        handleReservaConfirmada(data);
-                        return; // Evitar duplicar
-                    case "nueva_reserva":
-                        handleNuevaReserva(data);
-                        return;
-                    case "promotion":
-                        handlePromotionNotification(data);
-                        return;
-                    case "alert":
-                        handleAlertNotification(data);
+                        title = getString(R.string.notif_confirmada_title);
+                        message = getString(R.string.notif_confirmada_body, 
+                                data.get("ruta_nombre"), data.get("conductor_nombre"));
                         break;
-                    case "update":
-                        handleUpdateNotification(data);
+                    case "nueva_reserva":
+                        title = getString(R.string.notif_nueva_reserva_driver_title);
+                        message = getString(R.string.notif_nueva_reserva_body, 
+                                data.get("pasajero_nombre"), data.get("asiento_nombre"), data.get("ruta_nombre"));
+                        break;
+                    case "promotion":
+                        title = getString(R.string.notif_promotion_title);
+                        message = getString(R.string.notif_promotion_body);
+                        break;
+                    case "reserva_cancelada":
+                        title = getString(R.string.notif_cancelada_title);
+                        message = getString(R.string.notif_cancelada_body, data.get("ruta_nombre"));
                         break;
                 }
             }
 
-            // Si no hay tipo específico pero tiene título y mensaje, usar los datos
+            // Si tenemos el contenido listo, disparamos la UI
             if (title != null && message != null) {
                 sendNotification(title, message, data);
             }
@@ -107,46 +115,18 @@ public class NotificationService extends FirebaseMessagingService {
         }
     }
 
-    private void handleAlertNotification(Map<String, String> data) {
-        Log.d(TAG, "🔄 Processing alert notification");
-    }
-
-    private void handleUpdateNotification(Map<String, String> data) {
-        Log.d(TAG, "🔄 Processing update notification");
-    }
-
-    private void handlePromotionNotification(Map<String, String> data) {
-        Log.d(TAG, "🔄 Processing promotion notification");
-        String title = data.get("title") != null ? data.get("title") : "¡Mira esto! ✨";
-        String message = data.get("message") != null ? data.get("message") : "Tenemos algo nuevo para ti en RutaGo. ¡Ven a verlo!";
-        sendNotification(title, message, data);
-    }
-
-    private void handleReservaConfirmada(Map<String, String> data) {
-        Log.d(TAG, "✅ Processing reserva confirmada notification");
-        String title = "¡Reservation Confirmada! ✅";
-        String message = "Tu cupo en RutaGo ya está asegurado. ¡Entra para ver los detalles de tu viaje!";
-        sendNotification(title, message, data);
-    }
-
-    private void handleNuevaReserva(Map<String, String> data) {
-        Log.d(TAG, "🚗 Processing nueva reserva notification");
-        String title = "¡Nueva Reservation Recibida! 🚗";
-        String message = "Un pasajero ha solicitado un puesto. ¡Entra ahora para gestionar tu próxima ruta!";
-        sendNotification(title, message, data);
-    }
-
+    /**
+     * Construye y muestra la notificación con el estilo PREMIUM unificado.
+     */
     private void sendNotification(String title, String messageBody, Map<String, String> data) {
         try {
-            Log.d(TAG, "🎯 Creando notificación con Deep Link: " + title);
+            Log.d(TAG, "🎯 Generando notificación Premium: " + title);
 
             // 1. Determinar el destino (Deep Linking)
-            Class<?> targetClass = LoginActivity.class; // Destino por defecto
+            Class<?> targetClass = LoginActivity.class; 
             
             if (data != null && data.containsKey("target_activity")) {
                 String target = data.get("target_activity");
-                Log.d(TAG, "📍 Destino detectado: " + target);
-                
                 if (target != null) {
                     switch (target) {
                         case "driver_home":
@@ -165,57 +145,47 @@ public class NotificationService extends FirebaseMessagingService {
             Intent intent = new Intent(this, targetClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-            // Pasar todos los datos al intent por si la Activity los necesita
             if (data != null) {
                 for (Map.Entry<String, String> entry : data.entrySet()) {
                     intent.putExtra(entry.getKey(), entry.getValue());
                 }
             }
 
-            // Usar un requestCode único para evitar que se pisen los Intents
             int requestCode = (int) System.currentTimeMillis();
             PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCode, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            // ✅ PERSONALIZACIÓN PREMIUM:
-            // 1. Ícono pequeño (Campanita blanca sobre transparente)
-            int smallIcon = R.drawable.ic_notification;
-            
-            // 2. Ícono grande (Logo oficial circular de RutaGo)
+            // ✅ IDENTIDAD VISUAL PREMIUM RUTA-GO
+            int smallIcon = R.drawable.ic_notification; // Campanita blanca minimalista
             android.graphics.Bitmap largeIcon = android.graphics.BitmapFactory.decodeResource(
-                    getResources(), R.drawable.logo_main);
+                    getResources(), R.drawable.logo_main); // Logo oficial circular
 
             NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat.Builder(this, CHANNEL_ID)
                             .setSmallIcon(smallIcon)
                             .setLargeIcon(largeIcon)
-                            .setColor(getResources().getColor(R.color.primary_500))
-                            .setContentTitle(title != null ? title : getString(R.string.app_name))
+                            .setColor(getResources().getColor(R.color.primary_500)) // Naranja corporativo
+                            .setContentTitle(title)
                             .setContentText(messageBody)
-                            .setSubText(getString(R.string.app_name)) // 👈 Etiqueta premium en la parte superior
-                            .setStyle(new NotificationCompat.BigTextStyle()
-                                    .bigText(messageBody))
+                            .setSubText(getString(R.string.app_name)) // Etiqueta superior
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody)) // Texto expandible
                             .setAutoCancel(true)
                             .setSound(defaultSoundUri)
                             .setContentIntent(pendingIntent)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setVibrate(new long[]{0, 500, 250, 500}) // Patrón de vibración más elegante
+                            .setVibrate(new long[]{0, 500, 250, 500})
                             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
             android.app.NotificationManager notificationManager =
                     (android.app.NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            // Create notification channel for Android O and above
             createNotificationChannel(notificationManager);
 
-            // Generate unique ID for each notification
             int notificationId = (int) System.currentTimeMillis();
             notificationManager.notify(notificationId, notificationBuilder.build());
-
-            Log.d(TAG, "✅ Notificación mostrada: " + title);
 
         } catch (Exception e) {
             Log.e(TAG, "❌ Error creando notificación: " + e.getMessage());
@@ -229,23 +199,20 @@ public class NotificationService extends FirebaseMessagingService {
                     CHANNEL_NAME,
                     android.app.NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription("Channel for Transporte notifications");
+            channel.setDescription("Canal premium para notificaciones de Ruta-Go");
             channel.enableVibration(true);
             channel.setVibrationPattern(new long[]{0, 500, 200, 500});
             notificationManager.createNotificationChannel(channel);
-            Log.d(TAG, "✅ Canal de notificaciones creado");
         }
     }
 
     private void sendRegistrationToServer(String token) {
-        // ✅ REPARADO: Obtener ID directamente de Firebase Auth si es posible
         String userId = null;
         com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
         
         if (user != null) {
             userId = user.getUid();
         } else {
-            // Intentar por SharedPreferences
             SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             userId = prefs.getString(KEY_USER_ID, null);
         }
@@ -255,29 +222,6 @@ public class NotificationService extends FirebaseMessagingService {
             com.google.firebase.database.DatabaseReference db = com.chopcode.rutago.app.config.MyApp.getDatabaseReference("");
             db.child("usuarios").child(userId).child("tokenFCM").setValue(token);
             db.child("conductores").child(userId).child("tokenFCM").setValue(token);
-        } else {
-            Log.w(TAG, "⚠️ Token generado pero el usuario no ha iniciado sesión.");
-        }
-    }
-
-    /**
-     * ✅ NUEVO MÉTODO: Obtener el ID del usuario actual desde SharedPreferences
-     */
-    private String obtenerUserIdActual() {
-        try {
-            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            String userId = prefs.getString(KEY_USER_ID, null);
-
-            if (userId != null) {
-                Log.d(TAG, "👤 UserId obtenido: " + userId);
-                return userId;
-            } else {
-                Log.w(TAG, "⚠️ UserId no encontrado en SharedPreferences");
-                return "current_user_id"; // Fallback
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "❌ Error obteniendo userId: " + e.getMessage());
-            return "current_user_id";
         }
     }
 }

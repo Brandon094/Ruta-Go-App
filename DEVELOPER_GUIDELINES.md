@@ -10,7 +10,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Nombre de la App:** Ruta-Go
 - **Package Name:** `com.chopcode.rutago.app`
 - **Identidad Visual:**
-  - `logo_icon`: Imagotipo principal de la marca.
+  - `logo_icon`: Imagotipo principal de la marca (Premium).
   - **Colores:** Primario (`primary_500`), Secundario (`secondary_900`).
 
 ## 3. Stack Tecnológico Obligatorio
@@ -37,6 +37,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 ### C. UI/UX
 - **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales y estados de carga en los ViewModels.
 - **Reactividad:** Los Dashboards deben reaccionar a cambios en la base de datos instantáneamente. Evitar `addListenerForSingleValueEvent` en pantallas principales.
+- **Notificaciones:** Seguir el estándar Premium unificado en `NotificationService` con identidad visual oficial.
 
 ### D. Documentación Técnica (Mantenimiento)
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
@@ -50,22 +51,21 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - `conductores/$uid`: Perfil del conductor, referencia al `vehiculoId` y `horariosAsignados`.
 - `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacidad`).
 - `reservas/`: Nodo plano indexado por `driverId`, `userId` y `reservationDate`.
+- `reservas_archivadas/`: Nodo histórico para auditoría y rendimiento.
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Campos: `asientosDisponibles`, `totalAsientos`, `asientosOcupados`.
 
 ## 7. Estado Actual del Proyecto (Contexto para Desarrolladores)
-- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades en ambos flujos (Pasajero/Conductor).
-- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe en modelos para datos antiguos.
-- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando la consistencia de los contadores y evitando la sobreventa.
-- **Dashboards:** Reactivos para Conductor y Pasajero. El historial del pasajero ahora es 100% reactivo en tiempo real.
-- **Capacidad Dinámica:** Implementado "Sync Atómico" que propaga la capacidad del vehículo a los horarios operativos en tiempo real.
-- **UI:** 100% de los strings externalizados a `strings.xml`, traducidos al español y agrupados por módulo.
-- **Seguridad:** Reglas de Firebase optimizadas con índices bilingües y validaciones de tipos de datos.
-- **Git:** `.gitignore` optimizado para excluir basura de backups y archivos sensibles.
+- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades.
+- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe en modelos.
+- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando consistencia total.
+- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas (>30 días) y límites de carga en UI (50-100 registros).
+- **Notificaciones:** Sistema Premium de Notificaciones Push con Deep Linking (navegación directa a Dashboard/Historial).
+- **Dashboard Pasajero:** Ahora es 100% reactivo en historial y contadores.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
-- **Hito 1:** Auditoría y archivado automático de reservas con más de 30 días de antigüedad para optimizar el rendimiento.
-- **Hito 2:** Implementar sistema de Notificaciones Push con Deep Linking para navegación directa a reservas.
-- **Hito 3:** Chat en tiempo real entre pasajero y conductor post-confirmación.
+- **Hito 1:** Chat en tiempo real entre pasajero y conductor post-confirmación.
+- **Hito 2:** Implementar sistema de pagos integrados (Pasarela de pagos).
+- **Hito 3:** Panel de analíticas avanzadas para el dueño del proyecto.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*
