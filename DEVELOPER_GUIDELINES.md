@@ -29,7 +29,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Recursos:** El 100% de los textos deben estar en `strings.xml` organizados por pantalla/módulo.
 
 ### B. Gestión de Datos (Firebase)
-- **Modelos Bilingües:** Los modelos usan "Mapeo Dual" con `@PropertyName` para garantizar compatibilidad entre datos históricos (Español) y el nuevo estándar del código (Inglés).
+- **Modelos Bilingües:** Los modelos usan "Mapeo Dual" con `@PropertyName` y campos privados para garantizar compatibilidad entre datos históricos (Español) y el nuevo estándar del código (Inglés).
 - **Escucha Global:** Para listas de alta frecuencia, usar un solo listener global en el Service/ViewModel para optimizar el consumo de datos.
 - **Robustez de Servicios:** Los servicios (`Service`) deben usar el contexto global de la aplicación (`MyApp.getInstance()`) para operaciones de UI, evitando crashes.
 - **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `driverId` en vehículos y cumplir con campos obligatorios).
@@ -55,12 +55,12 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Campos: `asientosDisponibles`, `totalAsientos`, `asientosOcupados`.
 
 ## 7. Estado Actual del Proyecto (Contexto para Desarrolladores)
-- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades.
-- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe en modelos.
-- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando consistencia total.
-- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas (>30 días) y límites de carga en UI (50-100 registros).
+- **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards y historiales 100% reactivos.
+- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos.
+- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando consistencia total y evitando sobreventa.
+- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas (>30 días) y límites de carga inteligentes en UI (50 registros).
 - **Notificaciones:** Sistema Premium de Notificaciones Push con Deep Linking (navegación directa a Dashboard/Historial).
-- **Dashboard Pasajero:** Ahora es 100% reactivo en historial y contadores.
+- **Tiquete Digital:** Implementada visualización de comprobante de viaje detallado accesible desde ambos roles (Pasajero/Conductor).
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
 - **Hito 1:** Chat en tiempo real entre pasajero y conductor post-confirmación.
