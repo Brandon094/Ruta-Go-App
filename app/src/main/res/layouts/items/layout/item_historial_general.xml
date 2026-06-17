@@ -119,6 +119,8 @@
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     tools:text="Natagá → La Plata" />
+
+                <textView
             </LinearLayout>
 
             <!-- Fila 3: Detalles (Asiento y Precio) -->
@@ -174,13 +176,40 @@
             tools:visibility="visible">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerTiquete"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="Tiquete"
+                app:icon="@drawable/ic_route"
+                app:iconSize="16dp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/primary_500"
+                android:textColor="@color/primary_500" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnIrAlChat"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="Chat"
+                app:icon="@drawable/ic_email"
+                app:iconSize="16dp"
+                app:cornerRadius="8dp"
+                app:backgroundTint="@color/primary_500"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAccionPrincipal"
                 style="@style/AppButton.Primary.XSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Calificar"
-                android:visibility="gone"
-                tools:visibility="visible" />
+                android:visibility="gone" />
 
         </LinearLayout>
 

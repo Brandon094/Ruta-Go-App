@@ -63,7 +63,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
         private final TextView tvFecha, tvEstado, tvNombrePersona, tvTelefono, tvRuta, tvPuesto, tvPrecio;
         private final ImageView ivPersonaIcon;
         private final LinearLayout layoutAcciones;
-        private final MaterialButton btnAccionPrincipal;
+        private final MaterialButton btnAccionPrincipal, btnVerTiquete, btnIrAlChat;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,12 +77,17 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
             ivPersonaIcon = itemView.findViewById(R.id.ivPersonaIcon);
             layoutAcciones = itemView.findViewById(R.id.layoutAcciones);
             btnAccionPrincipal = itemView.findViewById(R.id.btnAccionPrincipal);
+            btnVerTiquete = itemView.findViewById(R.id.btnVerTiquete);
+            btnIrAlChat = itemView.findViewById(R.id.btnIrAlChat);
         }
 
         public void bind(Reservation reservation) {
             try {
-                // Evento de clic para abrir el tiquete
-                itemView.setOnClickListener(v -> {
+                String status = reservation.getReservationStatus();
+                boolean isConfirmed = "Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status);
+
+                // Configurar clics
+                View.OnClickListener openTicket = v -> {
                     Intent intent = new Intent(itemView.getContext(), TicketActivity.class);
                     intent.putExtra("origin", reservation.getOrigin());
                     intent.putExtra("destination", reservation.getDestination());
@@ -94,13 +99,21 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                     intent.putExtra("passengerName", reservation.getName());
                     intent.putExtra("driverName", reservation.getDriver());
                     intent.putExtra("vehiclePlate", reservation.getVehicleId());
-                    intent.putExtra("vehicleModel", reservation.getVehicleModel()); // ✅ Usar el nuevo campo
+                    intent.putExtra("vehicleModel", reservation.getVehicleModel());
+                    intent.putExtra("reservationId", reservation.getIdReservation());
+                    itemView.getContext().startActivity(intent);
+                };
+
+                itemView.setOnClickListener(openTicket);
+                btnVerTiquete.setOnClickListener(openTicket);
+
+                btnIrAlChat.setOnClickListener(v -> {
+                    Intent intent = new Intent(itemView.getContext(), com.chopcode.rutago.app.activities.common.ChatActivity.class);
                     intent.putExtra("reservationId", reservation.getIdReservation());
                     itemView.getContext().startActivity(intent);
                 });
 
                 tvFecha.setText(sdf.format(new Date(reservation.getReservationDate())));
-                String status = reservation.getReservationStatus();
                 tvEstado.setText(status);
                 tvEstado.setTextColor(getColorStatus(status));
                 tvNombrePersona.setText(reservation.getDriver());
@@ -112,14 +125,17 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 tvPuesto.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrecio.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
-                boolean canRate = ("Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status)) && !reservation.isRated();
+                // Mostrar/Ocultar sección de acciones
+                layoutAcciones.setVisibility(View.VISIBLE);
+                btnIrAlChat.setVisibility(isConfirmed ? View.VISIBLE : View.GONE);
+                
+                boolean canRate = isConfirmed && !reservation.isRated();
                 if (canRate) {
-                    layoutAcciones.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setText(itemView.getContext().getString(R.string.calificar_viaje_btn));
                     btnAccionPrincipal.setOnClickListener(v -> showRatingDialog(reservation));
                 } else {
-                    layoutAcciones.setVisibility(View.GONE);
+                    btnAccionPrincipal.setVisibility(View.GONE);
                 }
             } catch (Exception e) { Log.e("PassengerHistory", "Error bind: " + e.getMessage()); }
         }

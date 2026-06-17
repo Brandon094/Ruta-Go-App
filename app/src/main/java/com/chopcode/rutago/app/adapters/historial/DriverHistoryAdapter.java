@@ -16,6 +16,7 @@ import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.common.TicketActivity;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
     static class ReservationViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvDate, tvStatus, tvPersonName, tvPhone, tvRoute, tvSeat, tvPrice;
         private final LinearLayout actionsLayout;
+        private final MaterialButton btnVerTiquete, btnIrAlChat;
         private final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy - HH:mm", new Locale("es", "ES"));
 
         public ReservationViewHolder(@NonNull View itemView) {
@@ -74,12 +76,17 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
             tvSeat = itemView.findViewById(R.id.tvPuesto);
             tvPrice = itemView.findViewById(R.id.tvPrecio);
             actionsLayout = itemView.findViewById(R.id.layoutAcciones);
+            btnVerTiquete = itemView.findViewById(R.id.btnVerTiquete);
+            btnIrAlChat = itemView.findViewById(R.id.btnIrAlChat);
         }
 
         public void bind(Reservation reservation) {
             try {
-                // Evento de clic para abrir el tiquete (Conductor)
-                itemView.setOnClickListener(v -> {
+                String status = reservation.getReservationStatus();
+                boolean isConfirmed = "Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status);
+
+                // Configurar clics
+                View.OnClickListener openTicket = v -> {
                     Intent intent = new Intent(itemView.getContext(), TicketActivity.class);
                     intent.putExtra("origin", reservation.getOrigin());
                     intent.putExtra("destination", reservation.getDestination());
@@ -91,14 +98,21 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                     intent.putExtra("passengerName", reservation.getName());
                     intent.putExtra("driverName", reservation.getDriver());
                     intent.putExtra("vehiclePlate", reservation.getVehicleId());
-                    intent.putExtra("vehicleModel", reservation.getVehicleModel()); // ✅ Usar el nuevo campo
+                    intent.putExtra("vehicleModel", reservation.getVehicleModel());
+                    intent.putExtra("reservationId", reservation.getIdReservation());
+                    itemView.getContext().startActivity(intent);
+                };
+
+                itemView.setOnClickListener(openTicket);
+                btnVerTiquete.setOnClickListener(openTicket);
+
+                btnIrAlChat.setOnClickListener(v -> {
+                    Intent intent = new Intent(itemView.getContext(), com.chopcode.rutago.app.activities.common.ChatActivity.class);
                     intent.putExtra("reservationId", reservation.getIdReservation());
                     itemView.getContext().startActivity(intent);
                 });
 
                 tvDate.setText(sdf.format(new Date(reservation.getReservationDate())));
-                
-                String status = reservation.getReservationStatus();
                 tvStatus.setText(status);
                 tvStatus.setTextColor(getStatusColor(status));
 
@@ -108,7 +122,9 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 tvSeat.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrice.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
-                actionsLayout.setVisibility(View.GONE);
+                // Mostrar acciones
+                actionsLayout.setVisibility(View.VISIBLE);
+                btnIrAlChat.setVisibility(isConfirmed ? View.VISIBLE : View.GONE);
 
             } catch (Exception e) {
                 Log.e(TAG, "Error bind: " + e.getMessage());
