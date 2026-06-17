@@ -74,13 +74,9 @@ public class UserService {
 
     public void updateProfilePicture(String userId, String photoUrl, String node, UserUpdateCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference(node + "/" + userId);
-        ref.child("photoUrl").setValue(photoUrl).addOnSuccessListener(aVoid -> {
-            if (node.equals("conductores")) updateProfilePicture(userId, photoUrl, "usuarios", new UserUpdateCallback() {
-                @Override public void onSuccess() { callback.onSuccess(); }
-                @Override public void onError(String error) { callback.onSuccess(); }
-            });
-            else callback.onSuccess();
-        }).addOnFailureListener(e -> callback.onError(e.getMessage()));
+        ref.child("photoUrl").setValue(photoUrl)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
@@ -200,12 +196,8 @@ public class UserService {
         updates.put("telefono", phone);
         updates.put("placaVehiculo", plate);
         if (assignedSchedules != null) updates.put("horariosAsignados", assignedSchedules);
-        ref.updateChildren(updates).addOnSuccessListener(aVoid -> {
-            updateUserProfile(userId, name, phone, new UserUpdateCallback() {
-                @Override public void onSuccess() { callback.onSuccess(); }
-                @Override public void onError(String error) { callback.onError("Driver updated but user error: " + error); }
-            });
-        }).addOnFailureListener(e -> callback.onError(e.getMessage()));
+        ref.updateChildren(updates).addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     public void loadAssignedRoutes(List<String> assignedSchedules, RoutesCallback callback) {

@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.manager.ManageSeatsActivity;
-import com.chopcode.rutago.app.activities.driver.profile.DriverProfileActivity;
 import com.chopcode.rutago.app.adapters.reservas.ReservationAdapter;
 import com.chopcode.rutago.app.adapters.rutas.RouteAdapter;
 import com.chopcode.rutago.app.adapters.rutas.SelectRouteAdapter;
@@ -37,9 +36,6 @@ import com.chopcode.rutago.app.viewmodels.driver.DriverReservationsViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

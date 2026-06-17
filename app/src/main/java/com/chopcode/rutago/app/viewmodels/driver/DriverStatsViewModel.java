@@ -17,7 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ViewModel specialized in calculating and managing driver statistics reactively.
+ * 📊 Driver Stats ViewModel
+ * 
+ * Este ViewModel se encarga de la lógica reactiva del Dashboard del conductor.
+ * Su propósito principal es calcular ingresos, asientos libres y reservas 
+ * de forma dinámica basándose en los cambios de Firebase en tiempo real.
  */
 public class DriverStatsViewModel extends BaseViewModel {
 
@@ -26,17 +30,17 @@ public class DriverStatsViewModel extends BaseViewModel {
     private int capacityPerRoute = 13;
     private final DriverReservationService driverReservationService;
 
-    // General Statistics
+    // --- Estadísticas Generales (Dashboard Superior) ---
     private final MutableLiveData<Integer> confirmedReservationsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> availableSeatsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Double> earningsLiveData = new MutableLiveData<>(0.0);
 
-    // Route 1 Statistics
+    // --- Estadísticas Ruta 1 (Natagá → La Plata) ---
     private final MutableLiveData<String> route1NameLiveData = new MutableLiveData<>("Natagá → La Plata");
     private final MutableLiveData<Integer> route1ReservationsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> route1AvailableSeatsLiveData = new MutableLiveData<>(13);
 
-    // Route 2 Statistics
+    // --- Estadísticas Ruta 2 (La Plata → Natagá) ---
     private final MutableLiveData<String> route2NameLiveData = new MutableLiveData<>("La Plata → Natagá");
     private final MutableLiveData<Integer> route2ReservationsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> route2AvailableSeatsLiveData = new MutableLiveData<>(13);
@@ -49,6 +53,9 @@ public class DriverStatsViewModel extends BaseViewModel {
         this.driverReservationService = new DriverReservationService();
     }
 
+    /**
+     * Establece el ID del conductor y arranca la escucha en tiempo real.
+     */
     public void setConductorActual(String driverId) {
         if (driverId != null && !driverId.equals(this.currentDriverId)) {
             this.currentDriverId = driverId;
@@ -56,11 +63,17 @@ public class DriverStatsViewModel extends BaseViewModel {
         }
     }
 
+    /**
+     * Vincula los horarios asignados para filtrar estadísticas específicas.
+     */
     public void setHorariosAsignados(List<String> schedules) {
         this.assignedSchedules = schedules;
         startRealTimeStats();
     }
 
+    /**
+     * Actualiza la capacidad del cálculo dinámico según el vehículo cargado.
+     */
     public void setCapacidadVehiculo(int capacity) {
         if (capacity > 0) {
             this.capacityPerRoute = capacity;
@@ -68,6 +81,7 @@ public class DriverStatsViewModel extends BaseViewModel {
         }
     }
 
+    // Getters para LiveData
     public LiveData<Integer> getReservasConfirmadasLiveData() { return confirmedReservationsLiveData; }
     public LiveData<Integer> getAsientosDisponiblesLiveData() { return availableSeatsLiveData; }
     public LiveData<Double> getIngresosLiveData() { return earningsLiveData; }
@@ -78,6 +92,9 @@ public class DriverStatsViewModel extends BaseViewModel {
     public LiveData<Integer> getReservasRuta2LiveData() { return route2ReservationsLiveData; }
     public LiveData<Integer> getAsientosRuta2LiveData() { return route2AvailableSeatsLiveData; }
 
+    /**
+     * Inicia el listener de Firebase para que las estadísticas salten al instante.
+     */
     private void startRealTimeStats() {
         if (currentDriverId == null || currentDriverId.isEmpty()) return;
         
@@ -98,6 +115,9 @@ public class DriverStatsViewModel extends BaseViewModel {
                 });
     }
 
+    /**
+     * Remueve el listener de Firebase para liberar recursos.
+     */
     private void stopRealTimeStats() {
         if (statsListener != null) {
             com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas").removeEventListener(statsListener);
@@ -105,31 +125,36 @@ public class DriverStatsViewModel extends BaseViewModel {
         }
     }
 
+    /**
+     * Procesa los datos crudos de Firebase y los convierte en LiveData para la UI.
+     */
     private void processStatsUpdate(DriverReservationService.CompleteDriverStats stats) {
-        // En esta etapa del proyecto, las estadísticas son "históricas" (sin filtro de fecha)
-        // según lo solicitado anteriormente para pruebas.
-        
+        // En esta etapa del proyecto, las estadísticas son históricas (según solicitud)
         confirmedReservationsLiveData.postValue(stats.confirmedReservations);
         earningsLiveData.postValue(stats.totalEarnings);
 
+        // Cálculo dinámico de asientos disponibles globales
         int numRoutes = (assignedSchedules != null && !assignedSchedules.isEmpty()) ? assignedSchedules.size() : 2;
         int totalOccupied = stats.confirmedReservations + stats.pendingReservations;
         availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - totalOccupied));
 
+        // Procesar desglose individual por ruta
         processReservationsForDetailedStats(stats.confirmedReservationsList, stats.pendingReservationsList);
     }
 
     public void calculateRouteStatistics() {
-        // En modo reactivo, esto ya se maneja por el listener.
-        // Pero si es llamado explícitamente, refrescamos.
         refreshStatistics();
     }
 
+    /**
+     * Agrupa las reservas por origen/destino usando normalización de texto (quitar tildes).
+     */
     private void processReservationsForDetailedStats(List<Reservation> confirmed, List<Reservation> pending) {
-        Map<String, Integer> resMap = new HashMap<>();
-        Map<String, Integer> occMap = new HashMap<>();
-        Map<String, String> names = new HashMap<>();
+        Map<String, Integer> resMap = new HashMap<>(); // Conteo de reservas
+        Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total
+        Map<String, String> names = new HashMap<>();  // Nombres descriptivos
         
+        // Procesar confirmadas (suman a ingresos y ocupación)
         for (Reservation r : confirmed) {
             String origin = r.getOrigin();
             String dest = r.getDestination();
@@ -142,6 +167,7 @@ public class DriverStatsViewModel extends BaseViewModel {
             occMap.put(key, occMap.getOrDefault(key, 0) + 1);
         }
         
+        // Procesar pendientes (solo suman a ocupación)
         for (Reservation r : pending) {
             String origin = r.getOrigin();
             String dest = r.getDestination();
@@ -156,6 +182,9 @@ public class DriverStatsViewModel extends BaseViewModel {
         updateRouteDetails(resMap, occMap, names);
     }
 
+    /**
+     * Determina qué ruta es la 1 (Ida) y cuál es la 2 (Regreso) basándose en el nombre normalizado.
+     */
     private void updateRouteDetails(Map<String, Integer> resMap, Map<String, Integer> occMap, Map<String, String> names) {
         boolean f1 = false, f2 = false;
         
@@ -165,6 +194,7 @@ public class DriverStatsViewModel extends BaseViewModel {
             int ava = Math.max(0, capacityPerRoute - occ);
             String name = names.get(key);
             
+            // Lógica de detección de ruta Natagá -> La Plata
             if (key.startsWith("nataga") && key.contains("la plata")) {
                 if (key.indexOf("nataga") < key.indexOf("la plata")) {
                     route1NameLiveData.postValue(name); route1ReservationsLiveData.postValue(res); route1AvailableSeatsLiveData.postValue(ava); f1 = true;
@@ -174,6 +204,7 @@ public class DriverStatsViewModel extends BaseViewModel {
             }
         }
         
+        // Valores por defecto si no hay datos
         if (!f1) { route1NameLiveData.postValue("Natagá → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute); }
         if (!f2) { route2NameLiveData.postValue("La Plata → Natagá"); route2ReservationsLiveData.postValue(0); route2AvailableSeatsLiveData.postValue(capacityPerRoute); }
     }

@@ -133,20 +133,8 @@ public class EditDriverProfileViewModel extends ViewModel {
 
             DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
             conductorRef.setValue(driver).addOnSuccessListener(aVoid2 -> {
-                
-                DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
-                Map<String, Object> userUpdates = new HashMap<>();
-                userUpdates.put("nombre", driver.getNombre());
-                userUpdates.put("telefono", driver.getTelefono());
-                
-                userRef.updateChildren(userUpdates).addOnSuccessListener(aVoid3 -> {
-                    isLoading.postValue(false);
-                    updateSuccess.postValue(true);
-                }).addOnFailureListener(e -> {
-                    error.postValue("Error in users node: " + e.getMessage());
-                    isLoading.postValue(false);
-                });
-
+                isLoading.postValue(false);
+                updateSuccess.postValue(true);
             }).addOnFailureListener(e -> {
                 error.postValue("Error in drivers node: " + e.getMessage());
                 isLoading.postValue(false);
