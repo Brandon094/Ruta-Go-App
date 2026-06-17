@@ -52,18 +52,20 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacidad`).
 - `reservas/`: Nodo plano indexado por `driverId`, `userId` y `reservationDate`.
 - `reservas_archivadas/`: Nodo histórico para auditoría y rendimiento.
+- `chats/`: Mensajería en tiempo real vinculada al `reservationId`.
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Campos: `asientosDisponibles`, `totalAsientos`, `asientosOcupados`.
 
 ## 7. Estado Actual del Proyecto (Contexto para Desarrolladores)
 - **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards y historiales 100% reactivos.
 - **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos.
-- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando consistencia total y evitando sobreventa.
-- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas (>30 días) y límites de carga inteligentes en UI (50 registros).
-- **Notificaciones:** Sistema Premium de Notificaciones Push con Deep Linking (navegación directa a Dashboard/Historial).
-- **Tiquete Digital:** Implementada visualización de comprobante de viaje detallado accesible desde ambos roles (Pasajero/Conductor).
+- **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService` para mayor granularidad y mantenimiento.
+- **Mensajería:** Implementación del **Chat en Tiempo Real** para reservas confirmadas. Incluye notificaciones Push mediante `NotificationManager` y navegación directa (Deep Linking) desde el sistema de notificaciones. *Estado: En fase de estabilización para el rol del conductor.*
+- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos.
+- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas y límites de carga inteligentes en UI (50 registros).
+- **Tiquete Digital:** Implementada visualización de comprobante de viaje detallado con acceso directo al chat integrado.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
-- **Hito 1:** Chat en tiempo real entre pasajero y conductor post-confirmación.
+- **Hito 1 (Pendiente):** Estabilizar respuesta del conductor en el chat y asegurar entrega de notificaciones al pasajero.
 - **Hito 2:** Implementar sistema de pagos integrados (Pasarela de pagos).
 - **Hito 3:** Panel de analíticas avanzadas para el dueño del proyecto.
 
