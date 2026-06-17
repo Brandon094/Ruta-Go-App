@@ -131,7 +131,8 @@ public class DriverReservationService {
 
     /**
      * ⚡ Escucha cambios en tiempo real de todas las reservas del conductor.
-     * Se usa para mantener el Dashboard actualizado sin intervención del usuario.
+     * Se usa para mantener el Dashboard actualizado.
+     * LÍMITE: Solo carga las últimas 50 para optimizar rendimiento.
      */
     public ValueEventListener escucharEstadisticasCompletas(String driverUID, @Nullable List<String> schedules, RealTimeStatsListener listener) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
@@ -156,7 +157,6 @@ public class DriverReservationService {
                             double price = r.getPrice();
                             stats.totalReservations++;
                             
-                            // Clasificación por estados
                             if ("Confirmada".equalsIgnoreCase(status)) {
                                 stats.confirmedReservations++;
                                 stats.totalEarnings += price;
@@ -171,14 +171,24 @@ public class DriverReservationService {
                         }
                     }
                 }
-                stats.allReservations = all;
+                
+                // Ordenar por fecha (más reciente arriba)
+                Collections.sort(all, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
+                
+                // Truncar lista para la UI si es muy larga
+                if (all.size() > 50) {
+                    stats.allReservations = new ArrayList<>(all.subList(0, 50));
+                } else {
+                    stats.allReservations = all;
+                }
+                
                 listener.onStatsUpdated(stats);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { listener.onError(error.getMessage()); }
         };
         
-        // Registrar el listener con el índice optimizado en inglés
-        ref.orderByChild("driverId").equalTo(driverUID).addValueEventListener(valueListener);
+        // Registrar el listener con el índice optimizado y límite de descarga
+        ref.orderByChild("driverId").equalTo(driverUID).limitToLast(100).addValueEventListener(valueListener);
         return valueListener;
     }
 

@@ -234,7 +234,8 @@ public class ReservationService {
     }
 
     /**
-     * ⚡ Escucha reactiva del historial de un pasajero.
+     * ⚡ Escucha reactiva del historial de un pasajero con límite de seguridad.
+     * Trae solo las últimas 50 reservas para optimizar memoria.
      */
     public ValueEventListener listenPassengerHistory(String passengerId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
@@ -250,11 +251,19 @@ public class ReservationService {
                     }
                 }
                 Collections.sort(list, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
+                
+                // Aplicar límite de UI: Solo las últimas 50
+                if (list.size() > 50) {
+                    list = list.subList(0, 50);
+                }
+                
                 callback.onHistoryLoaded(list);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         };
-        ref.orderByChild("userId").equalTo(passengerId).addValueEventListener(listener);
+        
+        // Optimizamos la consulta de Firebase para que no procese toda la tabla
+        ref.orderByChild("userId").equalTo(passengerId).limitToLast(100).addValueEventListener(listener);
         return listener;
     }
 }

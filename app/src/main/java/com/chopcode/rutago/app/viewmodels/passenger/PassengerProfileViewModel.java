@@ -78,7 +78,7 @@ public class PassengerProfileViewModel extends ViewModel {
                 int confirmed = 0, canceled = 0, total = 0;
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     Reservation r = snap.getValue(Reservation.class);
-                    if (r != null && currentUserId.equals(r.getUserId())) {
+                    if (r != null) {
                         total++;
                         String status = r.getReservationStatus();
                         if (status != null) {
@@ -93,7 +93,8 @@ public class PassengerProfileViewModel extends ViewModel {
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "Counters error: " + error.getMessage()); }
         };
-        ref.orderByChild("userId").equalTo(currentUserId).addValueEventListener(countersListener);
+        // Optimización: Usar índice 'userId' y traer solo las últimas 100 para estadísticas actuales
+        ref.orderByChild("userId").equalTo(currentUserId).limitToLast(100).addValueEventListener(countersListener);
     }
 
     @Override
