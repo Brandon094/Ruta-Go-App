@@ -114,12 +114,12 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
 
         viewModel.getIsProcessing().observe(this, processing -> {
             btnConfirmReservation.setEnabled(!processing);
-            btnConfirmReservation.setText(processing ? "Processing..." : "Confirm Reservation");
+            btnConfirmReservation.setText(processing ? getString(R.string.procesando) : getString(R.string.confirmar_reserva_btn));
         });
 
         viewModel.getConfirmationSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "✅ Reservation successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.reserva_exitosa), Toast.LENGTH_SHORT).show();
                 navigateToHome();
             }
         });
@@ -143,7 +143,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
     @Override public void onConfirmButtonClicked() { viewModel.confirmReservation(); }
     @Override public void onCancelButtonClicked() { dialogManager.showCancellationDialog(this); }
     @Override public void onPaymentMethodChanged(String method) { viewModel.setPaymentMethod(method); }
-    @Override public void onHelpRequested() { Toast.makeText(this, "How can we help you?", Toast.LENGTH_SHORT).show(); }
+    @Override public void onHelpRequested() { Toast.makeText(this, getString(R.string.ayuda_mensaje), Toast.LENGTH_SHORT).show(); }
     @Override public void onPositiveAction() { finish(); }
     @Override public void onNegativeAction() { }
 

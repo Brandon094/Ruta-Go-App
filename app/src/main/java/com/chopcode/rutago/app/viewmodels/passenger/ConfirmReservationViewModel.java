@@ -9,6 +9,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.services.reservations.ReservationService;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class ConfirmReservationViewModel extends ViewModel {
         if (userId == null) return;
         userService.loadUserData(userId, new UserService.UserDataCallback() {
             @Override public void onUserDataLoaded(User user) { currentUser.postValue(user); }
-            @Override public void onError(String errorMsg) { error.postValue("Error loading user: " + errorMsg); }
+            @Override public void onError(String errorMsg) { error.postValue(MyApp.getAppContext().getString(R.string.error_cargar_usuario, errorMsg)); }
         });
     }
 
@@ -82,7 +83,7 @@ public class ConfirmReservationViewModel extends ViewModel {
         Map<String, Object> data = reservationData.getValue();
         User user = currentUser.getValue();
         String method = paymentMethod.getValue();
-        if (data == null || user == null) { error.setValue("Incomplete data"); return; }
+        if (data == null || user == null) { error.setValue(MyApp.getAppContext().getString(R.string.error_datos_incompletos)); return; }
 
         isProcessing.setValue(true);
         reservationService.updateSeatAvailability(

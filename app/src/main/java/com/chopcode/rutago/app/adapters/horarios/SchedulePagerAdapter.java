@@ -10,6 +10,7 @@ import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.fragments.HorarioFragment;
 import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.models.User;
+import com.chopcode.rutago.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,9 @@ public class SchedulePagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         HorarioFragment fragment;
         if (position == 0) {
-            fragment = HorarioFragment.newInstance(natagaList, "Natagá -> La Plata");
+            fragment = HorarioFragment.newInstance(natagaList, parentActivity.getString(R.string.nataga));
         } else {
-            fragment = HorarioFragment.newInstance(laPlataList, "La Plata -> Natagá");
+            fragment = HorarioFragment.newInstance(laPlataList, parentActivity.getString(R.string.laPlata));
         }
 
         if (parentActivity != null) {

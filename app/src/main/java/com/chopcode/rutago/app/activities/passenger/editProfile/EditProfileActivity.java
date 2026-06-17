@@ -91,13 +91,13 @@ public class EditProfileActivity extends AppCompatActivity {
 
         viewModel.getUpdateSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.perfil_actualizado), Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
         viewModel.getError().observe(this, errorMsg -> {
-            if (errorMsg != null) Toast.makeText(this, "Error: " + errorMsg, Toast.LENGTH_LONG).show();
+            if (errorMsg != null) Toast.makeText(this, getString(R.string.error_prefijo, errorMsg), Toast.LENGTH_LONG).show();
         });
     }
 

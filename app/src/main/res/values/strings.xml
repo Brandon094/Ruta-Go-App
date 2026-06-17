@@ -482,4 +482,33 @@
     <string name="capacidad_label">Capacidad</string>
     <string name="anio_label">Año</string>
     <string name="editar_perfil_conductor">Editar Perfil del Conductor</string>
+
+    <!-- PASSENGER FLOW NEW STRINGS -->
+    <string name="error_no_internet">Sin conexión a internet</string>
+    <string name="historial_viajes_count">Historial de Viajes (%d)</string>
+    <string name="buscar_ruta_conductor">Buscar ruta o conductor…</string>
+    <string name="procesando">Procesando…</string>
+    <string name="confirmar_reserva_btn">Confirmar Reserva</string>
+    <string name="reserva_exitosa">✅ Reserva realizada con éxito</string>
+    <string name="ayuda_mensaje">¿En qué podemos ayudarte?</string>
+    <string name="asientos_disponibles_count">Disponibles: %d</string>
+    <string name="ruta_directa_tiempo">Ruta Directa - Tiempo est.: %s</string>
+    <string name="error_datos_incompletos">Error: Datos de reserva incompletos</string>
+    <string name="cargando_punto">Cargando…</string>
+    <string name="ruta_favorita_label">Ruta Favorita: %s</string>
+    <string name="solicitud_enviada_revision">Solicitud enviada. Tu cuenta será revisada.</string>
+    <string name="perfil_actualizado">Perfil actualizado correctamente</string>
+    <string name="error_prefijo">Error: %s</string>
+    <string name="calificar_viaje_btn">Calificar Viaje</string>
+    <string name="conductor_label">Conductor: %s</string>
+    <string name="enviar_calificacion">Enviar Calificación</string>
+    <string name="seleccione_puntuacion">Por favor selecciona una puntuación</string>
+    <string name="gracias_calificacion">¡Gracias por tu calificación!</string>
+    <string name="asientos_disponibles_label_adapter">%d asientos disponibles</string>
+    <string name="error_cargar_usuario">Error al cargar usuario: %s</string>
+    <string name="usuario_no_autenticado">Usuario no autenticado</string>
+    <string name="nombre_obligatorio">El nombre es obligatorio</string>
+    <string name="telefono_obligatorio">El teléfono es obligatorio</string>
+    <string name="error_actualizar">Error al actualizar: %s</string>
+    <string name="inicie_sesion_reservar">Por favor inicia sesión para reservar</string>
 </resources>

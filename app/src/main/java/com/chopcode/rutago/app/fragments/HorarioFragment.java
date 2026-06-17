@@ -92,7 +92,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
     @Override
     public void onReservarClick(Schedule schedule) {
         if (!authManager.isUserLoggedIn()) {
-            Toast.makeText(getContext(), "Please log in to reserve", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.inicie_sesion_reservar, Toast.LENGTH_SHORT).show();
             authManager.redirectToLogin(getActivity());
             return;
         }

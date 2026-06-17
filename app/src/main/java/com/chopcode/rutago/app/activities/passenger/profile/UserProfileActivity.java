@@ -124,16 +124,16 @@ public class UserProfileActivity extends AppCompatActivity {
                 cardPremiumStats.setVisibility(View.VISIBLE);
                 Double gastado = (Double) stats.get("totalGastado");
                 tvTotalGastadoPremium.setText(FormatUtils.formatearPrecio(gastado != null ? gastado : 0.0));
-                tvPuntosLealtad.setText(stats.get("puntosLealtad") + " pts");
-                tvRutaFavorita.setText("Favorite Route: " + stats.get("rutaMasFrecuente"));
+                tvPuntosLealtad.setText(getString(R.string.puntos_format, String.valueOf(stats.get("puntosLealtad"))));
+                tvRutaFavorita.setText(getString(R.string.ruta_favorita_label, (String)stats.get("rutaMasFrecuente")));
             }
         });
 
-        viewModel.getError().observe(this, errorMsg -> { if (errorMsg != null) Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show(); });
+        viewModel.getError().observe(this, errorMsg -> { if (errorMsg != null) Toast.makeText(this, getString(R.string.error_prefijo, errorMsg), Toast.LENGTH_SHORT).show(); });
         viewModel.getUploadStatus().observe(this, status -> { if (status != null) Toast.makeText(this, status, Toast.LENGTH_SHORT).show(); });
         viewModel.getAccountDeletionSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "Request sent. Your account will be reviewed.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.solicitud_enviada_revision), Toast.LENGTH_LONG).show();
                 authManager.signOut(this);
                 finish();
             }

@@ -157,7 +157,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
     private void updateUI(boolean isEmpty, int size) {
         if (isEmpty) { recyclerHistory.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.VISIBLE); }
         else { recyclerHistory.setVisibility(View.VISIBLE); layoutEmptyState.setVisibility(View.GONE); }
-        tvHistoryTitle.setText("Trip History (" + size + ")");
+        tvHistoryTitle.setText(getString(R.string.historial_viajes_count, size));
     }
 
     private void showLoading(boolean show) {
@@ -171,7 +171,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
             SearchView sv = (SearchView) searchItem.getActionView();
-            sv.setQueryHint("Search route or driver...");
+            sv.setQueryHint(getString(R.string.buscar_ruta_conductor));
             sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override public boolean onQueryTextSubmit(String query) { searchText = query; viewModel.setFilters(currentFilter, query); return true; }
                 @Override public boolean onQueryTextChange(String newText) { searchText = newText; viewModel.setFilters(currentFilter, newText); return true; }

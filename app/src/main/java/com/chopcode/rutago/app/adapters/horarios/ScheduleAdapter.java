@@ -81,7 +81,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
             
             if (tvSeats != null) {
-                tvSeats.setText(available + " seats available");
+                tvSeats.setText(itemView.getContext().getString(R.string.asientos_disponibles_label_adapter, available));
                 updateColors(available);
             }
 

@@ -96,7 +96,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 if (canRate) {
                     layoutAcciones.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setVisibility(View.VISIBLE);
-                    btnAccionPrincipal.setText("Rate Trip");
+                    btnAccionPrincipal.setText(itemView.getContext().getString(R.string.calificar_viaje_btn));
                     btnAccionPrincipal.setOnClickListener(v -> showRatingDialog(reservation));
                 } else {
                     layoutAcciones.setVisibility(View.GONE);
@@ -109,22 +109,22 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
             TextView tvInfoConductor = dialogView.findViewById(R.id.tvInfoConductor);
             RatingBar ratingBar = dialogView.findViewById(R.id.ratingBarDialog);
             EditText etComments = dialogView.findViewById(R.id.etComentarios);
-            if (tvInfoConductor != null) tvInfoConductor.setText("Driver: " + reservation.getDriver());
+            if (tvInfoConductor != null) tvInfoConductor.setText(itemView.getContext().getString(R.string.conductor_label, reservation.getDriver()));
 
             new MaterialAlertDialogBuilder(itemView.getContext(), R.style.AppDialogTheme)
                 .setView(dialogView)
-                .setPositiveButton("Send Rating", (dialog, which) -> {
+                .setPositiveButton(R.string.enviar_calificacion, (dialog, which) -> {
                     float rating = ratingBar.getRating();
                     if (rating > 0) saveRating(reservation, rating, etComments.getText().toString().trim());
-                    else Toast.makeText(itemView.getContext(), "Please select a score", Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(itemView.getContext(), R.string.seleccione_puntuacion, Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("Cancel", null).show();
+                .setNegativeButton(R.string.cancelar, null).show();
         }
 
         private void saveRating(Reservation reservation, float rating, String comment) {
             RatingManager.getInstance().calificarViaje(reservation, rating, comment, new RatingManager.RatingCallback() {
-                @Override public void onSuccess() { Toast.makeText(itemView.getContext(), "Thanks for your rating!", Toast.LENGTH_SHORT).show(); layoutAcciones.setVisibility(View.GONE); }
-                @Override public void onError(String error) { Toast.makeText(itemView.getContext(), "Error: " + error, Toast.LENGTH_SHORT).show(); }
+                @Override public void onSuccess() { Toast.makeText(itemView.getContext(), R.string.gracias_calificacion, Toast.LENGTH_SHORT).show(); layoutAcciones.setVisibility(View.GONE); }
+                @Override public void onError(String error) { Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.error_prefijo, error), Toast.LENGTH_SHORT).show(); }
             });
         }
 

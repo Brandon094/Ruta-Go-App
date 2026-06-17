@@ -174,7 +174,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
             if (!isConnected) {
                 if (networkSnackbar == null) {
                     networkSnackbar = Snackbar.make(findViewById(android.R.id.content),
-                            "No internet connection", Snackbar.LENGTH_INDEFINITE);
+                            getString(R.string.error_no_internet), Snackbar.LENGTH_INDEFINITE);
                     networkSnackbar.setBackgroundTint(getColor(R.color.error_500));
                 }
                 networkSnackbar.show();

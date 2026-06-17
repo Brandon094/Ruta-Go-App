@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class EditProfileViewModel extends ViewModel {
     public void loadUserProfile() {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) {
-            error.setValue("User no autenticado");
+            error.setValue(MyApp.getAppContext().getString(R.string.usuario_no_autenticado));
             return;
         }
 
@@ -61,7 +62,7 @@ public class EditProfileViewModel extends ViewModel {
             @Override
             public void onError(String errorMsg) {
                 Log.e(TAG, "Error cargando datos: " + errorMsg);
-                error.postValue(errorMsg);
+                error.postValue(MyApp.getAppContext().getString(R.string.error_prefijo, errorMsg));
                 isLoading.postValue(false);
             }
         });
@@ -73,17 +74,17 @@ public class EditProfileViewModel extends ViewModel {
     public void updateProfile(String nuevoNombre, String nuevoTelefono) {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) {
-            error.setValue("Error: User no autenticado");
+            error.setValue(MyApp.getAppContext().getString(R.string.usuario_no_autenticado));
             return;
         }
 
         if (nuevoNombre == null || nuevoNombre.isEmpty()) {
-            error.setValue("El nombre es obligatorio");
+            error.setValue(MyApp.getAppContext().getString(R.string.nombre_obligatorio));
             return;
         }
 
         if (nuevoTelefono == null || nuevoTelefono.isEmpty()) {
-            error.setValue("El teléfono es obligatorio");
+            error.setValue(MyApp.getAppContext().getString(R.string.telefono_obligatorio));
             return;
         }
 
@@ -101,7 +102,7 @@ public class EditProfileViewModel extends ViewModel {
             @Override
             public void onError(String errorMsg) {
                 Log.e(TAG, "❌ Error al actualizar: " + errorMsg);
-                error.postValue(errorMsg);
+                error.postValue(MyApp.getAppContext().getString(R.string.error_actualizar, errorMsg));
                 isLoading.postValue(false);
             }
         });
