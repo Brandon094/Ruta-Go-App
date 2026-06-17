@@ -180,6 +180,7 @@
     <string name="bloquear_asiento_pregunta">¿Bloquear asiento %d manualmente?</string>
     <string name="liberar_asiento_pregunta">¿Liberar asiento %d bloqueado manualmente?</string>
     <string name="ocupado_por_app">Ocupado por la App (No editable)</string>
+    <string name="seat_already_occupied_error">El asiento ya está ocupado</string>
     <string name="bloquear_btn">Bloquear</string>
     <string name="liberar_btn">Liberar</string>
     <string name="error_reserva_puesto">Error al reservar: %s</string>

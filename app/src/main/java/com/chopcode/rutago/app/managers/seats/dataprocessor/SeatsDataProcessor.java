@@ -90,40 +90,90 @@ public class SeatsDataProcessor {
         });
     }
 
+    /**
+     * 🛡️ Reserva un asiento de forma atómica usando runTransaction.
+     * Garantiza que dos personas no puedan reservar el mismo asiento simultáneamente.
+     */
     public void reserveSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        checkSeatAvailability(horarioId, seatNumber, new SeatAvailabilityCallback() {
+        DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
+
+        scheduleRef.runTransaction(new Transaction.Handler() {
+            @NonNull
             @Override
-            public void onSeatAvailable(boolean available) {
-                if (!available) { callback.onError("Seat already occupied"); return; }
-                performSeatReservation(horarioId, seatNumber, callback);
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                // Verificar si el asiento ya está ocupado
+                MutableData occupiedRef = currentData.child("asientosOcupados").child(String.valueOf(seatNumber));
+                if (Boolean.TRUE.equals(occupiedRef.getValue(Boolean.class))) {
+                    return Transaction.abort(); // Abortar si ya está ocupado
+                }
+
+                // Marcar asiento como ocupado
+                occupiedRef.setValue(true);
+
+                // Decrementar el contador de asientos disponibles
+                Integer available = currentData.child("asientosDisponibles").getValue(Integer.class);
+                if (available != null) {
+                    currentData.child("asientosDisponibles").setValue(Math.max(0, available - 1));
+                }
+
+                return Transaction.success(currentData);
             }
-            @Override public void onError(String error) { callback.onError(error); }
+
+            @Override
+            public void onComplete(DatabaseError error, boolean committed, DataSnapshot currentData) {
+                if (committed) {
+                    Log.d(TAG, "✅ Asiento " + seatNumber + " reservado con éxito (Transaction)");
+                    callback.onSuccess();
+                } else {
+                    String errorMsg = (error != null) ? error.getMessage() : "Seat already occupied";
+                    Log.e(TAG, "❌ Fallo al reservar asiento " + seatNumber + ": " + errorMsg);
+                    callback.onError(errorMsg);
+                }
+            }
         });
     }
 
-    private void performSeatReservation(String horarioId, int seatNumber, SeatReservationCallback callback) {
-        DatabaseReference seatRef = databaseReference.child("disponibilidadAsientos").child(horarioId).child("asientosOcupados").child(String.valueOf(seatNumber));
-        seatRef.setValue(true).addOnSuccessListener(aVoid -> callback.onSuccess()).addOnFailureListener(e -> callback.onError(e.getMessage()));
-    }
-
+    /**
+     * 🛡️ Libera un asiento de forma atómica.
+     */
     public void freeSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
-        scheduleRef.child("asientosOcupados").child(String.valueOf(seatNumber)).removeValue().addOnSuccessListener(aVoid -> {
-            scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Integer available = snapshot.child("asientosDisponibles").getValue(Integer.class);
-                    Integer total = snapshot.child("totalAsientos").getValue(Integer.class);
-                    if (total == null) total = 13;
-                    if (available != null && available < total) {
-                        scheduleRef.child("asientosDisponibles").setValue(available + 1).addOnSuccessListener(v -> callback.onSuccess());
-                    } else {
-                        callback.onSuccess();
-                    }
+
+        scheduleRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                // Verificar si el asiento está realmente ocupado antes de liberar
+                MutableData occupiedRef = currentData.child("asientosOcupados").child(String.valueOf(seatNumber));
+                if (!Boolean.TRUE.equals(occupiedRef.getValue(Boolean.class))) {
+                    return Transaction.success(currentData); // Ya está libre
                 }
-                @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
-            });
-        }).addOnFailureListener(e -> callback.onError(e.getMessage()));
+
+                // Liberar asiento (remover valor)
+                occupiedRef.setValue(null);
+
+                // Incrementar contador de disponibles
+                Integer available = currentData.child("asientosDisponibles").getValue(Integer.class);
+                Integer total = currentData.child("totalAsientos").getValue(Integer.class);
+                if (total == null) total = 13;
+                
+                if (available != null && available < total) {
+                    currentData.child("asientosDisponibles").setValue(available + 1);
+                }
+
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError error, boolean committed, DataSnapshot currentData) {
+                if (committed) {
+                    Log.d(TAG, "✅ Asiento " + seatNumber + " liberado con éxito");
+                    callback.onSuccess();
+                } else {
+                    callback.onError(error != null ? error.getMessage() : "Transaction failed");
+                }
+            }
+        });
     }
 
     /**

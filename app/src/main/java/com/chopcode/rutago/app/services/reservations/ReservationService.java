@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
@@ -74,7 +75,7 @@ public class ReservationService {
                     @Override
                     public void onSeatAvailable(boolean available) {
                         if (!available) {
-                            callback.onError("Seat already occupied.");
+                            callback.onError(MyApp.getAppContext().getString(R.string.seat_already_occupied_error));
                             return;
                         }
                         getUserDataAndContinue(context, MyApp.getCurrentUserId(), scheduleId, selectedSeat,
@@ -96,7 +97,7 @@ public class ReservationService {
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.exists()) { callback.onError("User not found."); return; }
+                if (!snapshot.exists()) { callback.onError(MyApp.getAppContext().getString(R.string.usuario_no_autenticado)); return; }
 
                 String name = String.valueOf(snapshot.child("nombre").getValue());
                 String phone = String.valueOf(snapshot.child("telefono").getValue());
@@ -119,8 +120,8 @@ public class ReservationService {
 
     public void freeReservedSeat(String scheduleId, int seatNumber, ReservationUpdateCallback callback) {
         seatsDataManager.freeSeat(scheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
-            @Override public void onSuccess() { callback.onSuccess(); }
-            @Override public void onError(String error) { callback.onError(error); }
+            @Override public void onSuccess() { if (callback != null) callback.onSuccess(); }
+            @Override public void onError(String error) { if (callback != null) callback.onError(error); }
         });
     }
 
@@ -142,7 +143,7 @@ public class ReservationService {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + idReservation);
         ref.setValue(reservation).addOnSuccessListener(aVoid -> {
             if (context != null) {
-                Toast.makeText(context, "Reservation confirmed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.reserva_exitosa, Toast.LENGTH_SHORT).show();
                 notifyDriver(context, idReservation, uid, name, scheduleId, selectedSeat, origin, destination, price, paymentMethod);
             }
             callback.onSuccess();
