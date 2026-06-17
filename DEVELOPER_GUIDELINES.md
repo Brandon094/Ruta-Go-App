@@ -26,12 +26,13 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 ### A. Clean Architecture & Utils
 - **Centralización:** Prohibido duplicar lógica de formateo o manipulación de strings. Usar siempre `com.chopcode.rutago.app.utils.ui.FormatUtils` para precios, horas, fechas y normalización de texto (ej. quitar tildes para comparaciones).
 - **Mantenimiento:** El adaptador de listas (`Adapter`) solo debe mostrar datos; no debe realizar consultas a Firebase. La data debe llegar ya procesada desde el ViewModel.
+- **Recursos:** El 100% de los textos deben estar en `strings.xml` organizados por pantalla/módulo.
 
 ### B. Gestión de Datos (Firebase)
-- **Modelos Bilingües:** Los modelos deben usar `@PropertyName` para garantizar compatibilidad entre los datos históricos (Español) y el nuevo estándar del código (Inglés).
+- **Modelos Bilingües:** Los modelos usan "Mapeo Dual" con `@PropertyName` para garantizar compatibilidad entre datos históricos (Español) y el nuevo estándar del código (Inglés).
 - **Escucha Global:** Para listas de alta frecuencia, usar un solo listener global en el Service/ViewModel para optimizar el consumo de datos.
 - **Robustez de Servicios:** Los servicios (`Service`) deben usar el contexto global de la aplicación (`MyApp.getInstance()`) para operaciones de UI, evitando crashes.
-- **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `conductorId` en vehículos).
+- **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `driverId` en vehículos y cumplir con campos obligatorios).
 
 ### C. UI/UX
 - **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales y estados de carga en los ViewModels.
@@ -39,7 +40,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 
 ### D. Documentación Técnica (Mantenimiento)
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
-- **Comentarios de Cabecera:** Toda clase y método complejo debe incluir comentarios explicando su propósito.
+- **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).
 - **Trazabilidad:** Inyectar logs estratégicos (`Log.d`) en flujos principales para facilitar el debug en producción.
 
 ## 5. Gestión del Proyecto (Git)
@@ -47,21 +48,23 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 
 ## 6. Estructura Crítica de Base de Datos
 - `conductores/$uid`: Perfil del conductor, referencia al `vehiculoId` y `horariosAsignados`.
-- `vehiculos/$id`: Datos técnicos y capacidad (Campo: `capacidad`).
-- `reservas/`: Nodo plano indexado por `conductorId`, `usuarioId` y `fechaReserva`. Soporta llaves en ES/EN.
-- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado.
+- `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacity`).
+- `reservas/`: Nodo plano indexado por `driverId`, `userId` y `reservationDate`.
+- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado (Campos: `totalSeats`, `availableSeats`).
 
 ## 7. Estado Actual del Proyecto (Contexto para Desarrolladores)
-- **Arquitectura:** 100% migrado a MVVM y LiveData.
-- **Estandarización:** Código fuente 100% en Inglés. Modelos con soporte dual (ES/EN) para base de datos.
-- **Dashboards:** Reactivos para Conductor y Pasajero.
-- **Estadísticas:** Cálculo dinámico en ViewModels con normalización de rutas (ignora tildes/mayúsculas).
-- **Utilidades:** `FormatUtils` centraliza formateo y normalización. `SecurityUtils` gestiona seguridad UI.
+- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades.
+- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe en modelos para datos antiguos.
+- **Dashboards:** Reactivos para Conductor y Pasajero. El dashboard del conductor es multi-ViewModel.
+- **Capacidad Dinámica:** Implementado "Sync Atómico" que propaga la capacidad del vehículo a los horarios operativos en tiempo real.
+- **UI:** 100% de los strings externalizados a `strings.xml`, traducidos al español y agrupados por módulo.
+- **Seguridad:** Reglas de Firebase optimizadas con índices en inglés (`driverId`, `scheduleId`, etc.).
+- **Utilidades:** `FormatUtils` centraliza formateo, normalización y lógica visual de fechas. `ImageUtils` optimizado para CircleImageView y Glide.
 
-## 8. Próximos Hitos (Roadmap)
-- **Hito 1:** Sincronización atómica de asientos (Transactions).
-- **Hito 2:** Auditoría y archivado de reservas antiguas.
-- **Hito 3:** Notificaciones Push con Deep Linking y Chat.
+## 8. Siguientes Pasos (Roadmap Actualizado)
+- **Hito 1:** Implementar Transacciones Atómicas (`runTransaction`) en la reserva de asientos para evitar sobreventa.
+- **Hito 2:** Auditoría y archivado automático de reservas con más de 30 días de antigüedad.
+- **Hito 3:** Notificaciones Push con Deep Linking y Chat en tiempo real.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*
