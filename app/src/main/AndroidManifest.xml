@@ -138,6 +138,12 @@
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
+        <activity
+            android:name=".activities.common.TicketActivity"
+            android:exported="false"
+            android:label="Tiquete de Viaje"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.adapters.historial;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
+import com.chopcode.rutago.app.activities.common.TicketActivity;
 import com.chopcode.rutago.app.managers.ratings.RatingManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
@@ -79,6 +81,24 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
 
         public void bind(Reservation reservation) {
             try {
+                // Evento de clic para abrir el tiquete
+                itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(itemView.getContext(), TicketActivity.class);
+                    intent.putExtra("origin", reservation.getOrigin());
+                    intent.putExtra("destination", reservation.getDestination());
+                    intent.putExtra("status", reservation.getReservationStatus());
+                    intent.putExtra("date", reservation.getReservationDate());
+                    intent.putExtra("time", reservation.getEstimatedTime());
+                    intent.putExtra("seat", reservation.getReservedSeat());
+                    intent.putExtra("price", reservation.getPrice());
+                    intent.putExtra("passengerName", reservation.getName());
+                    intent.putExtra("driverName", reservation.getDriver());
+                    intent.putExtra("vehiclePlate", reservation.getVehicleId());
+                    intent.putExtra("vehicleModel", reservation.getRouteName()); // Legacy fallback
+                    intent.putExtra("reservationId", reservation.getIdReservation());
+                    itemView.getContext().startActivity(intent);
+                });
+
                 tvFecha.setText(sdf.format(new Date(reservation.getReservationDate())));
                 String status = reservation.getReservationStatus();
                 tvEstado.setText(status);

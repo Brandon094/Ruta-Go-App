@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
+import com.chopcode.rutago.app.activities.common.TicketActivity;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 
@@ -76,6 +78,23 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
 
         public void bind(Reservation reservation) {
             try {
+                // Evento de clic para abrir el tiquete (Conductor)
+                itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(itemView.getContext(), TicketActivity.class);
+                    intent.putExtra("origin", reservation.getOrigin());
+                    intent.putExtra("destination", reservation.getDestination());
+                    intent.putExtra("status", reservation.getReservationStatus());
+                    intent.putExtra("date", reservation.getReservationDate());
+                    intent.putExtra("time", reservation.getEstimatedTime());
+                    intent.putExtra("seat", reservation.getReservedSeat());
+                    intent.putExtra("price", reservation.getPrice());
+                    intent.putExtra("passengerName", reservation.getName());
+                    intent.putExtra("driverName", reservation.getDriver());
+                    intent.putExtra("vehiclePlate", reservation.getVehicleId());
+                    intent.putExtra("reservationId", reservation.getIdReservation());
+                    itemView.getContext().startActivity(intent);
+                });
+
                 tvDate.setText(sdf.format(new Date(reservation.getReservationDate())));
                 
                 String status = reservation.getReservationStatus();

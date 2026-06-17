@@ -277,7 +277,21 @@
     <string name="formato_moneda">$%s</string>
     <string name="formato_porcentaje">%d%%</string>
 
-    <!-- ========================================================================= -->
+    <!-- TICKET STRINGS -->
+    <string name="ticket_title">Comprobante de Viaje</string>
+    <string name="ticket_header">RUTA-GO</string>
+    <string name="ticket_trayecto">Trayecto</string>
+    <string name="ticket_fecha">Fecha</string>
+    <string name="ticket_hora">Hora</string>
+    <string name="ticket_asiento">Asiento</string>
+    <string name="ticket_valor">Valor</string>
+    <string name="ticket_info_viaje">Información del Viaje</string>
+    <string name="ticket_pasajero_label">Pasajero: %s</string>
+    <string name="ticket_conductor_label">Conductor: %s</string>
+    <string name="ticket_vehiculo_label">Vehículo: %1$s (%2$s)</string>
+    <string name="ticket_id_label">ID de Reserva:</string>
+    <string name="ticket_share">Compartir Tiquete</string>
+
     <!-- 🧪 API KEYS & INTERNAL                                                    -->
     <!-- ========================================================================= -->
     <string name="_0">0</string>
