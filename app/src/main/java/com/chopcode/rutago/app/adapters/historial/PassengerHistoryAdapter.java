@@ -112,6 +112,8 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 btnIrAlChat.setOnClickListener(v -> {
                     Intent intent = new Intent(itemView.getContext(), com.chopcode.rutago.app.activities.common.ChatActivity.class);
                     intent.putExtra("reservationId", reservation.getIdReservation());
+                    intent.putExtra("receiverId", reservation.getDriverId());
+                    intent.putExtra("senderName", reservation.getName());
                     itemView.getContext().startActivity(intent);
                 });
 

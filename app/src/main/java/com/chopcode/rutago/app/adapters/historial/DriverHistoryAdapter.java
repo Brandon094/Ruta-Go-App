@@ -111,6 +111,8 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 btnIrAlChat.setOnClickListener(v -> {
                     Intent intent = new Intent(itemView.getContext(), com.chopcode.rutago.app.activities.common.ChatActivity.class);
                     intent.putExtra("reservationId", reservation.getIdReservation());
+                    intent.putExtra("receiverId", reservation.getUserId());
+                    intent.putExtra("senderName", reservation.getDriver());
                     itemView.getContext().startActivity(intent);
                 });
 

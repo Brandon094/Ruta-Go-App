@@ -1,10 +1,13 @@
 package com.chopcode.rutago.app.viewmodels.common;
 
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.chopcode.rutago.app.models.ChatMessage;
+import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.services.chat.ChatService;
+import com.chopcode.rutago.app.services.reservations.ReservationService;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ public class ChatViewModel extends ViewModel {
     private final MutableLiveData<List<ChatMessage>> messages = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final ChatService chatService;
+    private final ReservationService reservationService;
     private ValueEventListener chatListener;
     private String currentReservationId;
     private String receiverId;
@@ -27,16 +31,44 @@ public class ChatViewModel extends ViewModel {
 
     public ChatViewModel() {
         this.chatService = new ChatService();
+        this.reservationService = new ReservationService();
     }
 
     public LiveData<List<ChatMessage>> getMessages() { return messages; }
     public LiveData<String> getError() { return error; }
 
-    public void initChat(String reservationId, String receiverId, String senderName) {
+    public void initChat(String reservationId, String rId, String sName) {
         this.currentReservationId = reservationId;
-        this.receiverId = receiverId;
-        this.senderName = senderName;
+        this.receiverId = rId;
+        this.senderName = sName;
+        
+        if (currentReservationId == null) return;
+        
+        // Si faltan datos clave, los cargamos de la reserva
+        if (receiverId == null || senderName == null) {
+            loadMissingData(reservationId);
+        }
+        
         startListening();
+    }
+
+    private void loadMissingData(String reservationId) {
+        reservationService.getReservationById(reservationId, new ReservationService.HistoryCallback() {
+            @Override
+            public void onHistoryLoaded(List<Reservation> reservations) {
+                if (!reservations.isEmpty()) {
+                    Reservation r = reservations.get(0);
+                    String currentUid = MyApp.getCurrentUserId();
+                    if (currentUid != null) {
+                        boolean isPassenger = currentUid.equals(r.getUserId());
+                        receiverId = isPassenger ? r.getDriverId() : r.getUserId();
+                        senderName = isPassenger ? r.getName() : r.getDriver();
+                        Log.d("ChatVM", "Missing data loaded. Receiver: " + receiverId);
+                    }
+                }
+            }
+            @Override public void onError(String err) { Log.e("ChatVM", "Error loading missing data: " + err); }
+        });
     }
 
     private void startListening() {
@@ -54,8 +86,12 @@ public class ChatViewModel extends ViewModel {
 
     public void sendMessage(String text) {
         String uid = MyApp.getCurrentUserId();
-        if (uid != null && currentReservationId != null && receiverId != null) {
-            chatService.sendMessage(currentReservationId, uid, senderName, receiverId, text);
+        // Intentamos enviar incluso si faltan algunos datos en el cliente, el servicio manejará el resto
+        if (uid != null && currentReservationId != null) {
+            String name = (senderName != null && !senderName.isEmpty()) ? senderName : "Usuario";
+            chatService.sendMessage(currentReservationId, uid, name, receiverId, text);
+        } else {
+            error.postValue("Error: No se pudo identificar la sesión o la reserva");
         }
     }
 

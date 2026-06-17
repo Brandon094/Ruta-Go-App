@@ -209,6 +209,28 @@ public class ReservationService {
     }
 
     /**
+     * Obtiene una reserva específica por su ID.
+     */
+    public void getReservationById(String reservationId, @NonNull HistoryCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + reservationId);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Reservation r = snapshot.getValue(Reservation.class);
+                    if (r != null) {
+                        r.setIdReservation(snapshot.getKey());
+                        List<Reservation> list = new ArrayList<>();
+                        list.add(r);
+                        callback.onHistoryLoaded(list);
+                    } else callback.onError("Error parsing reservation");
+                } else callback.onError("Reservation not found");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        });
+    }
+
+    /**
      * ⚡ Escucha reactiva del historial de un pasajero con límite de seguridad.
      * Trae solo las últimas 50 reservas para optimizar memoria.
      */

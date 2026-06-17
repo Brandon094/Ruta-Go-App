@@ -41,7 +41,7 @@ public class ChatService {
             // Disparar notificación push al receptor
             if (receiverId != null && !receiverId.isEmpty()) {
                 com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(MyApp.getAppContext())
-                        .notificarNuevoMensaje(receiverId, senderName, text, reservationId, null);
+                        .notificarNuevoMensaje(receiverId, senderId, senderName, text, reservationId, null);
             }
         }).addOnFailureListener(e -> Log.e(TAG, "Error sending message: " + e.getMessage()));
     }

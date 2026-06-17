@@ -36,6 +36,9 @@ public class ChatActivity extends AppCompatActivity {
         String receiverId = getIntent().getStringExtra("receiverId");
         String senderName = getIntent().getStringExtra("senderName");
         
+        // Log para debug
+        android.util.Log.d("ChatActivity", "Opening chat. resId: " + reservationId + ", receiver: " + receiverId);
+        
         if (reservationId == null) { finish(); return; }
 
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);

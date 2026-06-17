@@ -193,7 +193,7 @@ public class NotificationManager {
     /**
      * 4. NOTIFICACIÓN DE MENSAJE DE CHAT
      */
-    public void notificarNuevoMensaje(String receptorId, String emisorNombre, String mensaje, String reservaId, NotificationCallback callback) {
+    public void notificarNuevoMensaje(String receptorId, String emisorId, String emisorNombre, String mensaje, String reservaId, NotificationCallback callback) {
         String title = context.getString(R.string.notif_chat_title, emisorNombre);
         String body = mensaje.length() > 50 ? mensaje.substring(0, 47) + "..." : mensaje;
 
@@ -202,6 +202,8 @@ public class NotificationManager {
         data.put("title", title);
         data.put("message", body);
         data.put("reservationId", reservaId);
+        data.put("receiverId", emisorId); // El emisor original será el receptor de la respuesta
+        data.put("senderName", "User"); // Fallback, se puede mejorar cargando el perfil
         data.put("target_activity", "chat");
         data.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
