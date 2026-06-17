@@ -12,21 +12,34 @@ local.properties
 .DS_Store
 *.bak
 *.swp
+*.log
 
 # Firebase Functions
 firebase_functions/node_modules/
 firebase_functions/firebase-debug.log
 firebase_functions/package-lock.json
 
-# Secrets
+# Secrets & Keys
 secrets.properties
+*.pem
+*.jks
+*.p12
+*.key
+google-services.json
+app/google-services.xml
+service-account.json
+app/src/main/assets/service-account.json
 
 # Firebase Config (Sensitive)
 .firebaserc
-google-services.json
-app/google-services.json
-service-account.json
-app/src/main/assets/service-account.json
-*.pem
-*.jks
+
+# Project Specific Backups & Temporary Files
+app_backup_refactored/
+*_backup.md
+.gitignore.git
 release/
+debug/
+
+# OS specific files
+Thumb.db
+desktop.ini
