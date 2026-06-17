@@ -6,44 +6,36 @@ import com.google.firebase.database.PropertyName;
 /**
  * 🎫 Reservation Model
  * 
- * Este modelo es el "corazón" de los datos de la app. Implementa una estrategia de
- * "Mapeo Dual" para garantizar que la aplicación pueda leer datos históricos en español
- * de Firebase y manejarlos internamente en inglés para seguir el estándar Clean Architecture.
- * 
- * Los campos son públicos para facilitar el acceso rápido desde Firebase, pero cuentan
- * con setters decorados con @PropertyName para la interoperabilidad.
+ * Este modelo implementa una estrategia de "Mapeo Dual" para garantizar 
+ * compatibilidad bilingüe entre la base de datos (Español) y el código (Inglés).
  */
 @IgnoreExtraProperties
 public class Reservation {
-    // --- Campos en Inglés (Estándar del Código) ---
-    public String idReservation;
-    public String userId;
-    public String scheduleId;
-    public String driverId;
-    public String vehicleId;
-    public String vehicleModel; // ✅ Nuevo campo
-    public String routeId;
-    public String routeName;
-    public String driver; // Nombre del conductor
-    public String origin;
-    public String destination;
-    public String estimatedTime;
-    public String paymentMethod;
-    public String reservationStatus;
-    public String name; // Nombre del pasajero
-    public String phone; // Teléfono del pasajero
-    public String phoneC; // Teléfono del conductor
-    public String email;
-    public long reservationDate;
-    public double price;
-    public int reservedSeat = -1;
-    public boolean rated = false;
+    private String idReservation;
+    private String userId;
+    private String scheduleId;
+    private String driverId;
+    private String vehicleId;
+    private String vehicleModel; 
+    private String routeId;
+    private String routeName;
+    private String driver; // Nombre del conductor
+    private String origin;
+    private String destination;
+    private String estimatedTime;
+    private String paymentMethod;
+    private String reservationStatus;
+    private String name; // Nombre del pasajero
+    private String phone; // Teléfono del pasajero
+    private String phoneC; // Teléfono del conductor
+    private String email;
+    private long reservationDate;
+    private double price;
+    private int reservedSeat = -1;
+    private boolean rated = false;
 
     public Reservation() { }
 
-    /**
-     * Constructor completo para creación manual de reservas.
-     */
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
                        String driver, String driverId, String phoneC, String vehicleId, String vehicleModel, double price,
                        String origin, String destination, String estimatedTime, String paymentMethod,
@@ -73,121 +65,129 @@ public class Reservation {
     }
 
     // =========================================================================
-    // 🌍 ESTRATEGIA DE COMPATIBILIDAD BILINGÜE (Mapeo Dual)
+    // 🌍 MAPEOS DUALES (SETTERS)
     // =========================================================================
-    
-    // ... anteriores ...
-
-    @PropertyName("modeloVehiculo") // ✅ Mapeo ES
-    public void setModeloVehiculo(String val) { if (val != null) this.vehicleModel = val; }
-
-    @PropertyName("vehicleModel") // ✅ Mapeo EN
-    public void setVehicleModelEn(String val) { if (val != null) this.vehicleModel = val; }
 
     @PropertyName("idReserva")
-    public void setIdReserva(String val) { if (val != null) this.idReservation = val; }
-    
+    public void setIdReserva(String val) { this.idReservation = val; }
+    @PropertyName("idReservation")
+    public void setIdReservation(String val) { this.idReservation = val; }
+
     @PropertyName("usuarioId")
-    public void setUsuarioId(String val) { if (val != null) this.userId = val; }
-    
+    public void setUsuarioId(String val) { this.userId = val; }
+    @PropertyName("userId")
+    public void setUserId(String val) { this.userId = val; }
+
     @PropertyName("horarioId")
-    public void setHorarioId(String val) { if (val != null) this.scheduleId = val; }
-    
+    public void setHorarioId(String val) { this.scheduleId = val; }
+    @PropertyName("scheduleId")
+    public void setScheduleId(String val) { this.scheduleId = val; }
+
     @PropertyName("conductorId")
-    public void setConductorId(String val) { if (val != null) this.driverId = val; }
-    
+    public void setConductorId(String val) { this.driverId = val; }
+    @PropertyName("driverId")
+    public void setDriverId(String val) { this.driverId = val; }
+
     @PropertyName("puestoReservado")
-    public void setPuestoReservado(int val) { if (val != -1) this.reservedSeat = val; }
-    
+    public void setPuestoReservado(int val) { this.reservedSeat = val; }
+    @PropertyName("reservedSeat")
+    public void setReservedSeat(int val) { this.reservedSeat = val; }
+
     @PropertyName("conductor")
-    public void setConductor(String val) { if (val != null) this.driver = val; }
+    public void setConductor(String val) { this.driver = val; }
+    @PropertyName("driver")
+    public void setDriver(String val) { this.driver = val; }
 
-    @PropertyName("driver") // ✅ Mapeo explícito para llaves en Inglés
-    public void setDriverName(String val) { if (val != null) this.driver = val; }
-    
     @PropertyName("estadoReserva")
-    public void setEstadoReserva(String val) { if (val != null) this.reservationStatus = val; }
-    
-    @PropertyName("fechaReserva")
-    public void setFechaReserva(long val) { if (val != 0) this.reservationDate = val; }
-    
-    @PropertyName("nombre")
-    public void setNombre(String val) { if (val != null) this.name = val; }
+    public void setEstadoReserva(String val) { this.reservationStatus = val; }
+    @PropertyName("reservationStatus")
+    public void setReservationStatus(String val) { this.reservationStatus = val; }
 
-    @PropertyName("name") // ✅ Mapeo explícito para llaves en Inglés
-    public void setPassengerName(String val) { if (val != null) this.name = val; }
-    
+    @PropertyName("fechaReserva")
+    public void setFechaReserva(long val) { this.reservationDate = val; }
+    @PropertyName("reservationDate")
+    public void setReservationDate(long val) { this.reservationDate = val; }
+
+    @PropertyName("nombre")
+    public void setNombre(String val) { this.name = val; }
+    @PropertyName("name")
+    public void setName(String val) { this.name = val; }
+
     @PropertyName("telefono")
-    public void setTelefono(String val) { if (val != null) this.phone = val; }
-    
-    @PropertyName("telefonoC")
-    public void setTelefonoC(String val) { if (val != null) this.phoneC = val; }
-    
-    @PropertyName("metodoPago")
-    public void setMetodoPago(String val) { if (val != null) this.paymentMethod = val; }
-    
-    @PropertyName("origen")
-    public void setOrigen(String val) { if (val != null) this.origin = val; }
-    
-    @PropertyName("destino")
-    public void setDestino(String val) { if (val != null) this.destination = val; }
-    
+    public void setTelefono(String val) { this.phone = val; }
+    @PropertyName("phone")
+    public void setPhone(String val) { this.phone = val; }
+
+    @PropertyName("modeloVehiculo")
+    public void setModeloVehiculo(String val) { this.vehicleModel = val; }
+    @PropertyName("vehicleModel")
+    public void setVehicleModel(String val) { this.vehicleModel = val; }
+
     @PropertyName("precio")
-    public void setPrecio(double val) { if (val != 0) this.price = val; }
-    
+    public void setPrecio(double val) { this.price = val; }
+    @PropertyName("price")
+    public void setPrice(double val) { this.price = val; }
+
+    @PropertyName("origen")
+    public void setOrigen(String val) { this.origin = val; }
+    @PropertyName("origin")
+    public void setOrigin(String val) { this.origin = val; }
+
+    @PropertyName("destino")
+    public void setDestino(String val) { this.destination = val; }
+    @PropertyName("destination")
+    public void setDestination(String val) { this.destination = val; }
+
+    @PropertyName("telefonoC")
+    public void setTelefonoC(String val) { this.phoneC = val; }
+    @PropertyName("phoneC")
+    public void setPhoneC(String val) { this.phoneC = val; }
+
+    @PropertyName("vehiculoId")
+    public void setVehiculoId(String val) { this.vehicleId = val; }
+    @PropertyName("vehicleId")
+    public void setVehicleId(String val) { this.vehicleId = val; }
+
+    @PropertyName("metodoPago")
+    public void setMetodoPago(String val) { this.paymentMethod = val; }
+    @PropertyName("paymentMethod")
+    public void setPaymentMethod(String val) { this.paymentMethod = val; }
+
     @PropertyName("tiempoEstimado")
-    public void setTiempoEstimado(String val) { if (val != null) this.estimatedTime = val; }
-    
+    public void setTiempoEstimado(String val) { this.estimatedTime = val; }
+    @PropertyName("estimatedTime")
+    public void setEstimatedTime(String val) { this.estimatedTime = val; }
+
     @PropertyName("calificada")
     public void setCalificada(boolean val) { this.rated = val; }
-    
-    @PropertyName("vehiculoId")
-    public void setVehiculoId(String val) { if (val != null) this.vehicleId = val; }
+    @PropertyName("rated")
+    public void setRated(boolean val) { this.rated = val; }
 
     // =========================================================================
-    // 🛠️ GETTERS Y SETTERS ESTÁNDAR
+    // 🛠️ GETTERS (USAN ESTÁNDAR INGLÉS PARA ESCRITURA EN FIREBASE)
     // =========================================================================
 
-    public String getIdReservation() { return idReservation; }
-    public void setIdReservation(String idReservation) { this.idReservation = idReservation; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-    public String getScheduleId() { return scheduleId; }
-    public void setScheduleId(String scheduleId) { this.scheduleId = scheduleId; }
-    public String getDriverId() { return driverId; }
-    public void setDriverId(String driverId) { this.driverId = driverId; }
-    public String getVehicleId() { return vehicleId; }
-    public void setVehicleId(String vehicleId) { this.vehicleId = vehicleId; }
-    public String getRouteId() { return routeId; }
-    public void setRouteId(String routeId) { this.routeId = routeId; }
-    public String getRouteName() { return routeName; }
-    public void setRouteName(String routeName) { this.routeName = routeName; }
-    public String getDriver() { return driver; }
-    public void setDriver(String driver) { this.driver = driver; }
-    public String getOrigin() { return origin; }
-    public void setOrigin(String origin) { this.origin = origin; }
-    public String getDestination() { return destination; }
-    public void setDestination(String destination) { this.destination = destination; }
-    public String getEstimatedTime() { return estimatedTime; }
-    public void setEstimatedTime(String estimatedTime) { this.estimatedTime = estimatedTime; }
-    public String getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
-    public String getReservationStatus() { return reservationStatus; }
-    public void setReservationStatus(String reservationStatus) { this.reservationStatus = reservationStatus; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public String getPhoneC() { return phoneC; }
-    public void setPhoneC(String phoneC) { this.phoneC = phoneC; }
-    public String getEmail() { return email; }
+    @PropertyName("idReservation") public String getIdReservation() { return idReservation; }
+    @PropertyName("userId") public String getUserId() { return userId; }
+    @PropertyName("scheduleId") public String getScheduleId() { return scheduleId; }
+    @PropertyName("driverId") public String getDriverId() { return driverId; }
+    @PropertyName("vehicleId") public String getVehicleId() { return vehicleId; }
+    @PropertyName("vehicleModel") public String getVehicleModel() { return vehicleModel; }
+    @PropertyName("routeId") public String getRouteId() { return routeId; }
+    @PropertyName("routeName") public String getRouteName() { return routeName; }
+    @PropertyName("driver") public String getDriver() { return driver; }
+    @PropertyName("origin") public String getOrigin() { return origin; }
+    @PropertyName("destination") public String getDestination() { return destination; }
+    @PropertyName("estimatedTime") public String getEstimatedTime() { return estimatedTime; }
+    @PropertyName("paymentMethod") public String getPaymentMethod() { return paymentMethod; }
+    @PropertyName("reservationStatus") public String getReservationStatus() { return reservationStatus; }
+    @PropertyName("name") public String getName() { return name; }
+    @PropertyName("phone") public String getPhone() { return phone; }
+    @PropertyName("phoneC") public String getPhoneC() { return phoneC; }
+    @PropertyName("email") public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public long getReservationDate() { return reservationDate; }
-    public void setReservationDate(long reservationDate) { this.reservationDate = reservationDate; }
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-    public int getReservedSeat() { return reservedSeat; }
-    public void setReservedSeat(int reservedSeat) { this.reservedSeat = reservedSeat; }
-    public boolean isRated() { return rated; }
-    public void setRated(boolean rated) { this.rated = rated; }
+    @PropertyName("reservationDate") public long getReservationDate() { return reservationDate; }
+    @PropertyName("price") public double getPrice() { return price; }
+    @PropertyName("reservedSeat") public int getReservedSeat() { return reservedSeat; }
+    @PropertyName("rated") public boolean isRated() { return rated; }
 }

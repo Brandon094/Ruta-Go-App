@@ -94,7 +94,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                     intent.putExtra("passengerName", reservation.getName());
                     intent.putExtra("driverName", reservation.getDriver());
                     intent.putExtra("vehiclePlate", reservation.getVehicleId());
-                    intent.putExtra("vehicleModel", reservation.vehicleModel); // ✅ Usar el nuevo campo
+                    intent.putExtra("vehicleModel", reservation.getVehicleModel()); // ✅ Usar el nuevo campo
                     intent.putExtra("reservationId", reservation.getIdReservation());
                     itemView.getContext().startActivity(intent);
                 });
