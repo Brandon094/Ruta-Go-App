@@ -89,7 +89,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 String routeDesc = reservation.getRouteName();
                 if (routeDesc == null || routeDesc.isEmpty()) routeDesc = reservation.getOrigin() + " -> " + reservation.getDestination();
                 tvRuta.setText(routeDesc);
-                tvPuesto.setText("Seat " + reservation.getReservedSeat());
+                tvPuesto.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrecio.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
                 boolean canRate = ("Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status)) && !reservation.isRated();

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Reservation;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
@@ -83,7 +84,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
             }
 
             int seat = reservation.getReservedSeat();
-            tvAsiento.setText(seat > 0 ? "💺 Seat " + seat : "💺 Not assigned");
+            tvAsiento.setText(seat > 0 ? "💺 " + FormatUtils.formatearAsiento(seat) : "💺 Not assigned");
 
             if (reservation.getReservationDate() > 0) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());

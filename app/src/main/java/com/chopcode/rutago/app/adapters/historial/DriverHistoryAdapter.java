@@ -85,7 +85,7 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 tvPersonName.setText(reservation.getName());
                 tvPhone.setText(reservation.getPhone());
                 tvRoute.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
-                tvSeat.setText("Seat " + reservation.getReservedSeat());
+                tvSeat.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrice.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 
                 actionsLayout.setVisibility(View.GONE);
