@@ -48,23 +48,24 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 
 ## 6. Estructura Crítica de Base de Datos
 - `conductores/$uid`: Perfil del conductor, referencia al `vehiculoId` y `horariosAsignados`.
-- `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacity`).
+- `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacidad`).
 - `reservas/`: Nodo plano indexado por `driverId`, `userId` y `reservationDate`.
-- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado (Campos: `totalSeats`, `availableSeats`).
+- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Campos: `asientosDisponibles`, `totalAsientos`, `asientosOcupados`.
 
 ## 7. Estado Actual del Proyecto (Contexto para Desarrolladores)
-- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades.
+- **Arquitectura:** 100% migrado a MVVM y LiveData con separación estricta de responsabilidades en ambos flujos (Pasajero/Conductor).
 - **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe en modelos para datos antiguos.
-- **Dashboards:** Reactivos para Conductor y Pasajero. El dashboard del conductor es multi-ViewModel.
+- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos, garantizando la consistencia de los contadores y evitando la sobreventa.
+- **Dashboards:** Reactivos para Conductor y Pasajero. El historial del pasajero ahora es 100% reactivo en tiempo real.
 - **Capacidad Dinámica:** Implementado "Sync Atómico" que propaga la capacidad del vehículo a los horarios operativos en tiempo real.
 - **UI:** 100% de los strings externalizados a `strings.xml`, traducidos al español y agrupados por módulo.
-- **Seguridad:** Reglas de Firebase optimizadas con índices en inglés (`driverId`, `scheduleId`, etc.).
-- **Utilidades:** `FormatUtils` centraliza formateo, normalización y lógica visual de fechas. `ImageUtils` optimizado para CircleImageView y Glide.
+- **Seguridad:** Reglas de Firebase optimizadas con índices bilingües y validaciones de tipos de datos.
+- **Git:** `.gitignore` optimizado para excluir basura de backups y archivos sensibles.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
-- **Hito 1:** Implementar Transacciones Atómicas (`runTransaction`) en la reserva de asientos para evitar sobreventa.
-- **Hito 2:** Auditoría y archivado automático de reservas con más de 30 días de antigüedad.
-- **Hito 3:** Notificaciones Push con Deep Linking y Chat en tiempo real.
+- **Hito 1:** Auditoría y archivado automático de reservas con más de 30 días de antigüedad para optimizar el rendimiento.
+- **Hito 2:** Implementar sistema de Notificaciones Push con Deep Linking para navegación directa a reservas.
+- **Hito 3:** Chat en tiempo real entre pasajero y conductor post-confirmación.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*
