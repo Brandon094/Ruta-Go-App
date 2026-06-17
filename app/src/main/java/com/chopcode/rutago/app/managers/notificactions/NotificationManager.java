@@ -136,7 +136,7 @@ public class NotificationManager {
         notificationData.put("type", "reserva_confirmada");
         notificationData.put("reserva_asiento", "A" + asiento);
         notificationData.put("conductor_nombre", conductorNombre);
-        notificationData.put("target_activity", "passenger_home");
+        notificationData.put("target_activity", "passenger_history");
         notificationData.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
         guardarNotificacionEnBD(pasajeroId, notificationData, new NotificationCallback() {
@@ -169,7 +169,7 @@ public class NotificationManager {
         notificationData.put("message", body);
         notificationData.put("type", "reserva_cancelada");
         notificationData.put("motivo", motivo);
-        notificationData.put("target_activity", "passenger_home");
+        notificationData.put("target_activity", "passenger_history");
         notificationData.put("timestamp", String.valueOf(System.currentTimeMillis()));
 
         guardarNotificacionEnBD(pasajeroId, notificationData, new NotificationCallback() {

@@ -138,21 +138,44 @@ public class NotificationService extends FirebaseMessagingService {
 
     private void sendNotification(String title, String messageBody, Map<String, String> data) {
         try {
-            Log.d(TAG, "🎯 Creando notificación: " + title);
+            Log.d(TAG, "🎯 Creando notificación con Deep Link: " + title);
 
-            // Intent para cuando se hace clic en la notificación
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            // 1. Determinar el destino (Deep Linking)
+            Class<?> targetClass = LoginActivity.class; // Destino por defecto
+            
+            if (data != null && data.containsKey("target_activity")) {
+                String target = data.get("target_activity");
+                Log.d(TAG, "📍 Destino detectado: " + target);
+                
+                if (target != null) {
+                    switch (target) {
+                        case "driver_home":
+                            targetClass = com.chopcode.rutago.app.activities.driver.DriverHomeActivity.class;
+                            break;
+                        case "passenger_history":
+                            targetClass = com.chopcode.rutago.app.activities.passenger.history.ReservationHistoryActivity.class;
+                            break;
+                        case "passenger_home":
+                            targetClass = com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity.class;
+                            break;
+                    }
+                }
+            }
 
-            // Add data to intent
+            Intent intent = new Intent(this, targetClass);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+            // Pasar todos los datos al intent por si la Activity los necesita
             if (data != null) {
                 for (Map.Entry<String, String> entry : data.entrySet()) {
                     intent.putExtra(entry.getKey(), entry.getValue());
                 }
             }
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-                    PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+            // Usar un requestCode único para evitar que se pisen los Intents
+            int requestCode = (int) System.currentTimeMillis();
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, requestCode, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
