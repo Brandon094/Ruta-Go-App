@@ -11,6 +11,7 @@ import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.rutago.app.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -68,11 +69,11 @@ public class EditDriverProfileViewModel extends ViewModel {
                             isLoading.postValue(false);
                         }
                     } else {
-                        error.postValue("Error parsing driver data");
+                        error.postValue(MyApp.getAppContext().getString(R.string.error_parsing_driver_data));
                         isLoading.postValue(false);
                     }
                 } else {
-                    error.postValue("Driver data not found");
+                    error.postValue(MyApp.getAppContext().getString(R.string.driver_data_not_found));
                     isLoading.postValue(false);
                 }
             }
@@ -143,12 +144,12 @@ public class EditDriverProfileViewModel extends ViewModel {
                 isLoading.postValue(false);
                 updateSuccess.postValue(true);
             }).addOnFailureListener(e -> {
-                error.postValue("Error in drivers node: " + e.getMessage());
+                error.postValue(MyApp.getAppContext().getString(R.string.error_node_drivers, e.getMessage()));
                 isLoading.postValue(false);
             });
 
         }).addOnFailureListener(e -> {
-            error.postValue("Error in vehicles node: " + e.getMessage());
+            error.postValue(MyApp.getAppContext().getString(R.string.error_node_vehicles, e.getMessage()));
             isLoading.postValue(false);
         });
     }

@@ -145,7 +145,7 @@ public class DriverHistoryActivity extends AppCompatActivity {
     private void updateUI(boolean isEmpty, int size) {
         if (isEmpty) { recyclerHistory.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.VISIBLE); }
         else { recyclerHistory.setVisibility(View.VISIBLE); layoutEmptyState.setVisibility(View.GONE); }
-        tvListTitle.setText("Trips (" + size + ")");
+        tvListTitle.setText(getString(R.string.historial_viajes_count, size));
     }
 
     private void showLoading(boolean show) {
@@ -159,7 +159,7 @@ public class DriverHistoryActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
             SearchView sv = (SearchView) searchItem.getActionView();
-            sv.setQueryHint("Search passenger...");
+            sv.setQueryHint(getString(R.string.buscar_pasajero));
             sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override public boolean onQueryTextSubmit(String q) { searchText = q; viewModel.setFilters("TODAS", "TODAS", q); return true; }
                 @Override public boolean onQueryTextChange(String q) { searchText = q; viewModel.setFilters("TODAS", "TODAS", q); return true; }

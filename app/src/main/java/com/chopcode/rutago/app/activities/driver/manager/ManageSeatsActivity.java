@@ -91,9 +91,9 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         viewModel.getAppOccupiedSeats().observe(this, appSeats -> actualizarMapaAsientos());
         viewModel.getPhysicalOccupiedSeats().observe(this, physicalSeats -> actualizarMapaAsientos());
         viewModel.getTotalCapacity().observe(this, capacity -> actualizarMapaAsientos());
-        viewModel.getAvailableCount().observe(this, count -> tvAvailableSeatsInfo.setText("Available: " + count));
+        viewModel.getAvailableCount().observe(this, count -> tvAvailableSeatsInfo.setText(getString(R.string.asientos_disponibles_count, count)));
         viewModel.getError().observe(this, msg -> {
-            if (msg != null) Snackbar.make(findViewById(android.R.id.content), "Error: " + msg, Snackbar.LENGTH_LONG).show();
+            if (msg != null) Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_prefijo, msg), Snackbar.LENGTH_LONG).show();
         });
     }
 
@@ -115,7 +115,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         Set<Integer> physical = viewModel.getPhysicalOccupiedSeats().getValue();
 
         if (app != null && app.contains(seatNumber)) {
-            Snackbar.make(findViewById(android.R.id.content), "Occupied by App (Not editable)", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(findViewById(android.R.id.content), R.string.ocupado_por_app, Snackbar.LENGTH_SHORT).show();
         } else if (physical != null && physical.contains(seatNumber)) {
             showFreePhysicalSeatDialog(seatNumber);
         } else {
@@ -125,19 +125,19 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
 
     private void showReservePhysicalSeatDialog(int seatNumber) {
         new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                .setTitle("Physical Sale")
-                .setMessage("Block seat " + seatNumber + " manually?")
-                .setPositiveButton("Block", (d, w) -> viewModel.reservePhysical(seatNumber))
-                .setNegativeButton("Cancel", null)
+                .setTitle(R.string.venta_fisica_mayus)
+                .setMessage(getString(R.string.bloquear_asiento_pregunta, seatNumber))
+                .setPositiveButton(R.string.bloquear_btn, (d, w) -> viewModel.reservePhysical(seatNumber))
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 
     private void showFreePhysicalSeatDialog(int seatNumber) {
         new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                .setTitle("Free Seat")
-                .setMessage("Free manually blocked seat " + seatNumber + "?")
-                .setPositiveButton("Free", (d, w) -> viewModel.freePhysical(seatNumber))
-                .setNegativeButton("Close", null)
+                .setTitle(R.string.liberar_btn)
+                .setMessage(getString(R.string.liberar_asiento_pregunta, seatNumber))
+                .setPositiveButton(R.string.liberar_btn, (d, w) -> viewModel.freePhysical(seatNumber))
+                .setNegativeButton(R.string.volver, null)
                 .show();
     }
 

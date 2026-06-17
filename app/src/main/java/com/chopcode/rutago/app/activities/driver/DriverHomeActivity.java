@@ -169,7 +169,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         if (fabVentaFisica != null) {
             fabVentaFisica.setOnClickListener(view -> {
                 if (routeList == null || routeList.isEmpty()) {
-                    Toast.makeText(this, "No assigned routes", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_rutas_asignadas, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (routeList.size() == 1) abrirGestionAsientos(routeList.get(0));
@@ -191,7 +191,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_select_route, null);
         RecyclerView rv = dialogView.findViewById(R.id.rvSelectRoute);
         androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                .setView(dialogView).setNegativeButton("Back", null).create();
+                .setView(dialogView).setNegativeButton(R.string.volver, null).create();
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(new SelectRouteAdapter(routeList, route -> {
             dialog.dismiss();
@@ -225,7 +225,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         perfilViewModel.getPlacaVehiculoLiveData().observe(this, placa -> {
-            if (placa != null) tvPlacaVehiculo.setText("Plate: " + placa);
+            if (placa != null) tvPlacaVehiculo.setText(getString(R.string.placa_label_format, placa));
         });
 
         perfilViewModel.getCapacidadVehiculoLiveData().observe(this, capacity -> {
@@ -345,14 +345,14 @@ public class DriverHomeActivity extends AppCompatActivity {
 
     private void showConfirmationDialog(Reservation reservation, boolean isConfirmation) {
         new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
-                .setTitle(isConfirmation ? "Confirm" : "Cancel")
-                .setMessage(isConfirmation ? "Confirm reservation for " + reservation.getName() + "?" : "Cancel reservation for " + reservation.getName() + "?")
-                .setPositiveButton(isConfirmation ? "Confirm" : "Cancel", (dialog, which) -> {
+                .setTitle(isConfirmation ? R.string.confirmar : R.string.cancelar)
+                .setMessage(isConfirmation ? getString(R.string.confirmar_reserva_pregunta, reservation.getName()) : getString(R.string.cancelar_reserva_pregunta, reservation.getName()))
+                .setPositiveButton(isConfirmation ? R.string.confirmar : R.string.cancelar, (dialog, which) -> {
                     if (isConfirmation) reservasViewModel.confirmarReserva(this, reservation);
                     else reservasViewModel.cancelarReserva(this, reservation);
                     actualizarTiempoActualizacion();
                 })
-                .setNegativeButton("Back", null).show();
+                .setNegativeButton(R.string.volver, null).show();
     }
 
     private void updateReservationsUI() {
@@ -368,7 +368,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     }
 
     private void actualizarTiempoActualizacion() {
-        if (tvUltimaActualizacion != null) tvUltimaActualizacion.setText("Updated: " + timeFormat.format(new Date()));
+        if (tvUltimaActualizacion != null) tvUltimaActualizacion.setText(getString(R.string.actualizado_label_format, timeFormat.format(new Date())));
     }
 
     private void showEmptyReservations() { tvEmptyReservas.setVisibility(View.VISIBLE); rvReservas.setVisibility(View.GONE); }

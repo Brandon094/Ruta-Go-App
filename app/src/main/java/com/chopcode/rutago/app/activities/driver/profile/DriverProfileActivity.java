@@ -102,7 +102,7 @@ public class DriverProfileActivity extends AppCompatActivity {
                 tvConductor.setText(driver.getNombre());
                 tvEmail.setText(driver.getEmail());
                 tvTelefono.setText(driver.getTelefono());
-                tvPlacaVehiculoHeader.setText("🚗 PLATE: " + driver.getVehiclePlate());
+                tvPlacaVehiculoHeader.setText(getString(R.string.placa_label_format, driver.getVehiclePlate()));
                 ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivProfilePicture);
             }
         });

@@ -103,20 +103,20 @@ public class EditDriverProfileActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getConductorData().observe(this, driver -> {
             if (driver != null) {
-                tvNombreActual.setText("Name: " + driver.getNombre());
-                tvTelefonoActual.setText("Phone: " + driver.getTelefono());
-                tvCorreoActual.setText("Email: " + driver.getEmail());
+                tvNombreActual.setText(getString(R.string.nombreCompleto) + ": " + driver.getNombre());
+                tvTelefonoActual.setText(getString(R.string.telefono) + ": " + driver.getTelefono());
+                tvCorreoActual.setText(getString(R.string.correo) + ": " + driver.getEmail());
             }
         });
 
         viewModel.getVehiculoData().observe(this, vehicle -> {
             if (vehicle != null) {
-                tvPlacaActual.setText("Plate: " + vehicle.getPlate());
-                tvMarcaActual.setText("Brand: " + vehicle.getBrand());
-                tvModeloActual.setText("Model: " + vehicle.getModel());
-                tvColorActual.setText("Color: " + vehicle.getColor());
-                tvCapacidadActual.setText("Capacity: " + vehicle.getCapacity());
-                tvAnioActual.setText("Year: " + vehicle.getYear());
+                tvPlacaActual.setText(getString(R.string.placa) + ": " + vehicle.getPlate());
+                tvMarcaActual.setText(getString(R.string.marca) + ": " + vehicle.getBrand());
+                tvModeloActual.setText(getString(R.string.modelo) + ": " + vehicle.getModel());
+                tvColorActual.setText(getString(R.string.color) + ": " + vehicle.getColor());
+                tvCapacidadActual.setText(getString(R.string.capacidad) + ": " + vehicle.getCapacity());
+                tvAnioActual.setText(getString(R.string.anio_label) + ": " + vehicle.getYear());
             }
         });
 
@@ -127,13 +127,13 @@ public class EditDriverProfileActivity extends AppCompatActivity {
 
         viewModel.getUpdateSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.perfil_actualizado, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
         viewModel.getError().observe(this, msg -> {
-            if (msg != null) Toast.makeText(this, "Error: " + msg, Toast.LENGTH_LONG).show();
+            if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_LONG).show();
         });
     }
 

@@ -76,15 +76,15 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         }
 
         public void bind(Reservation reservation, OnReservaClickListener listener) {
-            tvNombre.setText(reservation.getName() != null ? reservation.getName() : "N/A");
-            tvTelefono.setText(reservation.getPhone() != null ? "📞 " + reservation.getPhone() : "📞 N/A");
+            tvNombre.setText(reservation.getName() != null ? reservation.getName() : itemView.getContext().getString(R.string.no_disponible));
+            tvTelefono.setText(reservation.getPhone() != null ? "📞 " + reservation.getPhone() : "📞 " + itemView.getContext().getString(R.string.no_disponible));
 
             if (reservation.getOrigin() != null && reservation.getDestination() != null) {
                 tvOrigenDestino.setText("📍 " + reservation.getOrigin() + " → " + reservation.getDestination());
             }
 
             int seat = reservation.getReservedSeat();
-            tvAsiento.setText(seat > 0 ? "💺 " + FormatUtils.formatearAsiento(seat) : "💺 Not assigned");
+            tvAsiento.setText(seat > 0 ? "💺 " + FormatUtils.formatearAsiento(seat) : "💺 " + itemView.getContext().getString(R.string.no_disponible));
 
             if (reservation.getReservationDate() > 0) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());

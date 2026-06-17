@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
 import com.chopcode.rutago.app.models.Reservation;
+import com.chopcode.rutago.app.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -126,7 +127,7 @@ public class ManageSeatsViewModel extends ViewModel {
         if (currentScheduleId == null) return;
         seatsDataProcessor.reserveSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() {}
-            @Override public void onError(String msg) { error.postValue(msg); }
+            @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_reserva_puesto, msg)); }
         });
     }
 
@@ -134,7 +135,7 @@ public class ManageSeatsViewModel extends ViewModel {
         if (currentScheduleId == null) return;
         seatsDataProcessor.freeSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() {}
-            @Override public void onError(String msg) { error.postValue(msg); }
+            @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_liberacion_puesto, msg)); }
         });
     }
 

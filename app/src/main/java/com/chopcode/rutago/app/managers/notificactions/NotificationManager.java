@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
+import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.database.DataSnapshot;
@@ -90,8 +91,8 @@ public class NotificationManager {
         
         Log.d(TAG, "🔔 [ENVIANDO -> CONDUCTOR] Nueva reserva de: " + pasajeroNombre);
         
-        String title = "🚗 Nueva Reservation";
-        String body = String.format("%s reservó el asiento A%d para %s", pasajeroNombre, asiento, ruta);
+        String title = context.getString(R.string.notif_nueva_reserva_title);
+        String body = context.getString(R.string.notif_nueva_reserva_body, pasajeroNombre, "A" + asiento, ruta);
 
         Map<String, Object> notificationData = new HashMap<>();
         notificationData.put("title", title);
@@ -126,8 +127,8 @@ public class NotificationManager {
 
         Log.d(TAG, "🔔 [ENVIANDO -> PASAJERO] Reservation Confirmada por: " + conductorNombre);
 
-        String title = "✅ Reservation Confirmada";
-        String body = String.format("¡Tu viaje en %s ha sido confirmado por %s!", ruta, conductorNombre);
+        String title = context.getString(R.string.notif_confirmada_title);
+        String body = context.getString(R.string.notif_confirmada_body, ruta, conductorNombre);
 
         Map<String, Object> notificationData = new HashMap<>();
         notificationData.put("title", title);
@@ -160,8 +161,8 @@ public class NotificationManager {
 
         Log.d(TAG, "🔔 [ENVIANDO -> PASAJERO] Reservation Cancelada");
 
-        String title = "❌ Reservation Cancelada";
-        String body = String.format("Lo sentimos, tu reserva para %s fue cancelada", ruta);
+        String title = context.getString(R.string.notif_cancelada_title);
+        String body = context.getString(R.string.notif_cancelada_body, ruta);
 
         Map<String, Object> notificationData = new HashMap<>();
         notificationData.put("title", title);

@@ -253,6 +253,8 @@
     <string name="modelo">Modelo: %s</string>
     <string name="capacidad">Capacidad: %d personas</string>
     <string name="placa">Placa: %s</string>
+    <string name="marca">Marca</string>
+    <string name="color">Color</string>
     <string name="editarPerfil">Editar perfil</string>
 
     <!-- ==================== -->
@@ -511,4 +513,36 @@
     <string name="telefono_obligatorio">El teléfono es obligatorio</string>
     <string name="error_actualizar">Error al actualizar: %s</string>
     <string name="inicie_sesion_reservar">Por favor inicia sesión para reservar</string>
+
+    <!-- DRIVER FLOW NEW STRINGS -->
+    <string name="no_rutas_asignadas">No hay rutas asignadas</string>
+    <string name="placa_label_format">Placa: %s</string>
+    <string name="actualizado_label_format">Actualizado: %s</string>
+    <string name="confirmar_reserva_pregunta">¿Confirmar reserva de %s?</string>
+    <string name="cancelar_reserva_pregunta">¿Cancelar reserva de %s?</string>
+    <string name="bloquear_asiento_pregunta">¿Bloquear asiento %d manualmente?</string>
+    <string name="liberar_asiento_pregunta">¿Liberar asiento %d bloqueado manualmente?</string>
+    <string name="ocupado_por_app">Ocupado por la App (No editable)</string>
+    <string name="error_carga_vehiculo">Error al cargar el vehículo: %s</string>
+    <string name="error_parsing_driver_data">Error al procesar datos del conductor</string>
+    <string name="driver_data_not_found">Datos del conductor no encontrados</string>
+    <string name="error_node_users">Error en nodo usuarios: %s</string>
+    <string name="error_node_drivers">Error en nodo conductores: %s</string>
+    <string name="error_node_vehicles">Error en nodo vehículos: %s</string>
+    <string name="seat_already_occupied_error">El asiento ya está ocupado</string>
+    <string name="error_reserva_puesto">Error al reservar: %s</string>
+    <string name="error_liberacion_puesto">Error al liberar el asiento: %s</string>
+    <string name="error_obtener_contador">Error al obtener el contador: %s</string>
+    <string name="error_actualizar_contador">Error al actualizar el contador: %s</string>
+    <string name="venta_fisica_mayus">VENTA FÍSICA</string>
+    <string name="bloquear_btn">Bloquear</string>
+    <string name="liberar_btn">Liberar</string>
+
+    <!-- NOTIFICATION STRINGS -->
+    <string name="notif_nueva_reserva_title">🚗 Nueva Reserva</string>
+    <string name="notif_nueva_reserva_body">%1$s reservó el asiento %2$s para %3$s</string>
+    <string name="notif_confirmada_title">✅ Reserva Confirmada</string>
+    <string name="notif_confirmada_body">¡Tu viaje en %1$s ha sido confirmado por %2$s!</string>
+    <string name="notif_cancelada_title">❌ Reserva Cancelada</string>
+    <string name="notif_cancelada_body">Lo sentimos, tu reserva para %s fue cancelada</string>
 </resources>
