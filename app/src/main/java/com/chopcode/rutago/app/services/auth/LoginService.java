@@ -23,7 +23,11 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 
 /**
- * Service to handle user authentication.
+ * 🔐 Login Service
+ * 
+ * Este servicio gestiona el ciclo de vida de la autenticación (Email/Google).
+ * Su característica más crítica es el "Motor de Detección de Rol", que analiza
+ * los nodos de Firebase para decidir si el usuario es un Conductor o un Pasajero.
  */
 public class LoginService {
     private static final String TAG = "LoginService";
@@ -60,13 +64,18 @@ public class LoginService {
                 .build();
     }
 
+    /**
+     * 🧠 Motor de Detección: Busca el UID en ambos nodos en paralelo.
+     */
     public void detectUserType(FirebaseUser user, @NonNull UserTypeCallback callback) {
         String uid = user.getUid();
         DatabaseReference dbRef = MyApp.getDatabaseReference("");
 
+        // Paso 1: Verificar en conductores
         dbRef.child("conductores").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshotDriver) {
+                // Paso 2: Verificar en usuarios (pasajeros)
                 dbRef.child("usuarios").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshotUser) {
@@ -79,20 +88,31 @@ public class LoginService {
         });
     }
 
+    /**
+     * ⚖️ Analizador de Resultados: Heurística para decidir el rol.
+     * Prioriza la existencia de datos técnicos (vehículo) para marcar como conductor.
+     */
     private void analyzeResults(String uid, DataSnapshot snapshotDriver, DataSnapshot snapshotUser, UserTypeCallback callback) {
+        // Si tiene perfil de usuario completo -> Pasajero
         if (snapshotUser.exists() && isUserComplete(snapshotUser)) {
             callback.onTypeDetected("passenger");
             return;
         }
+        
+        // Si tiene perfil de conductor con vehículo -> Conductor
         if (snapshotDriver.exists() && isDriverComplete(snapshotDriver)) {
             callback.onTypeDetected("driver");
             return;
         }
+        
+        // Casos ambiguos o de primer ingreso
         if (snapshotDriver.exists() && snapshotUser.exists()) {
             if (isDriverComplete(snapshotDriver)) callback.onTypeDetected("driver");
             else callback.onTypeDetected("passenger");
             return;
         }
+        
+        // Fallbacks
         if (snapshotUser.exists()) callback.onTypeDetected("passenger");
         else if (snapshotDriver.exists()) callback.onTypeDetected("passenger");
         else callback.onError("User data not found.");
@@ -106,6 +126,9 @@ public class LoginService {
         return snapshot.hasChild("nombre");
     }
 
+    /**
+     * Inicio de sesión tradicional por Email.
+     */
     public void loginWithEmail(String email, String password, @NonNull LoginCallback callback) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, task -> {
@@ -123,6 +146,9 @@ public class LoginService {
                 });
     }
 
+    /**
+     * Inicia el flujo de Google One Tap.
+     */
     public void loginWithGoogle(@NonNull LoginCallback callback) {
         oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(activity, result -> {
@@ -133,6 +159,9 @@ public class LoginService {
                 .addOnFailureListener(activity, e -> callback.onLoginFailure(e.getMessage()));
     }
 
+    /**
+     * Procesa la credencial de Google y registra al usuario si es nuevo.
+     */
     public void handleGoogleResult(Intent data, @NonNull LoginCallback callback) {
         try {
             SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
@@ -146,6 +175,7 @@ public class LoginService {
                             detectUserType(user, new UserTypeCallback() {
                                 @Override public void onTypeDetected(String type) { callback.onLoginSuccess(type); }
                                 @Override public void onError(String error) {
+                                    // Si no se detecta tipo, es un usuario nuevo de Google (Pasajero por defecto)
                                     registrationService.guardarUserSiNoExiste(user, new RegistrationService.RegistrationCallback() {
                                         @Override public void onSuccess() { callback.onLoginSuccess("passenger"); }
                                         @Override public void onFailure(String err) { callback.onLoginFailure(err); }

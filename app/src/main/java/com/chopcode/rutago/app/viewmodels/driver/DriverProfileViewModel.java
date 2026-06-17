@@ -13,7 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ViewModel to manage driver profile information.
+ * 👤 Driver Profile ViewModel
+ * 
+ * Orquesta la carga de información del conductor y su vehículo.
+ * Es el responsable de activar la sincronización de capacidad dinámica
+ * apenas el perfil es cargado, asegurando que los horarios asignados
+ * reflejen los puestos reales del vehículo en Firebase.
  */
 public class DriverProfileViewModel extends BaseViewModel {
 
@@ -24,7 +29,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final VehicleService vehicleService;
     private final SeatsDataProcessor seatsDataProcessor;
 
-    // LiveData
+    // --- LiveData para UI ---
     private final MutableLiveData<String> driverNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> vehiclePlateLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> vehicleCapacityLiveData = new MutableLiveData<>();
@@ -54,6 +59,9 @@ public class DriverProfileViewModel extends BaseViewModel {
     public MutableLiveData<Vehicle> getVehiculoLiveData() { return vehicleLiveData; }
     public MutableLiveData<String> getPhotoUploadStatus() { return photoUploadStatus; }
 
+    /**
+     * Carga todos los datos del conductor y dispara la sincronización de capacidad.
+     */
     public void cargarDatosCompletos(String driverUID) {
         if (driverUID == null || driverUID.isEmpty()) {
             setError("Invalid Driver ID");
@@ -67,7 +75,6 @@ public class DriverProfileViewModel extends BaseViewModel {
             @Override
             public void onDriverDataLoaded(Driver driver) {
                 Log.d(TAG, "Driver data loaded: " + driver.getNombre());
-                Log.d(TAG, "Assigned schedules: " + (driver.getAssignedSchedules() != null ? driver.getAssignedSchedules().toString() : "NULL"));
 
                 driverNameLiveData.postValue(driver.getNombre());
                 vehiclePlateLiveData.postValue(driver.getVehiclePlate());
@@ -75,7 +82,7 @@ public class DriverProfileViewModel extends BaseViewModel {
                 assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
                 driverLiveData.postValue(driver);
 
-                // Sync dynamic capacity to schedules
+                // 🔥 SYNC ATÓMICO: Propagar capacidad del vehículo a los nodos de disponibilidad
                 if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
                     seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
                 }
@@ -94,11 +101,18 @@ public class DriverProfileViewModel extends BaseViewModel {
         });
     }
 
+    /**
+     * Carga detalles técnicos del vehículo por placa.
+     */
     private void cargarVehiculo(String plate) {
         vehicleService.getVehicleByPlate(plate, new VehicleService.VehicleCallback() {
             @Override
             public void onVehicleLoaded(Vehicle vehicle) {
-                vehicleLiveData.postValue(vehicle);
+                if (vehicle != null) {
+                    vehicleLiveData.postValue(vehicle);
+                    // Asegurar que la capacidad se actualice si el modelo de vehículo tiene el dato más fresco
+                    if (vehicle.getCapacity() > 0) vehicleCapacityLiveData.postValue(vehicle.getCapacity());
+                }
             }
 
             @Override
@@ -108,6 +122,9 @@ public class DriverProfileViewModel extends BaseViewModel {
         });
     }
 
+    /**
+     * Sube una foto a Storage y actualiza la referencia en la DB del conductor.
+     */
     public void subirFotoPerfil(android.net.Uri uri) {
         if (currentDriverUID == null) return;
         photoUploadStatus.setValue("Uploading...");

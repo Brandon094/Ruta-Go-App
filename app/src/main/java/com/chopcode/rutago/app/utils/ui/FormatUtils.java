@@ -8,14 +8,18 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Utilidades centralizadas para formateo de datos en la UI.
- * Mejora el mantenimiento y asegura consistencia visual en toda la app.
+ * 🛠️ Format Utils (Single Source of Truth)
+ * 
+ * Esta clase centraliza toda la lógica de transformación de datos para la UI.
+ * Siguiendo Clean Architecture, ningún Adapter o Activity debe formatear precios
+ * o fechas manualmente; deben llamar a estos métodos.
  */
 public class FormatUtils {
     private static final String TAG = "FormatUtils";
 
     /**
-     * Formatea un precio (String o Double) a formato moneda colombiana ($12.000)
+     * Formatea un precio a moneda colombiana (ej: 12000 -> "$12.000").
+     * Soporta tanto String como Double.
      */
     public static String formatearPrecio(Object precio) {
         if (precio == null) return "$0";
@@ -41,7 +45,8 @@ public class FormatUtils {
     }
 
     /**
-     * Separa una hora tipo "06:00 AM" en un array ["06:00", "AM"]
+     * Separa una hora tipo "06:00 AM" en un array ["06:00", "AM"].
+     * Útil para layouts donde la hora y el periodo tienen tamaños distintos.
      */
     public static String[] separarHoraYAmPm(String horaCompleta) {
         String[] resultado = {"--:--", ""};
@@ -63,7 +68,7 @@ public class FormatUtils {
     }
 
     /**
-     * Formatea una fecha en formato descriptivo español
+     * Formatea una fecha en formato descriptivo (ej: "Lunes, 16 de Junio del 2026").
      */
     public static String formatearFechaLarga(Date fecha) {
         if (fecha == null) return "Fecha no disponible";
@@ -73,13 +78,12 @@ public class FormatUtils {
     }
 
     /**
-     * Formatea una fecha corta (yyyy-MM-dd) a un formato más legible.
-     * Si la fecha ya está formateada (contiene letras), la devuelve tal cual.
+     * Convierte "yyyy-MM-dd" a formato legible en español.
      */
     public static String formatearFechaCortaALegible(String fecha) {
         if (fecha == null || fecha.isEmpty()) return "Fecha no disponible";
         
-        // Si ya contiene letras (ej: "Lunes"), es que ya está formateada
+        // Evitar doble formateo si ya contiene texto
         if (fecha.matches(".*[a-zA-ZáéíóúÁÉÍÓÚ].*")) {
             return fecha;
         }
@@ -98,7 +102,7 @@ public class FormatUtils {
     }
 
     /**
-     * Obtiene la fecha del viaje basándose en si el horario ya pasó hoy
+     * Lógica de negocio visual: Si el horario ya pasó, asume que el viaje es para mañana.
      */
     public static String obtenerFechaViaje(String horarioHora) {
         Calendar calendar = Calendar.getInstance();
@@ -108,6 +112,9 @@ public class FormatUtils {
         return formatearFechaLarga(calendar.getTime());
     }
 
+    /**
+     * Compara una cadena de hora contra la hora actual del sistema.
+     */
     private static boolean esHorarioPasado(String horario) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
@@ -130,7 +137,7 @@ public class FormatUtils {
     }
 
     /**
-     * Calcula el tiempo estimado basado en la ruta
+     * Determina el tiempo de viaje estimado (Hardcoded por ahora según la ruta).
      */
     public static String calcularTiempoEstimado(String ruta) {
         if (ruta == null) return "55 min";
@@ -138,14 +145,14 @@ public class FormatUtils {
     }
 
     /**
-     * Formatea el número de asiento (ej: 1 -> A1)
+     * Formatea el número de asiento para visualización (ej: 1 -> "A1").
      */
     public static String formatearAsiento(int asiento) {
         return "A" + asiento;
     }
 
     /**
-     * Formatea la información del vehículo
+     * Combina placa y modelo para encabezados de perfil.
      */
     public static String formatearInfoVehiculo(String placa, String modelo) {
         if (modelo != null && !modelo.isEmpty() && !modelo.equalsIgnoreCase("null")) {
@@ -155,7 +162,7 @@ public class FormatUtils {
     }
 
     /**
-     * Formatea una hora de 24h (13:00) a 12h (1:00 PM)
+     * Convierte hora militar (13:00) a 12h (1:00 PM).
      */
     public static String formatearHora12h(String hora24) {
         if (hora24 == null || hora24.isEmpty()) return "Hora no disponible";
@@ -178,7 +185,8 @@ public class FormatUtils {
     }
 
     /**
-     * Normaliza un texto para comparaciones (quita tildes, minúsculas, espacios)
+     * 🔥 Normaliza un texto para comparaciones lógicas.
+     * Quita tildes, convierte a minúsculas y elimina espacios innecesarios.
      */
     public static String normalizarTexto(String texto) {
         if (texto == null) return "";

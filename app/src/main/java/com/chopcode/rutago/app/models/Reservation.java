@@ -3,8 +3,19 @@ package com.chopcode.rutago.app.models;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.PropertyName;
 
+/**
+ * 🎫 Reservation Model
+ * 
+ * Este modelo es el "corazón" de los datos de la app. Implementa una estrategia de
+ * "Mapeo Dual" para garantizar que la aplicación pueda leer datos históricos en español
+ * de Firebase y manejarlos internamente en inglés para seguir el estándar Clean Architecture.
+ * 
+ * Los campos son públicos para facilitar el acceso rápido desde Firebase, pero cuentan
+ * con setters decorados con @PropertyName para la interoperabilidad.
+ */
 @IgnoreExtraProperties
 public class Reservation {
+    // --- Campos en Inglés (Estándar del Código) ---
     public String idReservation;
     public String userId;
     public String scheduleId;
@@ -12,15 +23,15 @@ public class Reservation {
     public String vehicleId;
     public String routeId;
     public String routeName;
-    public String driver;
+    public String driver; // Nombre del conductor
     public String origin;
     public String destination;
     public String estimatedTime;
     public String paymentMethod;
     public String reservationStatus;
-    public String name;
-    public String phone;
-    public String phoneC;
+    public String name; // Nombre del pasajero
+    public String phone; // Teléfono del pasajero
+    public String phoneC; // Teléfono del conductor
     public String email;
     public long reservationDate;
     public double price;
@@ -29,6 +40,9 @@ public class Reservation {
 
     public Reservation() { }
 
+    /**
+     * Constructor completo para creación manual de reservas.
+     */
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
                        String driver, String driverId, String phoneC, String vehicleId, double price,
                        String origin, String destination, String estimatedTime, String paymentMethod,
@@ -56,45 +70,71 @@ public class Reservation {
         this.routeName = routeName;
     }
 
-    // Setters para compatibilidad con Español
+    // =========================================================================
+    // 🌍 ESTRATEGIA DE COMPATIBILIDAD BILINGÜE (Mapeo Dual)
+    // =========================================================================
+    
+    // Estas funciones permiten que Firebase mapee llaves en español (ej: "idReserva")
+    // directamente a nuestras variables en inglés (idReservation).
+
     @PropertyName("idReserva")
     public void setIdReserva(String val) { if (val != null) this.idReservation = val; }
+    
     @PropertyName("usuarioId")
     public void setUsuarioId(String val) { if (val != null) this.userId = val; }
+    
     @PropertyName("horarioId")
     public void setHorarioId(String val) { if (val != null) this.scheduleId = val; }
+    
     @PropertyName("conductorId")
     public void setConductorId(String val) { if (val != null) this.driverId = val; }
+    
     @PropertyName("puestoReservado")
     public void setPuestoReservado(int val) { if (val != -1) this.reservedSeat = val; }
+    
     @PropertyName("conductor")
     public void setConductor(String val) { if (val != null) this.driver = val; }
+    
     @PropertyName("estadoReserva")
     public void setEstadoReserva(String val) { if (val != null) this.reservationStatus = val; }
+    
     @PropertyName("fechaReserva")
     public void setFechaReserva(long val) { if (val != 0) this.reservationDate = val; }
+    
     @PropertyName("nombre")
     public void setNombre(String val) { if (val != null) this.name = val; }
+    
     @PropertyName("telefono")
     public void setTelefono(String val) { if (val != null) this.phone = val; }
+    
     @PropertyName("telefonoC")
     public void setTelefonoC(String val) { if (val != null) this.phoneC = val; }
+    
     @PropertyName("metodoPago")
     public void setMetodoPago(String val) { if (val != null) this.paymentMethod = val; }
+    
     @PropertyName("origen")
     public void setOrigen(String val) { if (val != null) this.origin = val; }
+    
     @PropertyName("destino")
     public void setDestino(String val) { if (val != null) this.destination = val; }
+    
     @PropertyName("precio")
     public void setPrecio(double val) { if (val != 0) this.price = val; }
+    
     @PropertyName("tiempoEstimado")
     public void setTiempoEstimado(String val) { if (val != null) this.estimatedTime = val; }
+    
     @PropertyName("calificada")
     public void setCalificada(boolean val) { this.rated = val; }
+    
     @PropertyName("vehiculoId")
     public void setVehiculoId(String val) { if (val != null) this.vehicleId = val; }
 
-    // Getters explícitos para compatibilidad con código existente
+    // =========================================================================
+    // 🛠️ GETTERS Y SETTERS ESTÁNDAR
+    // =========================================================================
+
     public String getIdReservation() { return idReservation; }
     public void setIdReservation(String idReservation) { this.idReservation = idReservation; }
     public String getUserId() { return userId; }
