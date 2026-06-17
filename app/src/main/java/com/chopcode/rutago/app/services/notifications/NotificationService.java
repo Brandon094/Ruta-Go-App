@@ -179,28 +179,31 @@ public class NotificationService extends FirebaseMessagingService {
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            // ✅ PERSONALIZACIÓN PROFESIONAL:
-            // 1. Ícono pequeño (debe ser blanco sobre transparente)
+            // ✅ PERSONALIZACIÓN PREMIUM:
+            // 1. Ícono pequeño (Campanita blanca sobre transparente)
             int smallIcon = R.drawable.ic_notification;
             
-            // 2. Ícono grande (Logo de la app a color)
+            // 2. Ícono grande (Logo oficial circular de RutaGo)
             android.graphics.Bitmap largeIcon = android.graphics.BitmapFactory.decodeResource(
                     getResources(), R.drawable.logo_main);
 
             NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat.Builder(this, CHANNEL_ID)
                             .setSmallIcon(smallIcon)
-                            .setLargeIcon(largeIcon) // 👈 Tu logo a color
-                            .setColor(getResources().getColor(R.color.primary_500)) // 👈 Color naranja RutaGo
+                            .setLargeIcon(largeIcon)
+                            .setColor(getResources().getColor(R.color.primary_500))
                             .setContentTitle(title != null ? title : getString(R.string.app_name))
                             .setContentText(messageBody)
-                            .setStyle(new NotificationCompat.BigTextStyle() // 👈 Para que se vea todo el texto si es largo
+                            .setSubText(getString(R.string.app_name)) // 👈 Etiqueta premium en la parte superior
+                            .setStyle(new NotificationCompat.BigTextStyle()
                                     .bigText(messageBody))
                             .setAutoCancel(true)
                             .setSound(defaultSoundUri)
                             .setContentIntent(pendingIntent)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setVibrate(new long[]{0, 500, 200, 500});
+                            .setVibrate(new long[]{0, 500, 250, 500}) // Patrón de vibración más elegante
+                            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
             android.app.NotificationManager notificationManager =
                     (android.app.NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

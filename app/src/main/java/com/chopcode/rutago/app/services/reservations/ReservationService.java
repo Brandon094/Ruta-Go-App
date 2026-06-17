@@ -144,7 +144,14 @@ public class ReservationService {
         ref.setValue(reservation).addOnSuccessListener(aVoid -> {
             if (context != null) {
                 Toast.makeText(context, R.string.reserva_exitosa, Toast.LENGTH_SHORT).show();
-                notifyDriver(context, idReservation, uid, name, scheduleId, selectedSeat, origin, destination, price, paymentMethod);
+            }
+            // Enviar notificación al conductor directamente usando su driverId
+            if (driverId != null && !driverId.isEmpty()) {
+                NotificationManager.getInstance(context != null ? context : MyApp.getAppContext())
+                        .notificarNuevaReservaAlConductor(driverId, name, origin + " -> " + destination, "Today", selectedSeat, price, paymentMethod, new NotificationManager.NotificationCallback() {
+                            @Override public void onSuccess() { Log.d(TAG, "✅ Notificación enviada al conductor: " + driverId); }
+                            @Override public void onError(String error) { Log.e(TAG, "❌ Error notificando al conductor: " + error); }
+                        });
             }
             callback.onSuccess();
         }).addOnFailureListener(e -> {
@@ -156,40 +163,8 @@ public class ReservationService {
         });
     }
 
-    private void notifyDriver(Context context, String reservationId, String passengerId, String passengerName,
-                                    String scheduleId, int seat, String origin, String destination,
-                                    double price, String paymentMethod) {
-
-        DatabaseReference driversRef = MyApp.getDatabaseReference("conductores");
-        driversRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String foundDriverId = null;
-                String driverName = "Driver";
-                
-                for (DataSnapshot driverSnap : snapshot.getChildren()) {
-                    DataSnapshot assignedSchedules = driverSnap.child("horariosAsignados");
-                    for (DataSnapshot h : assignedSchedules.getChildren()) {
-                        if (scheduleId.equals(String.valueOf(h.getValue()))) {
-                            foundDriverId = driverSnap.getKey();
-                            driverName = driverSnap.child("nombre").getValue(String.class);
-                            break;
-                        }
-                    }
-                    if (foundDriverId != null) break;
-                }
-
-                if (foundDriverId != null) {
-                    NotificationManager.getInstance(context)
-                            .notificarNuevaReservaAlConductor(foundDriverId, passengerName, origin + " -> " + destination, "Today", seat, price, paymentMethod, new NotificationManager.NotificationCallback() {
-                                @Override public void onSuccess() {}
-                                @Override public void onError(String error) {}
-                            });
-                }
-            }
-            @Override public void onCancelled(@NonNull DatabaseError error) {}
-        });
-    }
+    // Eliminamos el método notifyDriver antiguo que era ineficiente y no funcionaba bien
+    // ... rest of the code ...
 
     public void loadDriverReservations(String driverId, String status, ReservationsCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
