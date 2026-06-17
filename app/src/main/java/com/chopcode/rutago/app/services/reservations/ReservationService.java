@@ -15,6 +15,16 @@ import com.google.firebase.database.*;
 
 import java.util.*;
 
+/**
+ * 🎫 Reservation Service (Passenger Focus)
+ * 
+ * Gestiona el ciclo de vida de una reserva desde la creación hasta la consulta de historial.
+ * Funcionalidades clave:
+ * - Validar disponibilidad de asientos en tiempo real.
+ * - Registrar nuevas reservas vinculando datos de pasajero, conductor y vehículo.
+ * - Notificar automáticamente al conductor sobre nuevas reservas recibidas.
+ * - Recuperar el historial de viajes del pasajero.
+ */
 public class ReservationService {
 
     private static final String TAG = "ReservationService";

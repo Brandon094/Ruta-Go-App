@@ -26,6 +26,16 @@ import java.util.Map;
 /**
  * ✅ Confirm Reservation Activity (Passenger)
  */
+/**
+ * ✅ Confirm Reservation Activity (Passenger)
+ * 
+ * Etapa final del flujo de reserva.
+ * Responsabilidades:
+ * - Presentar un resumen detallado de la reserva (Ruta, Conductor, Vehículo, Asiento).
+ * - Permitir la selección del método de pago.
+ * - Procesar la reserva atómica en Firebase a través de ConfirmReservationViewModel.
+ * - Mostrar diálogos de confirmación y feedback de éxito/error.
+ */
 public class ConfirmReservationActivity extends AppCompatActivity implements
         ConfirmationUIManager.ConfirmationListener,
         ConfirmationDialogManager.DialogCallback {

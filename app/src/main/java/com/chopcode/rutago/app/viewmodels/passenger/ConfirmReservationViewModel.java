@@ -14,7 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ViewModel for reservation confirmation screen.
+ * ✅ Confirm Reservation ViewModel (Passenger)
+ * 
+ * Orquesta el proceso de confirmación final de una reserva.
+ * Sus responsabilidades incluyen:
+ * - Procesar los datos de viaje recibidos por Intent.
+ * - Gestionar la selección del método de pago.
+ * - Ejecutar la transacción de reserva en Firebase, la cual marca el asiento como 
+ *   ocupado y crea el registro de reserva simultáneamente.
  */
 public class ConfirmReservationViewModel extends ViewModel {
     private final MutableLiveData<Map<String, Object>> reservationData = new MutableLiveData<>(new HashMap<>());

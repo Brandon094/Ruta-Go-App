@@ -44,13 +44,12 @@ import com.google.firebase.auth.FirebaseUser;
 /**
  * 🔑 Login Activity
  * 
+ * Punto de entrada principal para la autenticación de usuarios.
  * Responsabilidades:
- * - Authentication with Email/Password and Google One Tap.
- * - Notification permission management (Android 13+).
- * - Persistent session verification (Auto-login).
- * - Redirection based on role (Passenger/Driver).
- * 
- * Architecture: MVVM - Logic delegated to {@link LoginViewModel}.
+ * - Gestionar el inicio de sesión tradicional (Email/Password) y social (Google One Tap).
+ * - Solicitar permisos críticos como notificaciones (Android 13+).
+ * - Verificar sesiones locales persistentes para login automático.
+ * - Redirigir al usuario a su Dashboard correspondiente (Pasajero o Conductor) tras validar su rol en Firebase.
  */
 public class LoginActivity extends AppCompatActivity {
 

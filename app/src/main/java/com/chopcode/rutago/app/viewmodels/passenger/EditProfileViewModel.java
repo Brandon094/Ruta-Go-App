@@ -13,12 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ViewModel para gestionar la edición del perfil del usuario pasajero.
+ * 📝 Edit Profile ViewModel (Passenger)
  * 
+ * Gestiona la lógica de negocio para la edición del perfil de usuario.
  * Responsabilidades:
- * - Cargar los datos actuales del usuario.
- * - Validar y procesar la actualización del perfil.
- * - Gestionar los estados de carga, éxito y error.
+ * - Recuperar la información actual del pasajero.
+ * - Validar que los campos obligatorios no estén vacíos.
+ * - Coordinar con el servicio de usuario para persistir los cambios en Firebase.
  */
 public class EditProfileViewModel extends ViewModel {
     private static final String TAG = "EditProfileVM";

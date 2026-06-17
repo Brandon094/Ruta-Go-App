@@ -15,7 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service to manage reservations from Passenger's perspective.
+ * 🎫 Passenger Reservation Service
+ * 
+ * Centraliza las consultas de reservas desde el punto de vista del pasajero.
+ * Incluye lógica para:
+ * - Recuperar el historial básico de viajes filtrado por el UID del usuario.
+ * - Calcular estadísticas Premium (Inversión total, puntos de lealtad y ruta más frecuente).
  */
 public class PassengerReservationService {
 

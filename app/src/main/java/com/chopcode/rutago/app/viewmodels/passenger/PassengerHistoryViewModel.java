@@ -12,7 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ViewModel to manage passenger reservation history.
+ * 📊 Passenger History ViewModel
+ * 
+ * Gestiona la lógica de filtrado y visualización del historial de viajes.
+ * Responsabilidades:
+ * - Recuperar todas las reservas del pasajero desde Firebase.
+ * - Aplicar filtros de búsqueda por texto y por estado (Confirmados/Cancelados).
+ * - Calcular estadísticas acumuladas para mostrar en el resumen del historial.
  */
 public class PassengerHistoryViewModel extends ViewModel {
     private static final String TAG = "PassengerHistoryVM";

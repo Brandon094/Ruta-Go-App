@@ -30,6 +30,16 @@ import java.util.ArrayList;
 /**
  * 📊 Reservation History Activity (Passenger)
  */
+/**
+ * 📊 Reservation History Activity (Passenger)
+ * 
+ * Permite al pasajero consultar sus viajes pasados y presentes.
+ * Responsabilidades:
+ * - Listar todas las reservas vinculadas al UID del pasajero.
+ * - Proporcionar filtros rápidos por estado (Confirmados, Cancelados) y búsqueda por texto.
+ * - Mostrar estadísticas acumuladas de viajes en la cabecera.
+ * - Permitir la calificación de viajes completados a través del adaptador.
+ */
 public class ReservationHistoryActivity extends AppCompatActivity {
 
     private static final String TAG = "ReservationHistoryActivity";

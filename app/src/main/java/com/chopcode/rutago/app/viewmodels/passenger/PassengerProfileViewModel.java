@@ -17,6 +17,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 👤 Passenger Profile ViewModel
+ * 
+ * Gestiona la información de perfil y las estadísticas de viaje del pasajero.
+ * Mantiene una escucha reactiva sobre las reservas del usuario para actualizar
+ * los contadores de viajes realizados, cancelados y totales en el Dashboard.
+ */
 public class PassengerProfileViewModel extends ViewModel {
     private static final String TAG = "PassengerProfileViewModel";
 

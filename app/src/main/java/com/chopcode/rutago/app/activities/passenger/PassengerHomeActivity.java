@@ -29,6 +29,18 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 
+/**
+ * 🏠 Passenger Home Activity
+ * 
+ * Este es el Dashboard principal para los pasajeros. 
+ * Responsabilidades:
+ * - Mostrar el catálogo de rutas disponibles (Natagá <-> La Plata) mediante un ViewPager2.
+ * - Visualizar estadísticas rápidas del usuario (Viajes realizados, cancelados y total).
+ * - Monitorear la conexión a internet en tiempo real para alertar al usuario.
+ * - Navegar a través de las secciones principales usando el Bottom Navigation.
+ * 
+ * Implementa MVVM mediante PassengerProfileViewModel y ScheduleViewModel.
+ */
 public class PassengerHomeActivity extends AppCompatActivity implements
         DashboardUIManager.UIActionsListener, HorarioFragment.OnUserDataListener {
 

@@ -11,6 +11,13 @@ import com.google.firebase.database.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 🕒 Schedule Service
+ * 
+ * Gestiona el catálogo maestro de horarios y la disponibilidad global de asientos.
+ * Proporciona listeners reactivos para que el Dashboard de horarios se actualice
+ * automáticamente ante cualquier cambio en los nodos de Firebase.
+ */
 public class ScheduleService {
 
     private static final String TAG = "ScheduleService";

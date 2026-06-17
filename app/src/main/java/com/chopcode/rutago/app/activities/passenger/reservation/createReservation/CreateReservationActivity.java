@@ -31,6 +31,12 @@ import java.util.Map;
 
 /**
  * 💺 Create Reservation Activity (Passenger)
+ * Esta actividad permite al pasajero seleccionar un asiento para un horario específico.
+ * Responsabilidades:
+ * - Mostrar el mapa interactivo de asientos (usando SeatManager).
+ * - Cargar y mostrar la información del conductor y vehículo asignado al horario.
+ * - Validar que se haya seleccionado un asiento antes de proceder.
+ * - Manejar la persistencia del estado ante cambios de configuración (rotación).
  */
 public class CreateReservationActivity extends AppCompatActivity implements SeatManager.SeatSelectionListener {
 

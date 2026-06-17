@@ -19,6 +19,12 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 /**
  * 📝 Edit Profile Activity (Passenger)
+ * 
+ * Permite al pasajero modificar sus datos personales de contacto.
+ * Responsabilidades:
+ * - Cargar la información actual desde el nodo /usuarios/.
+ * - Validar campos de entrada (Nombre, Teléfono).
+ * - Procesar la actualización mediante EditProfileViewModel.
  */
 public class EditProfileActivity extends AppCompatActivity {
 

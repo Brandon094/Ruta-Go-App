@@ -16,7 +16,13 @@ import com.chopcode.rutago.app.services.user.UserService;
 import java.util.Map;
 
 /**
- * ViewModel to manage passenger user profile.
+ * 👤 User Profile ViewModel (Passenger)
+ * 
+ * Gestiona el estado y la lógica de negocio para la pantalla de perfil del pasajero.
+ * Responsabilidades:
+ * - Cargar datos de perfil y estadísticas Premium (calculadas mediante el servicio de reservas).
+ * - Orquestar la subida de imágenes de perfil integrando Storage y Realtime Database.
+ * - Gestionar solicitudes de borrado de cuenta para cumplimiento de privacidad.
  */
 public class UserProfileViewModel extends ViewModel {
     private static final String TAG = "UserProfileVM";

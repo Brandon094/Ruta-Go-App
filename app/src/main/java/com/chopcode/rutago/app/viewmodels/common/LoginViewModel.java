@@ -14,7 +14,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 /**
- * ViewModel to manage login business logic.
+ * 🔑 Login ViewModel
+ * 
+ * Gestiona la lógica de negocio para la autenticación de usuarios.
+ * Responsabilidades:
+ * - Orquestar el inicio de sesión mediante el LoginService.
+ * - Sincronizar el token de Firebase Cloud Messaging (FCM) tras un login exitoso
+ *   para habilitar notificaciones push.
+ * - Manejar los estados de carga y reportar errores de credenciales a la UI.
  */
 public class LoginViewModel extends ViewModel {
     private static final String TAG = "LoginViewModel";

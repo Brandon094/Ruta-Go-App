@@ -28,6 +28,13 @@ import java.util.Map;
 
 /**
  * 👤 User Profile Activity (Passenger)
+ * 
+ * Punto central de gestión de cuenta para el pasajero.
+ * Responsabilidades:
+ * - Visualizar datos personales y foto de perfil.
+ * - Mostrar el panel Premium con estadísticas calculadas (Gasto total, ruta favorita).
+ * - Proporcionar accesos a la edición de perfil y solicitud de eliminación de cuenta.
+ * - Gestionar la subida de foto de perfil a Firebase Storage.
  */
 public class UserProfileActivity extends AppCompatActivity {
 

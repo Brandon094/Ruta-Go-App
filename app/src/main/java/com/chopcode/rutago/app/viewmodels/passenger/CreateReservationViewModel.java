@@ -17,6 +17,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * 💺 Create Reservation ViewModel (Passenger)
+ * 
+ * Gestiona el estado de la selección de asientos para un viaje.
+ * Se encarga de escuchar en tiempo real qué asientos están siendo ocupados
+ * en un horario específico para actualizar el mapa visual del pasajero.
+ */
 public class CreateReservationViewModel extends ViewModel {
     private static final String TAG = "CreateReservationVM";
 

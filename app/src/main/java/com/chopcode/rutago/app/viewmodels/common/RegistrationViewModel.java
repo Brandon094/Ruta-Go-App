@@ -15,7 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ViewModel to manage user registration process.
+ * 📝 Registration ViewModel
+ * 
+ * Gestiona la lógica de negocio para el registro de nuevos pasajeros.
+ * Responsabilidades:
+ * - Orquestar la creación de credenciales en Firebase Auth.
+ * - Persistir la información extendida del perfil en el nodo /usuarios/.
+ * - Inicializar el token de notificaciones Push (FCM) para el nuevo usuario.
+ * - Notificar a la UI sobre el progreso y resultado de la operación.
  */
 public class RegistrationViewModel extends ViewModel {
     private static final String TAG = "RegistrationViewModel";

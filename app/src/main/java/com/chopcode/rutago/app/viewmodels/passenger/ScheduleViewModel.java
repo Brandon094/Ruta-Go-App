@@ -14,6 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 🕒 Schedule ViewModel (Passenger)
+ * 
+ * Gestiona la lógica de obtención y actualización de horarios de viaje.
+ * Implementa una escucha reactiva global de asientos: si un conductor o pasajero 
+ * reserva un puesto, todos los pasajeros ven la actualización en su dashboard
+ * al instante sin recargar.
+ */
 public class ScheduleViewModel extends ViewModel {
     private static final String TAG = "ScheduleViewModel";
 

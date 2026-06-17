@@ -34,6 +34,13 @@ import java.util.Scanner;
 
 /**
  * 📝 Registration Activity
+ * 
+ * Permite a los nuevos pasajeros unirse a la plataforma Ruta-Go.
+ * Responsabilidades:
+ * - Recolectar datos básicos del usuario (Nombre, Email, Teléfono).
+ * - Implementar validaciones de seguridad (Password matching, formato de email).
+ * - Mostrar los Términos y Condiciones y la Política de Privacidad mediante diálogos interactivos.
+ * - Delegar el proceso de creación de cuenta en Firebase a RegistrationViewModel.
  */
 public class RegistrationActivity extends AppCompatActivity {
 
