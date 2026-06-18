@@ -49,11 +49,12 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:background="@drawable/bg_badge_status"
-                android:backgroundTint="@color/warning_500"
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Por confirmar"/>
+                tools:text="Por confirmar"
+                tools:background="@drawable/bg_estado_pendiente"
+                tools:textColor="@color/status_pending"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Detalles del viaje con Iconografía Proyectual -->

@@ -117,17 +117,21 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                         case "por confirmar":
                         case "pendiente":
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_pendiente);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_pending));
                             btnConfirmar.setVisibility(View.VISIBLE);
                             btnCancelar.setVisibility(View.VISIBLE);
                             break;
                         case "confirmada":
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_confirmado);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_confirmed));
                             break;
                         case "cancelada":
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_cancelado);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_cancelled));
                             break;
                         default:
                             tvEstado.setBackgroundResource(R.drawable.bg_badge_status);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.white));
                             break;
                     }
                 }

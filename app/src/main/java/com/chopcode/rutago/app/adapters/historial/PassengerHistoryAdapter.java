@@ -1,7 +1,6 @@
 package com.chopcode.rutago.app.adapters.historial;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,7 +132,26 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
 
                 tvFecha.setText(sdf.format(new Date(reservation.getReservationDate())));
                 tvEstado.setText(status);
-                tvEstado.setTextColor(getColorStatus(status));
+                
+                // Aplicar Estilo Unificado de Estado
+                if (status != null) {
+                    switch (status.toLowerCase()) {
+                        case "confirmada":
+                        case "completada":
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_confirmado);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_confirmed));
+                            break;
+                        case "cancelada":
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_cancelado);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_cancelled));
+                            break;
+                        default:
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_pendiente);
+                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_pending));
+                            break;
+                    }
+                }
+
                 tvNombrePersona.setText(reservation.getDriver() != null ? reservation.getDriver() : itemView.getContext().getString(R.string.no_disponible));
                 if (ivPersonaIcon != null) ivPersonaIcon.setImageResource(R.drawable.ic_driver);
                 
@@ -206,13 +224,6 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
             });
         }
 
-        private int getColorStatus(String status) {
-            if (status == null) return Color.GRAY;
-            switch (status.toLowerCase()) {
-                case "confirmada": return Color.parseColor("#1F8F3C");
-                case "cancelada": return Color.parseColor("#EF4444");
-                default: return Color.parseColor("#F59E0B");
-            }
-        }
+
     }
 }

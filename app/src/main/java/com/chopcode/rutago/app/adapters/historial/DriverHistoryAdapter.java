@@ -1,6 +1,5 @@
 package com.chopcode.rutago.app.adapters.historial;
 
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -131,7 +130,25 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
 
                 tvDate.setText(sdf.format(new Date(reservation.getReservationDate())));
                 tvStatus.setText(status);
-                tvStatus.setTextColor(getStatusColor(status));
+
+                // Aplicar Estilo Unificado de Estado
+                if (status != null) {
+                    switch (status.toLowerCase()) {
+                        case "confirmada":
+                        case "completada":
+                            tvStatus.setBackgroundResource(R.drawable.bg_estado_confirmado);
+                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_confirmed));
+                            break;
+                        case "cancelada":
+                            tvStatus.setBackgroundResource(R.drawable.bg_estado_cancelado);
+                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_cancelled));
+                            break;
+                        default:
+                            tvStatus.setBackgroundResource(R.drawable.bg_estado_pendiente);
+                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_pending));
+                            break;
+                    }
+                }
 
                 tvPersonName.setText(reservation.getName() != null ? reservation.getName() : itemView.getContext().getString(R.string.no_disponible));
                 
@@ -156,13 +173,6 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
             }
         }
 
-        private int getStatusColor(String status) {
-            if (status == null) return Color.GRAY;
-            switch (status.toLowerCase()) {
-                case "confirmada": return Color.parseColor("#1F8F3C");
-                case "cancelada": return Color.parseColor("#EF4444");
-                default: return Color.parseColor("#F59E0B");
-            }
-        }
+
     }
 }

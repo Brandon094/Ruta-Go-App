@@ -119,11 +119,23 @@ public class TicketActivity extends AppCompatActivity {
         tvVehicle.setText(getString(R.string.ticket_vehiculo_label, vehiclePlate != null ? vehiclePlate : "N/A", vehicleModel != null ? vehicleModel : "N/A"));
         tvID.setText(reservationId != null ? reservationId.toUpperCase() : "N/A");
 
-        // Estilo del badge según estado
-        if ("Cancelada".equalsIgnoreCase(status)) {
-            tvStatus.setBackgroundResource(R.drawable.bg_badge_error);
-        } else if ("Confirmada".equalsIgnoreCase(status)) {
-            tvStatus.setBackgroundResource(R.drawable.bg_badge_status);
+        // Estilo del badge según estado unificado
+        if (status != null) {
+            switch (status.toLowerCase()) {
+                case "confirmada":
+                case "completada":
+                    tvStatus.setBackgroundResource(R.drawable.bg_estado_confirmado);
+                    tvStatus.setTextColor(getColor(R.color.status_confirmed));
+                    break;
+                case "cancelada":
+                    tvStatus.setBackgroundResource(R.drawable.bg_estado_cancelado);
+                    tvStatus.setTextColor(getColor(R.color.status_cancelled));
+                    break;
+                default:
+                    tvStatus.setBackgroundResource(R.drawable.bg_estado_pendiente);
+                    tvStatus.setTextColor(getColor(R.color.status_pending));
+                    break;
+            }
         }
     }
 }

@@ -56,16 +56,18 @@
                 android:id="@+id/tvEstado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_estado_confirmado"
+                android:background="@drawable/bg_badge_status"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
-                android:textColor="@color/success"
+                android:textColor="@color/white"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:text="Confirmada" />
+                tools:text="Confirmada"
+                tools:background="@drawable/bg_estado_confirmado"
+                tools:textColor="@color/status_confirmed"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Divisor sutil -->
