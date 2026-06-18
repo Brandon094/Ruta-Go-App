@@ -33,8 +33,18 @@
 - **Auth:** Autenticación por Email/Password y **Google One Tap Sign-In**.
 - **Realtime Database:** Base de datos NoSQL para sincronización atómica de asientos y mensajería.
 - **Cloud Messaging (FCM):** Notificaciones Push con Deep Linking hacia actividades específicas.
+- **Cloud Functions:** El "cerebro" de la operación (Node.js). Gestiona la rotación automática de turnos, limpieza de datos y notificaciones masivas programadas.
 - **Storage:** Almacenamiento de perfiles y recursos multimedia.
 - **Crashlytics:** Monitoreo preventivo de errores en producción.
+
+---
+
+## ⚙️ El Corazón del Sistema: Rotación Automática
+Ruta-Go no es solo una base de datos; cuenta con un algoritmo de **Escalafón Ascendente Real** ejecutado mediante Firebase Cloud Functions cada noche a las 7:00 PM (Hora Bogotá).
+
+- **🔄 Rotación de Turnos:** Automatiza el ciclo de 9 días de los conductores (8 días operativos con horarios rotativos y 1 día de descanso).
+- **🧹 Limpieza Atómica:** Resetea la disponibilidad de asientos (13 puestos por ruta) y limpia el estado operativo para el día siguiente de forma automática.
+- **🔔 Orquestación de Alertas:** Dispara notificaciones personalizadas a los conductores sobre su nuevo estado y alertas masivas a los pasajeros informando que los horarios del nuevo día están listos.
 
 ---
 
