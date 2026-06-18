@@ -1,73 +1,78 @@
-# 🚍 RutaGo
+# 🚍 Ruta-Go (Transporte Natagá - La Plata)
 
-**Ruta-Go** es una aplicación que mejora la experiencia de pasajeros y conductores en la ruta Natagá - La Plata y viceversa. ✨
+**Ruta-Go** es una plataforma tecnológica integral diseñada para optimizar el transporte intermunicipal entre Natagá y La Plata (Huila). La solución conecta de manera eficiente a pasajeros y conductores a través de una arquitectura móvil moderna, reactiva y escalable. ✨
 
-Esta versión reducida permite a los usuarios:
-- 📆 Visualizar los horarios disponibles en ambas direcciones (Natagá - La Plata y La Plata - Natagá).
-- 🎟️ Realizar reservas de puestos.
+---
 
-⚠️ **Nota:** La funcionalidad de pago en línea no se ha implementado aún, pero está prevista para futuras versiones. Además, los conductores pueden ver las reservas de puestos y consultar sus ingresos diarios. 💰
+## 🚀 Características Principales
 
-## 🚀 Características
+### 🚶 Para Pasajeros
+- **📅 Consulta en Tiempo Real:** Visualización de horarios y rutas con disponibilidad de asientos actualizada al instante.
+- **💺 Mapa Interactivo de Asientos:** Selección precisa de puestos con validación de ocupación en vivo.
+- **💬 Chat Directo:** Mensajería bidireccional con el conductor una vez confirmada la reserva.
+- **🎫 Tiquete Digital:** Comprobante de viaje detallado accesible desde el historial.
+- **⭐ Calificaciones:** Sistema de feedback para evaluar la calidad del servicio del conductor.
 
-- **📅 Visualización de Horarios:**
-  - Consulta de horarios disponibles para los viajes en ambas direcciones.
-- **🪑 Reserva de Puestos:**
-  - Los pasajeros pueden reservar un asiento para un viaje específico.
-- **👨‍✈️ Gestión para Conductores:**
-  - Los conductores pueden revisar las reservas realizadas y ver los ingresos diarios.
-- **💳 Funcionalidad Pendiente:**
-  - La opción de pago en línea aún no se implementa.
+### 👨‍✈️ Para Conductores
+- **📊 Dashboard Operativo:** Estadísticas diarias de ingresos, reservas confirmadas y ocupación por ruta (Ida y Vuelta).
+- **📋 Gestión de Reservas:** Flujo de trabajo ágil para confirmar o cancelar solicitudes de pasajeros.
+- **📱 Venta Física:** Posibilidad de bloquear asientos manualmente para pasajeros captados fuera de la app.
+- **🔔 Notificaciones Inteligentes:** Sistema de alertas Push para nuevas reservas y mensajes de chat.
 
-## 📌 Modelos Principales
+---
 
-- **👤 User (Pasajero y Conductor):**
-  - Representa la información de los usuarios, con dos roles:
-    - **🚶 Pasajero**
-    - **👨‍✈️ Conductor**
-- **🛣️ Ruta y Horario:**
-  - Define los trayectos (Natagá - La Plata y La Plata - Natagá) y los horarios correspondientes.
-- **📄 Reserva:**
-  - Captura la información de la reserva de un puesto, vinculando al usuario, horario, conductor y vehículo.
-- **🎫 Disponibilidad de Asientos:**
-  - Gestiona la capacidad total y la cantidad de asientos disponibles para cada horario.
-- **🚐 Vehículo:**
-  - Registra la información del vehículo asignado al conductor, como placa, modelo y capacidad.
+## 🛠️ Stack Tecnológico e Infraestructura
 
-## 🛠️ Tecnologías Utilizadas
+### **Frontend (Móvil)**
+- **Lenguaje:** Java 17 (Toolchain optimizado).
+- **Arquitectura:** **MVVM (Model-View-ViewModel)** para una separación clara de responsabilidades.
+- **UI:** XML Layouts con **Material Components**, implementando estándares Premium de UX.
+- **Reactividad:** Uso extensivo de `LiveData` y `ValueEventListener` para sincronización en tiempo real.
 
-- **🖥️ Lenguaje:** Java
-- **📱 Plataforma:** Android Studio
-- **☁️ Backend:** Firebase (para autenticación, base de datos y otros servicios)
+### **Backend (Firebase)**
+- **Auth:** Autenticación por Email/Password y **Google One Tap Sign-In**.
+- **Realtime Database:** Base de datos NoSQL para sincronización atómica de asientos y mensajería.
+- **Cloud Messaging (FCM):** Notificaciones Push con Deep Linking hacia actividades específicas.
+- **Storage:** Almacenamiento de perfiles y recursos multimedia.
+- **Crashlytics:** Monitoreo preventivo de errores en producción.
+
+---
+
+## 📌 Arquitectura de Datos: Mapeo Dual
+Ruta-Go utiliza una estrategia de **Mapeo Dual Bilingüe**. Los modelos en el código utilizan nombres en inglés (`driverId`, `reservationDate`) mientras mantienen compatibilidad total con los campos históricos en español de la base de datos (`conductorId`, `fechaReserva`) mediante anotaciones `@PropertyName`.
+
+---
 
 ## 📂 Estructura del Proyecto
 
 ```plaintext
-Transporte-Nataga---La-Plata/
+Ruta-Go-App/
 ├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/chopcode/transportenataga_laplata/
-│   │   │   │   ├── models/         # 📌 Modelos: User, Pasajero, Conductor, Ruta, Horario, Reserva, DisponibilidadAsientos, Vehiculo
-│   │   │   │   ├── activities/     # 🎨 Interfaces gráficas y actividades
-│   │   │   │   ├── services/       # 🔧 Lógica de negocio y servicios
-│   │   │   └── res/                # 🖼️ Recursos (layouts, imágenes, etc.)
-├── README.md
-└── build.gradle
+│   ├── src/main/java/com/chopcode/rutago/app/
+│   │   ├── activities/     # 🎨 Controladores de Vista (Login, Dashboards, Chat)
+│   │   ├── viewmodels/     # 🧠 Lógica de negocio y gestión de estado
+│   │   ├── services/       # 🔧 Orquestadores de Firebase (Auth, Chat, Prices)
+│   │   ├── models/         # 📌 POJOs con Mapeo Dual (User, Reservation, Route)
+│   │   ├── managers/       # 🛠️ Helpers especializados (Permissions, UI, Analytics)
+│   │   └── adapters/       # 🔗 Adaptadores de listas (RecyclerView)
+│   └── src/main/res/       # 🖼️ Recursos (Layouts organizados por módulos)
+├── DEVELOPER_GUIDELINES.md # 🤖 Manual de Instrucciones para desarrolladores
+└── build.gradle            # 📦 Configuración de dependencias y optimización
 ```
 
-## 📌 Uso
+---
 
-### 🚶 Para Pasajeros
-1. Inicia sesión.
-2. Consulta los horarios disponibles.
-3. Reserva tu puesto para el viaje deseado.
+## 🤖 Guía para Desarrolladores
+Para mantener la integridad del código, el uso de Clean Architecture y la gestión de llaves, consulte obligatoriamente el archivo [DEVELOPER_GUIDELINES.md](./DEVELOPER_GUIDELINES.md).
 
-### 👨‍✈️ Para Conductores
-1. Inicia sesión.
-2. Accede a la sección de gestión.
-3. Consulta las reservas realizadas y los ingresos diarios.
+---
 
-## 📩 Contacto
+## 📩 Contacto y Soporte
+Desarrollado por **Chop Code Solutions**.
 
-Para cualquier consulta o sugerencia, contacta a 📧 [dazace94@gmail.com](mailto:dazace94@gmail.com) o visita mi perfil de GitHub: 🔗 [Brandon094](https://github.com/Brandon094).
+- **Desarrollador Lead:** Brandon Daza Cerquera
+- **Email:** 📧 [dazace94@gmail.com](mailto:dazace94@gmail.com)
+- **GitHub:** 🔗 [Brandon094](https://github.com/Brandon094)
+
+---
+*Ruta-Go - Conectando caminos, facilitando viajes.* 🚌💨🎯
