@@ -1,52 +1,36 @@
-# RutaGo
-#### Última actualización: 06 de Junio de 2026
+# 🛡️ Política de Seguridad y Privacidad – Ruta-Go
 
-En **ChopCode Solutions** nos tomamos muy en serio la privacidad y seguridad de nuestros usuarios. Esta Política de Privacidad describe detalladamente cómo recopilamos, utilizamos, almacenamos y protegemos la información de las personas (en adelante, "Pasajeros" y "Conductores") que utilizan nuestra aplicación móvil RutaGo (en adelante, la "Aplicación").
- 
-Al descargar, registrarte y utilizar RutaGo, aceptas las prácticas descritas en este documento.
+#### Última actualización: 17 de Junio, 2026
 
-## 1. Información que Recopilamos
-Para garantizar un servicio óptimo de reserva de asientos, sincronización en tiempo real y seguridad en las rutas intermunicipales, RutaGo recopila los siguientes datos:
-            
-- **Información de Autenticación:** Al iniciar sesión a través de Google (vía Firebase Authentication), recopilamos su nombre, correo electrónico y foto de perfil.
-- **Perfil del Pasajero:** Número de teléfono (indispensable para la comunicación logística con el conductor).
-- **Perfil del Conductor:** Datos del vehículo (placa, modelo, capacidad, fotos), historial de viajes y estadísticas de rendimiento.
-- **Datos de Operación:** Rutas consultadas, horarios seleccionados y selección de asientos en el mapa interactivo.
-- **Ventas Físicas y Manuales:** Los conductores pueden registrar el nombre (opcional) de pasajeros que adquieren pasajes de forma física para la correcta gestión del inventario de asientos en tiempo real.
-- **Información del Dispositivo:** Recopilamos datos técnicos básicos (modelo de dispositivo, versión de SO) a través de Firebase Crashlytics para corregir errores y mejorar la estabilidad.
+En **Chop Code Solutions**, la integridad de la plataforma y la confianza de nuestros usuarios son prioridad. Este documento detalla las medidas de seguridad técnica implementadas y el tratamiento de datos personales en cumplimiento con la **Ley 1581 de 2012 (Habeas Data)** de la República de Colombia.
 
-## 2. Cómo Utilizamos tu Información
-Los datos se utilizan exclusivamente para el ecosistema de RutaGo:
-                  
-- **Gestión de Reservas:** Coordinar el mapa de cabina en tiempo real vía Firebase Realtime Database para evitar sobrecupos.
-- **Logística:** Permitir que los conductores visualicen su lista de pasajeros confirmados para coordinar el abordaje en la ruta piloto (Nátaga ↔ La Plata).
-- **Notificaciones:** Envío de alertas sobre el estado de reservas, cambios de horario o cancelaciones.
-- **Estadísticas PRO:** Generar resúmenes de ingresos y métricas de ocupación para los conductores.
+## 1. Seguridad de la Infraestructura
+Ruta-Go utiliza una arquitectura de seguridad de nivel industrial respaldada por Google Cloud:
 
-## 3. Pagos y Transacciones
-RutaGo permite gestionar y registrar la intención de pago (Efectivo, Transferencia o Tarjeta). **Importante:** La Aplicación no funciona como pasarela de pagos integrada ni almacena números de tarjetas de crédito. El procesamiento del pago final es un acuerdo directo entre el pasajero y el conductor/empresa transportadora fuera de la plataforma digital.
+- **🔐 Reglas de Seguridad Firebase:** Hemos implementado **Firebase Security Rules** estrictas. Ningún usuario puede leer o escribir datos que no le correspondan. El acceso a los datos de los pasajeros está restringido exclusivamente al conductor asignado a su ruta.
+- **🛡️ Protección de Algoritmos:** La lógica crítica, incluyendo el **Algoritmo de Rotación Automática**, reside en Firebase Cloud Functions. Esto evita que la lógica de negocio sea vulnerable a ingeniería inversa en el dispositivo móvil.
+- **🚫 Ofuscación de Código (R8/ProGuard):** El binario de distribución (AAB/APK) está cifrado y ofuscado para proteger la propiedad intelectual de **Chop Code Solutions**.
 
-## 4. Almacenamiento y Seguridad
-Toda la información se almacena en los servidores de Google Firebase (Cloud Firestore y Realtime Database). Implementamos protocolos de seguridad estándar de la industria para proteger los datos contra accesos no autorizados. Los datos se conservarán mientras la cuenta esté activa o sea necesario para fines operativos y legales.
+## 2. Tratamiento de Datos (Privacidad)
+Para el correcto funcionamiento de las reservas y la logística, recopilamos:
 
-## 5. Uso Compartido de Datos con Terceros
-ChopCode Solutions no vende ni comercializa tus datos con terceros. La transferencia de datos es estrictamente operativa: el conductor asignado a una ruta tendrá acceso al nombre y teléfono de los pasajeros que reservaron en su vehículo para asegurar el contacto antes y durante el trayecto.
+- **Identidad:** Nombre, correo y foto vía Google Auth.
+- **Logística:** Número de teléfono (vital para la coordinación pasajero-conductor).
+- **Vehículo:** Datos técnicos del bus para seguridad del pasajero.
+- **Ubicación:** Datos de origen y destino para la gestión de rutas.
 
-## 6. Proveedores de Servicios de Terceros
-Utilizamos herramientas de Google para garantizar la calidad del servicio:
-- **Firebase Authentication:** Para el inicio de sesión seguro.
-- **Google Maps SDK:** Para la visualización de rutas (en caso de estar habilitado).
-- **Firebase Crashlytics:** Para el análisis de errores técnicos.
+## 3. Uso Compartido de Información
+La transferencia de datos es estrictamente operativa. **Chop Code Solutions no comercializa datos personales**. La información de contacto del pasajero solo se revela al conductor una vez que la reserva es confirmada, con el único fin de coordinar el abordaje.
 
-## 7. Tus Derechos (Acceso, Rectificación y Eliminación)
-Como usuario, tienes control total sobre tus datos:
-- Puedes actualizar tu perfil en los ajustes de la App.
-- **Eliminación de Datos:** Puedes solicitar la eliminación definitiva de tu cuenta desde la aplicación. Esto borrará de forma inmediata e irreversible todos tus registros asociados en nuestras bases de datos de Firebase.
+## 4. Derechos del Usuario
+En cumplimiento del **Habeas Data**, cualquier usuario puede:
+- **Acceder y Rectificar:** Modificar su información desde la sección "Editar Perfil".
+- **Eliminar:** Solicitar la supresión total de sus datos mediante la función "Eliminar Cuenta". Este proceso es irreversible y borra todo rastro en los servidores de Firebase.
 
-Para soporte técnico o ejercicio de derechos, contáctanos en: dazace94@gmail.com
-
-## 8. Modificaciones a la Política
-Nos reservamos el derecho de actualizar esta política para adaptarla a nuevas funciones o normativas. Los cambios significativos serán notificados dentro de la interfaz de RutaGo.
+## 5. Reporte de Vulnerabilidades
+Si detectas un fallo de seguridad, te agradecemos reportarlo de forma privada para proteger a la comunidad:
+📧 **dazace94@gmail.com**
 
 ---
-© 2026 ChopCode Solutions - RutaGo App. Todos los derechos reservados.
+© 2026 **Chop Code Solutions** - Ruta-Go App.
+*Entorno de Desarrollo Seguro: Parrot OS.*

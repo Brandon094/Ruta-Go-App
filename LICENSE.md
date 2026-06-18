@@ -1,76 +1,43 @@
-# Licencia de Uso Propietaria – RutaGo
+# Licencia de Uso Propietaria y Términos de Servicio – Ruta-Go
 
-**Copyright © Brandon Daza. Todos los derechos reservados.**
+**Copyright © 2026 Chop Code Solutions. Todos los derechos reservados.**
+**Titular del Software:** Brandon Daza Cerquera.
 
-## 1. Propósito de la Aplicación
+## 1. Naturaleza y Propiedad Intelectual
+Ruta-Go es una plataforma tecnológica desarrollada por **Chop Code Solutions**. El código fuente, la arquitectura (MVVM), los activos gráficos y los algoritmos propietarios (incluyendo, pero no limitado a, el sistema de rotación automática nocturna ejecutado en Firebase Cloud Functions) están protegidos por las leyes de propiedad intelectual internacionales y de la República de Colombia.
 
-RutaGo es una plataforma diseñada para mejorar la experiencia de viaje de los pasajeros y optimizar la gestión operativa de los conductores. Esta licencia regula el uso del software, su contenido, y cualquier servicio asociado.
+## 2. Derechos de Uso
 
-## 2. Derechos Otorgados
+### 2.1 Para Pasajeros
+* Se otorga una licencia de uso no exclusiva, intransferible y gratuita para acceder a la aplicación, consultar horarios y realizar reservas de viaje.
+* Queda prohibido cualquier intento de extracción de datos, modificación de la interfaz o uso indebido del sistema de mensajería (Chat).
 
-Se concede a los siguientes usuarios los permisos descritos a continuación:
+### 2.2 Para Conductores
+* El acceso a las funciones de administración, estadísticas y venta física está sujeto a los términos comerciales definidos por el titular.
+* El conductor reconoce que la plataforma es una herramienta de apoyo operativo y su uso no otorga derechos de propiedad sobre la tecnología suministrada.
 
-### 2.1 Pasajeros
+## 3. Restricciones Estrictas
+Queda terminantemente prohibido:
+* Realizar ingeniería inversa, descompilación o extracción del código fuente de los archivos de distribución (AAB/APK).
+* Clonar la identidad visual, logotipos o la marca **Ruta-Go** para crear aplicaciones derivadas.
+* Redistribuir la aplicación a través de canales no oficiales sin autorización expresa de **Chop Code Solutions**.
 
-* Acceso y uso gratuito de la aplicación RutaGo.
-* Consulta de horarios, rutas y disponibilidad.
-* Realización de reservas a través de la plataforma.
+## 4. Protección de Datos (Ley 1581 de 2012)
+En cumplimiento de la legislación colombiana de **Habeas Data**, los datos recolectados (nombres, teléfonos, correos y tokens de notificación) tienen como fin exclusivo la prestación del servicio de transporte y la seguridad de las reservas. El usuario podrá ejercer su derecho de supresión de datos a través de la función "Eliminar Cuenta" integrada en la app.
 
-Los pasajeros **no están autorizados** a copiar, distribuir, modificar o comercializar la aplicación o su tecnología.
+## 5. Limitación de Responsabilidad
+**Chop Code Solutions** actúa como proveedor tecnológico y no se hace responsable por:
+* Interrupciones del servicio derivadas de fallos en la infraestructura de terceros (Google Cloud, Firebase, operadores de red).
+* Incidentes, accidentes o calidad del servicio de transporte prestado físicamente por los conductores independientes.
+* Errores en la información de contacto o financiera suministrada voluntariamente por los usuarios.
 
-### 2.2 Conductores
+## 6. Jurisdicción y Ley Aplicable
+Esta licencia se rige por las leyes de la República de Colombia. Cualquier controversia será sometida a la jurisdicción de los tribunales competentes en el departamento del Huila.
 
-* Uso de la aplicación para gestionar reservas, visualizar ingresos diarios y administrar su operación.
-* El uso por parte de conductores podrá estar sujeto a **suscripción, tarifa o modelo de monetización** definido por el titular.
-
-Los conductores **no adquieren derechos sobre el software**, solo un permiso limitado de uso.
-
-## 3. Derechos Reservados
-
-El titular (Brandon Daza) conserva todos los derechos no otorgados explícitamente, incluyendo pero no limitado a:
-
-* Derecho exclusivo de modificar, copiar o distribuir el software.
-* Derecho exclusivo a monetizar la aplicación.
-* Derecho a integrar anuncios o cualquier mecanismo de ingresos no invasivo.
-* Derecho a suspender, limitar o cambiar las funcionalidades del servicio.
-
-No se permite:
-
-* Copiar o clonar la aplicación.
-* Realizar ingeniería inversa, descompilación o extracción del código fuente.
-* Crear versiones derivadas basadas en RutaGo.
-* Utilizar la aplicación o partes de ella con finalidad comercial sin autorización expresa del titular.
-
-## 4. Restricciones
-
-Queda estrictamente prohibido:
-
-* Modificar el software o su estructura.
-* Redistribuir la aplicación sin permiso.
-* Utilizar la plataforma para fines ilícitos o que afecten su funcionamiento.
-
-## 5. Actualizaciones y Cambios
-
-El titular podrá actualizar, modificar o eliminar funcionalidades de la aplicación en cualquier momento sin previo aviso.
-
-## 6. Ausencia de Garantías
-
-El software se proporciona "tal cual", sin garantías explícitas o implícitas. El titular no será responsable por daños derivados del uso del servicio.
-
-## 7. Limitación de Responsabilidad
-
-El titular no será responsable por:
-
-* Errores en la información suministrada por terceros.
-* Fallos de conexión o disponibilidad.
-* Daños directos o indirectos causados por el uso de la plataforma.
-
-## 8. Aceptación
-
-El uso de RutaGo implica la aceptación total de esta licencia.
+## 7. Aceptación del Acuerdo
+La instalación, registro o uso continuado de la aplicación Ruta-Go constituye la aceptación total y vinculante de estos términos.
 
 ---
-
-**Titular del Software:** Brandon Daza
-**Nombre del Proyecto:** RutaGo
-**Licencia Propietaria – Versión 1.0**
+**Versión de la Licencia:** 1.2
+**Fecha de Actualización:** 17 de Junio, 2026
+**Entorno de Firma:** Parrot OS Secured Environment.
