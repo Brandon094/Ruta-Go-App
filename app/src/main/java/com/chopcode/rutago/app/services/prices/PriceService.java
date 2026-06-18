@@ -36,9 +36,6 @@ public class PriceService {
         this.pricesRef = MyApp.getDatabaseReference("precios");
     }
 
-    /**
-     * Obtiene todos los precios para optimizar cargas en listas.
-     */
     public void getAllPrices(AllPricesCallback callback) {
         pricesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -47,15 +44,15 @@ public class PriceService {
                 if (snapshot.exists()) {
                     for (DataSnapshot originSnap : snapshot.getChildren()) {
                         String origin = originSnap.getKey();
+                        if (origin == null || origin.equals("ruta")) continue;
+                        
                         Map<String, Double> destPrices = new HashMap<>();
                         for (DataSnapshot destSnap : originSnap.getChildren()) {
                             String dest = destSnap.getKey();
-                            try {
-                                Double price = destSnap.getValue(Double.class);
-                                if (price != null) destPrices.put(dest, price);
-                            } catch (Exception ignored) {}
+                            Double price = convertToDouble(destSnap.getValue());
+                            if (price != null) destPrices.put(dest, price);
                         }
-                        if (origin != null) allPrices.put(origin, destPrices);
+                        allPrices.put(origin, destPrices);
                     }
                 }
                 callback.onPricesLoaded(allPrices);
@@ -65,47 +62,69 @@ public class PriceService {
         });
     }
 
+    private Double convertToDouble(Object value) {
+        if (value instanceof Number) return ((Number) value).doubleValue();
+        if (value instanceof String) {
+            try { return Double.parseDouble((String) value); } catch (Exception e) { return null; }
+        }
+        return null;
+    }
+
     /**
      * Obtiene el precio de una ruta basada en origen y destino.
      * Estructura en Firebase: precios / origen / destino
      */
     public void getRoutePrice(String origin, String destination, PriceCallback callback) {
         if (origin == null || destination == null) {
-            callback.onPriceLoaded(12000.0); // Fallback por defecto
+            callback.onPriceLoaded(12000.0);
             return;
         }
 
         String normOrigin = FormatUtils.normalizarTexto(origin);
         String normDest = FormatUtils.normalizarTexto(destination);
+        String legacyKey = normOrigin + " -> " + normDest;
 
-        Log.d(TAG, "Fetching price for: " + normOrigin + " -> " + normDest);
+        Log.d(TAG, "🔍 Buscando precio para: " + normOrigin + " -> " + normDest);
 
+        // Intentar primero con la estructura recomendada: precios/origen/destino
         pricesRef.child(normOrigin).child(normDest).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    try {
-                        Double price = snapshot.getValue(Double.class);
-                        if (price != null) {
-                            callback.onPriceLoaded(price);
-                        } else {
-                            callback.onPriceLoaded(12000.0);
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing price: " + e.getMessage());
-                        callback.onPriceLoaded(12000.0);
-                    }
+                    resolvePrice(snapshot, callback);
                 } else {
-                    Log.w(TAG, "Price not found for route, using default.");
-                    callback.onPriceLoaded(12000.0);
+                    // Si no existe, intentar con la estructura de tu JSON: precios/ruta/origen -> destino
+                    pricesRef.child("ruta").child(legacyKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshotLegacy) {
+                            if (snapshotLegacy.exists()) {
+                                resolvePrice(snapshotLegacy, callback);
+                            } else {
+                                Log.w(TAG, "⚠️ Precio no encontrado en ninguna estructura. Usando 12000.");
+                                callback.onPriceLoaded(12000.0);
+                            }
+                        }
+                        @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(12000.0); }
+                    });
                 }
             }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(12000.0); }
+        });
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Database error: " + error.getMessage());
+    private void resolvePrice(DataSnapshot snapshot, PriceCallback callback) {
+        try {
+            Object value = snapshot.getValue();
+            if (value instanceof Number) {
+                callback.onPriceLoaded(((Number) value).doubleValue());
+            } else if (value instanceof String) {
+                callback.onPriceLoaded(Double.parseDouble((String) value));
+            } else {
                 callback.onPriceLoaded(12000.0);
             }
-        });
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error al convertir precio: " + e.getMessage());
+            callback.onPriceLoaded(12000.0);
+        }
     }
 }

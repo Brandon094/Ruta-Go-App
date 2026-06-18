@@ -153,6 +153,11 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             selectedRoute = intent.getStringExtra("rutaSeleccionada");
             scheduleId = intent.getStringExtra("horarioId");
             scheduleTime = intent.getStringExtra("horarioHora");
+            
+            // 🔥 CAPTURAR PRECIO DEL INTENT
+            double initialPrice = intent.getDoubleExtra("precioSeleccionado", 12000.0);
+            if (viewModel != null) viewModel.setInitialPrice(initialPrice);
+
             reservationUserManager.updateFromIntent(intent.getStringExtra("usuarioId"), intent.getStringExtra("usuarioNombre"), intent.getStringExtra("usuarioTelefono"));
         }
     }

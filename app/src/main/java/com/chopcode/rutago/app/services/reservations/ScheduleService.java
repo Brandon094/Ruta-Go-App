@@ -88,9 +88,15 @@ public class ScheduleService {
 
                             // Resolver precio dinámico
                             if (routeStr != null) {
-                                String lowRoute = routeStr.toLowerCase();
-                                String origin = lowRoute.contains("natag") ? "Natagá" : "La Plata";
-                                String destination = origin.equals("Natagá") ? "La Plata" : "Natagá";
+                                String separator = routeStr.contains(" → ") ? " → " : " -> ";
+                                String[] parts = routeStr.split(separator);
+                                String origin = "Natagá";
+                                String destination = "La Plata";
+                                
+                                if (parts.length == 2) {
+                                    origin = parts[0].trim();
+                                    destination = parts[1].trim();
+                                }
                                 
                                 String normOrigin = FormatUtils.normalizarTexto(origin);
                                 String normDest = FormatUtils.normalizarTexto(destination);
@@ -101,9 +107,8 @@ public class ScheduleService {
                                 }
                                 schedule.setPrice(String.valueOf(price));
 
-                                routeStr = routeStr.trim();
-                                if (routeStr.equals("Natagá -> La Plata")) natagaList.add(schedule);
-                                else if (routeStr.equals("La Plata -> Natagá")) laPlataList.add(schedule);
+                                if (normOrigin.contains("nataga")) natagaList.add(schedule);
+                                else if (normOrigin.contains("plata")) laPlataList.add(schedule);
                                 else natagaList.add(schedule);
                             } else {
                                 schedule.setPrice("12000");

@@ -67,6 +67,10 @@ public class CreateReservationViewModel extends ViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getError() { return error; }
 
+    public void setInitialPrice(double price) {
+        routePrice.setValue(price);
+    }
+
     public void loadPrice(String origin, String destination) {
         priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
             @Override public void onPriceLoaded(double price) { routePrice.postValue(price); }

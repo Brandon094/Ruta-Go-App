@@ -105,6 +105,14 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             intent.putExtra("horarioId", schedule.getId());
             intent.putExtra("horarioHora", schedule.getTime());
             intent.putExtra("rutaSeleccionada", title);
+            
+            // 🔥 PASAR PRECIO YA CARGADO
+            try {
+                double priceValue = Double.parseDouble(schedule.getPrice());
+                intent.putExtra("precioSeleccionado", priceValue);
+            } catch (Exception e) {
+                intent.putExtra("precioSeleccionado", 12000.0);
+            }
 
             if (userDataListener != null) {
                 User user = userDataListener.getUserActual();
