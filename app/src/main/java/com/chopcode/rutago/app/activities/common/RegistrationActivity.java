@@ -88,7 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getRegistrationSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.user_registered_success, Toast.LENGTH_SHORT).show();
                 if (MyApp.getCurrentUserId() != null) saveUserIdToPrefs(MyApp.getCurrentUserId());
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
@@ -97,13 +97,13 @@ public class RegistrationActivity extends AppCompatActivity {
 
         viewModel.getRegistrationError().observe(this, error -> {
             btnRegister.setEnabled(true);
-            btnRegister.setText("Register");
-            Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
+            btnRegister.setText(R.string.registrarse);
+            Toast.makeText(this, getString(R.string.error_prefijo, error), Toast.LENGTH_LONG).show();
         });
 
         viewModel.getIsLoading().observe(this, loading -> {
             btnRegister.setEnabled(!loading);
-            btnRegister.setText(loading ? "Registering..." : "Register");
+            btnRegister.setText(loading ? getString(R.string.registering) : getString(R.string.registrarse));
         });
     }
 
@@ -129,18 +129,18 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void setupTermsAndConditionsLink() {
-        String textTerms = "Terms and Conditions";
-        String textPrivacy = "Privacy Policy";
-        String fullText = "I accept the " + textTerms + " and the " + textPrivacy;
+        String textTerms = getString(R.string.terms_and_conditions);
+        String textPrivacy = getString(R.string.privacy_policy);
+        String fullText = getString(R.string.accept_terms) + " " + textTerms + " " + getString(R.string.and_the) + " " + textPrivacy;
         SpannableString ss = new SpannableString(fullText);
 
         ClickableSpan termsClick = new ClickableSpan() {
-            @Override public void onClick(@NonNull View widget) { showLegalDialog(R.raw.terms_conditions, "Terms and Conditions"); }
+            @Override public void onClick(@NonNull View widget) { showLegalDialog(R.raw.terms_conditions, getString(R.string.terms_and_conditions)); }
             @Override public void updateDrawState(@NonNull TextPaint ds) { super.updateDrawState(ds); ds.setUnderlineText(true); ds.setFakeBoldText(true); }
         };
 
         ClickableSpan privacyClick = new ClickableSpan() {
-            @Override public void onClick(@NonNull View widget) { showLegalDialog(R.raw.privacy_policy, "Privacy Policy"); }
+            @Override public void onClick(@NonNull View widget) { showLegalDialog(R.raw.privacy_policy, getString(R.string.privacy_policy)); }
             @Override public void updateDrawState(@NonNull TextPaint ds) { super.updateDrawState(ds); ds.setUnderlineText(true); ds.setFakeBoldText(true); }
         };
 
@@ -170,16 +170,16 @@ public class RegistrationActivity extends AppCompatActivity {
             String htmlContent = s.hasNext() ? s.next() : "";
             is.close();
             webView.loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null);
-            new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme).setTitle(title).setView(dialogView).setPositiveButton("I have read and accept", (dialog, which) -> checkboxTerms.setChecked(true)).setNegativeButton("Close", null).show();
+            new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme).setTitle(title).setView(dialogView).setPositiveButton(R.string.legal_accept, (dialog, which) -> checkboxTerms.setChecked(true)).setNegativeButton(R.string.close, null).show();
         } catch (Exception e) { Log.e(TAG, "Error loading legal doc: " + e.getMessage()); }
     }
 
     private boolean validateFields(String name, String email, String password, String confirmPassword) {
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) { Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show(); return false; }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { Toast.makeText(this, "Enter a valid email", Toast.LENGTH_SHORT).show(); return false; }
-        if (!password.equals(confirmPassword)) { Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show(); return false; }
-        if (password.length() < 6) { Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show(); return false; }
-        if (!checkboxTerms.isChecked()) { Toast.makeText(this, "You must accept the terms and conditions", Toast.LENGTH_SHORT).show(); return false; }
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) { Toast.makeText(this, R.string.error_fill_fields, Toast.LENGTH_SHORT).show(); return false; }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { Toast.makeText(this, R.string.correo_valido, Toast.LENGTH_SHORT).show(); return false; }
+        if (!password.equals(confirmPassword)) { Toast.makeText(this, R.string.error_passwords_mismatch, Toast.LENGTH_SHORT).show(); return false; }
+        if (password.length() < 6) { Toast.makeText(this, R.string.error_password_length, Toast.LENGTH_SHORT).show(); return false; }
+        if (!checkboxTerms.isChecked()) { Toast.makeText(this, R.string.must_accept_terms, Toast.LENGTH_SHORT).show(); return false; }
         return true;
     }
 

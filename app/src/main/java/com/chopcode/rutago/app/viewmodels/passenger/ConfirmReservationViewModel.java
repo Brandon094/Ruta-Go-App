@@ -112,6 +112,7 @@ public class ConfirmReservationViewModel extends ViewModel {
                 (String) data.get("origen"),
                 (String) data.get("destino"),
                 (String) data.get("tiempoEstimado"),
+                (String) data.get("horarioHora"), // 🔥 Pasamos departureTime
                 method,
                 "Por confirmar",
                 (String) data.get("vehiculoPlaca"),

@@ -110,7 +110,7 @@ public class DriverHistoryActivity extends AppCompatActivity {
 
         viewModel.getIsLoading().observe(this, this::showLoading);
 
-        viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, "Error: " + msg, Toast.LENGTH_SHORT).show(); });
+        viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_SHORT).show(); });
 
         viewModel.getTotalCount().observe(this, count -> tvTotal.setText(String.valueOf(count)));
         viewModel.getConfirmedCount().observe(this, count -> tvConfirmed.setText(String.valueOf(count)));

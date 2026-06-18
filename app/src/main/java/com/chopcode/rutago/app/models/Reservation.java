@@ -22,7 +22,8 @@ public class Reservation {
     private String driver; // Nombre del conductor
     private String origin;
     private String destination;
-    private String estimatedTime;
+    private String estimatedTime; // Duración (ej: "60 min")
+    private String departureTime; // Hora de salida (ej: "02:00 PM")
     private String paymentMethod;
     private String reservationStatus;
     private String name; // Nombre del pasajero
@@ -38,7 +39,7 @@ public class Reservation {
 
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
                        String driver, String driverId, String phoneC, String vehicleId, String vehicleModel, double price,
-                       String origin, String destination, String estimatedTime, String paymentMethod,
+                       String origin, String destination, String estimatedTime, String departureTime, String paymentMethod,
                        String reservationStatus, long reservationDate, String name, String phone,
                        String email, String routeId, String routeName) {
         this.idReservation = idReservation;
@@ -54,6 +55,7 @@ public class Reservation {
         this.origin = origin;
         this.destination = destination;
         this.estimatedTime = estimatedTime;
+        this.departureTime = departureTime;
         this.paymentMethod = paymentMethod;
         this.reservationStatus = reservationStatus;
         this.reservationDate = reservationDate;
@@ -158,6 +160,11 @@ public class Reservation {
     @PropertyName("estimatedTime")
     public void setEstimatedTime(String val) { this.estimatedTime = val; }
 
+    @PropertyName("departureTime")
+    public void setDepartureTime(String val) { this.departureTime = val; }
+    @PropertyName("horaSalida")
+    public void setHoraSalida(String val) { this.departureTime = val; }
+
     @PropertyName("calificada")
     public void setCalificada(boolean val) { this.rated = val; }
     @PropertyName("rated")
@@ -179,6 +186,7 @@ public class Reservation {
     @PropertyName("origin") public String getOrigin() { return origin; }
     @PropertyName("destination") public String getDestination() { return destination; }
     @PropertyName("estimatedTime") public String getEstimatedTime() { return estimatedTime; }
+    @PropertyName("departureTime") public String getDepartureTime() { return departureTime; }
     @PropertyName("paymentMethod") public String getPaymentMethod() { return paymentMethod; }
     @PropertyName("reservationStatus") public String getReservationStatus() { return reservationStatus; }
     @PropertyName("name") public String getName() { return name; }

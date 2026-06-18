@@ -92,7 +92,18 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                     intent.putExtra("destination", reservation.getDestination());
                     intent.putExtra("status", reservation.getReservationStatus());
                     intent.putExtra("date", reservation.getReservationDate());
-                    intent.putExtra("time", reservation.getEstimatedTime());
+                    
+                    // 🔥 FIX: Usar la hora de salida real guardada en la reserva
+                    String depTime = reservation.getDepartureTime();
+                    if (depTime == null || depTime.isEmpty() || depTime.contains("min")) {
+                        depTime = reservation.getEstimatedTime(); // Fallback para reservas legacy
+                    }
+                    
+                    intent.putExtra("time", depTime);
+                    intent.putExtra("duration", reservation.getEstimatedTime().contains("min") ? 
+                            reservation.getEstimatedTime() : 
+                            FormatUtils.calcularTiempoEstimado(reservation.getOrigin() + " -> " + reservation.getDestination()));
+
                     intent.putExtra("seat", reservation.getReservedSeat());
                     intent.putExtra("price", reservation.getPrice());
                     intent.putExtra("passengerName", reservation.getName());

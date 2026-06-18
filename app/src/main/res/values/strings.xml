@@ -62,6 +62,19 @@
     <string name="telefono_obligatorio">El teléfono es obligatorio</string>
     <string name="correo_obligatorio">El correo es obligatorio</string>
     <string name="correo_valido">Ingresa un correo válido</string>
+    <string name="accept_terms">Acepto los</string>
+    <string name="terms_and_conditions">Términos y Condiciones</string>
+    <string name="and_the">y la</string>
+    <string name="privacy_policy">Política de Privacidad</string>
+    <string name="must_accept_terms">Debes aceptar los términos y condiciones</string>
+    <string name="user_registered_success">Usuario registrado exitosamente</string>
+    <string name="registering">Registrando...</string>
+    <string name="error_fill_fields">Por favor completa todos los campos obligatorios</string>
+    <string name="error_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="error_password_length">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_incorrect_password">Contraseña incorrecta</string>
+    <string name="legal_accept">He leído y acepto</string>
+    <string name="close">Cerrar</string>
 
     <!-- ========================================================================= -->
     <!-- 🏠 PASSENGER DASHBOARD & ROUTES                                          -->
@@ -249,6 +262,7 @@
     <string name="solicitud_enviada_revision">Solicitud enviada. Tu cuenta será revisada.</string>
     <string name="error_actualizar">Error al actualizar: %s</string>
     <string name="error_cargar_usuario">Error al cargar usuario: %s</string>
+    <string name="error_opening_chat">Error al abrir el chat: %s</string>
     <string name="error_session_not_found">Error: No se encontró la sesión tras el login</string>
     <string name="calificar_viaje_btn">Calificar Viaje</string>
     <string name="conductor_label">Conductor: %s</string>

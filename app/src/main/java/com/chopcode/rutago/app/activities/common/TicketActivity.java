@@ -3,6 +3,7 @@ package com.chopcode.rutago.app.activities.common;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.chopcode.rutago.app.R;
@@ -49,6 +50,7 @@ public class TicketActivity extends AppCompatActivity {
         TextView tvStatus = findViewById(R.id.tvTicketStatus);
         TextView tvDate = findViewById(R.id.tvTicketDate);
         TextView tvTime = findViewById(R.id.tvTicketTime);
+        TextView tvDuration = findViewById(R.id.tvTicketDuration);
         TextView tvSeat = findViewById(R.id.tvTicketSeat);
         TextView tvPrice = findViewById(R.id.tvTicketPrice);
         TextView tvPassenger = findViewById(R.id.tvTicketPassenger);
@@ -62,6 +64,7 @@ public class TicketActivity extends AppCompatActivity {
         String status = intent.getStringExtra("status");
         long timestamp = intent.getLongExtra("date", 0);
         String time = intent.getStringExtra("time");
+        String duration = intent.getStringExtra("duration");
         int seat = intent.getIntExtra("seat", 0);
         double price = intent.getDoubleExtra("price", 0);
         String passengerName = intent.getStringExtra("passengerName");
@@ -91,10 +94,13 @@ public class TicketActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", new Locale("es", "ES"));
             tvDate.setText(sdf.format(new Date(timestamp)));
         } else {
-            tvDate.setText("Hoy");
+            tvDate.setText(R.string.hoy);
         }
 
         tvTime.setText(time != null ? time : "--:--");
+        tvDuration.setText(duration != null ? duration : "");
+        tvDuration.setVisibility(duration != null && !duration.isEmpty() ? View.VISIBLE : View.GONE);
+
         tvSeat.setText(FormatUtils.formatearAsiento(seat));
         tvPrice.setText(FormatUtils.formatearPrecio(price));
         tvPassenger.setText(getString(R.string.ticket_pasajero_label, passengerName != null ? passengerName : "N/A"));

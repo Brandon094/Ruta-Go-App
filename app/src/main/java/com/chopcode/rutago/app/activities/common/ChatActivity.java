@@ -38,7 +38,7 @@ public class ChatActivity extends AppCompatActivity {
         } catch (Exception e) {
             android.util.Log.e("ChatActivity", "❌ ERROR CRÍTICO EN ONCREATE: " + e.getMessage());
             e.printStackTrace();
-            Toast.makeText(this, "Error al abrir chat: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_opening_chat, e.getMessage()), Toast.LENGTH_LONG).show();
             finish();
         }
     }
@@ -117,7 +117,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         viewModel.getError().observe(this, err -> {
-            if (err != null) Toast.makeText(this, "Error: " + err, Toast.LENGTH_SHORT).show();
+            if (err != null) Toast.makeText(this, getString(R.string.error_prefijo, err), Toast.LENGTH_SHORT).show();
         });
     }
 }

@@ -163,25 +163,36 @@ public class FormatUtils {
 
     /**
      * Convierte hora militar (13:00) a 12h (1:00 PM).
+     * Si la hora ya está en formato 12h, la devuelve normalizada.
      */
-    public static String formatearHora12h(String hora24) {
-        if (hora24 == null || hora24.isEmpty()) return "Hora no disponible";
+    public static String formatearHora12h(String hora) {
+        if (hora == null || hora.isEmpty()) return "Hora no disponible";
+        
+        String limpia = hora.trim().toUpperCase();
+        
+        // 🔥 FIX: Si ya contiene AM o PM, no procesar como hora militar
+        if (limpia.contains("AM") || limpia.contains("PM")) {
+            return limpia;
+        }
+
         try {
-            String[] partes = hora24.split(":");
+            String[] partes = limpia.split(":");
             if (partes.length >= 2) {
-                int hora = Integer.parseInt(partes[0].trim());
-                int minuto = Integer.parseInt(partes[1].substring(0, 2).trim());
+                int horaNum = Integer.parseInt(partes[0].trim());
+                // Extraer solo los números de los minutos por si viene algo como "00 PM"
+                String minutosStr = partes[1].replaceAll("[^\\d]", "");
+                int minutoNum = Integer.parseInt(minutosStr);
 
-                String periodo = hora >= 12 ? "PM" : "AM";
-                if (hora > 12) hora -= 12;
-                if (hora == 0) hora = 12;
+                String periodo = horaNum >= 12 ? "PM" : "AM";
+                if (horaNum > 12) horaNum -= 12;
+                if (horaNum == 0) horaNum = 12;
 
-                return String.format(Locale.getDefault(), "%d:%02d %s", hora, minuto, periodo);
+                return String.format(Locale.getDefault(), "%d:%02d %s", horaNum, minutoNum, periodo);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error formateando hora 12h: " + e.getMessage());
         }
-        return hora24;
+        return hora;
     }
 
     /**

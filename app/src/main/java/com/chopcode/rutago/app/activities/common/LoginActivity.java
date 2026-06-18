@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (validateLoginFields(email, password)) {
                 Log.d(TAG, "🎯 [CLICK] Attempting email login: " + email);
-                buttonLogin.setText("Loading...");
+                buttonLogin.setText(R.string.cargando);
                 viewModel.loginWithEmail(email, password);
             }
         });
@@ -208,11 +208,11 @@ public class LoginActivity extends AppCompatActivity {
         if (layoutPassword != null) layoutPassword.setError(null);
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            if (layoutEmail != null) layoutEmail.setError("Enter a valid email");
+            if (layoutEmail != null) layoutEmail.setError(getString(R.string.correo_valido));
             isValid = false;
         }
         if (password.length() < 6) {
-            if (layoutPassword != null) layoutPassword.setError("Minimum 6 characters");
+            if (layoutPassword != null) layoutPassword.setError(getString(R.string.error_password_length));
             isValid = false;
         }
         return isValid;
@@ -248,14 +248,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void restoreLoginButton() {
-        buttonLogin.setText("Login");
+        buttonLogin.setText(R.string.ingresar);
         showProgress(false);
     }
 
     private void handleLoginError(String error, String email) {
         TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
         if (error.equals("Credenciales incorrectas") || error.contains("incorrecta")) {
-            if (layoutPassword != null) layoutPassword.setError("Incorrect password");
+            if (layoutPassword != null) layoutPassword.setError(getString(R.string.error_incorrect_password));
             animateErrorField(editTextPassword);
         } else {
             showCenteredSnackbar(error, true);

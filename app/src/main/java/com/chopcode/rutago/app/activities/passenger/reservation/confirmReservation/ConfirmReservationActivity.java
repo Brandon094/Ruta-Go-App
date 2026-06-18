@@ -83,22 +83,10 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         topAppBar.setNavigationOnClickListener(v -> onBackPressed());
 
         uiManager = new ConfirmationUIManager(analyticsHelper);
-        initializeViewReferences();
-        uiManager.setupNewListeners();
+        uiManager.init(findViewById(R.id.cardEfectivo), this);
 
         btnConfirmReservation.setOnClickListener(v -> viewModel.confirmReservation());
         btnCancel.setOnClickListener(v -> dialogManager.showCancellationDialog(this));
-    }
-
-    private void initializeViewReferences() {
-        uiManager.setNewViewReferences(
-                findViewById(R.id.tvOrigen), findViewById(R.id.tvDestino), findViewById(R.id.tvFecha),
-                findViewById(R.id.tvHora), findViewById(R.id.tvTiempoEstimado), findViewById(R.id.tvPrecio),
-                findViewById(R.id.tvAsiento), findViewById(R.id.tvUser), findViewById(R.id.tvTelefonoP),
-                findViewById(R.id.tvConductor), findViewById(R.id.tvTelefonoC), findViewById(R.id.tvPlaca),
-                findViewById(R.id.cardEfectivo)
-        );
-        uiManager.setConfirmationListener(this);
     }
 
     private void setupObservers() {
@@ -140,10 +128,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         ((TextView)findViewById(R.id.tvTiempoEstimado)).setText((String)data.get("tiempoEstimado"));
     }
 
-    @Override public void onConfirmButtonClicked() { viewModel.confirmReservation(); }
-    @Override public void onCancelButtonClicked() { dialogManager.showCancellationDialog(this); }
     @Override public void onPaymentMethodChanged(String method) { viewModel.setPaymentMethod(method); }
-    @Override public void onHelpRequested() { Toast.makeText(this, getString(R.string.ayuda_mensaje), Toast.LENGTH_SHORT).show(); }
     @Override public void onPositiveAction() { finish(); }
     @Override public void onNegativeAction() { }
 

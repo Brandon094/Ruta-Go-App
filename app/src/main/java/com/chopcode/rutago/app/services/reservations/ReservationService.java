@@ -65,6 +65,7 @@ public class ReservationService {
 
     public void updateSeatAvailability(Context context, String scheduleId, int selectedSeat,
                                                  String origin, String destination, String estimatedTime,
+                                                 String departureTime,
                                                  String paymentMethod, String reservationStatus,
                                                  String plate, String model, Double price,
                                                  String driver, String driverId, String phoneC,
@@ -79,7 +80,7 @@ public class ReservationService {
                             return;
                         }
                         getUserDataAndContinue(context, MyApp.getCurrentUserId(), scheduleId, selectedSeat,
-                                origin, destination, estimatedTime, paymentMethod, reservationStatus,
+                                origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus,
                                 plate, model, price, driver, driverId, phoneC, callback);
                     }
                     @Override public void onError(String error) { callback.onError(error); }
@@ -88,6 +89,7 @@ public class ReservationService {
 
     private void getUserDataAndContinue(Context context, String uid, String scheduleId, int selectedSeat,
                                                String origin, String destination, String estimatedTime,
+                                               String departureTime,
                                                String paymentMethod, String reservationStatus,
                                                String plate, String model, Double price, String driver, 
                                                String driverId, String phoneC,
@@ -108,7 +110,7 @@ public class ReservationService {
                             @Override
                             public void onSuccess() {
                                 registerReservation(context, uid, name, phone, email, scheduleId, selectedSeat,
-                                        origin, destination, estimatedTime, paymentMethod, reservationStatus,
+                                        origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus,
                                         plate, model, price, driver, driverId, phoneC, callback);
                             }
                             @Override public void onError(String error) { callback.onError(error); }
@@ -127,7 +129,7 @@ public class ReservationService {
 
     private void registerReservation(Context context, String uid, String name, String phone, String email,
                                   String scheduleId, int selectedSeat, String origin, String destination,
-                                  String estimatedTime, String paymentMethod, String reservationStatus,
+                                  String estimatedTime, String departureTime, String paymentMethod, String reservationStatus,
                                   String plate, String model, double price, String driver, String driverId, String phoneC,
                                   ReservationCallback callback) {
         
@@ -136,7 +138,7 @@ public class ReservationService {
 
         Reservation reservation = new Reservation(
                 idReservation, uid, scheduleId, selectedSeat, driver, driverId, phoneC, plate, model, price,
-                origin, destination, estimatedTime, paymentMethod, reservationStatus, reservationDate,
+                origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus, reservationDate,
                 name, phone, email, null, null
         );
 

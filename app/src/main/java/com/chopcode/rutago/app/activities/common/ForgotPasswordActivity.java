@@ -75,7 +75,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     private void setupObservers() {
         viewModel.getSendSuccess().observe(this, success -> { if (success) showSuccessState(); });
-        viewModel.getSendError().observe(this, msg -> { btnRecover.setEnabled(true); Toast.makeText(this, "Error: " + msg, Toast.LENGTH_LONG).show(); });
+        viewModel.getSendError().observe(this, msg -> { btnRecover.setEnabled(true); Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_LONG).show(); });
         viewModel.getIsLoading().observe(this, loading -> { progressBar.setVisibility(loading ? View.VISIBLE : View.GONE); btnRecover.setEnabled(!loading); });
     }
 
