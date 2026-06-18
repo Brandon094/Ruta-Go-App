@@ -9,7 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
+import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -77,6 +80,14 @@ public class TicketActivity extends AppCompatActivity {
         tvRoute.setText(origin + " → " + dest);
         tvStatus.setText(status != null ? status.toUpperCase() : "N/A");
         
+        MaterialCardView ticketCard = findViewById(R.id.ticketCardMain);
+
+        findViewById(R.id.btnShareTicket).setOnClickListener(v -> {
+            if (ticketCard != null) {
+                ImageUtils.shareViewAsImage(this, ticketCard, "Ticket_" + reservationId);
+            }
+        });
+
         findViewById(R.id.btnChatTicket).setOnClickListener(v -> {
             Intent chatIntent = new Intent(this, ChatActivity.class);
             chatIntent.putExtra("reservationId", reservationId);

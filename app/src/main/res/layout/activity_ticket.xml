@@ -36,6 +36,7 @@
 
             <!-- Card del Tiquete Principal -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/ticketCardMain"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/surface"
