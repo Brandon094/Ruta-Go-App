@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.activities.common;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,24 +31,54 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        try {
+            android.util.Log.e("ChatActivity", "🚩 onCreate INICIADO");
+            setContentView(R.layout.activity_chat);
+            handleIntent(getIntent());
+        } catch (Exception e) {
+            android.util.Log.e("ChatActivity", "❌ ERROR CRÍTICO EN ONCREATE: " + e.getMessage());
+            e.printStackTrace();
+            Toast.makeText(this, "Error al abrir chat: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
 
-        reservationId = getIntent().getStringExtra("reservationId");
-        String receiverId = getIntent().getStringExtra("receiverId");
-        String senderName = getIntent().getStringExtra("senderName");
-        
-        // Log para debug
-        android.util.Log.d("ChatActivity", "Opening chat. resId: " + reservationId + ", receiver: " + receiverId);
-        
-        if (reservationId == null) { finish(); return; }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
 
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+    private void handleIntent(Intent intent) {
+        if (intent == null) {
+            android.util.Log.e("ChatActivity", "❌ Intent es NULL");
+            return;
+        }
         
-        initViews();
-        setupRecyclerView();
-        setupObservers();
+        reservationId = intent.getStringExtra("reservationId");
+        String receiverId = intent.getStringExtra("receiverId");
+        String senderName = intent.getStringExtra("senderName");
         
-        viewModel.initChat(reservationId, receiverId, senderName);
+        android.util.Log.e("ChatActivity", "🚀 handleIntent - resId: " + reservationId + ", receiver: " + receiverId);
+        
+        if (reservationId == null) {
+            android.util.Log.e("ChatActivity", "❌ Faltan datos (reservationId es NULL)");
+            return; 
+        }
+
+        try {
+            if (viewModel == null) {
+                android.util.Log.d("ChatActivity", "📦 Inicializando ViewModel y Views");
+                viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+                initViews();
+                setupRecyclerView();
+                setupObservers();
+            }
+            viewModel.initChat(reservationId, receiverId, senderName);
+        } catch (Exception e) {
+            android.util.Log.e("ChatActivity", "❌ Error en inicialización: " + e.getMessage());
+        }
     }
 
     private void initViews() {

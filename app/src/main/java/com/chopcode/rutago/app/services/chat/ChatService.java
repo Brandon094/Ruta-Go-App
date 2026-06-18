@@ -31,19 +31,27 @@ public class ChatService {
      * Envía un nuevo mensaje y dispara notificación al receptor.
      */
     public void sendMessage(String reservationId, String senderId, String senderName, String receiverId, String text) {
-        if (reservationId == null || text.trim().isEmpty()) return;
+        if (reservationId == null || text.trim().isEmpty()) {
+            Log.e(TAG, "❌ No se puede enviar: Datos incompletos (ResID o Texto vacío)");
+            return;
+        }
 
+        Log.d(TAG, "📤 Enviando mensaje a la reserva: " + reservationId);
         DatabaseReference ref = chatsRef.child(reservationId).child("mensajes").push();
         String messageId = ref.getKey();
         ChatMessage message = new ChatMessage(messageId, senderId, text, System.currentTimeMillis());
 
         ref.setValue(message).addOnSuccessListener(aVoid -> {
+            Log.d(TAG, "✅ Mensaje guardado en Firebase exitosamente");
             // Disparar notificación push al receptor
             if (receiverId != null && !receiverId.isEmpty()) {
+                Log.d(TAG, "🔔 Notificando al receptor: " + receiverId);
                 com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(MyApp.getAppContext())
                         .notificarNuevoMensaje(receiverId, senderId, senderName, text, reservationId, null);
             }
-        }).addOnFailureListener(e -> Log.e(TAG, "Error sending message: " + e.getMessage()));
+        }).addOnFailureListener(e -> {
+            Log.e(TAG, "❌ FATAL: Error al guardar en Firebase: " + e.getMessage());
+        });
     }
 
     /**

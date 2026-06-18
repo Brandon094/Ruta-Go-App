@@ -141,6 +141,10 @@ public class NotificationService extends FirebaseMessagingService {
                         case "passenger_home":
                             targetClass = com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity.class;
                             break;
+                        case "chat":
+                            targetClass = com.chopcode.rutago.app.activities.common.ChatActivity.class;
+                            android.util.Log.d(TAG, "🚀 Destino de notificación: ChatActivity");
+                            break;
                     }
                 }
             }

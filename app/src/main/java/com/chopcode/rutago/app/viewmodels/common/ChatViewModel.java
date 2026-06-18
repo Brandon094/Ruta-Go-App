@@ -38,27 +38,23 @@ public class ChatViewModel extends ViewModel {
     public LiveData<String> getError() { return error; }
 
     public void initChat(String reservationId, String rId, String sName) {
+        if (reservationId == null) {
+            android.util.Log.e("ChatVM", "❌ initChat ABORTADO: reservationId es NULL");
+            return;
+        }
+
         this.currentReservationId = reservationId;
         this.receiverId = rId;
         this.senderName = sName;
         
-        Log.d("ChatVM", "initChat - resId: " + reservationId + ", receiver: " + rId + ", sender: " + sName);
-        
-        if (currentReservationId == null) {
-            Log.e("ChatVM", "initChat failed: reservationId is null");
-            return;
-        }
+        android.util.Log.e("ChatVM", "💬 initChat - resId: " + reservationId + ", receiver: " + rId);
         
         String myUid = MyApp.getCurrentUserId();
-        Log.d("ChatVM", "Current User UID: " + myUid);
+        android.util.Log.e("ChatVM", "👤 Mi UID: " + myUid);
 
-        // Si el receptor es el mismo que yo, o si faltan datos, forzamos carga de Firebase
-        boolean needsFix = (myUid != null && myUid.equals(receiverId)) || receiverId == null || senderName == null;
-        
-        if (needsFix) {
-            Log.w("ChatVM", "Identity issue detected. Triggering auto-fix (needsFix=" + needsFix + ")...");
-            loadMissingData(reservationId);
-        }
+        // Siempre cargamos la data de la reserva para asegurar que senderName y receiverId 
+        // son correctos según el rol actual (conductor/pasajero)
+        loadMissingData(reservationId);
         
         startListening();
     }
@@ -121,17 +117,17 @@ public class ChatViewModel extends ViewModel {
 
     private void startListening() {
         if (currentReservationId == null) return;
-        Log.d("ChatVM", "Started listening to messages for: " + currentReservationId);
+        android.util.Log.e("ChatVM", "📡 Iniciando escucha de Firebase para: " + currentReservationId);
         
         chatListener = chatService.listenMessages(currentReservationId, new ChatService.MessagesCallback() {
             @Override
             public void onMessagesUpdated(List<ChatMessage> list) {
-                Log.d("ChatVM", "Messages updated. Total: " + list.size());
+                android.util.Log.e("ChatVM", "📊 Mensajes recibidos: " + list.size());
                 messages.postValue(list);
             }
 
             @Override public void onError(String err) { 
-                Log.e("ChatVM", "Chat Listener Error: " + err);
+                android.util.Log.e("ChatVM", "❌ Error en listener de mensajes: " + err);
                 error.postValue(err); 
             }
         });
@@ -143,15 +139,25 @@ public class ChatViewModel extends ViewModel {
         Log.d("ChatVM", "UID: " + uid);
         Log.d("ChatVM", "ResId: " + currentReservationId);
         Log.d("ChatVM", "ReceiverId: " + receiverId);
-        Log.d("ChatVM", "SenderName: " + senderName);
+        Log.d("ChatVM", "SenderName (Me): " + senderName);
         
         if (uid != null && currentReservationId != null && receiverId != null) {
+            // Si el receptor soy yo mismo, algo está mal en la carga inicial
+            if (uid.equals(receiverId)) {
+                Log.w("ChatVM", "⚠️ Error de identidad: El receptor soy yo mismo. Reintentando sincronización...");
+                loadMissingData(currentReservationId);
+                error.postValue("Sincronizando chat... Por favor, intenta enviar de nuevo.");
+                return;
+            }
+            
             String name = (senderName != null && !senderName.isEmpty()) ? senderName : "Usuario";
             chatService.sendMessage(currentReservationId, uid, name, receiverId, text);
         } else {
-            String errorMsg = "Error: Faltan datos para enviar (Destinatario: " + (receiverId == null ? "NULL" : "OK") + ")";
-            Log.e("ChatVM", errorMsg);
+            String errorMsg = "Faltan datos: Res=" + (currentReservationId != null) + ", Rec=" + (receiverId != null);
+            Log.e("ChatVM", "❌ " + errorMsg);
             error.postValue(errorMsg);
+            // Intentar recuperar datos para el próximo intento
+            if (currentReservationId != null) loadMissingData(currentReservationId);
         }
     }
 
