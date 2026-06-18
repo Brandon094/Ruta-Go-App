@@ -11,6 +11,7 @@ public class User {
     protected String email;
     protected String password;
     protected String photoUrl;
+    protected String status; // "active", "inactive", "blocked"
 
     public User() { }
 
@@ -62,4 +63,13 @@ public class User {
     public String getPhotoUrl() { return photoUrl; }
     @PropertyName("photoUrl")
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    @PropertyName("estado")
+    public String getEstado() { return status; }
+    @PropertyName("estado")
+    public void setEstado(String status) { this.status = status; }
+    @PropertyName("status")
+    public String getStatus() { return status; }
+    @PropertyName("status")
+    public void setStatus(String status) { this.status = status; }
 }

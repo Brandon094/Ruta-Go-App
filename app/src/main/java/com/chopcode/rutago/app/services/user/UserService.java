@@ -81,6 +81,13 @@ public class UserService {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    public void updateUserStatus(String userId, String status, UserUpdateCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("usuarios/" + userId);
+        ref.child("status").setValue(status)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
     public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
         DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
         Map<String, Object> updates = new HashMap<>();

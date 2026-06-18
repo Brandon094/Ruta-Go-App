@@ -112,10 +112,13 @@
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    android:background="@drawable/bg_badge_status"
-                    android:backgroundTint="@color/secondary_900"
+                    android:background="@drawable/bg_badge_active"
                     android:paddingHorizontal="12dp"
-                    android:paddingVertical="4dp" />
+                    android:paddingVertical="4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    tools:text="Pasajero Activo" />
             </LinearLayout>
 
             <!-- Shimmer Info Card -->

@@ -82,6 +82,7 @@ public class RegistrationViewModel extends ViewModel {
         userData.put("telefono", phone);
         userData.put("fechaRegistro", System.currentTimeMillis());
         userData.put("rol", "usuario");
+        userData.put("status", "active");
         userRef.setValue(userData).addOnFailureListener(e -> Log.e(TAG, "Error saving extra data: " + e.getMessage()));
     }
 }

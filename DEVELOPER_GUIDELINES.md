@@ -47,6 +47,9 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Estandarización de Filas:** En tarjetas de información (ej. detalles del vehículo), usar `LinearLayout` con pesos (`weightSum`) en lugar de `GridLayout` para garantizar simetría 50/50 y evitar que los datos se oculten en fuentes grandes.
 - **Centralización de Navegación:** El `BottomNavFragment` debe estar vinculado a su propio `BottomNavViewModel` para gestionar eventos de cierre de sesión y analíticas de navegación.
 - **Consistencia en Diálogos:** Todos los diálogos deben heredar de `AppDialogTheme` y sus botones deben tener un `minHeight` mínimo de 48dp para accesibilidad.
+- **Cabeceras de Perfil:** Para avatares grandes (150dp), usar un `headerBackground` de 270dp y una `Guideline` horizontal de seguridad a 310dp para evitar solapamientos.
+- **Badges de Estado:** Usar el sistema de diseño unificado (Fondo con 15% opacidad + Borde sólido de 1dp) para etiquetas de Confirmado, Cancelado y Pendiente.
+- **Gestión de Usuario:** Los pasajeros pueden alternar su estado entre Activo e Inactivo desde su perfil. El estado Bloqueado es administrativo y restringe funciones.
 ### D. Documentación Técnica (Mantenimiento)
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
 - **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).

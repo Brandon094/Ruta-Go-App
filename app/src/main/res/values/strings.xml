@@ -248,7 +248,11 @@
     <string name="placa">Placa: %s</string>
     <string name="editarPerfil">Editar perfil</string>
     <string name="perfil_actualizado">Perfil actualizado correctamente</string>
+    <string name="status_active">Activo</string>
+    <string name="status_inactive">Inactivo</string>
+    <string name="status_blocked">Cuenta Bloqueada</string>
     <string name="status_pasajero_activo">Pasajero Activo</string>
+    <string name="status_pasajero_inactivo">Pasajero Inactivo</string>
     <string name="informacion_personal">Información Personal</string>
     <string name="email_label">Correo electrónico</string>
     <string name="telefono_label_short">Teléfono</string>

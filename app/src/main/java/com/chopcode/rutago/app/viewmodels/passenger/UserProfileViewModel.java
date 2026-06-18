@@ -99,4 +99,36 @@ public class UserProfileViewModel extends ViewModel {
             @Override public void onError(String errorMsg) { error.postValue(errorMsg); }
         });
     }
+
+    /**
+     * Alterna el estado del usuario entre "active" e "inactive".
+     */
+    public void toggleUserStatus() {
+        User current = userData.getValue();
+        if (current == null || "blocked".equals(current.getStatus())) return;
+
+        String newStatus = "active".equals(current.getStatus()) ? "inactive" : "active";
+        String userId = authManager.getUserId();
+        if (userId == null) return;
+
+        setLoading(true);
+        userService.updateUserStatus(userId, newStatus, new UserService.UserUpdateCallback() {
+            @Override
+            public void onSuccess() {
+                current.setStatus(newStatus);
+                userData.postValue(current);
+                setLoading(false);
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                error.postValue(errorMsg);
+                setLoading(false);
+            }
+        });
+    }
+
+    private void setLoading(boolean loading) {
+        isLoading.postValue(loading);
+    }
 }

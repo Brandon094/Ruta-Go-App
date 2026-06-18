@@ -27,6 +27,7 @@ import com.chopcode.rutago.app.viewmodels.passenger.PassengerProfileViewModel;
 import com.chopcode.rutago.app.viewmodels.passenger.ScheduleViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.tabs.TabLayout;
 
 /**
@@ -146,6 +147,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         TextView tvReservasCount = findViewById(R.id.tvReservasCount);
         TextView tvCanceladasCount = findViewById(R.id.tvCanceladasCount);
         TextView tvTotalCount = findViewById(R.id.tvTotalCount);
+        TextView tvUserStatusBadge = findViewById(R.id.tvUserStatusBadge);
 
         legendHeader = findViewById(R.id.legendHeader);
         legendContent = findViewById(R.id.legendContent);
@@ -160,6 +162,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         ivUserAvatar = findViewById(R.id.ivUserAvatar);
 
         uiManager.setViewReferences(tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount);
+        uiManager.setStatusBadgeReference(tvUserStatusBadge);
         uiManager.setupToolbar(topAppBar);
 
         pagerAdapter = new SchedulePagerAdapter(this, new java.util.ArrayList<>(), new java.util.ArrayList<>());

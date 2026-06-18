@@ -41,7 +41,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private static final String TAG = "UserProfileActivity";
 
     // Views
-    private TextView tvNombre, tvCorreo, tvTelefono;
+    private TextView tvNombre, tvCorreo, tvTelefono, tvUserStatus;
     private TextView tvTotalGastadoPremium, tvPuntosLealtad, tvRutaFavorita;
     private ImageView ivProfilePicture;
     private MaterialCardView cardPremiumStats, cardPerfil, btnChangePhoto;
@@ -91,6 +91,7 @@ public class UserProfileActivity extends AppCompatActivity {
         tvNombre = findViewById(R.id.tvNombreUser);
         tvCorreo = findViewById(R.id.tvEmail);
         tvTelefono = findViewById(R.id.tvPhone);
+        tvUserStatus = findViewById(R.id.tvUserStatus);
         cardPremiumStats = findViewById(R.id.cardPremiumStats);
         tvTotalGastadoPremium = findViewById(R.id.tvTotalGastadoPremium);
         tvPuntosLealtad = findViewById(R.id.tvPuntosLealtad);
@@ -101,6 +102,7 @@ public class UserProfileActivity extends AppCompatActivity {
         if (btnChangePhoto != null) btnChangePhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irAEditarPerfil());
         if (btnDeleteAccount != null) btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
+        if (tvUserStatus != null) tvUserStatus.setOnClickListener(v -> viewModel.toggleUserStatus());
     }
 
     private void setupObservers() {
@@ -114,6 +116,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 tvNombre.setText(user.getNombre() != null ? user.getNombre() : getString(R.string.pasajero));
                 tvCorreo.setText(user.getEmail() != null ? user.getEmail() : getString(R.string.no_disponible));
                 tvTelefono.setText(user.getTelefono() != null ? user.getTelefono() : getString(R.string.no_disponible));
+                updateStatusBadge(user.getStatus());
                 ImageUtils.loadProfilePhoto(this, user.getPhotoUrl(), ivProfilePicture);
             }
         });
@@ -138,6 +141,36 @@ public class UserProfileActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void updateStatusBadge(String status) {
+        if (tvUserStatus == null) return;
+        
+        if (status == null) status = "active";
+        
+        switch (status.toLowerCase()) {
+            case "active":
+                tvUserStatus.setText(R.string.status_pasajero_activo);
+                tvUserStatus.setBackgroundResource(R.drawable.bg_badge_active);
+                tvUserStatus.setTextColor(getColor(R.color.status_confirmed));
+                break;
+            case "inactive":
+                tvUserStatus.setText(R.string.status_pasajero_inactivo);
+                tvUserStatus.setBackgroundResource(R.drawable.bg_badge_inactive);
+                tvUserStatus.setTextColor(getColor(R.color.status_inactive));
+                break;
+            case "blocked":
+                tvUserStatus.setText(R.string.status_blocked);
+                tvUserStatus.setBackgroundResource(R.drawable.bg_badge_blocked);
+                tvUserStatus.setTextColor(getColor(R.color.status_cancelled));
+                tvUserStatus.setClickable(false);
+                break;
+            default:
+                tvUserStatus.setText(R.string.status_pasajero_activo);
+                tvUserStatus.setBackgroundResource(R.drawable.bg_badge_active);
+                tvUserStatus.setTextColor(getColor(R.color.status_confirmed));
+                break;
+        }
     }
 
     private void mostrarDialogoConfirmacionBorrado() {

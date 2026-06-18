@@ -57,11 +57,11 @@ public class PassengerProfileViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    User user = new User();
-                    user.setId(currentUserId);
-                    user.setNombre(String.valueOf(snapshot.child("nombre").getValue()));
-                    user.setPhotoUrl(snapshot.hasChild("photoUrl") ? String.valueOf(snapshot.child("photoUrl").getValue()) : null);
-                    userLiveData.postValue(user);
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        user.setId(currentUserId);
+                        userLiveData.postValue(user);
+                    }
                 }
                 isLoading.postValue(false);
             }

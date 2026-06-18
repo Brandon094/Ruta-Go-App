@@ -11,7 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class DashboardUIManager {
 
     private final DashboardAnalyticsHelper analyticsHelper;
-    private TextView tvUserName, tvWelcome, tvReservasCount, tvTotalCount, tvCanceladasCount;
+    private TextView tvUserName, tvWelcome, tvReservasCount, tvTotalCount, tvCanceladasCount, tvUserStatusBadge;
     private UIActionsListener listener;
 
     public interface UIActionsListener {}
@@ -32,6 +32,10 @@ public class DashboardUIManager {
         this.tvTotalCount = tvTotalCount;
     }
 
+    public void setStatusBadgeReference(TextView tvBadge) {
+        this.tvUserStatusBadge = tvBadge;
+    }
+
     public void setupToolbar(Toolbar toolbar) {
         toolbar.setOnMenuItemClickListener(item -> false);
     }
@@ -40,6 +44,36 @@ public class DashboardUIManager {
         if (user != null && user.getNombre() != null) {
             tvUserName.setText(user.getNombre());
             tvWelcome.setText("Welcome!");
+            updateStatusBadge(user.getStatus());
+        }
+    }
+
+    private void updateStatusBadge(String status) {
+        if (tvUserStatusBadge == null) return;
+
+        if (status == null) status = "active";
+
+        switch (status.toLowerCase()) {
+            case "active":
+                tvUserStatusBadge.setText(R.string.status_pasajero_activo);
+                tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
+                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
+                break;
+            case "inactive":
+                tvUserStatusBadge.setText(R.string.status_pasajero_inactivo);
+                tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_inactive);
+                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_inactive));
+                break;
+            case "blocked":
+                tvUserStatusBadge.setText(R.string.status_blocked);
+                tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_blocked);
+                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_cancelled));
+                break;
+            default:
+                tvUserStatusBadge.setText(R.string.status_pasajero_activo);
+                tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
+                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
+                break;
         }
     }
 
