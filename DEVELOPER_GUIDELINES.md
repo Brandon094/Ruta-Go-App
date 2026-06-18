@@ -44,6 +44,12 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).
 - **Trazabilidad:** Inyectar logs estratégicos (`Log.d`) en flujos principales para facilitar el debug en producción.
 
+### E. Gestión de Lanzamientos (Play Store)
+- **Keystore Oficial:** El archivo de firma de producción (`key.jks`) reside exclusivamente en el entorno estabilizado (Linux/Parrot). **Prohibido borrar o mover sin backup externo.**
+- **Versionamiento:** Seguir el estándar `versionCode` incremental (entero) y `versionName` semántico (ej. 1.2.0).
+- **Huellas Digitales:** En caso de migración de entorno, se debe generar el certificado `.pem` y solicitar el restablecimiento de la "Clave de Carga" en la Play Console (proceso de 48 horas).
+- **Consistencia SHA:** Las huellas SHA-1 de Google Play (App Signing) deben estar siempre vinculadas en Firebase Console para que Google Auth funcione en la versión de la tienda.
+
 ## 5. Gestión del Proyecto (Git)
 Se debe seguir el estándar de **Conventional Commits** y los mensajes deben estar en **Español** para facilitar la comprensión del dueño del proyecto.
 
