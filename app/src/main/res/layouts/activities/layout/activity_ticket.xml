@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@color/primary_500"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -18,31 +18,48 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/white"
+            app:navigationIconTint="@color/text_on_primary"
             app:title="@string/ticket_title"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/text_on_primary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingVertical="20dp">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.06" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.94" />
 
             <!-- Card del Tiquete Principal -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/ticketCardMain"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/surface"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp"
-                app:strokeWidth="0dp">
+                app:strokeWidth="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -95,7 +112,6 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <!-- Ruta -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -118,14 +134,12 @@
                             android:layout_marginVertical="16dp"
                             android:background="@color/divider" />
 
-                        <!-- Detalles en Grilla -->
                         <GridLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:columnCount="2"
                             android:rowCount="3">
 
-                            <!-- Fecha -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -146,7 +160,6 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
-                            <!-- Hora -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -175,7 +188,6 @@
                                     android:textStyle="italic" />
                             </LinearLayout>
 
-                            <!-- Asiento -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -198,7 +210,6 @@
                                     android:textStyle="bold" />
                             </LinearLayout>
 
-                            <!-- Precio -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -227,7 +238,6 @@
                             android:layout_marginVertical="16dp"
                             android:background="@color/divider" />
 
-                        <!-- Info Pasajero/Conductor -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -296,15 +306,20 @@
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/layoutTicketActions"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/ticketCardMain"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnChatTicket"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
                     android:text="Chat"
@@ -320,7 +335,8 @@
                     android:id="@+id/btnShareTicket"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="56dp"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/ticket_share"
@@ -334,7 +350,7 @@
 
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

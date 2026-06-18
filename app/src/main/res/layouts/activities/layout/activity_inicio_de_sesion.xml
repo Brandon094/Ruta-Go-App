@@ -15,19 +15,33 @@
             android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp"
-            tools:context=".activities.common.InicioDeSesionActivity">
+            android:paddingVertical="24dp"
+            tools:context=".activities.common.LoginActivity">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.08" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.92" />
 
             <!-- Título con ícono - Reducido para ahorrar espacio -->
             <LinearLayout
                 android:id="@+id/headerLayout"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -51,7 +65,7 @@
             <!-- Card contenedora del formulario - Ajustada -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/loginCardView"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 app:cardBackgroundColor="@color/surface"
@@ -59,8 +73,8 @@
                 app:cardElevation="4dp"
                 app:strokeColor="@color/outline"
                 app:strokeWidth="1dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
                 app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
                 <LinearLayout
@@ -145,7 +159,8 @@
                         android:id="@+id/buttonIngresar"
                         style="@style/AppButton.Primary"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="52dp"
                         android:layout_marginTop="8dp"
                         android:text="@string/ingresar"
                         app:cornerRadius="12dp"
@@ -159,11 +174,13 @@
             <!-- Separador o -->
             <LinearLayout
                 android:id="@+id/separatorLayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
                 app:layout_constraintTop_toBottomOf="@+id/loginCardView">
 
                 <View
@@ -192,8 +209,9 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGoogleSignIn"
                 style="@style/AppButton.Secondary"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="52dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/ingresarGoogle"
                 app:icon="@drawable/ic_google_logo"
@@ -203,8 +221,8 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 app:layout_constraintTop_toBottomOf="@+id/separatorLayout"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd" />
 
             <!-- Texto de "No tienes cuenta?" y Registrarse -->
             <LinearLayout
@@ -213,7 +231,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"
-                android:orientation="horizontal"
+                android:orientation="vertical"
+                android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@+id/btnGoogleSignIn"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -232,7 +251,6 @@
                     android:id="@+id/buttonRegistro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:text="@string/registrate"
                     android:textColor="@color/primary_500"
                     android:textSize="15sp"
