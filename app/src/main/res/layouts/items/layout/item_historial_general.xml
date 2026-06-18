@@ -26,6 +26,16 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp">
 
+            <ImageView
+                android:id="@+id/ivFechaIcon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_schedule"
+                app:tint="@color/primary_500"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
             <TextView
                 android:id="@+id/tvFecha"
                 android:layout_width="0dp"
@@ -33,7 +43,8 @@
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@+id/ivFechaIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tvEstado"
@@ -126,7 +137,7 @@
                     android:layout_marginStart="8dp"
                     android:textColor="@color/text_primary"
                     android:textSize="14sp"
-                    tools:text="Natagá → La Plata" />
+                    tools:text="Natagá -> La Plata" />
 
             </LinearLayout>
 
@@ -159,6 +170,13 @@
                         android:textSize="14sp"
                         tools:text="Asiento 5" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_price"
+                    app:tint="@color/primary_500"
+                    android:layout_marginEnd="4dp" />
 
                 <TextView
                     android:id="@+id/tvPrecio"

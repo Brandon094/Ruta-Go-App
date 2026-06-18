@@ -106,7 +106,7 @@
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
-                    tools:text="Natagá → La Plata" />
+                    tools:text="Natagá -> La Plata" />
             </LinearLayout>
 
             <!-- Fecha/Hora y Asiento -->

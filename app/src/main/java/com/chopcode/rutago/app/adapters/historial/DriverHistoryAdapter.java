@@ -133,9 +133,17 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 tvStatus.setText(status);
                 tvStatus.setTextColor(getStatusColor(status));
 
-                tvPersonName.setText(reservation.getName());
-                tvPhone.setText(reservation.getPhone());
-                tvRoute.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
+                tvPersonName.setText(reservation.getName() != null ? reservation.getName() : itemView.getContext().getString(R.string.no_disponible));
+                
+                String phone = reservation.getPhone();
+                tvPhone.setText(phone != null ? phone : itemView.getContext().getString(R.string.no_disponible));
+                
+                if (reservation.getOrigin() != null && reservation.getDestination() != null) {
+                    tvRoute.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
+                } else {
+                    tvRoute.setText(itemView.getContext().getString(R.string.no_disponible));
+                }
+                
                 tvSeat.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrice.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 

@@ -80,8 +80,8 @@
     <!-- 🏠 PASSENGER DASHBOARD & ROUTES                                          -->
     <!-- ========================================================================= -->
     <string name="horarios">Horarios de rutas</string>
-    <string name="nataga">Natagá → La Plata</string>
-    <string name="laPlata">La Plata → Natagá</string>
+    <string name="nataga">Natagá -> La Plata</string>
+    <string name="laPlata">La Plata -> Natagá</string>
     <string name="ruta_hora">Ruta - Hora</string>
     <string name="proximasRutas">Próxima ruta</string>
     <string name="tiempoEstimado">Tiempo estimado: %s</string>
@@ -133,7 +133,7 @@
     <string name="info_pago_efectivo">Paga en efectivo al conductor al momento del viaje. Asegúrate de tener el cambio exacto.</string>
     <string name="info_importante">Información importante</string>
     <string name="info_confirmacion_reserva">• Tu asiento estará reservado por 15 minutos\n• Llega 10 minutos antes de la salida\n• El conductor puede contactarte para confirmar\n• Cancela con al menos 1 hora de anticipación</string>
-    <string name="reserva_exitosa">✅ Reserva realizada con éxito</string>
+    <string name="reserva_exitosa">Reserva realizada con éxito</string>
     <string name="procesando">Procesando…</string>
     <string name="asientos_disponibles_count">Disponibles: %d</string>
     <string name="ruta_directa_tiempo">Ruta Directa - Tiempo est.: %s</string>
@@ -248,13 +248,13 @@
     <string name="placa">Placa: %s</string>
     <string name="editarPerfil">Editar perfil</string>
     <string name="perfil_actualizado">Perfil actualizado correctamente</string>
-    <string name="status_pasajero_activo">🎯 Pasajero Activo</string>
+    <string name="status_pasajero_activo">Pasajero Activo</string>
     <string name="informacion_personal">Información Personal</string>
     <string name="email_label">Correo electrónico</string>
     <string name="telefono_label_short">Teléfono</string>
     <string name="ruta_favorita_label">Ruta Favorita: %s</string>
     <string name="puntos_format">%s pts</string>
-    <string name="status_conductor_activo">🚗 Conductor Activo</string>
+    <string name="status_conductor_activo">Conductor Activo</string>
     <string name="informacion_vehiculo">Información del Vehículo</string>
     <string name="capacidad_label">Capacidad</string>
     <string name="anio_label">Año</string>
@@ -273,17 +273,17 @@
     <!-- ========================================================================= -->
     <!-- 🔔 NOTIFICATIONS                                                          -->
     <!-- ========================================================================= -->
-    <string name="notif_nueva_reserva_title">🚗 Nueva Reserva</string>
+    <string name="notif_nueva_reserva_title">Nueva Reserva</string>
     <string name="notif_nueva_reserva_body">%1$s reservó el asiento %2$s para %3$s</string>
-    <string name="notif_confirmada_title">✅ Reserva Confirmada</string>
+    <string name="notif_confirmada_title">Reserva Confirmada</string>
     <string name="notif_confirmada_body">¡Tu viaje en %1$s ha sido confirmado por %2$s! Entra para ver los detalles.</string>
-    <string name="notif_cancelada_title">❌ Reserva Cancelada</string>
+    <string name="notif_cancelada_title">Reserva Cancelada</string>
     <string name="notif_cancelada_body">Lo sentimos, tu reserva para %s fue cancelada</string>
-    <string name="notif_promotion_title">¡Mira esto! ✨</string>
+    <string name="notif_promotion_title">¡Mira esto!</string>
     <string name="notif_promotion_body">Tenemos algo nuevo para ti en RutaGo. ¡Ven a verlo!</string>
-    <string name="notif_nueva_reserva_driver_title">🚗 ¡Nueva Reserva Recibida!</string>
+    <string name="notif_nueva_reserva_driver_title">¡Nueva Reserva Recibida!</string>
     <string name="notif_nueva_reserva_driver_body">Un pasajero ha solicitado un puesto. ¡Entra ahora para gestionar tu próxima ruta!</string>
-    <string name="notif_chat_title">💬 Mensaje nuevo de %s</string>
+    <string name="notif_chat_title">Mensaje nuevo de %s</string>
     <string name="notif_chat_body">%s</string>
 
     <!-- ========================================================================= -->

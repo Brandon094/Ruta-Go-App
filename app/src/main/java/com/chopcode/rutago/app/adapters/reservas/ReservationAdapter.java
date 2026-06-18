@@ -62,6 +62,7 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
     static class ReservationViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre, tvTelefono, tvOrigenDestino, tvFechaHora, tvAsiento, tvEstado;
         private MaterialButton btnConfirmar, btnCancelar;
+        private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
 
         public ReservationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,49 +77,72 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         }
 
         public void bind(Reservation reservation, OnReservaClickListener listener) {
-            tvNombre.setText(reservation.getName() != null ? reservation.getName() : itemView.getContext().getString(R.string.no_disponible));
-            tvTelefono.setText(reservation.getPhone() != null ? "📞 " + reservation.getPhone() : "📞 " + itemView.getContext().getString(R.string.no_disponible));
+            try {
+                // Nombre
+                String nombre = reservation.getName();
+                tvNombre.setText(nombre != null ? nombre : itemView.getContext().getString(R.string.no_disponible));
 
-            if (reservation.getOrigin() != null && reservation.getDestination() != null) {
-                tvOrigenDestino.setText("📍 " + reservation.getOrigin() + " → " + reservation.getDestination());
-            }
+                // Teléfono
+                String telefono = reservation.getPhone();
+                tvTelefono.setText(telefono != null ? telefono : itemView.getContext().getString(R.string.no_disponible));
 
-            int seat = reservation.getReservedSeat();
-            tvAsiento.setText(seat > 0 ? "💺 " + FormatUtils.formatearAsiento(seat) : "💺 " + itemView.getContext().getString(R.string.no_disponible));
-
-            if (reservation.getReservationDate() > 0) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-                tvFechaHora.setText("🕒 " + sdf.format(new Date(reservation.getReservationDate())));
-            }
-
-            if (reservation.getReservationStatus() != null) {
-                tvEstado.setText(reservation.getReservationStatus());
-                switch (reservation.getReservationStatus()) {
-                    case "Por confirmar":
-                        tvEstado.setBackgroundResource(R.drawable.bg_estado_pendiente);
-                        btnConfirmar.setVisibility(View.VISIBLE);
-                        btnCancelar.setVisibility(View.VISIBLE);
-                        break;
-                    case "Confirmada":
-                        tvEstado.setBackgroundResource(R.drawable.bg_estado_confirmado);
-                        btnConfirmar.setVisibility(View.GONE);
-                        btnCancelar.setVisibility(View.GONE);
-                        break;
-                    case "Cancelada":
-                        tvEstado.setBackgroundResource(R.drawable.bg_estado_cancelado);
-                        btnConfirmar.setVisibility(View.GONE);
-                        btnCancelar.setVisibility(View.GONE);
-                        break;
+                // Origen y Destino
+                if (reservation.getOrigin() != null && reservation.getDestination() != null) {
+                    tvOrigenDestino.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
+                } else {
+                    tvOrigenDestino.setText(itemView.getContext().getString(R.string.no_disponible));
                 }
+
+                // Asiento
+                int seat = reservation.getReservedSeat();
+                tvAsiento.setText(seat > 0 ? FormatUtils.formatearAsiento(seat) : itemView.getContext().getString(R.string.no_disponible));
+
+                // Fecha y Hora
+                if (reservation.getReservationDate() > 0) {
+                    tvFechaHora.setText(sdf.format(new Date(reservation.getReservationDate())));
+                } else {
+                    tvFechaHora.setText(itemView.getContext().getString(R.string.no_disponible));
+                }
+
+                // Estado y Botones
+                String status = reservation.getReservationStatus();
+                if (status != null) {
+                    tvEstado.setText(status);
+                    
+                    // Reset visibilities for recycling
+                    btnConfirmar.setVisibility(View.GONE);
+                    btnCancelar.setVisibility(View.GONE);
+
+                    switch (status.toLowerCase()) {
+                        case "por confirmar":
+                        case "pendiente":
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_pendiente);
+                            btnConfirmar.setVisibility(View.VISIBLE);
+                            btnCancelar.setVisibility(View.VISIBLE);
+                            break;
+                        case "confirmada":
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_confirmado);
+                            break;
+                        case "cancelada":
+                            tvEstado.setBackgroundResource(R.drawable.bg_estado_cancelado);
+                            break;
+                        default:
+                            tvEstado.setBackgroundResource(R.drawable.bg_badge_status);
+                            break;
+                    }
+                }
+
+                btnConfirmar.setOnClickListener(v -> {
+                    if (listener != null) listener.onConfirmarClick(reservation);
+                });
+
+                btnCancelar.setOnClickListener(v -> {
+                    if (listener != null) listener.onCancelarClick(reservation);
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error bind: " + e.getMessage());
             }
-
-            btnConfirmar.setOnClickListener(v -> {
-                if (listener != null) listener.onConfirmarClick(reservation);
-            });
-
-            btnCancelar.setOnClickListener(v -> {
-                if (listener != null) listener.onCancelarClick(reservation);
-            });
         }
     }
 }

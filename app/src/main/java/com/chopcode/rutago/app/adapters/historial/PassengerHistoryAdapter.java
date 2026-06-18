@@ -134,12 +134,22 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 tvFecha.setText(sdf.format(new Date(reservation.getReservationDate())));
                 tvEstado.setText(status);
                 tvEstado.setTextColor(getColorStatus(status));
-                tvNombrePersona.setText(reservation.getDriver());
+                tvNombrePersona.setText(reservation.getDriver() != null ? reservation.getDriver() : itemView.getContext().getString(R.string.no_disponible));
                 if (ivPersonaIcon != null) ivPersonaIcon.setImageResource(R.drawable.ic_driver);
-                tvTelefono.setText(reservation.getPhoneC());
+                
+                String phone = reservation.getPhoneC();
+                tvTelefono.setText(phone != null ? phone : itemView.getContext().getString(R.string.no_disponible));
+                
                 String routeDesc = reservation.getRouteName();
-                if (routeDesc == null || routeDesc.isEmpty()) routeDesc = reservation.getOrigin() + " -> " + reservation.getDestination();
+                if (routeDesc == null || routeDesc.isEmpty()) {
+                    if (reservation.getOrigin() != null && reservation.getDestination() != null) {
+                        routeDesc = reservation.getOrigin() + " -> " + reservation.getDestination();
+                    } else {
+                        routeDesc = itemView.getContext().getString(R.string.no_disponible);
+                    }
+                }
                 tvRuta.setText(routeDesc);
+                
                 tvPuesto.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
                 tvPrecio.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
 

@@ -77,7 +77,7 @@ public class TicketActivity extends AppCompatActivity {
         String reservationId = intent.getStringExtra("reservationId");
 
         // Pintar UI
-        tvRoute.setText(origin + " → " + dest);
+        tvRoute.setText(origin + " -> " + dest);
         tvStatus.setText(status != null ? status.toUpperCase() : "N/A");
         
         MaterialCardView ticketCard = findViewById(R.id.ticketCardMain);

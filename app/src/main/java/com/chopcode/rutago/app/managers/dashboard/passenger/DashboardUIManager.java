@@ -51,8 +51,8 @@ public class DashboardUIManager {
 
     public void setupTabLayout(TabLayout tabLayout, androidx.viewpager2.widget.ViewPager2 viewPager) {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if (position == 0) tab.setText("Natagá → La Plata");
-            else tab.setText("La Plata → Natagá");
+            if (position == 0) tab.setText("Natagá -> La Plata");
+            else tab.setText("La Plata -> Natagá");
         }).attach();
     }
 }

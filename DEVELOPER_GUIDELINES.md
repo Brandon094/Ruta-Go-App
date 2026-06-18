@@ -43,7 +43,10 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Inmersión (Scroll Infinito):** Para efectos premium, usar `android:clipToPadding="false"` junto con un `paddingBottom` generoso (ej. 88dp) en listas. Esto permite que el contenido fluya por detrás de las barras de navegación.
 - **Simetría Operativa:** El mapa de asientos debe usar una grilla de 5 columnas (Izquierda x2, Pasillo x1, Derecha x2) para garantizar alineación exacta en la gestión.
 - **Compartición Segura:** El uso de `FileProvider` es obligatorio para compartir activos generados (como el tiquete digital) garantizando compatibilidad con Android 7.0+.
-- **Estética Proyectual:** Prohibido el uso de emojis en items de lista. Usar exclusivamente la iconografía oficial en `drawables/icons/`.
+- **Estética Proyectual:** Prohibido el uso de emojis en items de lista, diálogos o encabezados. Usar exclusivamente la iconografía oficial en `drawables/icons/`. Evitar caracteres especiales como flechas Unicode (`→`); usar en su lugar estándares ASCII (`->`) para máxima compatibilidad.
+- **Estandarización de Filas:** En tarjetas de información (ej. detalles del vehículo), usar `LinearLayout` con pesos (`weightSum`) en lugar de `GridLayout` para garantizar simetría 50/50 y evitar que los datos se oculten en fuentes grandes.
+- **Centralización de Navegación:** El `BottomNavFragment` debe estar vinculado a su propio `BottomNavViewModel` para gestionar eventos de cierre de sesión y analíticas de navegación.
+- **Consistencia en Diálogos:** Todos los diálogos deben heredar de `AppDialogTheme` y sus botones deben tener un `minHeight` mínimo de 48dp para accesibilidad.
 ### D. Documentación Técnica (Mantenimiento)
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
 - **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).

@@ -104,10 +104,11 @@
                     android:paddingHorizontal="24dp" />
 
                 <TextView
+                    android:id="@+id/tvUserStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="🎯 Pasajero Activo"
+                    android:text="@string/status_pasajero_activo"
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:textStyle="bold"

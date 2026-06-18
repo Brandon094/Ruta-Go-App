@@ -35,7 +35,7 @@ public class SelectRouteAdapter extends RecyclerView.Adapter<SelectRouteAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Route route = routes.get(position);
-        holder.tvName.setText(route.getOrigin() + " → " + route.getDestination());
+        holder.tvName.setText(route.getOrigin() + " -> " + route.getDestination());
         String timeStr = (route.getTime() != null) ? route.getTime().getTime() : "--:--";
         holder.tvTime.setText(timeStr);
         

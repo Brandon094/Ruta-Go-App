@@ -284,7 +284,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showCenteredSnackbar(String message, boolean isError) {
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), (isError ? "❌ " : "") + message, 3000);
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), message, 3000);
         View view = snackbar.getView();
         view.setBackgroundColor(ContextCompat.getColor(this, isError ? R.color.error_500 : R.color.primary_500));
         if (view.getLayoutParams() instanceof FrameLayout.LayoutParams) {
