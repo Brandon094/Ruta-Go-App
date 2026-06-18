@@ -208,47 +208,74 @@
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 android:layout_marginBottom="12dp"/>
-                            <androidx.gridlayout.widget.GridLayout
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Fila 1 -->
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                app:columnCount="2">
+                                android:orientation="horizontal"
+                                android:baselineAligned="false"
+                                android:weightSum="2">
 
                                 <!-- Placa -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" app:layout_columnWeight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
                                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_license" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvPlacaActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Placa: --" android:textColor="@color/text_secondary" android:textSize="12sp"/>
                                 </LinearLayout>
 
                                 <!-- Marca -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" app:layout_columnWeight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
                                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_copyrigth" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvMarcaActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Marca: --" android:textColor="@color/text_secondary" android:textSize="12sp"/>
                                 </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Fila 2 -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:baselineAligned="false"
+                                android:weightSum="2">
 
                                 <!-- Modelo -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" app:layout_columnWeight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
                                     <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_car_model" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvModeloActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Modelo: --" android:textColor="@color/text_secondary" android:textSize="12sp"/>
                                 </LinearLayout>
 
                                 <!-- Color -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" app:layout_columnWeight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp" android:minHeight="32dp">
                                     <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_color_lens" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvColorActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Color: --" android:textColor="@color/text_secondary" android:textSize="12sp"/>
                                 </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Fila 3 -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:baselineAligned="false"
+                                android:weightSum="2">
 
                                 <!-- Capacidad -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="32dp">
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="32dp">
                                     <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_capacidad" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvCapacidadActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Capacidad: --" android:textColor="@color/text_secondary" android:textSize="11sp"/>
                                 </LinearLayout>
 
                                 <!-- Año -->
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" app:layout_columnWeight="1" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="32dp">
-                                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_calendar_today" app:tint="@color/text_tertiary" />
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="32dp">
+                                    <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_calendar_today" app:tint="@color/text_tertiary" />
                                     <TextView android:id="@+id/tvAnioActual" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Año: --" android:textColor="@color/text_secondary" android:textSize="12sp"/>
                                 </LinearLayout>
-                            </androidx.gridlayout.widget.GridLayout>
+                            </LinearLayout>
+                        </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
