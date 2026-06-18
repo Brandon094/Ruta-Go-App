@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="14dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:minHeight="80dp">
 
         <!-- Indicador de tiempo -->
         <LinearLayout
@@ -27,7 +28,9 @@
             android:background="@drawable/bg_time_circle"
             android:gravity="center"
             android:orientation="vertical"
-            android:elevation="2dp">
+            android:elevation="2dp"
+            android:padding="4dp"
+            android:minWidth="50dp">
 
             <TextView
                 android:id="@+id/tvHora"
@@ -43,29 +46,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/primary_500"
-                android:textSize="10sp"
+                android:textSize="11sp"
+                android:textStyle="bold"
                 tools:text="AM" />
         </LinearLayout>
 
         <!-- Separador -->
         <View
             android:layout_width="1dp"
-            android:layout_height="28dp"
+            android:layout_height="32dp"
             android:background="@color/outline"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginHorizontal="12dp"
             android:alpha="0.5" />
 
         <!-- Contenedor principal de información -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginEnd="8dp">
 
             <!-- Ruta -->
             <TextView
                 android:id="@+id/tvRuta"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
@@ -78,53 +83,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="6dp"
-                android:gravity="center_vertical">
+                android:layout_marginTop="6dp">
 
                 <!-- Fila de asientos -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
                         android:src="@drawable/ic_seat"
                         app:tint="@color/primary_300"
-                        android:layout_marginEnd="4dp" />
+                        android:layout_marginEnd="6dp" />
 
                     <TextView
                         android:id="@+id/tvAsientos"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
+                        android:textSize="11sp"
                         tools:text="13 asientos disponibles" />
                 </LinearLayout>
 
                 <!-- Fila de precio -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="2dp">
+                    android:layout_marginTop="3dp">
 
                     <ImageView
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
                         android:src="@drawable/ic_price"
                         app:tint="@color/primary_300"
-                        android:layout_marginEnd="4dp" />
+                        android:layout_marginEnd="6dp" />
 
                     <TextView
                         android:id="@+id/tvPrecio"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/success"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:textStyle="bold"
                         tools:text="$12.000" />
                 </LinearLayout>
@@ -135,13 +139,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/bg_badge_status"
-                android:paddingHorizontal="6dp"
-                android:paddingVertical="1dp"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
                 android:text="Disponible"
                 android:textColor="@color/success"
-                android:textSize="9sp" />
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Botón de acción -->

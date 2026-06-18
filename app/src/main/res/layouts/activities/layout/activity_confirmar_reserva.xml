@@ -213,63 +213,68 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Grid de detalles -->
-                    <androidx.gridlayout.widget.GridLayout
+                    <!-- Detalles del viaje en filas -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="2"
-                        android:rowCount="2"
-                        android:columnOrderPreserved="false"
+                        android:orientation="vertical"
                         android:layout_marginBottom="16dp">
 
+                        <!-- Fila 1: Fecha y Hora -->
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_column="0"
-                            app:layout_row="0"
-                            app:layout_columnWeight="1"
-                            android:layout_marginEnd="8dp"
+                            android:orientation="horizontal"
+                            android:baselineAligned="false"
                             android:layout_marginBottom="12dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fecha" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fecha" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                                <TextView android:id="@+id/tvFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora_salida" android:textColor="@color/text_tertiary" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvHora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                            </LinearLayout>
                         </LinearLayout>
 
+                        <!-- Fila 2: Duración y Asiento -->
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_column="1"
-                            app:layout_row="0"
-                            app:layout_columnWeight="1"
-                            android:layout_marginBottom="12dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora_salida" android:textColor="@color/text_tertiary" android:textSize="11sp" />
-                            <TextView android:id="@+id/tvHora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
-                        </LinearLayout>
+                            android:orientation="horizontal"
+                            android:baselineAligned="false">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_column="0"
-                            app:layout_row="1"
-                            app:layout_columnWeight="1"
-                            android:layout_marginEnd="8dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/duracion" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvTiempoEstimado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
-                        </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/duracion" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                                <TextView android:id="@+id/tvTiempoEstimado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                            </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_column="1"
-                            app:layout_row="1"
-                            app:layout_columnWeight="1">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/asiento" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvAsiento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="14sp" android:textStyle="bold" android:background="@drawable/bg_chip_primary" android:backgroundTint="@color/secondary_700" android:textColor="@color/primary_500" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:layout_marginTop="2dp" />
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/asiento" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                                <TextView android:id="@+id/tvAsiento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="14sp" android:textStyle="bold" android:background="@drawable/bg_chip_primary" android:backgroundTint="@color/secondary_700" android:textColor="@color/primary_500" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:layout_marginTop="2dp" />
+                            </LinearLayout>
                         </LinearLayout>
-                    </androidx.gridlayout.widget.GridLayout>
+                    </LinearLayout>
 
                     <!-- Precio -->
                     <LinearLayout
@@ -427,7 +432,8 @@
                     android:id="@+id/btnConfirmar"
                     style="@style/AppButton.Primary"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="52dp"
                     android:layout_marginBottom="12dp"
                     android:text="@string/confirmarReserva"
                     android:insetTop="0dp"
@@ -439,7 +445,8 @@
                     android:id="@+id/btnCancelar"
                     style="@style/AppButton.Secondary"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="52dp"
                     android:text="@string/cancelar"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_chip_background"
-    tools:context=".activities.passenger.InicioUsersActivity">
+    tools:context=".activities.passenger.PassengerHomeActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -164,7 +164,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:minHeight="48dp">
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
@@ -182,8 +183,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/confirmadas"
-                                    android:textSize="8sp"
-                                    android:textColor="@color/text_secondary" />
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_secondary"
+                                    android:gravity="center" />
                             </LinearLayout>
 
                             <!-- Canceladas -->
@@ -192,7 +194,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:minHeight="48dp">
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
@@ -210,8 +213,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/canceladas"
-                                    android:textSize="8sp"
-                                    android:textColor="@color/text_secondary" />
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_secondary"
+                                    android:gravity="center" />
                             </LinearLayout>
 
                             <!-- Total -->
@@ -220,7 +224,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:minHeight="48dp">
                                 <ImageView
                                     android:layout_width="22dp"
                                     android:layout_height="22dp"
@@ -238,8 +243,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/total"
-                                    android:textSize="8sp"
-                                    android:textColor="@color/text_secondary" />
+                                    android:textSize="11sp"
+                                    android:textColor="@color/text_secondary"
+                                    android:gravity="center" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -255,7 +261,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingHorizontal="16dp"
-                            android:paddingVertical="8dp"
+                            android:paddingVertical="12dp"
+                            android:minHeight="48dp"
                             android:clickable="true"
                             android:focusable="true"
                             android:background="?attr/selectableItemBackground">
@@ -265,14 +272,14 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/contador_leyenda"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="10sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold"
                                 android:layout_centerVertical="true" />
 
                             <ImageView
                                 android:id="@+id/legendExpandIcon"
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 android:src="@drawable/ic_expand_more"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerVertical="true"
@@ -286,7 +293,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:paddingHorizontal="16dp"
-                            android:paddingBottom="8dp"
+                            android:paddingBottom="12dp"
                             android:visibility="gone">
 
                             <!-- Confirmadas -->
@@ -294,28 +301,28 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
                                 android:gravity="center_vertical">
                                 <View
-                                    android:layout_width="8dp"
-                                    android:layout_height="8dp"
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
                                     android:background="@drawable/bg_circle_logout"
                                     android:backgroundTint="@color/primary_500" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
+                                    android:layout_marginStart="10dp"
                                     android:text="@string/leyenda_confirmadas_titulo"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="10sp"
+                                    android:textSize="12sp"
                                     android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
+                                    android:layout_marginStart="6dp"
                                     android:text="@string/leyenda_confirmadas_desc"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp" />
+                                    android:textSize="12sp" />
                             </LinearLayout>
 
                             <!-- Canceladas -->
@@ -323,28 +330,28 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
                                 android:gravity="center_vertical">
                                 <View
-                                    android:layout_width="8dp"
-                                    android:layout_height="8dp"
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
                                     android:background="@drawable/bg_circle_logout"
                                     android:backgroundTint="@color/error" />
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
+                                    android:layout_marginStart="10dp"
                                     android:text="@string/leyenda_canceladas_titulo"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="10sp"
+                                    android:textSize="12sp"
                                     android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
+                                    android:layout_marginStart="6dp"
                                     android:text="@string/leyenda_canceladas_desc"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp" />
+                                    android:textSize="12sp" />
                             </LinearLayout>
 
                             <!-- Total -->
@@ -352,28 +359,29 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="6dp"
                                 android:gravity="center_vertical">
                                 <View
-                                    android:layout_width="8dp"
-                                    android:layout_height="8dp"
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
                                     android:background="@drawable/bg_circle_logout"
                                     android:backgroundTint="@color/success" />
                                 <TextView
+                                    android:id="@+id/textView2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
+                                    android:layout_marginStart="10dp"
                                     android:text="@string/leyenda_total_titulo"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="10sp"
+                                    android:textSize="12sp"
                                     android:textStyle="bold" />
                                 <TextView
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
+                                    android:layout_marginStart="6dp"
                                     android:text="@string/leyenda_total_desc"
                                     android:textColor="@color/text_secondary"
-                                    android:textSize="10sp" />
+                                    android:textSize="12sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -391,21 +399,21 @@
             android:paddingTop="12dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginBottom="8dp">
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_schedule"
                     app:tint="@color/primary_500" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/horarios_disponibles"
                     android:textColor="@color/chip_text"
                     android:textSize="16sp"
@@ -415,14 +423,16 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_marginBottom="4dp"
                 app:tabBackground="@drawable/tab_selector_light"
                 app:tabTextColor="@color/text_primary"
                 app:tabSelectedTextColor="@color/text_on_primary"
                 app:tabIndicatorColor="@color/primary_500"
                 app:tabIndicatorHeight="3dp"
-                app:tabMode="fixed" />
+                app:tabMode="fixed"
+                app:tabGravity="fill"/>
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -431,20 +441,20 @@
         android:id="@+id/viewPagerHorarios"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
         android:visibility="gone"
+        android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_inicio_usuarios"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
         android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
         app:shimmer_auto_start="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <include layout="@layout/skeleton_item_historial" />
