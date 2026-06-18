@@ -38,8 +38,12 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales y estados de carga en los ViewModels.
 - **Reactividad:** Los Dashboards deben reaccionar a cambios en la base de datos instantáneamente. Evitar `addListenerForSingleValueEvent` en pantallas principales.
 - **Notificaciones:** Seguir el estándar Premium unificado en `NotificationService` con identidad visual oficial.
+- **Responsividad (Guías):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en `ConstraintLayout` para que la UI "respire" en cualquier dispositivo.
+- **Accesibilidad (Zoom 200%):** Prohibido usar alturas fijas (`android:layout_height`) en botones o contenedores con texto. Usar siempre `wrap_content` + `android:minHeight` (ej. 52dp) para evitar textos cortados.
+- **Inmersión (Scroll Infinito):** Para efectos premium, usar `android:clipToPadding="false"` junto con un `paddingBottom` generoso (ej. 88dp) en listas. Esto permite que el contenido fluya por detrás de las barras de navegación.
+- **Simetría Operativa:** El mapa de asientos debe usar una grilla de 5 columnas (Izquierda x2, Pasillo x1, Derecha x2) para garantizar alineación exacta en la gestión.
 - **Compartición Segura:** El uso de `FileProvider` es obligatorio para compartir activos generados (como el tiquete digital) garantizando compatibilidad con Android 7.0+.
-
+- **Estética Proyectual:** Prohibido el uso de emojis en items de lista. Usar exclusivamente la iconografía oficial en `drawables/icons/`.
 ### D. Documentación Técnica (Mantenimiento)
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
 - **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).
@@ -67,6 +71,8 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 ## 7. Estado Actual del Proyecto (v1.2.0 Stable)
 - **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards y historiales 100% reactivos.
 - **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos.
+- **UI Responsiva & Accesible:** 100% de las actividades de Pasajero y Conductor optimizadas con guías porcentuales y soporte para zoom de fuente (200%).
+- **Mapa de Asientos:** Unificado y simétrico con grilla de 5 columnas.
 - **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService` para mayor granularidad y mantenimiento.
 - **Tarifas Dinámicas:** Implementado `PriceService`. Los precios ahora se gestionan centralizadamente desde la base de datos, soportando cambios en tiempo real sin despliegues.
 - **Mensajería:** Implementación del **Chat en Tiempo Real** (Bidireccional) para reservas confirmadas. Incluye notificaciones Push mediante `NotificationManager`.

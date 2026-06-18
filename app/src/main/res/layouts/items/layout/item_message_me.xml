@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:text="Hola, ¿ya saliste?"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/tvTime"
@@ -39,7 +39,7 @@
                 android:layout_marginTop="2dp"
                 android:text="10:30 AM"
                 android:textColor="#CCFFFFFF"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
