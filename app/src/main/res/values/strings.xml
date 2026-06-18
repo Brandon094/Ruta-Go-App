@@ -18,7 +18,7 @@
     <string name="network_error">Sin conexión a internet. Los datos pueden no estar actualizados.</string>
     <string name="network_error_driver">Sin conexión a internet. No se podrán confirmar reservas.</string>
     <string name="network_restored">Conexión restablecida</string>
-    <string name="powered_by">Powered by</string>
+    <string name="powered_by">Desarrollado por</string>
     <string name="chop_code">ChopCode</string>
     <string name="activo">Activo</string>
     <string name="desactivo">Inactivo</string>
@@ -26,7 +26,7 @@
     <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
-    <string name="inicioSesion">Iniciar sesión</string>
+    <string name="inicioSesion">Iniciar Sesión</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="ingresar">Ingresar</string>
     <string name="ingresarGoogle">Inicia con Google</string>
@@ -219,7 +219,7 @@
     <!-- ========================================================================= -->
     <!-- 👤 PROFILE & VEHICLE                                                      -->
     <!-- ========================================================================= -->
-    <string name="gestion_perifl">Gestiona tu perfil.</string>
+    <string name="gestion_perfil">Gestiona tu perfil.</string>
     <string name="datosVehiculo">Datos del vehículo</string>
     <string name="placaVehiculo">Placa: %s</string>
     <string name="placa_label_format">Placa: %s</string>
@@ -237,7 +237,7 @@
     <string name="perfil_actualizado">Perfil actualizado correctamente</string>
     <string name="status_pasajero_activo">🎯 Pasajero Activo</string>
     <string name="informacion_personal">Información Personal</string>
-    <string name="email_label">Email</string>
+    <string name="email_label">Correo electrónico</string>
     <string name="telefono_label_short">Teléfono</string>
     <string name="ruta_favorita_label">Ruta Favorita: %s</string>
     <string name="puntos_format">%s pts</string>
