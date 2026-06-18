@@ -17,6 +17,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="230dp" />
+
             <!-- Background del Header Naranja -->
             <View
                 android:id="@+id/headerBackground"
@@ -115,9 +122,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="180dp"
                 app:shimmer_auto_start="true"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="@id/guideline_header">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -133,10 +139,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="180dp"
                 android:paddingHorizontal="20dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/guideline_header"
                 tools:visibility="visible">
 
                 <!-- CARD 1: INFORMACIÓN PERSONAL -->
@@ -171,10 +176,11 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingVertical="8dp">
+                            android:paddingVertical="8dp"
+                            android:minHeight="48dp">
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:src="@drawable/ic_email"
                                 app:tint="@color/primary_500" />
                             <LinearLayout
@@ -194,10 +200,11 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:paddingVertical="8dp">
+                            android:paddingVertical="8dp"
+                            android:minHeight="48dp">
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:src="@drawable/ic_phone_enabled"
                                 app:tint="@color/primary_500" />
                             <LinearLayout
@@ -343,7 +350,8 @@
                             android:id="@+id/btnEditarPerfil"
                             style="@style/AppButton.Secondary"
                             android:layout_width="match_parent"
-                            android:layout_height="52dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="52dp"
                             android:layout_marginTop="20dp"
                             android:text="Editar Perfil"
                             android:textSize="14sp"
@@ -359,6 +367,7 @@
                     style="@style/Widget.MaterialComponents.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minHeight="48dp"
                     android:layout_marginTop="24dp"
                     android:layout_gravity="center_horizontal"
                     android:text="Solicitar borrar cuenta"

@@ -149,28 +149,29 @@
                             app:tint="@color/primary_500" />
                     </RelativeLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:weightSum="3">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="16dp"
+                            android:weightSum="3"
+                            android:minHeight="60dp">
 
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvReservasConfirmadas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/success" android:textSize="18sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="8sp" android:textColor="@color/text_secondary" />
-                        </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                                <TextView android:id="@+id/tvReservasConfirmadas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/success" android:textSize="18sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="11sp" android:textColor="@color/text_secondary" />
+                            </LinearLayout>
 
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvAsientosDisponibles" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="26" android:textColor="@color/primary_500" android:textSize="18sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="8sp" android:textColor="@color/text_secondary" />
-                        </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                                <TextView android:id="@+id/tvAsientosDisponibles" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="26" android:textColor="@color/primary_500" android:textSize="18sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="11sp" android:textColor="@color/text_secondary" />
+                            </LinearLayout>
 
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                            <TextView android:id="@+id/tvTotalIngresos" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0" android:textColor="@color/warning_500" android:textSize="18sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ingresos" android:textSize="8sp" android:textColor="@color/text_secondary" />
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                                <TextView android:id="@+id/tvTotalIngresos" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0" android:textColor="@color/warning_500" android:textSize="18sp" android:textStyle="bold" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ingresos" android:textSize="11sp" android:textColor="@color/text_secondary" />
+                            </LinearLayout>
                         </LinearLayout>
-                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -181,13 +182,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:paddingBottom="500dp">
+            android:padding="16dp">
 
             <!-- 🔄 SHIMMER PARA CARGA -->
             <com.facebook.shimmer.ShimmerFrameLayout
@@ -338,15 +340,15 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_checklist" app:tint="@color/text_tertiary" android:layout_marginBottom="4dp"/>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:minHeight="48dp">
+                                    <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_checklist" app:tint="@color/text_tertiary" android:layout_marginBottom="4dp"/>
                                     <TextView android:id="@+id/tvReservasRuta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_primary" android:textStyle="bold" android:textSize="16sp"/>
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="8sp" android:textColor="@color/text_tertiary"/>
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="11sp" android:textColor="@color/text_tertiary"/>
                                 </LinearLayout>
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_seat" app:tint="@color/success" android:layout_marginBottom="4dp"/>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:minHeight="48dp">
+                                    <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_seat" app:tint="@color/success" android:layout_marginBottom="4dp"/>
                                     <TextView android:id="@+id/tvAsientosRuta" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="13" android:textColor="@color/success" android:textStyle="bold" android:textSize="16sp"/>
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="8sp" android:textColor="@color/text_tertiary"/>
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="11sp" android:textColor="@color/text_tertiary"/>
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
@@ -376,15 +378,15 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_checklist" app:tint="@color/text_tertiary" android:layout_marginBottom="4dp"/>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:minHeight="48dp">
+                                    <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_checklist" app:tint="@color/text_tertiary" android:layout_marginBottom="4dp"/>
                                     <TextView android:id="@+id/tvReservasRuta2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="@color/text_primary" android:textStyle="bold" android:textSize="16sp"/>
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="8sp" android:textColor="@color/text_tertiary"/>
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reservas" android:textSize="11sp" android:textColor="@color/text_tertiary"/>
                                 </LinearLayout>
-                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center">
-                                    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_seat" app:tint="@color/success" android:layout_marginBottom="4dp"/>
+                                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:minHeight="48dp">
+                                    <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_seat" app:tint="@color/success" android:layout_marginBottom="4dp"/>
                                     <TextView android:id="@+id/tvAsientosRuta2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="13" android:textColor="@color/success" android:textStyle="bold" android:textSize="16sp"/>
-                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="8sp" android:textColor="@color/text_tertiary"/>
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Libres" android:textSize="11sp" android:textColor="@color/text_tertiary"/>
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>

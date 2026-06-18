@@ -119,7 +119,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:minHeight="48dp">
 
                         <TextView
                             android:id="@+id/tvTotal"
@@ -135,7 +136,7 @@
                             android:layout_height="wrap_content"
                             android:text="Total"
                             android:textColor="@color/text_tertiary"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -145,7 +146,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:minHeight="48dp">
 
                         <TextView
                             android:id="@+id/tvConfirmadas"
@@ -161,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:text="Confirmadas"
                             android:textColor="@color/text_tertiary"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -171,7 +173,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:minHeight="48dp">
 
                         <TextView
                             android:id="@+id/tvCanceladas"
@@ -187,7 +190,7 @@
                             android:layout_height="wrap_content"
                             android:text="Canceladas"
                             android:textColor="@color/text_tertiary"
-                            android:textSize="11sp" />
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -246,7 +249,8 @@
             <LinearLayout
                 android:id="@+id/layoutEmptyState"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="wrap_content"
+                android:minHeight="400dp"
                 android:visibility="gone"
                 android:orientation="vertical"
                 android:gravity="center"
