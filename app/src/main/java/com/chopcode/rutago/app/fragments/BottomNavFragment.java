@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.DriverHomeActivity;
@@ -18,15 +19,22 @@ import com.chopcode.rutago.app.activities.driver.profile.DriverProfileActivity;
 import com.chopcode.rutago.app.activities.passenger.history.ReservationHistoryActivity;
 import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.activities.passenger.profile.UserProfileActivity;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.viewmodels.common.BottomNavViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+/**
+ * 🧭 BottomNavFragment
+ * 
+ * Fragmento que gestiona la barra de navegación inferior en toda la aplicación.
+ * Migrado a MVVM para la gestión de lógica de negocio (ej. logout).
+ */
 public class BottomNavFragment extends Fragment {
 
     private static final String TAG = "BottomNavFragment";
     private boolean isDriver = false;
-    private AuthManager authManager;
+    private BottomNavViewModel viewModel;
+    private BottomNavigationView navView;
 
     public static BottomNavFragment newInstance(boolean isDriver) {
         BottomNavFragment fragment = new BottomNavFragment();
@@ -39,13 +47,11 @@ public class BottomNavFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        authManager = AuthManager.getInstance();
         if (getArguments() != null) {
             isDriver = getArguments().getBoolean("isDriver");
         }
+        viewModel = new ViewModelProvider(this).get(BottomNavViewModel.class);
     }
-
-    private BottomNavigationView navView;
 
     @Nullable
     @Override
@@ -54,7 +60,16 @@ public class BottomNavFragment extends Fragment {
         navView = view.findViewById(R.id.bottomNavigationView);
 
         setupNavigation(navView);
+        observeViewModel();
         return view;
+    }
+
+    private void observeViewModel() {
+        viewModel.getLogoutSuccess().observe(getViewLifecycleOwner(), success -> {
+            if (Boolean.TRUE.equals(success) && getActivity() != null) {
+                getActivity().finishAffinity();
+            }
+        });
     }
 
     @Override
@@ -146,10 +161,7 @@ public class BottomNavFragment extends Fragment {
 
         new MaterialAlertDialogBuilder(getContext(), R.style.AppDialogTheme)
                 .setView(dialogView)
-                .setPositiveButton("Cerrar Sesión", (dialog, which) -> {
-                    authManager.signOut(getActivity());
-                    getActivity().finishAffinity();
-                })
+                .setPositiveButton("Cerrar Sesión", (dialog, which) -> viewModel.logout(getActivity()))
                 .setNegativeButton("Volver", null)
                 .show();
     }
