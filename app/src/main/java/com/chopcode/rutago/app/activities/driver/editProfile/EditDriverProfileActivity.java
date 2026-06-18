@@ -111,12 +111,16 @@ public class EditDriverProfileActivity extends AppCompatActivity {
 
         viewModel.getVehiculoData().observe(this, vehicle -> {
             if (vehicle != null) {
-                tvPlacaActual.setText(getString(R.string.placa) + ": " + vehicle.getPlate());
-                tvMarcaActual.setText(getString(R.string.marca) + ": " + vehicle.getBrand());
-                tvModeloActual.setText(getString(R.string.modelo) + ": " + vehicle.getModel());
-                tvColorActual.setText(getString(R.string.color) + ": " + vehicle.getColor());
-                tvCapacidadActual.setText(getString(R.string.capacidad) + ": " + vehicle.getCapacity());
-                tvAnioActual.setText(getString(R.string.anio_label) + ": " + vehicle.getYear());
+                tvPlacaActual.setText(getString(R.string.placa_label_format, vehicle.getPlate() != null ? vehicle.getPlate() : "--"));
+                tvMarcaActual.setText(getString(R.string.marca) + ": " + (vehicle.getBrand() != null ? vehicle.getBrand() : "--"));
+                tvModeloActual.setText(getString(R.string.modelo, vehicle.getModel() != null ? vehicle.getModel() : "--"));
+                tvColorActual.setText(getString(R.string.color) + ": " + (vehicle.getColor() != null ? vehicle.getColor() : "--"));
+                
+                int cap = 0;
+                try { cap = vehicle.getCapacity(); } catch (Exception ignored) {}
+                tvCapacidadActual.setText(getString(R.string.capacidad, cap));
+                
+                tvAnioActual.setText(getString(R.string.anio_label) + ": " + (vehicle.getYear() != null ? vehicle.getYear() : "--"));
             }
         });
 
