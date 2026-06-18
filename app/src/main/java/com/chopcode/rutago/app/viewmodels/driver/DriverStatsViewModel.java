@@ -47,10 +47,21 @@ public class DriverStatsViewModel extends BaseViewModel {
 
     private String currentDriverId;
     private List<String> assignedSchedules;
+    private List<com.chopcode.rutago.app.models.Route> activeRoutes = new ArrayList<>();
     private ValueEventListener statsListener;
 
     public DriverStatsViewModel() {
         this.driverReservationService = new DriverReservationService();
+    }
+
+    /**
+     * Establece las rutas activas para resolver datos faltantes en las reservas.
+     */
+    public void setRutasActivas(List<com.chopcode.rutago.app.models.Route> routes) {
+        if (routes != null) {
+            this.activeRoutes = routes;
+            refreshStatistics();
+        }
     }
 
     /**
@@ -154,28 +165,33 @@ public class DriverStatsViewModel extends BaseViewModel {
         Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total
         Map<String, String> names = new HashMap<>();  // Nombres descriptivos
         
-        // Procesar confirmadas (suman a ingresos y ocupación)
-        for (Reservation r : confirmed) {
+        List<Reservation> allToProcess = new ArrayList<>(confirmed);
+        allToProcess.addAll(pending);
+
+        for (Reservation r : allToProcess) {
             String origin = r.getOrigin();
             String dest = r.getDestination();
+            
+            // 🔥 FIX: Si faltan datos, intentar resolver desde la lista de rutas usando scheduleId
+            if ((origin == null || origin.isEmpty() || origin.equalsIgnoreCase("N/A")) && r.getScheduleId() != null) {
+                for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
+                    if (r.getScheduleId().equals(route.getScheduleId())) {
+                        origin = route.getOrigin();
+                        dest = route.getDestination();
+                        break;
+                    }
+                }
+            }
+
             if (origin == null || origin.isEmpty()) origin = "N/A";
             if (dest == null || dest.isEmpty()) dest = "N/A";
             
             String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
             names.put(key, origin + " → " + dest);
-            resMap.put(key, resMap.getOrDefault(key, 0) + 1);
-            occMap.put(key, occMap.getOrDefault(key, 0) + 1);
-        }
-        
-        // Procesar pendientes (solo suman a ocupación)
-        for (Reservation r : pending) {
-            String origin = r.getOrigin();
-            String dest = r.getDestination();
-            if (origin == null || origin.isEmpty()) origin = "N/A";
-            if (dest == null || dest.isEmpty()) dest = "N/A";
             
-            String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
-            names.put(key, origin + " → " + dest);
+            if (confirmed.contains(r)) {
+                resMap.put(key, resMap.getOrDefault(key, 0) + 1);
+            }
             occMap.put(key, occMap.getOrDefault(key, 0) + 1);
         }
         
@@ -194,19 +210,37 @@ public class DriverStatsViewModel extends BaseViewModel {
             int ava = Math.max(0, capacityPerRoute - occ);
             String name = names.get(key);
             
-            // Lógica de detección de ruta Natagá -> La Plata
-            if (key.startsWith("nataga") && key.contains("la plata")) {
-                if (key.indexOf("nataga") < key.indexOf("la plata")) {
-                    route1NameLiveData.postValue(name); route1ReservationsLiveData.postValue(res); route1AvailableSeatsLiveData.postValue(ava); f1 = true;
+            String normKey = FormatUtils.normalizarTexto(key);
+            
+            // Lógica de detección bidireccional mejorada
+            if (normKey.contains("nataga") && normKey.contains("la plata")) {
+                if (normKey.indexOf("nataga") < normKey.indexOf("la plata")) {
+                    // Natagá -> La Plata (Ruta 1)
+                    route1NameLiveData.postValue(name);
+                    route1ReservationsLiveData.postValue(res);
+                    route1AvailableSeatsLiveData.postValue(ava);
+                    f1 = true;
                 } else {
-                    route2NameLiveData.postValue(name); route2ReservationsLiveData.postValue(res); route2AvailableSeatsLiveData.postValue(ava); f2 = true;
+                    // La Plata -> Natagá (Ruta 2)
+                    route2NameLiveData.postValue(name);
+                    route2ReservationsLiveData.postValue(res);
+                    route2AvailableSeatsLiveData.postValue(ava);
+                    f2 = true;
                 }
             }
         }
         
-        // Valores por defecto si no hay datos
-        if (!f1) { route1NameLiveData.postValue("Natagá → La Plata"); route1ReservationsLiveData.postValue(0); route1AvailableSeatsLiveData.postValue(capacityPerRoute); }
-        if (!f2) { route2NameLiveData.postValue("La Plata → Natagá"); route2ReservationsLiveData.postValue(0); route2AvailableSeatsLiveData.postValue(capacityPerRoute); }
+        // Valores por defecto si no hay datos detectados
+        if (!f1) { 
+            route1NameLiveData.postValue("Natagá → La Plata"); 
+            route1ReservationsLiveData.postValue(0); 
+            route1AvailableSeatsLiveData.postValue(capacityPerRoute); 
+        }
+        if (!f2) { 
+            route2NameLiveData.postValue("La Plata → Natagá"); 
+            route2ReservationsLiveData.postValue(0); 
+            route2AvailableSeatsLiveData.postValue(capacityPerRoute); 
+        }
     }
 
     public void refreshStatistics() { 

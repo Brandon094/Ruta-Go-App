@@ -280,7 +280,11 @@ public class DriverHomeActivity extends AppCompatActivity {
                 if (routeAdapter != null) routeAdapter.actualizarRutas(new ArrayList<>(routes));
                 updateRoutesUI();
                 tvContadorRutas.setText(getString(R.string.contador_rutas, routes.size()));
+                
+                // 🔥 FIX: Sincronizar rutas con el ViewModel de estadísticas para resolver datos de reservas
+                estadisticasViewModel.setRutasActivas(routes);
                 if (!reservationList.isEmpty()) estadisticasViewModel.calculateRouteStatistics();
+
                 actualizarTiempoActualizacion();
             } else {
                 tvContadorRutas.setText(getString(R.string.contador_rutas, 0));
