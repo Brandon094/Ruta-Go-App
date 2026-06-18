@@ -5,6 +5,8 @@ import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.models.Driver;
+import com.chopcode.rutago.app.services.prices.PriceService;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.firebase.database.DataSnapshot;
@@ -206,6 +208,18 @@ public class UserService {
             return; 
         }
         
+        PriceService priceService = new PriceService();
+        priceService.getAllPrices(new PriceService.AllPricesCallback() {
+            @Override
+            public void onPricesLoaded(Map<String, Map<String, Double>> allPrices) {
+                fetchRoutesWithPrices(assignedSchedules, allPrices, callback);
+            }
+
+            @Override public void onError(String error) { fetchRoutesWithPrices(assignedSchedules, new HashMap<>(), callback); }
+        });
+    }
+
+    private void fetchRoutesWithPrices(List<String> assignedSchedules, Map<String, Map<String, Double>> allPrices, RoutesCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("horarios");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -236,7 +250,15 @@ public class UserService {
                             String origin = lowRoute.contains("natag") ? "Natagá" : "La Plata";
                             String destination = origin.equals("Natagá") ? "La Plata" : "Natagá";
                             
-                            Route route = new Route(scheduleId, origin, destination, 12000);
+                            // Resolver precio desde el mapa dinámico
+                            double price = 12000.0;
+                            String normOrigin = FormatUtils.normalizarTexto(origin);
+                            String normDest = FormatUtils.normalizarTexto(destination);
+                            if (allPrices.containsKey(normOrigin) && allPrices.get(normOrigin).containsKey(normDest)) {
+                                price = allPrices.get(normOrigin).get(normDest);
+                            }
+                            
+                            Route route = new Route(scheduleId, origin, destination, price);
                             route.setTime(schedule);
                             route.setScheduleId(scheduleId);
                             routesList.add(route);

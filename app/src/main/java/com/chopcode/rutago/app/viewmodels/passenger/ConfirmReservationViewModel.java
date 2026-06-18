@@ -9,6 +9,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.services.reservations.ReservationService;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.services.prices.PriceService;
 import com.chopcode.rutago.app.R;
 
 import java.util.HashMap;
@@ -34,10 +35,12 @@ public class ConfirmReservationViewModel extends ViewModel {
 
     private final ReservationService reservationService;
     private final UserService userService;
+    private final PriceService priceService;
 
     public ConfirmReservationViewModel() {
         this.reservationService = new ReservationService();
         this.userService = new UserService();
+        this.priceService = new PriceService();
     }
 
     public LiveData<Map<String, Object>> getReservationData() { return reservationData; }
@@ -64,8 +67,24 @@ public class ConfirmReservationViewModel extends ViewModel {
         data.put("tiempoEstimado", intent.getStringExtra("tiempoEstimado"));
         data.put("origen", intent.getStringExtra("origen"));
         data.put("destino", intent.getStringExtra("destino"));
+        
         reservationData.setValue(data);
         loadUserData();
+        fetchUpdatedPrice((String)data.get("origen"), (String)data.get("destino"));
+    }
+
+    private void fetchUpdatedPrice(String origin, String destination) {
+        priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
+            @Override
+            public void onPriceLoaded(double price) {
+                Map<String, Object> data = reservationData.getValue();
+                if (data != null) {
+                    data.put("precio", price);
+                    reservationData.postValue(data);
+                }
+            }
+            @Override public void onError(String errorMsg) { /* Usar el del intent */ }
+        });
     }
 
     public void loadUserData() {

@@ -196,6 +196,14 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             tvSelectedRoute.setText(selectedRoute);
             expandableSectionManager.updateSummaryInfo(selectedRoute, null);
             tvRouteDescription.setText(getString(R.string.ruta_directa_tiempo, FormatUtils.calcularTiempoEstimado(selectedRoute)));
+
+            // 🔥 RESOLVER PRECIO DINÁMICO
+            String separator = " → ";
+            if (!selectedRoute.contains(separator)) separator = " -> ";
+            String[] parts = selectedRoute.split(separator);
+            if (parts.length == 2) {
+                viewModel.loadPrice(parts[0].trim(), parts[1].trim());
+            }
         }
         if (scheduleTime != null) {
             tvSelectedSchedule.setText(scheduleTime);
@@ -213,7 +221,8 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
 
     private void validateReservation() {
         String travelDate = FormatUtils.obtenerFechaViaje(scheduleTime);
-        Intent intent = reservationDataProcessor.prepareReservationConfirmation(this, seatManager, selectedRoute, scheduleId, scheduleTime, driverName, driverPhone, driverId, vehiclePlate, vehicleModel, vehicleCapacity, reservationUserManager.getUserNombre(), reservationUserManager.getUserTelefono(), reservationUserManager.getUserId(), travelDate);
+        Double currentPrice = viewModel.getRoutePrice().getValue();
+        Intent intent = reservationDataProcessor.prepareReservationConfirmation(this, seatManager, selectedRoute, scheduleId, scheduleTime, driverName, driverPhone, driverId, vehiclePlate, vehicleModel, vehicleCapacity, reservationUserManager.getUserNombre(), reservationUserManager.getUserTelefono(), reservationUserManager.getUserId(), travelDate, currentPrice);
         if (intent != null) startActivity(intent);
         else Toast.makeText(this, getString(R.string.error_datos_incompletos), Toast.LENGTH_SHORT).show();
     }

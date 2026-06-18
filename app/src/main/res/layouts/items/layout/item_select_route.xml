@@ -49,6 +49,16 @@
                 android:text="@string/hora"
                 android:textSize="14sp"
                 android:textColor="@color/secondary_200" />
+
+            <TextView
+                android:id="@+id/tvRouteFare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$12.000"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/warning_500"
+                android:layout_marginTop="2dp"/>
         </LinearLayout>
 
         <ImageView

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Route;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import java.util.List;
 
 public class SelectRouteAdapter extends RecyclerView.Adapter<SelectRouteAdapter.ViewHolder> {
@@ -37,6 +38,10 @@ public class SelectRouteAdapter extends RecyclerView.Adapter<SelectRouteAdapter.
         holder.tvName.setText(route.getOrigin() + " → " + route.getDestination());
         String timeStr = (route.getTime() != null) ? route.getTime().getTime() : "--:--";
         holder.tvTime.setText(timeStr);
+        
+        // Mostrar precio dinámico
+        holder.tvFare.setText(FormatUtils.formatearPrecio(route.getFare()));
+        
         holder.itemView.setOnClickListener(v -> { if (listener != null) listener.onRouteClick(route); });
     }
 
@@ -44,11 +49,12 @@ public class SelectRouteAdapter extends RecyclerView.Adapter<SelectRouteAdapter.
     public int getItemCount() { return routes.size(); }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvTime;
+        TextView tvName, tvTime, tvFare;
         ViewHolder(View view) {
             super(view);
             tvName = view.findViewById(R.id.tvRouteName);
             tvTime = view.findViewById(R.id.tvRouteTime);
+            tvFare = view.findViewById(R.id.tvRouteFare);
         }
     }
 }

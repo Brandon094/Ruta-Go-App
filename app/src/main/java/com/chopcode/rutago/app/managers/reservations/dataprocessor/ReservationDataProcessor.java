@@ -37,14 +37,15 @@ public class ReservationDataProcessor {
             String userName,
             String userPhone,
             String userId,
-            String travelDate) {
+            String travelDate,
+            Double routePrice) {
 
         if (!validateRequiredData(seatManager, selectedRoute, scheduleId, scheduleTime)) return null;
 
         logReservationDataToAnalytics(seatManager.getAsientoSeleccionado(), selectedRoute, scheduleTime, driverName, vehiclePlate);
 
         Intent intent = new Intent(context, ConfirmReservationActivity.class);
-        populateIntentWithReservationData(intent, seatManager, selectedRoute, scheduleId, scheduleTime, driverName, driverPhone, driverId, vehiclePlate, vehicleModel, vehicleCapacity, userName, userPhone, userId, travelDate);
+        populateIntentWithReservationData(intent, seatManager, selectedRoute, scheduleId, scheduleTime, driverName, driverPhone, driverId, vehiclePlate, vehicleModel, vehicleCapacity, userName, userPhone, userId, travelDate, routePrice);
 
         return intent;
     }
@@ -67,7 +68,7 @@ public class ReservationDataProcessor {
     private void populateIntentWithReservationData(
             Intent intent, SeatManager seatManager, String route, String sId, String sTime,
             String dName, String dPhone, String dId, String vPlate, String vModel, Integer vCap,
-            String uName, String uPhone, String uId, String tDate) {
+            String uName, String uPhone, String uId, String tDate, Double routePrice) {
 
         intent.putExtra("asientoSeleccionado", seatManager.getAsientoSeleccionado());
         intent.putExtra("rutaSeleccionada", route);
@@ -97,7 +98,7 @@ public class ReservationDataProcessor {
                 intent.putExtra("destino", parts[1].trim());
             }
         }
-        intent.putExtra("precio", 12000.0);
+        intent.putExtra("precio", routePrice != null ? routePrice : 12000.0);
         intent.putExtra("tiempoEstimado", route != null && route.contains("Natagá") ? "60 min" : "55 min");
     }
 }

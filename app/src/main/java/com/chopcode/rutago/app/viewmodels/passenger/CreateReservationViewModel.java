@@ -12,6 +12,7 @@ import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.reservations.ReservationService;
 import com.chopcode.rutago.app.services.reservations.VehicleService;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.chopcode.rutago.app.services.prices.PriceService;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,7 @@ import java.util.Set;
  * - Escuchar en tiempo real qué asientos están siendo ocupados en un horario.
  * - Cargar la información del conductor y su vehículo vinculado al horario.
  * - Sincronizar los datos del usuario actual para el proceso de reserva.
+ * - Resolver la tarifa dinámica de la ruta.
  */
 public class CreateReservationViewModel extends ViewModel {
     private static final String TAG = "CreateReservationVM";
@@ -37,12 +39,14 @@ public class CreateReservationViewModel extends ViewModel {
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
     private final MutableLiveData<Driver> currentDriver = new MutableLiveData<>();
     private final MutableLiveData<Vehicle> currentVehicle = new MutableLiveData<>();
+    private final MutableLiveData<Double> routePrice = new MutableLiveData<>(12000.0);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     private final ReservationService reservationService;
     private final UserService userService;
     private final VehicleService vehicleService;
+    private final PriceService priceService;
     private DatabaseReference seatsListenerRef;
     private ValueEventListener seatsValueListener;
     private DatabaseReference scheduleDriverRef;
@@ -52,14 +56,23 @@ public class CreateReservationViewModel extends ViewModel {
         this.reservationService = new ReservationService();
         this.userService = new UserService();
         this.vehicleService = new VehicleService();
+        this.priceService = new PriceService();
     }
 
     public LiveData<Set<Integer>> getOccupiedSeats() { return occupiedSeats; }
     public LiveData<User> getCurrentUser() { return currentUser; }
     public LiveData<Driver> getCurrentDriver() { return currentDriver; }
     public LiveData<Vehicle> getCurrentVehicle() { return currentVehicle; }
+    public LiveData<Double> getRoutePrice() { return routePrice; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getError() { return error; }
+
+    public void loadPrice(String origin, String destination) {
+        priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
+            @Override public void onPriceLoaded(double price) { routePrice.postValue(price); }
+            @Override public void onError(String error) { routePrice.postValue(12000.0); }
+        });
+    }
 
     public void loadUserData() {
         String userId = MyApp.getCurrentUserId();

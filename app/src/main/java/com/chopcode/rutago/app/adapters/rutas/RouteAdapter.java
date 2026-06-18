@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Route;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import java.util.List;
 
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHolder> {
@@ -55,23 +56,30 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
     }
 
     public static class RouteViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvOrigin, tvDestination, tvTime;
+        private TextView tvOrigin, tvDestination, tvTime, tvPrice;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
             tvOrigin = itemView.findViewById(R.id.tvOrigen);
             tvDestination = itemView.findViewById(R.id.tvDestino);
             tvTime = itemView.findViewById(R.id.tvHorario);
+            tvPrice = itemView.findViewById(R.id.tvPrecioRuta);
         }
 
         public void bind(Route route) {
             Log.d("RouteAdapter", "Binding route: " + route.getOrigin() + " to " + route.getDestination());
             tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : itemView.getContext().getString(R.string.no_disponible));
             tvDestination.setText(route.getDestination() != null ? route.getDestination() : itemView.getContext().getString(R.string.no_disponible));
+            
             if (route.getTime() != null && route.getTime().getTime() != null) {
                 tvTime.setText(route.getTime().getTime());
             } else {
                 tvTime.setText("--:--");
+            }
+
+            // Enlazar precio dinámico desde el modelo Route
+            if (tvPrice != null) {
+                tvPrice.setText(FormatUtils.formatearPrecio(route.getFare()));
             }
         }
     }
