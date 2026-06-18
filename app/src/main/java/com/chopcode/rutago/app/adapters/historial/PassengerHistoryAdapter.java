@@ -121,7 +121,6 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                     itemView.getContext().startActivity(intent);
                 };
 
-                itemView.setOnClickListener(openTicket);
                 btnVerTiquete.setOnClickListener(openTicket);
 
                 btnIrAlChat.setOnClickListener(v -> {

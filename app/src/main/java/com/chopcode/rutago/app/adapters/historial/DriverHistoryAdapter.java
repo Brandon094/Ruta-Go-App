@@ -116,7 +116,6 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                     itemView.getContext().startActivity(intent);
                 };
 
-                itemView.setOnClickListener(openTicket);
                 btnVerTiquete.setOnClickListener(openTicket);
 
                 btnIrAlChat.setOnClickListener(v -> {
