@@ -139,7 +139,7 @@ public class ReservationService {
         Reservation reservation = new Reservation(
                 idReservation, uid, scheduleId, selectedSeat, driver, driverId, phoneC, plate, model, price,
                 origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus, reservationDate,
-                name, phone, email, null, null
+                name, phone, email, null, null, 0.0f
         );
 
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + idReservation);

@@ -5,6 +5,8 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Rating;
 import com.chopcode.rutago.app.models.Reservation;
 import com.google.firebase.database.DatabaseReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Singleton Manager to handle driver ratings.
@@ -53,14 +55,24 @@ public class RatingManager {
         rating.setId(ref.getKey());
 
         ref.setValue(rating)
-                .addOnSuccessListener(aVoid -> markAsRated(reservation.getIdReservation(), callback))
+                .addOnSuccessListener(aVoid -> markAsRated(reservation.getIdReservation(), stars, callback))
                 .addOnFailureListener(e -> { if (callback != null) callback.onError(e.getMessage()); });
     }
 
-    private void markAsRated(String reservationId, RatingCallback callback) {
+    private void markAsRated(String reservationId, float stars, RatingCallback callback) {
         if (reservationId == null) return;
-        reservesRef.child(reservationId).child("rated").setValue(true)
+        
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("rated", true);
+        updates.put("calificada", true); // Compatibilidad dual
+        updates.put("rating", stars);
+        updates.put("calificacion", stars); // Compatibilidad dual
+
+        reservesRef.child(reservationId).updateChildren(updates)
                 .addOnSuccessListener(aVoid -> { if (callback != null) callback.onSuccess(); })
-                .addOnFailureListener(e -> { if (callback != null) callback.onSuccess(); });
+                .addOnFailureListener(e -> { 
+                    Log.e(TAG, "Error marking as rated: " + e.getMessage());
+                    if (callback != null) callback.onError("No se pudo marcar como calificada: " + e.getMessage()); 
+                });
     }
 }

@@ -34,6 +34,7 @@ public class Reservation {
     private double price;
     private int reservedSeat = -1;
     private boolean rated = false;
+    private float rating = 0.0f;
 
     public Reservation() { }
 
@@ -41,7 +42,7 @@ public class Reservation {
                        String driver, String driverId, String phoneC, String vehicleId, String vehicleModel, double price,
                        String origin, String destination, String estimatedTime, String departureTime, String paymentMethod,
                        String reservationStatus, long reservationDate, String name, String phone,
-                       String email, String routeId, String routeName) {
+                       String email, String routeId, String routeName, float rating) {
         this.idReservation = idReservation;
         this.userId = userId;
         this.scheduleId = scheduleId;
@@ -64,6 +65,7 @@ public class Reservation {
         this.email = email;
         this.routeId = routeId;
         this.routeName = routeName;
+        this.rating = rating;
     }
 
     // =========================================================================
@@ -170,6 +172,11 @@ public class Reservation {
     @PropertyName("rated")
     public void setRated(boolean val) { this.rated = val; }
 
+    @PropertyName("calificacion")
+    public void setCalificacion(float val) { this.rating = val; }
+    @PropertyName("rating")
+    public void setRating(float val) { this.rating = val; }
+
     // =========================================================================
     // 🛠️ GETTERS (USAN ESTÁNDAR INGLÉS PARA ESCRITURA EN FIREBASE)
     // =========================================================================
@@ -197,5 +204,7 @@ public class Reservation {
     @PropertyName("reservationDate") public long getReservationDate() { return reservationDate; }
     @PropertyName("price") public double getPrice() { return price; }
     @PropertyName("reservedSeat") public int getReservedSeat() { return reservedSeat; }
+    @PropertyName("rating") public float getRating() { return rating; }
+    @PropertyName("calificada") public boolean isCalificada() { return rated; }
     @PropertyName("rated") public boolean isRated() { return rated; }
 }

@@ -391,7 +391,7 @@
             android:paddingTop="12dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
@@ -437,14 +437,14 @@
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_inicio_usuarios"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"
         android:paddingHorizontal="16dp"
         app:shimmer_auto_start="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <include layout="@layout/skeleton_item_historial" />

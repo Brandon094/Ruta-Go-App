@@ -33,7 +33,7 @@ import java.util.Locale;
 public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHistoryAdapter.ViewHolder> {
 
     private List<Reservation> reservations;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy - HH:mm", new Locale("en", "US"));
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy - HH:mm", new Locale("es", "ES"));
 
     public PassengerHistoryAdapter(List<Reservation> reservations) {
         this.reservations = reservations != null ? reservations : new ArrayList<>();
@@ -62,8 +62,9 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvFecha, tvEstado, tvNombrePersona, tvTelefono, tvRuta, tvPuesto, tvPrecio;
         private final ImageView ivPersonaIcon;
-        private final LinearLayout layoutAcciones;
+        private final LinearLayout layoutAcciones, layoutCalificacion;
         private final MaterialButton btnAccionPrincipal, btnVerTiquete, btnIrAlChat;
+        private final RatingBar ratingBar;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,28 +77,31 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
             tvPrecio = itemView.findViewById(R.id.tvPrecio);
             ivPersonaIcon = itemView.findViewById(R.id.ivPersonaIcon);
             layoutAcciones = itemView.findViewById(R.id.layoutAcciones);
+            layoutCalificacion = itemView.findViewById(R.id.layoutCalificacion);
             btnAccionPrincipal = itemView.findViewById(R.id.btnAccionPrincipal);
             btnVerTiquete = itemView.findViewById(R.id.btnVerTiquete);
             btnIrAlChat = itemView.findViewById(R.id.btnIrAlChat);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
         }
 
         public void bind(Reservation reservation) {
             try {
                 String status = reservation.getReservationStatus();
                 boolean isConfirmed = "Confirmada".equalsIgnoreCase(status) || "Completada".equalsIgnoreCase(status);
+                boolean isRated = reservation.isRated();
 
-                // Configurar clics
+                // ... (previous logic for openTicket and chat)
                 View.OnClickListener openTicket = v -> {
+                    // ... (no changes here)
                     Intent intent = new Intent(itemView.getContext(), TicketActivity.class);
                     intent.putExtra("origin", reservation.getOrigin());
                     intent.putExtra("destination", reservation.getDestination());
                     intent.putExtra("status", reservation.getReservationStatus());
                     intent.putExtra("date", reservation.getReservationDate());
                     
-                    // 🔥 FIX: Usar la hora de salida real guardada en la reserva
                     String depTime = reservation.getDepartureTime();
                     if (depTime == null || depTime.isEmpty() || depTime.contains("min")) {
-                        depTime = reservation.getEstimatedTime(); // Fallback para reservas legacy
+                        depTime = reservation.getEstimatedTime();
                     }
                     
                     intent.putExtra("time", depTime);
@@ -144,7 +148,7 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 layoutAcciones.setVisibility(View.VISIBLE);
                 btnIrAlChat.setVisibility(isConfirmed ? View.VISIBLE : View.GONE);
                 
-                boolean canRate = isConfirmed && !reservation.isRated();
+                boolean canRate = isConfirmed && !isRated;
                 if (canRate) {
                     btnAccionPrincipal.setVisibility(View.VISIBLE);
                     btnAccionPrincipal.setText(itemView.getContext().getString(R.string.calificar_viaje_btn));
@@ -152,6 +156,15 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 } else {
                     btnAccionPrincipal.setVisibility(View.GONE);
                 }
+
+                // 🔥 Mostrar calificación si ya existe
+                if (isRated && layoutCalificacion != null && ratingBar != null) {
+                    layoutCalificacion.setVisibility(View.VISIBLE);
+                    ratingBar.setRating(reservation.getRating());
+                } else if (layoutCalificacion != null) {
+                    layoutCalificacion.setVisibility(View.GONE);
+                }
+
             } catch (Exception e) { Log.e("PassengerHistory", "Error bind: " + e.getMessage()); }
         }
 
@@ -174,7 +187,12 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
 
         private void saveRating(Reservation reservation, float rating, String comment) {
             RatingManager.getInstance().calificarViaje(reservation, rating, comment, new RatingManager.RatingCallback() {
-                @Override public void onSuccess() { Toast.makeText(itemView.getContext(), R.string.gracias_calificacion, Toast.LENGTH_SHORT).show(); layoutAcciones.setVisibility(View.GONE); }
+                @Override public void onSuccess() { 
+                    Toast.makeText(itemView.getContext(), R.string.gracias_calificacion, Toast.LENGTH_SHORT).show(); 
+                    reservation.setRated(true);
+                    reservation.setRating(rating);
+                    notifyItemChanged(getAdapterPosition());
+                }
                 @Override public void onError(String error) { Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.error_prefijo, error), Toast.LENGTH_SHORT).show(); }
             });
         }
