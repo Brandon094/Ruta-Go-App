@@ -59,13 +59,13 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards y historiales 100% reactivos.
 - **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos.
 - **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService` para mayor granularidad y mantenimiento.
-- **Mensajería:** Implementación del **Chat en Tiempo Real** para reservas confirmadas. Incluye notificaciones Push mediante `NotificationManager` y navegación directa (Deep Linking) desde el sistema de notificaciones. *Estado: En fase de estabilización para el rol del conductor.*
+- **Mensajería:** Implementación del **Chat en Tiempo Real** (Bidireccional) para reservas confirmadas. Incluye notificaciones Push mediante `NotificationManager`. *Estado: Funcional con necesidad de optimización en Deep Linking.*
 - **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos.
 - **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas y límites de carga inteligentes en UI (50 registros).
 - **Tiquete Digital:** Implementada visualización de comprobante de viaje detallado con acceso directo al chat integrado.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
-- **Hito 1 (Pendiente):** Estabilizar respuesta del conductor en el chat y asegurar entrega de notificaciones al pasajero.
+- **Hito 1 (Pendiente):** Optimizar Deep Linking para asegurar navegación directa al chat desde cualquier estado de la app.
 - **Hito 2:** Implementar sistema de pagos integrados (Pasarela de pagos).
 - **Hito 3:** Panel de analíticas avanzadas para el dueño del proyecto.
 
