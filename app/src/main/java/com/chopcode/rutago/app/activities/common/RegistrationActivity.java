@@ -82,6 +82,13 @@ public class RegistrationActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.buttonIniciarSesion);
         topAppBar = findViewById(R.id.topAppBar);
         checkboxTerms = findViewById(R.id.checkboxTerms);
+
+        // 🔥 Animación viva para el logo
+        View logoCard = findViewById(R.id.registerCardLogo);
+        if (logoCard != null) {
+            com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startLogoTiltAnimation(logoCard);
+        }
+
         setupTermsAndConditionsLink();
     }
 

@@ -114,6 +114,12 @@ public class LoginActivity extends AppCompatActivity {
         UIAnimationUtils.setClickAnimation(buttonRegistration);
         UIAnimationUtils.setClickAnimation(forgotPassword);
 
+        // 🔥 Animación viva para el logo
+        View logoCard = findViewById(R.id.loginCardLogo);
+        if (logoCard != null) {
+            UIAnimationUtils.startLogoTiltAnimation(logoCard);
+        }
+
         setupPasswordVisibilityToggle();
     }
 

@@ -64,6 +64,12 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         layoutSuccess = findViewById(R.id.layout_success);
         tvSubtitle = findViewById(R.id.tv_subtitle);
         btnUnderstood = findViewById(R.id.btn_entendido);
+
+        // 🔥 Animación viva para el logo
+        View logoCard = findViewById(R.id.forgotCardLogo);
+        if (logoCard != null) {
+            com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startLogoTiltAnimation(logoCard);
+        }
     }
 
     private void setupToolbar() {

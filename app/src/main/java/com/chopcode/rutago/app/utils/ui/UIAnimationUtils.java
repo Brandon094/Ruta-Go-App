@@ -227,9 +227,31 @@ public class UIAnimationUtils {
                     .alpha(1f)
                     .translationY(0f)
                     .setStartDelay(1600)
-                    .setDuration(800)
+                    .setDuration(900)
                     .setInterpolator(new android.view.animation.DecelerateInterpolator())
                     .start();
         }
+    }
+
+    /**
+     * 🔄 Crea una animación de inclinación (tilt) periódica y sofisticada para el logo.
+     * Gira ligeramente y vuelve a su posición para dar sensación de vida.
+     */
+    public static void startLogoTiltAnimation(View view) {
+        if (view == null) return;
+
+        android.animation.ObjectAnimator tilt = android.animation.ObjectAnimator.ofFloat(view, "rotation", 0f, 15f, 0f, -15f, 0f);
+        tilt.setDuration(1500);
+        tilt.setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator());
+        
+        android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                tilt.start();
+                handler.postDelayed(this, 5000); // Cada 5 segundos un "guiño" visual
+            }
+        };
+        handler.postDelayed(runnable, 2000);
     }
 }
