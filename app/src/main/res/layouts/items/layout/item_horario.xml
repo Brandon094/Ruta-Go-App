@@ -134,52 +134,52 @@
 
             </LinearLayout>
 
-            <!-- Estado de disponibilidad y Badge de Próximo -->
-            <LinearLayout
+            <!-- Estado de disponibilidad -->
+            <TextView
+                android:id="@+id/tvEstadoDisponibilidad"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tvEstadoDisponibilidad"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_badge_status"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:text="Disponible"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvBadgeProximo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_badge_status"
-                    android:backgroundTint="@color/primary_500"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:text="@string/badge_siguiente"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-            </LinearLayout>
+                android:background="@drawable/bg_badge_status"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="Disponible"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Botón de acción -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnReservar"
-            style="@style/FabStyle.Mini"
+        <!-- Contenedor de Acción y Badge Siguiente -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
-            app:fabSize="mini" />
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnReservar"
+                style="@style/FabStyle.Mini"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add"
+                app:fabSize="mini" />
+
+            <TextView
+                android:id="@+id/tvBadgeProximo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_badge_status"
+                android:backgroundTint="@color/secondary_900"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:text="@string/badge_siguiente"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
