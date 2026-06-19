@@ -114,6 +114,9 @@ public class DriverReservationsViewModel extends BaseViewModel {
                 new DriverReservationService.ReservationUpdateCallback() {
                     @Override
                     public void onSuccess() {
+                        // 🔥 Persistir en estadísticas diarias (ingresosDiarios y reservasConfirmadas)
+                        driverReservationService.registrarVentaEnEstadisticas(reservation.getDriverId(), reservation.getPrice());
+
                         eliminarReservaDeLista(reservation);
                         reservationProcessedLiveData.postValue(true);
                     }

@@ -215,11 +215,11 @@ public class DriverHomeActivity extends AppCompatActivity {
     }
 
     private void abrirGestionAsientos(Route route) {
-        // ... (resto igual)
         Intent intent = new Intent(this, ManageSeatsActivity.class);
         intent.putExtra("horarioId", route.getScheduleId());
         intent.putExtra("rutaNombre", route.getOrigin() + " -> " + route.getDestination());
         intent.putExtra("horarioHora", route.getTime() != null ? route.getTime().getTime() : "--:--");
+        intent.putExtra("rutaPrecio", route.getFare());
         startActivity(intent);
     }
 

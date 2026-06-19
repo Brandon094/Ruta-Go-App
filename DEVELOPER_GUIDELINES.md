@@ -96,6 +96,7 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - `precios/$origen/$destino`: Nodo de tarifas dinámicas.
 - `reservas/`: Nodo plano indexado. Incluye `departureTime` y `rated`.
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado.
+- `estadisticas/$uid/$fecha`: Resumen financiero diario (Campos: `ingresosDiarios`, `reservasConfirmadas`, `ultimaActualizacion`).
 - `usuarios/$uid`: Perfil, roles, tokens FCM y status.
 
 ## 7. Estado Actual del Proyecto (v1.2.0 Stable - Ready for Play Store)
@@ -106,7 +107,8 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - **Estandarización Visual:** Unificación de fondos Navy Premium para todos los logos con paddings optimizados.
 - **Módulo de Autenticación:** Login con Email y Google One Tap funcional con animaciones de carga.
 - **Gestión de Estados:** Sistema de estados (Activo/Inactivo) con badges de pulso para conductores y pasajeros.
-- **Atomicidad:** Uso de `runTransaction` para garantizar la integridad de las reservas de asientos.
+- **Atomicidad:** Uso de `runTransaction` y `ServerValue.increment` para garantizar la integridad de las reservas de asientos y la precisión de las estadísticas financieras.
+- **Persistencia de Estadísticas:** El sistema registra cada venta (App o Venta Física) en el nodo `estadisticas/` usando incrementos atómicos por fecha (`yyyy-MM-dd`) para evitar colisiones de datos.
 
 ## 8. Siguientes Pasos (Roadmap)
 - **Hito 1:** Monitoreo de métricas en Play Console tras aprobación.

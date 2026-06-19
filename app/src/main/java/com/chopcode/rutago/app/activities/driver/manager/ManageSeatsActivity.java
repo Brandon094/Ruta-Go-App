@@ -36,6 +36,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     
     // Intent Data
     private String scheduleId, routeName, scheduleTime;
+    private double routePrice;
     
     // Views
     private TextView tvRouteName, tvScheduleInfo, tvAvailableSeatsInfo;
@@ -55,6 +56,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         getIntentData();
         
         viewModel = new ViewModelProvider(this).get(ManageSeatsViewModel.class);
+        viewModel.setRoutePrice(routePrice);
         
         initViews();
         setupManagers();
@@ -67,6 +69,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         scheduleId = getIntent().getStringExtra("horarioId");
         routeName = getIntent().getStringExtra("rutaNombre");
         scheduleTime = getIntent().getStringExtra("horarioHora");
+        routePrice = getIntent().getDoubleExtra("rutaPrecio", 12000.0);
     }
 
     private void initViews() {

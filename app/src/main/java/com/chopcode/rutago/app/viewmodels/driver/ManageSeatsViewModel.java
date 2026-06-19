@@ -39,13 +39,20 @@ public class ManageSeatsViewModel extends ViewModel {
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     private final SeatsDataProcessor seatsDataProcessor;
+    private final com.chopcode.rutago.app.services.reservations.driver.DriverReservationService driverReservationService;
     private ValueEventListener seatsListener;
     private ValueEventListener reservesListener;
     private String currentScheduleId;
     private Set<Integer> lastTotalOccupied = new HashSet<>();
+    private double routePrice = 12000.0;
 
     public ManageSeatsViewModel() {
         this.seatsDataProcessor = new SeatsDataProcessor();
+        this.driverReservationService = new com.chopcode.rutago.app.services.reservations.driver.DriverReservationService();
+    }
+
+    public void setRoutePrice(double price) {
+        this.routePrice = price;
     }
 
     public LiveData<Set<Integer>> getAppOccupiedSeats() { return appOccupiedSeats; }
@@ -126,7 +133,13 @@ public class ManageSeatsViewModel extends ViewModel {
     public void reservePhysical(int seatNumber) {
         if (currentScheduleId == null) return;
         seatsDataProcessor.reserveSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
-            @Override public void onSuccess() {}
+            @Override public void onSuccess() {
+                // 🔥 Registrar la venta física en las estadísticas diarias del conductor
+                String driverId = MyApp.getCurrentUserId();
+                if (driverId != null) {
+                    driverReservationService.registrarVentaEnEstadisticas(driverId, routePrice);
+                }
+            }
             @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_reserva_puesto, msg)); }
         });
     }

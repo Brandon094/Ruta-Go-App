@@ -230,7 +230,27 @@ public class DriverReservationService {
     }
 
     /**
-     * Guarda un resumen diario de las finanzas del conductor.
+     * 🔥 Registra una venta en las estadísticas diarias del conductor de forma atómica.
+     * Incrementa los ingresos y el contador de reservas confirmadas.
+     */
+    public void registrarVentaEnEstadisticas(String driverUID, double price) {
+        if (driverUID == null || driverUID.isEmpty()) return;
+        
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        String today = sdf.format(new java.util.Date());
+        
+        DatabaseReference ref = MyApp.getDatabaseReference("estadisticas/" + driverUID + "/" + today);
+        
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("ingresosDiarios", com.google.firebase.database.ServerValue.increment(price));
+        updates.put("reservasConfirmadas", com.google.firebase.database.ServerValue.increment(1));
+        updates.put("ultimaActualizacion", com.google.firebase.database.ServerValue.TIMESTAMP);
+        
+        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "Error actualizando estadísticas: " + e.getMessage()));
+    }
+
+    /**
+     * Guarda un resumen diario de las finanzas del conductor (Legacy / Sobrescritura).
      */
     public void guardarEstadisticasDiarias(String driverUID, int confirmed, double earnings, ReservationUpdateCallback callback) {
         if (driverUID == null || driverUID.isEmpty()) return;
@@ -238,9 +258,9 @@ public class DriverReservationService {
         String today = sdf.format(new java.util.Date());
         DatabaseReference ref = MyApp.getDatabaseReference("estadisticas/" + driverUID + "/" + today);
         Map<String, Object> map = new HashMap<>();
-        map.put("earnings", earnings);
-        map.put("confirmedReservations", confirmed);
-        map.put("lastUpdate", System.currentTimeMillis());
+        map.put("ingresosDiarios", earnings);
+        map.put("reservasConfirmadas", confirmed);
+        map.put("ultimaActualizacion", System.currentTimeMillis());
         ref.setValue(map).addOnSuccessListener(aVoid -> { if (callback != null) callback.onSuccess(); })
                 .addOnFailureListener(e -> { if (callback != null) callback.onError(e.getMessage()); });
     }
