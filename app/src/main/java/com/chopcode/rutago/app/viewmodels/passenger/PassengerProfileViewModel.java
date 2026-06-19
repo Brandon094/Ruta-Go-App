@@ -31,6 +31,8 @@ public class PassengerProfileViewModel extends ViewModel {
     private final MutableLiveData<Integer> confirmedCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> canceledCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> totalCount = new MutableLiveData<>(0);
+    private final MutableLiveData<Double> totalSpent = new MutableLiveData<>(0.0);
+    private final MutableLiveData<Integer> loyaltyPoints = new MutableLiveData<>(0);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private ValueEventListener profileListener;
@@ -41,6 +43,8 @@ public class PassengerProfileViewModel extends ViewModel {
     public LiveData<Integer> getConfirmedCount() { return confirmedCount; }
     public LiveData<Integer> getCanceledCount() { return canceledCount; }
     public LiveData<Integer> getTotalCount() { return totalCount; }
+    public LiveData<Double> getTotalSpent() { return totalSpent; }
+    public LiveData<Integer> getLoyaltyPoints() { return loyaltyPoints; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void init() {
@@ -76,13 +80,17 @@ public class PassengerProfileViewModel extends ViewModel {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 int confirmed = 0, canceled = 0, total = 0;
+                double spent = 0;
                 for (DataSnapshot snap : snapshot.getChildren()) {
                     Reservation r = snap.getValue(Reservation.class);
                     if (r != null) {
                         total++;
                         String status = r.getReservationStatus();
                         if (status != null) {
-                            if (status.equalsIgnoreCase("confirmada") || status.equalsIgnoreCase("confirmado")) confirmed++;
+                            if (status.equalsIgnoreCase("confirmada") || status.equalsIgnoreCase("confirmado")) {
+                                confirmed++;
+                                spent += r.getPrice();
+                            }
                             else if (status.equalsIgnoreCase("cancelada") || status.equalsIgnoreCase("cancelado")) canceled++;
                         }
                     }
@@ -90,6 +98,8 @@ public class PassengerProfileViewModel extends ViewModel {
                 confirmedCount.postValue(confirmed);
                 canceledCount.postValue(canceled);
                 totalCount.postValue(total);
+                totalSpent.postValue(spent);
+                loyaltyPoints.postValue(confirmed * 10);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "Counters error: " + error.getMessage()); }
         };
