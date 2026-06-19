@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?android:attr/colorBackground">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.92" />
 
-            <!-- Título con ícono - Reducido para ahorrar espacio -->
+            <!-- Título con ícono -->
             <LinearLayout
                 android:id="@+id/headerLayout"
                 android:layout_width="0dp"
@@ -62,16 +62,16 @@
                     android:textColor="@color/primary_500" />
             </LinearLayout>
 
-            <!-- Card contenedora del formulario - Ajustada -->
+            <!-- Card contenedora del formulario -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/loginCardView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:strokeColor="@color/outline"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp"
                 app:layout_constraintStart_toStartOf="@id/guidelineStart"
                 app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
@@ -90,11 +90,11 @@
                         android:layout_height="wrap_content"
                         app:startIconDrawable="@drawable/ic_email"
                         app:startIconTint="@color/primary_500"
-                        app:boxStrokeColor="@color/outline"
+                        app:boxStrokeColor="@color/primary_500"
                         app:boxStrokeErrorColor="@color/error_500"
-                        app:hintTextColor="@color/text_tertiary"
-                        app:boxBackgroundColor="@color/surface_1"
-                        android:textColorHint="@color/text_tertiary"
+                        app:hintTextColor="@color/primary_500"
+                        app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                        android:textColorHint="?attr/android:textColorSecondary"
                         style="@style/TextInputStyle">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -104,8 +104,8 @@
                             android:hint="@string/correo"
                             android:inputType="textEmailAddress"
                             android:textSize="16sp"
-                            android:textColor="@color/text_primary"
-                            android:textColorHint="@color/text_tertiary"/>
+                            android:textColor="?attr/colorOnSurface"
+                            android:textColorHint="?attr/android:textColorSecondary"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Campo Contraseña -->
@@ -117,13 +117,13 @@
                         app:startIconDrawable="@drawable/ic_key"
                         app:endIconDrawable="@drawable/ic_visibility_off"
                         app:startIconTint="@color/primary_500"
-                        app:endIconTint="@color/text_tertiary"
+                        app:endIconTint="?attr/android:textColorSecondary"
                         app:endIconMode="password_toggle"
-                        app:boxStrokeColor="@color/outline"
+                        app:boxStrokeColor="@color/primary_500"
                         app:boxStrokeErrorColor="@color/error_500"
-                        app:hintTextColor="@color/text_tertiary"
-                        app:boxBackgroundColor="@color/surface_1"
-                        android:textColorHint="@color/text_tertiary"
+                        app:hintTextColor="@color/primary_500"
+                        app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                        android:textColorHint="?attr/android:textColorSecondary"
                         style="@style/TextInputStyle">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -133,12 +133,12 @@
                             android:hint="@string/contraseña"
                             android:inputType="textPassword"
                             android:textSize="16sp"
-                            android:textColor="@color/text_primary"
-                            android:textColorHint="@color/text_tertiary"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textColorHint="?attr/android:textColorSecondary"
                             android:focusableInTouchMode="true"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Texto "Olvidé contraseña" alineado a la derecha -->
+                    <!-- Texto "Olvidé contraseña" -->
                     <TextView
                         android:id="@+id/olvidasteContraseña"
                         android:layout_width="wrap_content"
@@ -157,7 +157,7 @@
                     <!-- Boton ingresar -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonIngresar"
-                        style="@style/AppButton.Primary"
+                        style="@style/ButtonStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="52dp"
@@ -187,7 +187,7 @@
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="@color/outline"/>
+                    android:background="?attr/colorSurfaceVariant"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -195,20 +195,20 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/or"
-                    android:textColor="@color/text_tertiary"
+                    android:textColor="?attr/android:textColorSecondary"
                     android:textSize="14sp"/>
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1"
-                    android:background="@color/outline"/>
+                    android:background="?attr/colorSurfaceVariant"/>
             </LinearLayout>
 
             <!-- Botón ingresar con Google -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGoogleSignIn"
-                style="@style/AppButton.Secondary"
+                style="@style/ButtonStyleSecondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:minHeight="52dp"
@@ -244,7 +244,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/noTieneCuenta"
-                    android:textColor="@color/text_tertiary"
+                    android:textColor="?attr/android:textColorSecondary"
                     android:textSize="15sp"/>
 
                 <TextView
@@ -263,7 +263,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Overlay para oscurecer (inicialmente invisible) -->
+    <!-- Overlay para oscurecer -->
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
@@ -273,9 +273,10 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <!-- Progress Bar para Login -->
+    <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/progressBar"
+        style="@style/ProgressBarCircularStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

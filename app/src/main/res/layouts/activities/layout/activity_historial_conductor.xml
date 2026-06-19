@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?android:attr/colorBackground">
 
     <!-- AppBar con título y filtros -->
     <com.google.android.material.appbar.AppBarLayout
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="Historial de Reservas"
-            app:titleTextColor="@color/secondary_900" />
+            app:titleTextColor="?attr/colorOnPrimary" />
 
         <!-- ChipGroup con Scroll Horizontal para filtros rápidos -->
         <HorizontalScrollView
@@ -42,8 +42,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Todas"
-                    app:chipBackgroundColor="@color/secondary_800"
-                    android:textColor="@color/white"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    android:textColor="?attr/colorOnSurface"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
@@ -52,8 +52,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Confirmadas"
-                    app:chipBackgroundColor="@color/secondary_800"
-                    android:textColor="@color/white"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    android:textColor="?attr/colorOnSurface"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
@@ -62,8 +62,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Canceladas"
-                    app:chipBackgroundColor="@color/secondary_800"
-                    android:textColor="@color/white"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    android:textColor="?attr/colorOnSurface"
                     app:checkedIconVisible="false" />
 
                 <com.google.android.material.chip.Chip
@@ -72,8 +72,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Hoy"
-                    app:chipBackgroundColor="@color/secondary_800"
-                    android:textColor="@color/white"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    android:textColor="?attr/colorOnSurface"
                     app:checkedIconVisible="false" />
 
             </com.google.android.material.chip.ChipGroup>
@@ -102,8 +102,8 @@
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/secondary_800"
-                app:strokeColor="@color/secondary_700"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -127,7 +127,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/success"
+                            android:textColor="@color/success_500"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -135,7 +135,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Confirmadas"
-                            android:textColor="@color/text_tertiary"
+                            android:textColor="?attr/android:textColorSecondary"
                             android:textSize="12sp" />
 
                     </LinearLayout>
@@ -154,7 +154,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/error"
+                            android:textColor="@color/error_500"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -162,7 +162,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Canceladas"
-                            android:textColor="@color/text_tertiary"
+                            android:textColor="?attr/android:textColorSecondary"
                             android:textSize="12sp" />
 
                     </LinearLayout>
@@ -189,7 +189,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Total"
-                            android:textColor="@color/text_tertiary"
+                            android:textColor="?attr/android:textColorSecondary"
                             android:textSize="12sp" />
 
                     </LinearLayout>
@@ -210,7 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Últimas reservas"
-                    android:textColor="@color/text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginBottom="12dp"
@@ -262,8 +262,8 @@
                     android:layout_height="100dp"
                     app:cardCornerRadius="50dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/secondary_800"
-                    app:strokeColor="@color/secondary_700"
+                    app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                    app:strokeColor="?attr/colorSurfaceVariant"
                     app:strokeWidth="1dp"
                     android:layout_marginBottom="20dp">
 
@@ -279,7 +279,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sin historial de reservas"
-                    android:textColor="@color/text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -287,8 +287,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Las reservas confirmadas o canceladas aparecerán aquí para tu control."
-                    android:textColor="@color/text_tertiary"
-                    android:textSize="14sp"
+                    android:textColor="?attr/android:textColorSecondary"
                     android:gravity="center"
                     android:layout_marginTop="8dp" />
 

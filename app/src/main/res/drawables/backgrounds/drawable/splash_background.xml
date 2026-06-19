@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Fondo Navy Oficial -->
-    <item android:drawable="@color/secondary_900" />
+    <!-- Fondo que se adapta al tema -->
+    <item android:drawable="?android:attr/colorBackground" />
 
     <!-- Logo Splash Centrado -->
     <item>

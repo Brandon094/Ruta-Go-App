@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="28dp"
     app:cardElevation="0dp"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -27,7 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Sin conexión"
-            android:textColor="@color/text_primary"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -38,12 +39,12 @@
             android:layout_marginTop="12dp"
             android:gravity="center"
             android:text="No pudimos conectar con el servidor. Por favor, verifica tu conexión a internet e intenta de nuevo."
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/android:textColorSecondary"
             android:textSize="14sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetryConnection"
-            style="@style/Widget.MaterialComponents.Button"
+            style="@style/ButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="52dp"
@@ -51,7 +52,6 @@
             android:text="Reintentar"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            app:backgroundTint="@color/primary_500"
             app:cornerRadius="16dp" />
 
     </LinearLayout>

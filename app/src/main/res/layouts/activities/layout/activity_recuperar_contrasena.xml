@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     tools:context=".activities.common.ForgotPasswordActivity">
 
     <!-- Barra superior Naranja -->
@@ -22,9 +22,9 @@
             android:background="@color/primary_500"
             app:title="@string/recuperar_contrasena_title"
             app:titleCentered="true"
-            app:titleTextColor="@color/secondary_900"
+            app:titleTextColor="?attr/colorOnPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/secondary_900" />
+            app:navigationIconTint="?attr/colorOnPrimary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -78,7 +78,7 @@
                     android:layout_marginTop="16dp"
                     android:gravity="center"
                     android:text="@string/instrucciones_recuperar"
-                    android:textColor="@color/text_tertiary"
+                    android:textColor="?attr/android:textColorTertiary"
                     android:textSize="15sp"
                     android:paddingHorizontal="8dp" />
             </LinearLayout>
@@ -89,10 +89,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:strokeColor="@color/outline"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp"
                 app:layout_constraintStart_toStartOf="@id/guidelineStart"
                 app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
@@ -111,7 +111,7 @@
                         android:layout_height="wrap_content"
                         app:startIconDrawable="@drawable/ic_email"
                         app:startIconTint="@color/primary_500"
-                        app:boxBackgroundColor="@color/surface_1"
+                        app:boxBackgroundColor="?attr/colorSurfaceVariant"
                         android:hint="@string/correo">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -119,13 +119,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textEmailAddress"
-                            android:textColor="@color/text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_recuperar"
-                        style="@style/AppButton.Primary"
+                        style="@style/ButtonStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="52dp"
@@ -145,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
                 app:strokeColor="@color/success_500"
@@ -173,7 +173,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="@string/correo_enviado"
-                        android:textColor="@color/text_primary"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -183,12 +183,12 @@
                         android:layout_marginTop="8dp"
                         android:gravity="center"
                         android:text="@string/correo_enviado_detalle"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="?attr/android:textColorSecondary"
                         android:textSize="14sp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_entendido"
-                        style="@style/AppButton.Primary"
+                        style="@style/ButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minHeight="52dp"
@@ -206,10 +206,10 @@
 
     <ProgressBar
         android:id="@+id/pb_loading"
+        style="@style/ProgressBarCircularStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminateTint="@color/primary_500" />
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

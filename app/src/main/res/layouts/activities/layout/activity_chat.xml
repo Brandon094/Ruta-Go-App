@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     tools:context=".activities.common.ChatActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -19,9 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/text_on_primary"
+            app:navigationIconTint="?attr/colorOnPrimary"
             app:title="Chat con el viaje"
-            app:titleTextColor="@color/text_on_primary" />
+            app:titleTextColor="?attr/colorOnPrimary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -39,7 +39,7 @@
         android:id="@+id/layoutInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/surface"
+        android:background="?attr/colorSurface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="8dp"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Escribe un mensaje..."
                 android:maxLines="4"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnSurface"
                 android:paddingVertical="10dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -77,7 +77,7 @@
             android:src="@drawable/ic_send"
             app:backgroundTint="@color/primary_500"
             app:fabSize="mini"
-            app:tint="@color/white"
+            app:tint="?attr/colorOnPrimary"
             app:elevation="2dp"/>
     </LinearLayout>
 

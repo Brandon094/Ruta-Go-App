@@ -11,7 +11,7 @@
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:background="@drawable/bg_circle_primary"
-        android:backgroundTint="@color/surface_3" />
+        android:backgroundTint="?attr/colorSurfaceVariant" />
 
     <!-- Name Placeholder -->
     <View
@@ -19,7 +19,7 @@
         android:layout_height="24dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_chip_primary"
-        android:backgroundTint="@color/surface_3" />
+        android:backgroundTint="?attr/colorSurfaceVariant" />
 
     <!-- Status Badge Placeholder -->
     <View
@@ -27,6 +27,6 @@
         android:layout_height="18dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_badge_status"
-        android:backgroundTint="@color/surface_3" />
+        android:backgroundTint="?attr/colorSurfaceVariant" />
 
 </LinearLayout>

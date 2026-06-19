@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="24dp"
     app:cardElevation="0dp"
-    app:cardBackgroundColor="@color/secondary_800"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -21,7 +21,7 @@
             android:text="@string/como_fue_viaje"
             android:textSize="20sp"
             android:fontFamily="sans-serif-medium"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnSurface"
             android:layout_marginBottom="8dp"
             android:textAlignment="center" />
 
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="@string/califica_conductor"
             android:textSize="15sp"
-            android:textColor="@color/secondary_200"
+            android:textColor="?attr/android:textColorSecondary"
             android:layout_marginBottom="24dp"
             android:textAlignment="center" />
 
@@ -43,7 +43,7 @@
             android:stepSize="1.0"
             android:rating="0"
             android:progressTint="@color/primary_500"
-            android:progressBackgroundTint="@color/secondary_400"
+            android:progressBackgroundTint="?attr/colorSurfaceVariant"
             android:layout_marginBottom="24dp"
             style="@style/Widget.AppCompat.RatingBar" />
 
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/comentarios_opcional"
-            android:textColorHint="@color/secondary_300"
+            android:textColorHint="?attr/android:textColorTertiary"
             app:hintTextColor="@color/primary_500"
             app:boxStrokeColor="@color/primary_500"
             app:boxCornerRadiusTopStart="12dp"
@@ -67,7 +67,7 @@
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:gravity="top"
-                android:textColor="@color/white" />
+                android:textColor="?attr/colorOnSurface" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -21,6 +21,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **UI:** XML Layouts (View System) con Material Components.
 - **Backend:** Firebase (Auth, Realtime Database, Storage, Cloud Messaging, Cloud Functions, Crashlytics) y Google Analytics.
 - **Arquitectura:** **MVVM (Model-View-ViewModel)**. 
+- **Multi-tema:** Soporte oficial para **Tema Claro** y **Tema Oscuro** (DayNight System).
 - **Reactividad:** Uso estricto de `LiveData` y `ValueEventListener` (`addValueEventListener`) para actualizaciones en tiempo real.
 
 ## 4. Reglas de Oro del Código
@@ -65,6 +66,11 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
   - **Efecto Latido:** Badges de estado "Activo" deben usar `UIAnimationUtils.startPulseAnimation` para indicar operatividad en tiempo real.
   - **Entrada Pop-in:** Tarjetas principales, tiquetes y **asientos ocupados** deben usar `UIAnimationUtils.playCardEntryAnimation` o `playSeatPopAnimation`.
   - **Selección de Asientos:** El mapa de asientos debe usar `playSeatSelectionAnimation` para confirmar visualmente la elección.
+- **Soporte Multi-tema (DayNight):** 
+  - Prohibido hardcodear colores (`@color/...`) para fondos y textos en los layouts XML.
+  - Uso obligatorio de **Atributos de Tema** (`?attr/...`) para garantizar que la app se adapte automáticamente al modo claro/oscuro del sistema.
+  - Atributos clave: `?android:attr/colorBackground`, `?attr/colorSurface`, `?attr/colorOnSurface`, `?attr/colorSurfaceVariant`, `?attr/android:textColorSecondary`.
+  - Excepción: Los elementos con identidad de marca fija (ej. botones Naranja con texto Blanco) pueden mantener sus colores estáticos si el diseño lo requiere.
 
 ### D. Documentación Técnica & Analíticas
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
@@ -163,9 +169,11 @@ Para mantener la limpieza del proyecto, solo se deben usar los recursos listados
 
 ### D. Colores Maestro (`res/values/colors.xml`)
 - **Primario:** `primary_500` (#FF7A1A - Naranja).
-- **Secundario/Fondo:** `secondary_900` (#061426 - Navy Profundo).
+- **Secundario/Fondo (Dark):** `secondary_900` (#061426 - Navy Profundo).
+- **Fondo (Light):** `light_background` (#F8FAFC - Blanco Humo).
 - **Éxito:** `success_500` (#10B981 - Emerald Premium).
-- **Superficie:** `secondary_800` (#061929 - Navy Card).
+- **Superficie (Dark):** `secondary_800` (#061929 - Navy Card).
+- **Superficie (Light):** `white` (#FFFFFF - Blanco Puro).
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*

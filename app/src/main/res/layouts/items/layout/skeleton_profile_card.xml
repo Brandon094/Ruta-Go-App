@@ -11,7 +11,7 @@
         android:layout_height="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/bg_chip_primary"
-        android:backgroundTint="@color/surface_3" />
+        android:backgroundTint="?attr/colorSurfaceVariant" />
 
     <!-- Row 1 -->
     <LinearLayout
@@ -24,13 +24,13 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/bg_circle_primary"
-            android:backgroundTint="@color/surface_3" />
+            android:backgroundTint="?attr/colorSurfaceVariant" />
         <View
             android:layout_width="150dp"
             android:layout_height="16dp"
             android:layout_marginStart="12dp"
             android:background="@drawable/bg_chip_primary"
-            android:backgroundTint="@color/surface_3" />
+            android:backgroundTint="?attr/colorSurfaceVariant" />
     </LinearLayout>
 
     <!-- Row 2 -->
@@ -44,13 +44,13 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/bg_circle_primary"
-            android:backgroundTint="@color/surface_3" />
+            android:backgroundTint="?attr/colorSurfaceVariant" />
         <View
             android:layout_width="120dp"
             android:layout_height="16dp"
             android:layout_marginStart="12dp"
             android:background="@drawable/bg_chip_primary"
-            android:backgroundTint="@color/surface_3" />
+            android:backgroundTint="?attr/colorSurfaceVariant" />
     </LinearLayout>
 
     <!-- Button -->
@@ -59,6 +59,6 @@
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_chip_primary"
-        android:backgroundTint="@color/surface_3" />
+        android:backgroundTint="?attr/colorSurfaceVariant" />
 
 </LinearLayout>
