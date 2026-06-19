@@ -50,6 +50,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         return schedules.size();
     }
 
+    public int getNextTripIndex() {
+        return nextTripIndex;
+    }
+
     public void actualizarHorarios(List<Schedule> newSchedules) {
         this.schedules.clear();
         if (newSchedules != null) {
