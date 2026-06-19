@@ -178,55 +178,57 @@ public class UIAnimationUtils {
 
     /**
      * 🚀 Animación Sofisticada para el Splash Screen.
-     * Anima el contenedor (Pin), el logo interno y el texto de marca de forma secuencial.
+     * Efecto moderno de crecimiento secuencial: primero el pin de fondo y luego el logo.
+     * Ambos inician desde un punto diminuto para dar sensación de emergencia.
      */
     public static void playSophisticatedSplashAnimation(View pinContainer, View logoIcon, View poweredBy) {
         if (pinContainer == null || logoIcon == null) return;
 
-        // 1. Preparar estados iniciales
+        // 1. Preparar estados iniciales (Diminutos e invisibles)
         pinContainer.setAlpha(0f);
-        pinContainer.setScaleX(0.5f);
-        pinContainer.setScaleY(0.5f);
+        pinContainer.setScaleX(0.05f);
+        pinContainer.setScaleY(0.05f);
         
         logoIcon.setAlpha(0f);
-        logoIcon.setScaleX(0.7f);
-        logoIcon.setScaleY(0.7f);
+        logoIcon.setScaleX(0.01f);
+        logoIcon.setScaleY(0.01f);
 
         if (poweredBy != null) {
             poweredBy.setAlpha(0f);
-            poweredBy.setTranslationY(20f);
+            poweredBy.setTranslationY(50f);
         }
 
-        // 2. Animación del Pin (Fondo)
+        // 2. Animación del Pin (Fondo) - Crece con efecto rebote
         pinContainer.animate()
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(1000)
-                .setInterpolator(new android.view.animation.OvershootInterpolator(1.5f))
+                .setDuration(1300)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
                 .withEndAction(() -> {
-                    // Micro-interacción de latido suave al terminar de entrar
+                    // Iniciar latido sutil al finalizar la secuencia
                     startPulseAnimation(pinContainer);
                 })
                 .start();
 
-        // 3. Animación del Logo (Secuencial con delay)
+        // 3. Animación del Logo (Secuencial) - Emerge cuando el pin ya es visible
         logoIcon.animate()
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setStartDelay(400)
-                .setDuration(800)
-                .setInterpolator(new android.view.animation.OvershootInterpolator(2.0f))
+                .setStartDelay(800) // Delay marcado para efecto secuencial puro
+                .setDuration(1100)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(2.2f))
                 .start();
 
-        // 4. Animación del "Powered By" (Sutil al final)
+        // 4. Animación del "Powered By" (Entrada elegante al final)
         if (poweredBy != null) {
             poweredBy.animate()
                     .alpha(1f)
                     .translationY(0f)
-                    .setStartDelay(800)
-                    .setDuration(600)
+                    .setStartDelay(1600)
+                    .setDuration(800)
+                    .setInterpolator(new android.view.animation.DecelerateInterpolator())
                     .start();
         }
     }

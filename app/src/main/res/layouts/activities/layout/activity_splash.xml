@@ -25,10 +25,10 @@
             android:id="@+id/logo_splash"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="42dp"
-            android:paddingEnd="42dp"
-            android:paddingTop="28dp"
-            android:paddingBottom="58dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="52dp"
             android:src="@drawable/logo_splash"
             android:contentDescription="@string/app_logo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
