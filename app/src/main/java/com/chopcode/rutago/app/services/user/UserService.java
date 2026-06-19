@@ -254,8 +254,22 @@ public class UserService {
                             schedule.setRoute(routeName);
                             
                             String lowRoute = routeName.toLowerCase();
-                            String origin = lowRoute.contains("natag") ? "Natagá" : "La Plata";
-                            String destination = origin.equals("Natagá") ? "La Plata" : "Natagá";
+                            String origin, destination;
+
+                            // 🔄 Determinación dinámica de Origen y Destino basada en el texto de la ruta en DB
+                            if (lowRoute.contains("natag") && lowRoute.contains("plata")) {
+                                if (lowRoute.indexOf("natag") < lowRoute.indexOf("plata")) {
+                                    origin = "Natagá";
+                                    destination = "La Plata";
+                                } else {
+                                    origin = "La Plata";
+                                    destination = "Natagá";
+                                }
+                            } else {
+                                // Fallback por si la ruta no sigue el patrón estándar
+                                origin = routeName.contains("->") ? routeName.split("->")[0].trim() : "Natagá";
+                                destination = routeName.contains("->") ? routeName.split("->")[1].trim() : "La Plata";
+                            }
                             
                             // Resolver precio desde el mapa dinámico
                             double price = 12000.0;
@@ -273,10 +287,21 @@ public class UserService {
                     }
                 }
 
+                // 🔄 Ordenar por tiempo (Primero el más cercano a salir)
                 Collections.sort(routesList, (r1, r2) -> {
-                    if (r1.getTime() != null && r2.getTime() != null && r1.getTime().getTime() != null && r2.getTime().getTime() != null) 
-                        return r1.getTime().getTime().compareTo(r2.getTime().getTime());
-                    return 0;
+                    if (r1.getTime() == null || r2.getTime() == null) return 0;
+                    String t1 = r1.getTime().getTime();
+                    String t2 = r2.getTime().getTime();
+                    if (t1 == null || t2 == null) return 0;
+
+                    boolean p1 = FormatUtils.esHorarioPasado(t1);
+                    boolean p2 = FormatUtils.esHorarioPasado(t2);
+
+                    // Si uno pasó y el otro no, el que NO pasó va primero
+                    if (p1 != p2) return p1 ? 1 : -1;
+
+                    // Si ambos tienen el mismo estado (ambos pasaron o ambos no), comparar por hora absoluta
+                    return t1.compareTo(t2);
                 });
                 callback.onRoutesLoaded(routesList);
             }
