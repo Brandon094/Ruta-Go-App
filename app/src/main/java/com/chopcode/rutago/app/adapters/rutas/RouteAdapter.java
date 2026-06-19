@@ -93,11 +93,13 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : itemView.getContext().getString(R.string.no_disponible));
             tvDestination.setText(route.getDestination() != null ? route.getDestination() : itemView.getContext().getString(R.string.no_disponible));
             
+            String timeStr = "--:--";
+            boolean isPast = false;
             if (route.getTime() != null && route.getTime().getTime() != null) {
-                tvTime.setText(route.getTime().getTime());
-            } else {
-                tvTime.setText("--:--");
+                timeStr = route.getTime().getTime();
+                isPast = FormatUtils.esHorarioPasado(timeStr);
             }
+            tvTime.setText(timeStr);
 
             // Enlazar precio dinámico desde el modelo Route con animación y color de la marca
             if (tvPrice != null) {
@@ -105,16 +107,25 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, route.getFare());
             }
 
-            // Feedback dinámico para el conductor
+            // Feedback dinámico para el conductor (Siguiente o Finalizada)
             if (tvBadgeNext != null) {
-                if (isNext) {
+                com.chopcode.rutago.app.utils.ui.UIAnimationUtils.stopAnimation(tvBadgeNext);
+                if (isNext && !isPast) {
                     tvBadgeNext.setVisibility(View.VISIBLE);
+                    tvBadgeNext.setText(R.string.badge_siguiente);
+                    tvBadgeNext.setBackgroundResource(R.drawable.bg_status_next);
                     com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startPulseAnimation(tvBadgeNext);
+                } else if (isPast) {
+                    tvBadgeNext.setVisibility(View.VISIBLE);
+                    tvBadgeNext.setText(R.string.estado_finalizado);
+                    tvBadgeNext.setBackgroundResource(R.drawable.bg_badge_inactive);
                 } else {
                     tvBadgeNext.setVisibility(View.GONE);
-                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.stopAnimation(tvBadgeNext);
                 }
             }
+
+            // Opacidad de la tarjeta si ya pasó
+            itemView.setAlpha(isPast ? 0.6f : 1.0f);
         }
     }
 }
