@@ -351,12 +351,9 @@
                             style="@style/ButtonStyleSecondary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="52dp"
                             android:layout_marginTop="20dp"
                             android:text="Editar Perfil"
                             android:textSize="14sp"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
                             app:icon="@drawable/ic_edit"
                             app:iconGravity="textStart" />
                     </LinearLayout>
@@ -364,14 +361,12 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnDeleteAccount"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    style="@style/ButtonStyleText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
                     android:layout_marginTop="24dp"
                     android:layout_gravity="center_horizontal"
                     android:text="Solicitar borrar cuenta"
-                    android:textAllCaps="false"
                     android:textColor="@color/error_500"
                     android:textSize="13sp" />
 

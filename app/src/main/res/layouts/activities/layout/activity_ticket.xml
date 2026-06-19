@@ -78,7 +78,7 @@
                             android:layout_width="72dp"
                             android:layout_height="72dp"
                             android:layout_gravity="center"
-                            app:cardBackgroundColor="?attr/colorPrimaryDark"
+                            app:cardBackgroundColor="?attr/colorSecondary"
                             app:cardCornerRadius="36dp"
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
@@ -327,36 +327,30 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnChatTicket"
+                    style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:minHeight="56dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
                     android:text="Chat"
-                    android:textColor="@color/white"
                     android:textSize="13sp"
-                    app:backgroundTint="@color/primary_500"
-                    app:cornerRadius="12dp"
                     app:icon="@drawable/ic_email"
-                    app:iconTint="@color/white"
-                    app:iconPadding="8dp" />
+                    app:iconPadding="8dp"
+                    app:elevation="0dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnShareTicket"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/ButtonStyleSecondary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:minHeight="56dp"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/ticket_share"
-                    android:textColor="@color/primary_500"
                     android:textSize="13sp"
-                    app:cornerRadius="12dp"
                     app:icon="@drawable/ic_share"
-                    app:iconTint="@color/primary_500"
                     app:iconPadding="8dp"
-                    app:strokeColor="@color/primary_500" />
+                    app:elevation="0dp"
+                    app:backgroundTint="@android:color/transparent" />
 
             </LinearLayout>
 

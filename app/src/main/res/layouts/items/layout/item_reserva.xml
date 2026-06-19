@@ -180,8 +180,6 @@
                 android:layout_marginEnd="8dp"
                 android:text="Rechazar"
                 app:icon="@drawable/ic_cancel"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
                 app:iconSize="16dp" />
 
             <!-- Botón Confirmar -->
@@ -193,8 +191,6 @@
                 android:minHeight="44dp"
                 android:text="Confirmar"
                 app:icon="@drawable/ic_check"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
                 app:iconSize="16dp" />
         </LinearLayout>
     </LinearLayout>

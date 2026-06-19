@@ -131,9 +131,7 @@
                         android:minHeight="52dp"
                         android:layout_marginTop="24dp"
                         android:text="@string/enviar_instrucciones"
-                        app:cornerRadius="12dp"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp" />
+                        app:cornerRadius="12dp" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -195,9 +193,7 @@
                         android:layout_marginTop="24dp"
                         android:paddingHorizontal="32dp"
                         android:text="@string/entendido"
-                        app:cornerRadius="12dp"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp" />
+                        app:cornerRadius="12dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

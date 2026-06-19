@@ -223,8 +223,6 @@
                         android:minHeight="52dp"
                         android:text="@string/crear_mi_cuenta"
                         android:textSize="16sp"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
                         app:cornerRadius="12dp"
                         app:icon="@drawable/ic_person_add"
                         app:iconGravity="textStart" />

@@ -172,15 +172,15 @@
                         android:layout_gravity="center_horizontal"
                         android:columnCount="3"
                         android:alignmentMode="alignMargins">
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnConductor" style="@style/AsientoButtonStyle.Conductor" android:layout_margin="4dp" app:icon="@drawable/ic_driver" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento1" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="1" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento2" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="2" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento3" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="3" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento4" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="4" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento5" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="5" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnConductor" style="@style/AsientoButtonStyle.Conductor" android:layout_margin="3dp" app:icon="@drawable/ic_driver" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento1" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="1" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento2" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="2" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento3" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="3" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento4" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="4" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento5" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="5" app:icon="@drawable/asiento_disponible" />
                     </GridLayout>
 
-                    <View android:layout_width="60dp" android:layout_height="1dp" android:background="?attr/colorSurfaceVariant" android:layout_gravity="center_horizontal" android:layout_marginVertical="24dp" />
+                    <View android:layout_width="60dp" android:layout_height="1dp" android:background="?attr/colorSurfaceVariant" android:layout_gravity="center_horizontal" android:layout_marginVertical="16dp" />
 
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Zona Trasera" android:textAppearance="?attr/textAppearanceTitleSmall" android:textColor="?attr/android:textColorTertiary" android:layout_gravity="center_horizontal" android:layout_marginBottom="16dp" />
 
@@ -192,24 +192,24 @@
                         android:alignmentMode="alignMargins">
 
                         <!-- Fila 1 Trasera -->
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="6" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="7" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento6" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="6" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento7" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="7" app:icon="@drawable/asiento_disponible" />
 
                         <!-- Pasillo Central -->
-                        <View android:layout_width="20dp" android:layout_height="1dp" />
+                        <View android:layout_width="16dp" android:layout_height="1dp" />
 
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="10" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="11" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento10" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="10" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento11" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="11" app:icon="@drawable/asiento_disponible" />
 
                         <!-- Fila 2 Trasera -->
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="8" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="9" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento8" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="8" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento9" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="9" app:icon="@drawable/asiento_disponible" />
 
                         <!-- Pasillo Central -->
-                        <View android:layout_width="20dp" android:layout_height="1dp" />
+                        <View android:layout_width="16dp" android:layout_height="1dp" />
 
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="12" app:icon="@drawable/asiento_disponible" />
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="4dp" android:text="13" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento12" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="12" app:icon="@drawable/asiento_disponible" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnAsiento13" style="@style/AsientoButtonStyle.Disponible" android:layout_margin="3dp" android:text="13" app:icon="@drawable/asiento_disponible" />
                     </GridLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
