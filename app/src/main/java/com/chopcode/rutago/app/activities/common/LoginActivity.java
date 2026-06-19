@@ -109,6 +109,11 @@ public class LoginActivity extends AppCompatActivity {
         overlay = findViewById(R.id.overlay);
         progressBar = findViewById(R.id.progressBar);
 
+        UIAnimationUtils.setClickAnimation(buttonLogin);
+        UIAnimationUtils.setClickAnimation(btnGoogleSignIn);
+        UIAnimationUtils.setClickAnimation(buttonRegistration);
+        UIAnimationUtils.setClickAnimation(forgotPassword);
+
         setupPasswordVisibilityToggle();
     }
 

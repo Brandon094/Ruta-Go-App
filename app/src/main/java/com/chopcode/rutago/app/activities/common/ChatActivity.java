@@ -91,6 +91,9 @@ public class ChatActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
 
+        // 🔥 Micro-interacción de Botón
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnSend);
+
         btnSend.setOnClickListener(v -> {
             String text = etMessage.getText().toString().trim();
             if (!text.isEmpty()) {

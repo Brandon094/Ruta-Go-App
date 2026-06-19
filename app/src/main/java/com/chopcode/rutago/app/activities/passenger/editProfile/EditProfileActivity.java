@@ -72,6 +72,10 @@ public class EditProfileActivity extends AppCompatActivity {
         btnGuardar = findViewById(R.id.btnGuardarCambios);
         btnCancelar = findViewById(R.id.btnCancelar);
         progressBar = findViewById(R.id.progressBar);
+
+        // 🔥 Micro-interacciones de Botones
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnGuardar);
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancelar);
     }
 
     private void setupObservers() {

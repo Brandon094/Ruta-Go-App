@@ -100,6 +100,11 @@ public class UserProfileActivity extends AppCompatActivity {
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
 
+        UIAnimationUtils.setClickAnimation(btnChangePhoto);
+        UIAnimationUtils.setClickAnimation(btnEditarPerfil);
+        UIAnimationUtils.setClickAnimation(btnDeleteAccount);
+        UIAnimationUtils.setClickAnimation(tvUserStatus);
+
         if (btnChangePhoto != null) btnChangePhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irAEditarPerfil());
         if (btnDeleteAccount != null) btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());

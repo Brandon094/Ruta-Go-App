@@ -90,6 +90,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private int currentConfirmed = 0;
     private int currentAvailable = 0;
     private double currentIncome = 0;
+    private int lastRes1 = 0, lastSeats1 = 0, lastRes2 = 0, lastSeats2 = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,12 +160,19 @@ public class DriverHomeActivity extends AppCompatActivity {
         fabVentaFisica = findViewById(R.id.fabVentaFisica);
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
         tvDriverStatusBadge = findViewById(R.id.tvDriverStatusBadge);
+
+        // 🔥 Animaciones Premium de Entrada para tarjetas
+        UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardEstadisticas));
+        UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardReservas));
+        UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardRutas));
+
         actualizarTiempoActualizacion();
     }
 
     private void setupButtons() {
         ImageView icRefresh = findViewById(R.id.ic_refresh);
         if (icRefresh != null) {
+            UIAnimationUtils.setClickAnimation(icRefresh);
             icRefresh.setOnClickListener(view -> {
                 if (isDataLoaded) {
                     icRefresh.animate().rotationBy(720f).setDuration(2000).setInterpolator(new OvershootInterpolator(1.0f)).start();
@@ -173,6 +181,7 @@ public class DriverHomeActivity extends AppCompatActivity {
             });
         }
         if (fabVentaFisica != null) {
+            UIAnimationUtils.setClickAnimation(fabVentaFisica);
             fabVentaFisica.setOnClickListener(view -> {
                 if (routeList == null || routeList.isEmpty()) {
                     Toast.makeText(this, R.string.no_rutas_asignadas, Toast.LENGTH_SHORT).show();
@@ -324,11 +333,17 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
         estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> {
             TextView tv = findViewById(R.id.tvReservasRuta);
-            if (tv != null) tv.setText(String.valueOf(count));
+            if (tv != null) {
+                UIAnimationUtils.animateNumericText(tv, lastRes1, count != null ? count : 0);
+                lastRes1 = count != null ? count : 0;
+            }
         });
         estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> {
             TextView tv = findViewById(R.id.tvAsientosRuta);
-            if (tv != null) tv.setText(String.valueOf(count));
+            if (tv != null) {
+                UIAnimationUtils.animateNumericText(tv, lastSeats1, count != null ? count : 0);
+                lastSeats1 = count != null ? count : 0;
+            }
         });
 
         estadisticasViewModel.getNombreRuta2LiveData().observe(this, name -> {
@@ -337,11 +352,17 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
         estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> {
             TextView tv = findViewById(R.id.tvReservasRuta2);
-            if (tv != null) tv.setText(String.valueOf(count));
+            if (tv != null) {
+                UIAnimationUtils.animateNumericText(tv, lastRes2, count != null ? count : 0);
+                lastRes2 = count != null ? count : 0;
+            }
         });
         estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> {
             TextView tv = findViewById(R.id.tvAsientosRuta2);
-            if (tv != null) tv.setText(String.valueOf(count));
+            if (tv != null) {
+                UIAnimationUtils.animateNumericText(tv, lastSeats2, count != null ? count : 0);
+                lastSeats2 = count != null ? count : 0;
+            }
         });
     }
 
@@ -428,6 +449,8 @@ public class DriverHomeActivity extends AppCompatActivity {
     private void actualizarBadgeEstado(String status) {
         if (tvDriverStatusBadge == null) return;
         
+        UIAnimationUtils.stopAnimation(tvDriverStatusBadge);
+
         if (status == null) status = "active";
         
         switch (status.toLowerCase()) {
@@ -435,6 +458,7 @@ public class DriverHomeActivity extends AppCompatActivity {
                 tvDriverStatusBadge.setText(R.string.status_conductor_activo);
                 tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
                 tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
+                UIAnimationUtils.startPulseAnimation(tvDriverStatusBadge);
                 break;
             case "inactive":
                 tvDriverStatusBadge.setText(R.string.status_conductor_descanso);
@@ -445,6 +469,7 @@ public class DriverHomeActivity extends AppCompatActivity {
                 tvDriverStatusBadge.setText(R.string.status_conductor_activo);
                 tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
                 tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
+                UIAnimationUtils.startPulseAnimation(tvDriverStatusBadge);
                 break;
         }
     }
@@ -460,6 +485,10 @@ public class DriverHomeActivity extends AppCompatActivity {
             currentConfirmed = 0;
             currentAvailable = 0;
             currentIncome = 0;
+            lastRes1 = 0;
+            lastSeats1 = 0;
+            lastRes2 = 0;
+            lastSeats2 = 0;
             reloadAllData(); 
         }
     }

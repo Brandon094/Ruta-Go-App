@@ -162,7 +162,10 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 }
                 
                 tvSeat.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
-                tvPrice.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
+                
+                // Animación de precio en el historial del conductor con color de la marca
+                tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
+                com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, reservation.getPrice());
 
                 // Mostrar acciones
                 actionsLayout.setVisibility(View.VISIBLE);

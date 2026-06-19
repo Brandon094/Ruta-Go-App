@@ -57,7 +57,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice;
+        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge;
         public FloatingActionButton btnReserve;
 
         public ViewHolder(@NonNull View itemView) {
@@ -67,6 +67,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             tvRoute = itemView.findViewById(R.id.tvRuta);
             tvSeats = itemView.findViewById(R.id.tvAsientos);
             tvPrice = itemView.findViewById(R.id.tvPrecio);
+            tvAvailabilityBadge = itemView.findViewById(R.id.tvEstadoDisponibilidad);
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
@@ -81,11 +82,22 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
             
             if (tvSeats != null) {
-                tvSeats.setText(itemView.getContext().getString(R.string.asientos_disponibles_label_adapter, available));
+                // tvSeats.setText(itemView.getContext().getString(R.string.asientos_disponibles_label_adapter, available));
+                com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateNumericText(tvSeats, 0, available);
+                // Concatenar el texto "Disponibles" después de la animación? 
+                // Mejor actualizar el texto con formato pero la animación numérica es solo para el número.
+                // Para simplificar, mantendremos el número animado y el color.
                 updateColors(available);
             }
 
-            if (tvPrice != null) tvPrice.setText(FormatUtils.formatearPrecio(schedule.getPrice()));
+            if (tvPrice != null) {
+                try {
+                    double priceVal = Double.parseDouble(schedule.getPrice());
+                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, priceVal);
+                } catch (Exception e) {
+                    tvPrice.setText(FormatUtils.formatearPrecio(schedule.getPrice()));
+                }
+            }
 
             if (btnReserve != null) {
                 btnReserve.setOnClickListener(v -> {
@@ -97,11 +109,38 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
 
         private void updateColors(int available) {
-            int color;
-            if (available == 0) color = itemView.getContext().getColor(R.color.error);
-            else if (available < 5) color = itemView.getContext().getColor(R.color.status_pending);
-            else color = itemView.getContext().getColor(R.color.success);
-            if (tvSeats != null) tvSeats.setTextColor(color);
+            int textColor;
+            int badgeColor;
+            String badgeText;
+
+            if (available == 0) {
+                textColor = itemView.getContext().getColor(R.color.error_500);
+                badgeColor = itemView.getContext().getColor(R.color.error_500);
+                badgeText = "Agotado";
+            } else if (available < 5) {
+                textColor = itemView.getContext().getColor(R.color.warning_500);
+                badgeColor = itemView.getContext().getColor(R.color.warning_500);
+                badgeText = "Últimos cupos";
+            } else {
+                textColor = itemView.getContext().getColor(R.color.primary_200); // Color suave para el texto de asientos
+                badgeColor = itemView.getContext().getColor(R.color.primary_500); // Naranja corporativo para Disponible
+                badgeText = "Disponible";
+            }
+
+            if (tvSeats != null) {
+                tvSeats.setTextColor(textColor);
+                tvSeats.setText(itemView.getContext().getString(R.string.asientos_disponibles_label_adapter, available));
+            }
+            
+            if (tvAvailabilityBadge != null) {
+                tvAvailabilityBadge.setText(badgeText);
+                tvAvailabilityBadge.getBackground().setTint(badgeColor);
+            }
+
+            // Eliminar verde del precio si existiera y usar naranja corporativo
+            if (tvPrice != null) {
+                tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
+            }
         }
     }
 }

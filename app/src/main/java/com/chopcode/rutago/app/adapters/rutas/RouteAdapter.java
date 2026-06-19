@@ -77,9 +77,10 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
                 tvTime.setText("--:--");
             }
 
-            // Enlazar precio dinámico desde el modelo Route
+            // Enlazar precio dinámico desde el modelo Route con animación y color de la marca
             if (tvPrice != null) {
-                tvPrice.setText(FormatUtils.formatearPrecio(route.getFare()));
+                tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
+                com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, route.getFare());
             }
         }
     }

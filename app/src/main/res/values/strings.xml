@@ -88,7 +88,7 @@
     <string name="horarios_disponibles">Horarios disponibles</string>
     <string name="nueva_reserva">NUEVA\nRESERVA</string>
     <string name="no_hay_rutas">No hay rutas programadas</string>
-    <string name="asientos_disponibles_label_adapter">%d asientos disponibles</string>
+    <string name="asientos_disponibles_label_adapter">Disponibles: %d</string>
     <string name="contador_rutas">%d</string>
     <string name="contador_reservas">%d</string>
     <string name="desc_expand_icon">Icono de expandir</string>

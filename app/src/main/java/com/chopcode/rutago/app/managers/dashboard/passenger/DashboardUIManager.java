@@ -53,6 +53,8 @@ public class DashboardUIManager {
     private void updateStatusBadge(String status) {
         if (tvUserStatusBadge == null) return;
 
+        UIAnimationUtils.stopAnimation(tvUserStatusBadge);
+
         if (status == null) status = "active";
 
         switch (status.toLowerCase()) {
@@ -60,6 +62,7 @@ public class DashboardUIManager {
                 tvUserStatusBadge.setText(R.string.status_pasajero_activo);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
                 tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
+                UIAnimationUtils.startPulseAnimation(tvUserStatusBadge);
                 break;
             case "inactive":
                 tvUserStatusBadge.setText(R.string.status_pasajero_inactivo);
@@ -75,6 +78,7 @@ public class DashboardUIManager {
                 tvUserStatusBadge.setText(R.string.status_pasajero_activo);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
                 tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
+                UIAnimationUtils.startPulseAnimation(tvUserStatusBadge);
                 break;
         }
     }

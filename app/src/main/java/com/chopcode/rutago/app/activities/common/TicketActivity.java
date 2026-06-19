@@ -82,13 +82,22 @@ public class TicketActivity extends AppCompatActivity {
         
         MaterialCardView ticketCard = findViewById(R.id.ticketCardMain);
 
-        findViewById(R.id.btnShareTicket).setOnClickListener(v -> {
+        // 🔥 Animación Premium de Entrada centralizada
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(ticketCard);
+
+        View btnShare = findViewById(R.id.btnShareTicket);
+        View btnChat = findViewById(R.id.btnChatTicket);
+
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnShare);
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnChat);
+
+        btnShare.setOnClickListener(v -> {
             if (ticketCard != null) {
                 ImageUtils.shareViewAsImage(this, ticketCard, "Ticket_" + reservationId);
             }
         });
 
-        findViewById(R.id.btnChatTicket).setOnClickListener(v -> {
+        btnChat.setOnClickListener(v -> {
             Intent chatIntent = new Intent(this, ChatActivity.class);
             chatIntent.putExtra("reservationId", reservationId);
             

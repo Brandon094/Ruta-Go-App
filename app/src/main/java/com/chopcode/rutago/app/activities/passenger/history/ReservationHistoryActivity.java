@@ -127,10 +127,10 @@ public class ReservationHistoryActivity extends AppCompatActivity {
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, "Error: " + msg, Toast.LENGTH_SHORT).show(); });
 
-        // No hacemos nada en los observadores individuales de conteo para evitar colisiones con animateStats
-        viewModel.getTotalCount().observe(this, count -> { });
-        viewModel.getConfirmedCount().observe(this, count -> { });
-        viewModel.getCancelledCount().observe(this, count -> { });
+        // Observadores de conteo: disparar animación cuando los datos lleguen
+        viewModel.getTotalCount().observe(this, count -> animateStats());
+        viewModel.getConfirmedCount().observe(this, count -> animateStats());
+        viewModel.getCancelledCount().observe(this, count -> animateStats());
     }
 
     private void animateStats() {

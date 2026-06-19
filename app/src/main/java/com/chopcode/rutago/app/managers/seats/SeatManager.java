@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class SeatManager {
     private Integer asientoSeleccionado = null;
     private Set<Integer> asientosOcupados = new HashSet<>();
     private final ReservationAnalyticsHelper analyticsHelper;
+    private boolean isFirstLoad = true;
 
     // Iconos de los asientos
     private final int VECTOR_ASIENTO_DISPONIBLE = R.drawable.asiento_disponible;
@@ -104,6 +106,9 @@ public class SeatManager {
 
         // IMPORTANTE: Remover el tint del icono para que se muestren los colores correctos
         btnAsiento.setIconTint(null);
+        
+        // Micro-interacción táctil
+        UIAnimationUtils.setClickAnimation(btnAsiento);
 
         mapaAsientos.put(numeroAsiento, btnAsiento);
     }
@@ -124,6 +129,8 @@ public class SeatManager {
         if (ocupadosApp != null) this.asientosOcupados.addAll(ocupadosApp);
         if (ocupadosFisicos != null) this.asientosOcupados.addAll(ocupadosFisicos);
 
+        int animationDelay = 0;
+
         for (Map.Entry<Integer, MaterialButton> entry : mapaAsientos.entrySet()) {
             int numAsiento = entry.getKey();
             MaterialButton btn = entry.getValue();
@@ -134,14 +141,26 @@ public class SeatManager {
             }
 
             btn.setVisibility(View.VISIBLE);
+            
+            boolean stateChanged = false;
             if (ocupadosApp != null && ocupadosApp.contains(numAsiento)) {
                 marcarAsientoOcupado(btn);
+                stateChanged = true;
             } else if (ocupadosFisicos != null && ocupadosFisicos.contains(numAsiento)) {
                 marcarAsientoFisico(btn);
+                stateChanged = true;
             } else {
                 configurarAsientoDisponible(btn, numAsiento);
             }
+
+            // Animación de pop si es el primer cargue o si el asiento está ocupado
+            if (stateChanged && isFirstLoad) {
+                UIAnimationUtils.playSeatPopAnimation(btn, animationDelay);
+                animationDelay += 50; // Efecto cascada
+            }
         }
+
+        isFirstLoad = false;
 
         // Registrar evento analítico
         analyticsHelper.logAsientosCargados(this.asientosOcupados.size(), capacidadTotal, null);
@@ -212,6 +231,7 @@ public class SeatManager {
         MaterialButton btn = mapaAsientos.get(numAsiento);
         if (btn != null) {
             btn.setIcon(ContextCompat.getDrawable(context, VECTOR_ASIENTO_SELECCIONADO));
+            UIAnimationUtils.playSeatSelectionAnimation(btn);
         }
 
         if (listener != null) {

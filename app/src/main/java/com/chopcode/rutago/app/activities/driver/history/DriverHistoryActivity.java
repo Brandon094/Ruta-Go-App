@@ -123,10 +123,10 @@ public class DriverHistoryActivity extends AppCompatActivity {
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_SHORT).show(); });
 
-        // Observadores pasivos
-        viewModel.getTotalCount().observe(this, count -> { });
-        viewModel.getConfirmedCount().observe(this, count -> { });
-        viewModel.getCancelledCount().observe(this, count -> { });
+        // Observadores activos para disparar animaciones
+        viewModel.getTotalCount().observe(this, count -> animateStats());
+        viewModel.getConfirmedCount().observe(this, count -> animateStats());
+        viewModel.getCancelledCount().observe(this, count -> animateStats());
     }
 
     private void animateStats() {

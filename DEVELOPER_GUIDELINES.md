@@ -35,9 +35,11 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Escucha Global:** Para listas de alta frecuencia, usar un solo listener global en el Service/ViewModel para optimizar el consumo de datos.
 - **Robustez de Servicios:** Los servicios (`Service`) deben usar el contexto global de la aplicación (`MyApp.getInstance()`) para operaciones de UI, evitando crashes.
 - **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `driverId` en vehículos y cumplir con campos obligatorios).
+- **Caché de ViewModel:** Prohibido reiniciar estados de carga (Shimmer) si la data ya reside en memoria o el UID no ha cambiado. El Shimmer solo debe dispararse en la carga inicial para una experiencia instantánea.
 
 ### C. UI/UX
-- **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales y estados de carga en los ViewModels.
+- **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales. Una vez cargada la data, usar `UIAnimationUtils` para conteos progresivos (incluyendo items de listas), transiciones de tarjetas (`playCardEntryAnimation`) y micro-interacciones de escala en elementos clickables.
+- **Carga de Imágenes:** Usar `ImageUtils` con Glide (DiskCacheStrategy.ALL y Priority.IMMEDIATE) para garantizar que las fotos de perfil sean visibles al instante al navegar.
 - **Reactividad:** Los Dashboards deben reaccionar a cambios en la base de datos instantáneamente. Evitar `addListenerForSingleValueEvent` en pantallas principales.
 - **Notificaciones:** Seguir el estándar Premium unificado en `NotificationService` con identidad visual oficial.
 - **Responsividad (Guías):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en `ConstraintLayout` para que la UI "respire" en cualquier dispositivo.
@@ -50,12 +52,19 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Centralización de Navegación:** El `BottomNavFragment` debe estar vinculado a su propio `BottomNavViewModel` para gestionar eventos de cierre de sesión y analíticas de navegación.
 - **Consistencia en Diálogos:** Todos los diálogos deben heredar de `AppDialogTheme` y sus botones deben tener un `minHeight` mínimo de 48dp para accesibilidad.
 - **Cabeceras de Perfil:** Para avatares grandes (150dp), usar un `headerBackground` de 270dp y una `Guideline` horizontal de seguridad a 310dp para evitar solapamientos.
-- **Badges de Estado:** Usar el sistema de diseño unificado (Fondo Navy `secondary_900` + Borde sólido de 1dp del color de estado) para etiquetas de Confirmado, Cancelado, Pendiente, Activo e Inactivo.
+- **Badges de Estado:** Usar el sistema de diseño unificado (Fondo Navy `secondary_900` + Borde sólido de 1dp del color de estado) para etiquetas de Confirmado, Cancelado, Pendiente, Activo e Inactivo. Para disponibilidad en horarios, usar el naranja corporativo `primary_500` para resaltar la acción de reserva.
+- **Sincronización de Estadísticas:** Los contadores en Home e Historial deben seguir el orden consistente: [Confirmados] - [Cancelados] - [Total].
 - **Gestión de Usuario:** Los pasajeros pueden alternar su estado entre Activo e Inactivo desde su perfil. El estado Bloqueado es administrativo y restringe funciones.
 - **Política de Errores (UX):** 
   - *Snackbars:* Para avisos informativos o errores temporales (ej. reconexión). 
   - *Diálogos:* Para errores críticos o confirmaciones de seguridad. 
   - *TextInputLayout:* Solo para validaciones de formato en tiempo real.
+  - *Visual Feedback:* Usar `UIAnimationUtils.playErrorShake` para indicar errores en campos específicos.
+- **Micro-interacciones Premium:** 
+  - **Feedback Táctil:** Uso obligatorio de `UIAnimationUtils.setClickAnimation` en botones para efecto de escala (presión).
+  - **Efecto Latido:** Badges de estado "Activo" deben usar `UIAnimationUtils.startPulseAnimation` para indicar operatividad en tiempo real.
+  - **Entrada Pop-in:** Tarjetas principales, tiquetes y **asientos ocupados** deben usar `UIAnimationUtils.playCardEntryAnimation` o `playSeatPopAnimation`.
+  - **Selección de Asientos:** El mapa de asientos debe usar `playSeatSelectionAnimation` para confirmar visualmente la elección.
 
 ### D. Documentación Técnica & Analíticas
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
@@ -96,7 +105,9 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 
 ## 7. Estado Actual del Proyecto (v1.2.0 Stable - Ready for Play Store)
 - **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards, historiales y navegación 100% reactivos.
-- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos. Limpieza total de emojis y caracteres no estándar.
+- **Optimización Premium:** Implementación de caché agresiva en ViewModels e imágenes (Glide) para navegación instantánea.
+- **Estandarización Visual:** Unificación de orden de estadísticas en todas las pantallas. Implementación de micro-interacciones (feedback táctil) y animaciones pop-in.
+- **Estandarización de Código:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos. Limpieza total de emojis y caracteres no estándar.
 - **UI Responsiva & Accesible:** 100% de las actividades optimizadas con guías porcentuales y soporte para zoom de fuente (200%).
 - **Mapa de Asientos:** Unificado y simétrico con grilla de 5 columnas.
 - **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService`.
@@ -104,9 +115,9 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - **Mensajería:** Chat en Tiempo Real con notificaciones Push y **Deep Linking funcional** (enlaces directos) unificados en `NotificationService` con estilo Premium.
 - **Atomicidad y Sincronización:** Uso de `runTransaction` para reservas. Sincronización de capacidad de vehículo automática tras edición de perfil.
 - **Rendimiento:** `ArchiveService` para limpieza de reservas y límites de carga inteligentes en UI.
-- **Tiquete Digital:** Visualización detallada, chat integrado y funcionalidad de **Compartir como Imagen (PNG)** con branding Navy unificado.
+- **Tiquete Digital:** Visualización detallada, chat integrado y funcionalidad de **Compartir como Imagen (PNG)** con branding Navy unificado y animaciones de entrada.
 - **Automatización de Operaciones:** Cloud Function `automatedRotation` funcional para rotación de turnos a las 7:00 PM (Bogotá), reseteo de asientos y notificaciones automáticas.
-- **Gestión de Estados:** Sistema de estados (Activo/Inactivo/Bloqueado) implementado para Pasajeros y Conductores con badges de alta visibilidad.
+- **Gestión de Estados:** Sistema de estados (Activo/Inactivo/Bloqueado) implementado para Pasajeros y Conductores con badges de alta visibilidad y animación de pulso.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
 - **Hito 1 (DONE):** Optimizar Deep Linking y navegación reactiva.

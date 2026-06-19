@@ -98,6 +98,10 @@ public class EditDriverProfileActivity extends AppCompatActivity {
         btnCancelar = findViewById(R.id.btnCancelar);
         btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
         progressBar = findViewById(R.id.progressBar);
+
+        // 🔥 Micro-interacciones de Botones
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancelar);
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnGuardarCambios);
     }
 
     private void setupObservers() {

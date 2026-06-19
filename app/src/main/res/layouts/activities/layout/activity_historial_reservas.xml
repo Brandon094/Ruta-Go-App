@@ -113,33 +113,6 @@
                     android:padding="12dp"
                     android:weightSum="3">
 
-                    <!-- Total de viajes -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:minHeight="48dp">
-
-                        <TextView
-                            android:id="@+id/tvTotalViajes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/primary_500"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Total"
-                            android:textColor="@color/text_tertiary"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
                     <!-- Viajes confirmados -->
                     <LinearLayout
                         android:layout_width="0dp"
@@ -189,6 +162,33 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Cancelados"
+                            android:textColor="@color/text_tertiary"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                    <!-- Total de viajes -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:minHeight="48dp">
+
+                        <TextView
+                            android:id="@+id/tvTotalViajes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/primary_500"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total"
                             android:textColor="@color/text_tertiary"
                             android:textSize="12sp" />
 

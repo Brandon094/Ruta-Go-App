@@ -78,6 +78,15 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         btnConfirmReservation = findViewById(R.id.btnConfirmar);
         btnCancel = findViewById(R.id.btnCancelar);
 
+        // 🔥 Micro-interacciones de Botones
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnConfirmReservation);
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancel);
+
+        // 🔥 Animaciones Premium de Entrada para tarjetas
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardViaje));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardContactos));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardPago));
+
         setSupportActionBar(topAppBar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         topAppBar.setNavigationOnClickListener(v -> onBackPressed());

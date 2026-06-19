@@ -174,6 +174,16 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         btnConfirm = findViewById(R.id.buttonConfirmar);
         btnCancel = findViewById(R.id.buttonCancelar);
         topAppBar = findViewById(R.id.topAppBar);
+
+        // 🔥 Micro-interacciones de Botones
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnConfirm);
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancel);
+
+        // 🔥 Animaciones de Entrada Premium para tarjetas
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.infoViajeCardView));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.busCardView));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.selectedSeatCardView));
+
         headerInfo = findViewById(R.id.headerInfo);
         expandableContent = findViewById(R.id.contenidoExpandible);
         summaryInfo = findViewById(R.id.resumenInfo);

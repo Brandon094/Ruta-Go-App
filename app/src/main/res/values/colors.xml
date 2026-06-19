@@ -31,12 +31,12 @@
     <color name="secondary_800">#061929</color>  <!-- Navy Oscuro para Cards -->
     <color name="secondary_900">#061426</color>  <!-- Navy Fondo de Pantalla -->
 
-    <!-- VERDE ÉXITO -->
-    <color name="success_50">#E8F5E9</color>
-    <color name="success_100">#C8E6C9</color>
-    <color name="success_600">#1B7E35</color>
-    <color name="success_700">#156A2E</color>
-    <color name="success_500">#1F8F3C</color>
+    <!-- VERDE ÉXITO (Premium Emerald) -->
+    <color name="success_50">#ECFDF5</color>
+    <color name="success_100">#D1FAE5</color>
+    <color name="success_600">#059669</color>
+    <color name="success_700">#047857</color>
+    <color name="success_500">#10B981</color>
 
     <!-- AMARILLO ADVERTENCIA -->
     <color name="warning_50">#FFF9E6</color>
@@ -121,12 +121,12 @@
     <color name="status_cancelled">@color/error_500</color>
 
     <!-- Variantes claras para contraste en fondos oscuros (baja opacidad) -->
-    <color name="status_confirmed_light">#261F8F3C</color>
-    <color name="status_pending_light">#26F59E0B</color>
-    <color name="status_cancelled_light">#26EF4444</color>
+    <color name="status_confirmed_light">#1A10B981</color>
+    <color name="status_pending_light">#1AF59E0B</color>
+    <color name="status_cancelled_light">#1AEF4444</color>
     <color name="status_inactive">@color/text_tertiary</color>
-    <color name="status_inactive_light">#26839FAD</color>
-    <color name="success_light">#261F8F3C</color>
+    <color name="status_inactive_light">#1A839FAD</color>
+    <color name="success_light">#1A10B981</color>
 
     <!-- ==================== -->
     <!-- ALIAS PARA CONSISTENCIA -->

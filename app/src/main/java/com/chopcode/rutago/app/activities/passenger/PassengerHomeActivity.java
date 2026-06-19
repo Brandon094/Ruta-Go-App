@@ -23,6 +23,7 @@ import com.chopcode.rutago.app.fragments.HorarioFragment;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerProfileViewModel;
 import com.chopcode.rutago.app.viewmodels.passenger.ScheduleViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -163,6 +164,9 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         layoutRealStats = findViewById(R.id.layout_real_stats);
         ivUserAvatar = findViewById(R.id.ivUserAvatar);
 
+        MaterialCardView cardStatsContainer = findViewById(R.id.cardStatsContainer);
+        UIAnimationUtils.playCardEntryAnimation(cardStatsContainer);
+
         uiManager.setViewReferences(tvUserName, tvWelcome, tvReservasCount, tvCanceladasCount, tvTotalCount);
         uiManager.setStatusBadgeReference(tvUserStatusBadge);
         uiManager.setupToolbar(topAppBar);
@@ -231,9 +235,10 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        // Forzar animación si los datos ya están en cache
+        // Resetear localmente en el UI Manager y disparar animación a los valores actuales del VM
         if (uiManager != null) {
             uiManager.updateCounters(0, 0, 0);
+            updateCounters();
         }
     }
 }

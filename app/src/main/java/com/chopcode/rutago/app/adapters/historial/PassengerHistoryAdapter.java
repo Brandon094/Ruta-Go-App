@@ -169,7 +169,10 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 tvRuta.setText(routeDesc);
                 
                 tvPuesto.setText(FormatUtils.formatearAsiento(reservation.getReservedSeat()));
-                tvPrecio.setText(FormatUtils.formatearPrecio(reservation.getPrice()));
+                
+                // Animación de precio en el historial con color de la marca
+                tvPrecio.setTextColor(itemView.getContext().getColor(R.color.primary_500));
+                com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrecio, 0, reservation.getPrice());
 
                 // Mostrar/Ocultar sección de acciones
                 layoutAcciones.setVisibility(View.VISIBLE);
