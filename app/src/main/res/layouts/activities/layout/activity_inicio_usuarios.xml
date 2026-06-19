@@ -24,10 +24,13 @@
             style="@style/Widget.MaterialComponents.Toolbar.Primary">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="left"
                 android:src="@drawable/logo_icon"
+                android:background="@drawable/bg_circle_logout"
+                android:backgroundTint="@color/secondary_900"
+                android:padding="6dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/app_name" />
 

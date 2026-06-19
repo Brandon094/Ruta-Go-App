@@ -8,9 +8,12 @@
     <!-- Logo Animado -->
     <ImageView
         android:id="@+id/logo_splash"
-        android:layout_width="140dp"
-        android:layout_height="193dp"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:src="@drawable/logo_splash"
+        android:background="@drawable/bg_circle_logout"
+        android:backgroundTint="@color/secondary_900"
+        android:padding="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

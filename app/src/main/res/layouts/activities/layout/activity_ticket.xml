@@ -78,7 +78,7 @@
                             android:layout_width="72dp"
                             android:layout_height="72dp"
                             android:layout_gravity="center"
-                            app:cardBackgroundColor="?attr/colorSecondary"
+                            app:cardBackgroundColor="@color/secondary_900"
                             app:cardCornerRadius="36dp"
                             app:cardElevation="0dp"
                             app:strokeWidth="0dp">
