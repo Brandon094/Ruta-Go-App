@@ -174,9 +174,11 @@
     <string name="sin_reservas_activas">No hay reservas activas en este momento</string>
     <string name="sin_proximas_rutas">No hay rutas programadas para hoy</string>
     <string name="no_rutas_asignadas">No hay rutas asignadas</string>
+    <string name="no_rutas_activas_venta">No hay rutas activas para realizar ventas en este momento</string>
     <string name="confirmar_reserva_pregunta">¿Confirmar reserva de %s?</string>
     <string name="cancelar_reserva_pregunta">¿Cancelar reserva de %s?</string>
     <string name="reserva_procesada_exito">Reserva procesada exitosamente</string>
+    <string name="ruta_finalizada_gestion_error">Esta ruta ya finalizó. No es posible gestionar asientos.</string>
     <string name="venta_fisica_mayus">VENTA FÍSICA</string>
     <string name="vender_pasaje">Vender Pasaje</string>
     <string name="seleccionar_ruta">Selecciona la Ruta</string>

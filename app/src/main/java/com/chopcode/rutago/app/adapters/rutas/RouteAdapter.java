@@ -42,7 +42,19 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         if (routeList == null || position >= routeList.size()) return;
         Route route = routeList.get(position);
         holder.bind(route, position == nextRouteIndex);
+
+        // Bloquear clic si la ruta ya finalizó
+        boolean isPast = false;
+        if (route.getTime() != null && route.getTime().getTime() != null) {
+            isPast = FormatUtils.esHorarioPasado(route.getTime().getTime());
+        }
+
+        final boolean finalIsPast = isPast;
         holder.itemView.setOnClickListener(v -> {
+            if (finalIsPast) {
+                android.widget.Toast.makeText(v.getContext(), R.string.ruta_finalizada_gestion_error, android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (listener != null) listener.onRutaClick(route);
         });
     }

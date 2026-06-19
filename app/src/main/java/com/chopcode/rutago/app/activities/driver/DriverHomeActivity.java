@@ -194,13 +194,28 @@ public class DriverHomeActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.no_rutas_asignadas, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (routeList.size() == 1) abrirGestionAsientos(routeList.get(0));
-                else mostrarSelectorDeRuta();
+                
+                // Filtrar solo rutas que no han pasado
+                List<Route> activeRoutes = new ArrayList<>();
+                for (Route r : routeList) {
+                    if (r.getTime() != null && !FormatUtils.esHorarioPasado(r.getTime().getTime())) {
+                        activeRoutes.add(r);
+                    }
+                }
+
+                if (activeRoutes.isEmpty()) {
+                    Toast.makeText(this, R.string.no_rutas_activas_venta, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (activeRoutes.size() == 1) abrirGestionAsientos(activeRoutes.get(0));
+                else mostrarSelectorDeRuta(activeRoutes);
             });
         }
     }
 
     private void abrirGestionAsientos(Route route) {
+        // ... (resto igual)
         Intent intent = new Intent(this, ManageSeatsActivity.class);
         intent.putExtra("horarioId", route.getScheduleId());
         intent.putExtra("rutaNombre", route.getOrigin() + " -> " + route.getDestination());
@@ -208,14 +223,14 @@ public class DriverHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void mostrarSelectorDeRuta() {
-        if (routeList == null || routeList.isEmpty()) return;
+    private void mostrarSelectorDeRuta(List<Route> routes) {
+        if (routes == null || routes.isEmpty()) return;
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_select_route, null);
         RecyclerView rv = dialogView.findViewById(R.id.rvSelectRoute);
         androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
                 .setView(dialogView).setNegativeButton(R.string.volver, null).create();
         rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(new SelectRouteAdapter(routeList, route -> {
+        rv.setAdapter(new SelectRouteAdapter(routes, route -> {
             dialog.dismiss();
             abrirGestionAsientos(route);
         }));
