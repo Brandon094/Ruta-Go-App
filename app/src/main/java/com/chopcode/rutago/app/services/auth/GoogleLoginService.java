@@ -10,6 +10,8 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -90,6 +92,14 @@ public class GoogleLoginService {
                     }
                 });
             }
-        } catch (Exception e) { callback.onLoginFailure(e.getMessage()); }
+        } catch (ApiException e) {
+            if (e.getStatusCode() == CommonStatusCodes.CANCELED) {
+                callback.onLoginFailure("CANCELED_BY_USER");
+            } else {
+                callback.onLoginFailure(e.getMessage());
+            }
+        } catch (Exception e) {
+            callback.onLoginFailure(e.getMessage());
+        }
     }
 }

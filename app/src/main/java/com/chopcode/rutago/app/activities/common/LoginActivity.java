@@ -34,6 +34,8 @@ import com.chopcode.rutago.app.activities.passenger.reservation.createReservatio
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.permissions.PermissionManager;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
+import com.chopcode.rutago.app.services.auth.GoogleLoginService;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.chopcode.rutago.app.viewmodels.common.LoginViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -253,10 +255,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLoginError(String error, String email) {
+        if ("CANCELED_BY_USER".equals(error)) {
+            // No mostrar error si el usuario canceló el selector de Google
+            return;
+        }
+
         TextInputLayout layoutPassword = findViewById(R.id.passwordInputLayout);
         if (error.equals("Credenciales incorrectas") || error.contains("incorrecta")) {
             if (layoutPassword != null) layoutPassword.setError(getString(R.string.error_incorrect_password));
-            animateErrorField(editTextPassword);
+            UIAnimationUtils.playErrorShake(this, editTextPassword);
         } else {
             showCenteredSnackbar(error, true);
         }
@@ -273,13 +280,6 @@ public class LoginActivity extends AppCompatActivity {
     private void hideOverlay() {
         if (overlay != null) {
             overlay.animate().alpha(0f).setDuration(300).withEndAction(() -> overlay.setVisibility(View.GONE)).start();
-        }
-    }
-
-    private void animateErrorField(View view) {
-        if (view != null) {
-            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-            view.startAnimation(shake);
         }
     }
 

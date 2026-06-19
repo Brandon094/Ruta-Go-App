@@ -10,8 +10,8 @@ admin.initializeApp();
  * PROPÓSITO:
  * 1. Rotar los turnos de los conductores para el día siguiente.
  * 2. Limpiar la disponibilidad de asientos (resetear a 13).
- * 3. Notificar a conductores sobre su nuevo estado.
- * 4. Notificar a pasajeros que los horarios están listos.
+ * 3. Actualizar estados de actividad (Active/Inactive) según carga.
+ * 4. Notificar a conductores y pasajeros sobre los nuevos horarios.
  */
 exports.automatedRotation = onSchedule({
     schedule: "0 19 * * *", // 19:00 = 7:00 PM Bogotá
@@ -24,46 +24,49 @@ exports.automatedRotation = onSchedule({
     try {
         console.log("🔄 Iniciando ciclo de rotación nocturna...");
 
-        // 1. DEFINICIÓN DE BLOQUES DE TURNOS (Tus parejas correctas)
-        // 1. EL CAMINO DEL CONDUCTOR (Escalafón Ascendente Real)
+        // 1. DEFINICIÓN DE ESCALAFÓN (Día 9 es descanso)
         const ROTATING_SHIFTS = [
-            ["h009"],                 // Día 1: ENTRADA (5 PM). Duerme en La Plata.
-            ["h010", "h008", "h018"], // Día 2: REGRESA (7:30 AM) + TURNO 3 PM.
-            ["h007", "h017"],         // Día 3: TURNO 1 PM.
-            ["h006", "h016"],         // Día 4: TURNO 11 AM.
-            ["h004", "h014"],         // Día 5: TURNO 9:30 AM.
-            ["h003", "h013"],         // Día 6: TURNO 8:30 AM.
-            ["h002", "h012"],         // Día 7: TURNO 7:15 AM.
-            ["h001", "h011"],         // Día 8: TURNO 6:15 AM (Último antes de descanso).
-            []                        // Día 9: DESCANSO.
+            ["h009"],                 // Día 1: ENTRADA
+            ["h010", "h008", "h018"], // Día 2
+            ["h007", "h017"],         // Día 3
+            ["h006", "h016"],         // Día 4
+            ["h004", "h014"],         // Día 5
+            ["h003", "h013"],         // Día 6
+            ["h002", "h012"],         // Día 7
+            ["h001", "h011"],         // Día 8
+            []                        // Día 9: DESCANSO
         ];
 
-        // 2. CARGA DE DATOS DESDE REALTIME DATABASE
+        // 2. CARGA DE DATOS (Sync Total)
         const [conductoresSnap, horariosSnap, usuariosSnap] = await Promise.all([
             db.ref('conductores').once('value'),
             db.ref('horarios').once('value'),
             db.ref('usuarios').once('value')
         ]);
 
+        const tokenMap = {};
+        usuariosSnap.forEach(uSnap => {
+            if (uSnap.val().tokenFCM) tokenMap[uSnap.key] = uSnap.val().tokenFCM;
+        });
+
         const conductoresParaRotar = [];
         const tokensPasajeros = [];
         let brayanId = null;
 
-        // Clasificar conductores
+        // Clasificar conductores y capturar tokens
         conductoresSnap.forEach((snap) => {
             const data = snap.val();
+            const uid = snap.key;
+            const token = data.tokenFCM || tokenMap[uid]; // Buscar en ambos nodos
+
             if (data.nombre && data.nombre.toLowerCase().includes("brayan")) {
-                brayanId = snap.key;
+                brayanId = uid;
             } else {
-                conductoresParaRotar.push({
-                    id: snap.key,
-                    nombre: data.nombre,
-                    token: data.tokenFCM
-                });
+                conductoresParaRotar.push({ id: uid, nombre: data.nombre, token: token });
             }
         });
 
-        // Recopilar tokens de pasajeros para notificación masiva
+        // Recopilar tokens de pasajeros
         usuariosSnap.forEach((uSnap) => {
             const uData = uSnap.val();
             if (uData.rol === "usuario" && uData.tokenFCM) {
@@ -71,7 +74,6 @@ exports.automatedRotation = onSchedule({
             }
         });
 
-        // Ordenar conductores por ID para asegurar consistencia
         conductoresParaRotar.sort((a, b) => a.id.localeCompare(b.id));
 
         const updates = {};
@@ -84,9 +86,18 @@ exports.automatedRotation = onSchedule({
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
             updates[`conductores/${brayanId}/status`] = "active";
             updates[`usuarios/${brayanId}/status`] = "active";
-            horariosFijos.forEach(hId => {
-                updates[`horarios/${hId}/conductorId`] = brayanId;
-            });
+            horariosFijos.forEach(hId => { updates[`horarios/${hId}/conductorId`] = brayanId; });
+
+            const bToken = tokenMap[brayanId];
+            if (bToken) {
+                notificationPromises.push(
+                    messaging.send({
+                        token: bToken,
+                        notification: { title: "Turnos Actualizados", body: "Tus turnos fijos están listos para mañana." },
+                        data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
+                    }).catch(e => console.error("Error notif Brayan:", e))
+                );
+            }
         }
 
         // 4. ALGORITMO DE ESCALAFÓN Y NOTIFICACIÓN A CONDUCTORES
@@ -99,26 +110,23 @@ exports.automatedRotation = onSchedule({
             updates[`conductores/${c.id}/status`] = esDescanso ? "inactive" : "active";
             updates[`usuarios/${c.id}/status`] = esDescanso ? "inactive" : "active";
 
-            misHorarios.forEach(hId => {
-                updates[`horarios/${hId}/conductorId`] = c.id;
-            });
+            misHorarios.forEach(hId => { updates[`horarios/${hId}/conductorId`] = c.id; });
 
             if (c.token) {
-                const esDescanso = misHorarios.length === 0;
                 notificationPromises.push(
                     messaging.send({
                         token: c.token,
                         notification: {
-                            title: esDescanso ? "😴 ¡Mañana Descansas!" : "🔄 Turnos Actualizados",
-                            body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : `✅ Turnos listos para mañana. Revisa tus horarios en la app.`
+                            title: esDescanso ? "Manana Descansas" : "Turnos Actualizados",
+                            body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app."
                         },
-                        data: { type: "ROTACION_NOTIFICACION", click_action: "OPEN_DRIVER_PANEL" }
+                        data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
                     }).catch(e => console.error(`Error notif ${c.nombre}:`, e))
                 );
             }
         });
 
-        // 5. NOTIFICACIÓN MASIVA A PASAJEROS
+        // 5. NOTIFICACIÓN MASIVA A PASAJEROS (Sin Emojis)
         if (tokensPasajeros.length > 0) {
             for (let i = 0; i < tokensPasajeros.length; i += 500) {
                 const chunk = tokensPasajeros.slice(i, i + 500);
@@ -126,16 +134,16 @@ exports.automatedRotation = onSchedule({
                     messaging.sendEachForMulticast({
                         tokens: chunk,
                         notification: {
-                            title: "¡Horarios Listos! 🚗",
-                            body: "Ya puedes reservar tu viaje para mañana en RutaGo. ¡Asegura tu cupo!"
+                            title: "Horarios Listos",
+                            body: "Ya puedes reservar tu viaje para mañana en RutaGo. Asegura tu cupo."
                         },
-                        data: { type: "HORARIOS_DISPONIBLES", click_action: "OPEN_PASSENGER_DASHBOARD" }
-                    }).catch(e => console.error("❌ Error notif masiva pasajeros:", e))
+                        data: { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" }
+                    }).catch(e => console.error("Error notif masiva pasajeros:", e))
                 );
             }
         }
 
-        // 6. LIMPIEZA DE ASIENTOS (RESET PARA MAÑANA)
+        // 6. LIMPIEZA DE ASIENTOS (RESET TOTAL)
         const dispUpdates = {};
         horariosSnap.forEach(hSnap => {
             const hId = hSnap.key;
@@ -151,7 +159,7 @@ exports.automatedRotation = onSchedule({
             ...notificationPromises
         ]);
 
-        console.log(`✅ Ciclo completado. ${tokensPasajeros.length} pasajeros y conductores notificados.`);
+        console.log(`✅ Ciclo completado. ${tokensPasajeros.length} pasajeros y conductores procesados.`);
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
