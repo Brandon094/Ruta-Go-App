@@ -203,16 +203,36 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
             TextView tvInfoConductor = dialogView.findViewById(R.id.tvInfoConductor);
             RatingBar ratingBar = dialogView.findViewById(R.id.ratingBarDialog);
             EditText etComments = dialogView.findViewById(R.id.etComentarios);
+            
             if (tvInfoConductor != null) tvInfoConductor.setText(itemView.getContext().getString(R.string.conductor_label, reservation.getDriver()));
 
-            new MaterialAlertDialogBuilder(itemView.getContext(), R.style.AppDialogTheme)
+            // 🔥 Animación al interactuar con las estrellas
+            if (ratingBar != null) {
+                ratingBar.setOnRatingBarChangeListener((rb, rating, fromUser) -> {
+                    if (fromUser) com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playStarRatingAnimation(rb);
+                });
+            }
+
+            androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(itemView.getContext(), R.style.AppDialogTheme)
                 .setView(dialogView)
-                .setPositiveButton(R.string.enviar_calificacion, (dialog, which) -> {
-                    float rating = ratingBar.getRating();
-                    if (rating > 0) saveRating(reservation, rating, etComments.getText().toString().trim());
-                    else Toast.makeText(itemView.getContext(), R.string.seleccione_puntuacion, Toast.LENGTH_SHORT).show();
+                .setPositiveButton(R.string.enviar_calificacion, (d, which) -> {
+                    if (ratingBar != null) {
+                        float rating = ratingBar.getRating();
+                        if (rating > 0) saveRating(reservation, rating, etComments.getText().toString().trim());
+                        else Toast.makeText(itemView.getContext(), R.string.seleccione_puntuacion, Toast.LENGTH_SHORT).show();
+                    }
                 })
-                .setNegativeButton(R.string.cancelar, null).show();
+                .setNegativeButton(R.string.cancelar, null)
+                .create();
+
+            // 🔥 Animación de entrada premium para el diálogo
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().getAttributes().windowAnimations = R.style.CustomActivityAnimation;
+            }
+            dialog.show();
+            
+            // Animación de entrada para el contenido interno
+            com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(dialogView);
         }
 
         private void saveRating(Reservation reservation, float rating, String comment) {

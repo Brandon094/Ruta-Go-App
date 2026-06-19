@@ -153,4 +153,26 @@ public class UIAnimationUtils {
                 .setInterpolator(new android.view.animation.OvershootInterpolator(1.5f))
                 .start();
     }
+
+    /**
+     * ⭐ Animación explosiva para la selección de estrellas en calificación.
+     */
+    public static void playStarRatingAnimation(View view) {
+        if (view == null) return;
+        view.animate().cancel();
+        view.setScaleX(0.8f);
+        view.setScaleY(0.8f);
+        view.animate()
+                .scaleX(1.15f)
+                .scaleY(1.15f)
+                .setDuration(150)
+                .setInterpolator(new android.view.animation.AccelerateInterpolator())
+                .withEndAction(() -> view.animate()
+                        .scaleX(1.0f)
+                        .scaleY(1.0f)
+                        .setDuration(250)
+                        .setInterpolator(new android.view.animation.OvershootInterpolator(2.0f))
+                        .start())
+                .start();
+    }
 }
