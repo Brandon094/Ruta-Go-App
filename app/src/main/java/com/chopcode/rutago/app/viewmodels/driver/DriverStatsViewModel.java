@@ -4,7 +4,6 @@ import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
-import com.chopcode.rutago.app.utils.ui.FormatUtils;
 
 import android.util.Log;
 import androidx.lifecycle.LiveData;
@@ -147,88 +146,69 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Agrupa las reservas por origen/destino usando normalización de texto (quitar tildes).
+     * Agrupa las reservas por scheduleId para un desglose preciso por turno.
      * Garantiza que todas las rutas activas aparezcan en el desglose, incluso con 0 reservas.
      */
     private void processReservationsForDetailedStats(List<Reservation> confirmed, List<Reservation> pending) {
         Map<String, Integer> resMap = new HashMap<>(); // Conteo de reservas confirmadas
         Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total (confirmadas + pendientes)
-        Map<String, String> names = new HashMap<>();  // Nombres descriptivos
         
         // 1. Inicializar con las rutas activas asignadas al conductor
         for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
-            String origin = route.getOrigin();
-            String dest = route.getDestination();
-            if (origin != null && dest != null) {
-                String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
-                names.put(key, origin + " → " + dest);
-                resMap.put(key, 0);
-                occMap.put(key, 0);
+            String sid = route.getScheduleId();
+            if (sid != null) {
+                resMap.put(sid, 0);
+                occMap.put(sid, 0);
             }
         }
 
-        // 2. Procesar las reservas recibidas
+        // 2. Procesar las reservas recibidas agrupando por scheduleId
         List<Reservation> allToProcess = new ArrayList<>(confirmed);
         allToProcess.addAll(pending);
 
         for (Reservation r : allToProcess) {
-            String origin = r.getOrigin();
-            String dest = r.getDestination();
-            
-            // 🔥 Resolver datos faltantes desde activeRoutes si es necesario
-            if ((origin == null || origin.isEmpty() || origin.equalsIgnoreCase("N/A")) && r.getScheduleId() != null) {
-                for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
-                    if (r.getScheduleId().equals(route.getScheduleId())) {
-                        origin = route.getOrigin();
-                        dest = route.getDestination();
-                        break;
-                    }
+            String sid = r.getScheduleId();
+            if (sid != null && resMap.containsKey(sid)) {
+                if (confirmed.contains(r)) {
+                    resMap.put(sid, resMap.getOrDefault(sid, 0) + 1);
                 }
+                occMap.put(sid, occMap.getOrDefault(sid, 0) + 1);
             }
-
-            if (origin == null || origin.isEmpty()) origin = "N/A";
-            if (dest == null || dest.isEmpty()) dest = "N/A";
-            
-            String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
-            
-            // Solo agregar si no existe ya para evitar duplicados si las rutas varían ligeramente en texto
-            if (!names.containsKey(key)) {
-                names.put(key, origin + " → " + dest);
-            }
-            
-            if (confirmed.contains(r)) {
-                resMap.put(key, resMap.getOrDefault(key, 0) + 1);
-            }
-            occMap.put(key, occMap.getOrDefault(key, 0) + 1);
         }
         
-        updateRouteDetails(resMap, occMap, names);
+        updateRouteDetailsDynamic(resMap, occMap);
     }
 
     /**
      * Genera dinámicamente la lista de estadísticas por ruta.
-     * Soporta N rutas (1, 2, 3 o más) asignando colores corporativos de forma cíclica.
+     * Mantiene el orden de activeRoutes (que ya viene ordenado: Siguiente primero).
      */
-    private void updateRouteDetails(Map<String, Integer> resMap, Map<String, Integer> occMap, Map<String, String> names) {
+    private void updateRouteDetailsDynamic(Map<String, Integer> resMap, Map<String, Integer> occMap) {
         List<com.chopcode.rutago.app.models.RouteStat> newStats = new ArrayList<>();
         int[] brandColors = {R.color.primary_500, R.color.secondary_400, R.color.secondary_300};
         int colorIndex = 0;
 
-        for (String key : names.keySet()) {
-            int res = resMap.getOrDefault(key, 0);
-            int occ = occMap.getOrDefault(key, 0);
+        for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
+            String sid = route.getScheduleId();
+            if (sid == null) continue;
+
+            int res = resMap.getOrDefault(sid, 0);
+            int occ = occMap.getOrDefault(sid, 0);
             int ava = Math.max(0, capacityPerRoute - occ);
-            String name = names.get(key);
+            
+            // Nombre descriptivo con horario para diferenciar turnos iguales
+            String time = (route.getTime() != null) ? route.getTime().getTime() : "--:--";
+            String displayName = route.getOrigin() + " → " + route.getDestination() + " (" + time + ")";
             
             int color = brandColors[colorIndex % brandColors.length];
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat(name, res, ava, color));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat(displayName, res, ava, color));
             colorIndex++;
         }
         
-        // Si no hay datos, agregar placeholders básicos
+        // Fallback básico si la lista sigue vacía
         if (newStats.isEmpty()) {
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata", 0, capacityPerRoute, R.color.primary_500));
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá", 0, capacityPerRoute, R.color.secondary_400));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata (06:00 AM)", 0, capacityPerRoute, R.color.primary_500));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá (07:30 AM)", 0, capacityPerRoute, R.color.secondary_400));
         }
         
         routeStatsLiveData.postValue(newStats);
