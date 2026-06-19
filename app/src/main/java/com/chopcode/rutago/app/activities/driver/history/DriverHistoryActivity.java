@@ -21,6 +21,7 @@ import com.chopcode.rutago.app.adapters.historial.DriverHistoryAdapter;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.viewmodels.driver.DriverHistoryViewModel;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -56,6 +57,10 @@ public class DriverHistoryActivity extends AppCompatActivity {
     private AuthManager authManager;
     private boolean isPremiumUser = true; 
     private String searchText = "";
+
+    private int lastTotal = 0;
+    private int lastConfirmed = 0;
+    private int lastCanceled = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +117,18 @@ public class DriverHistoryActivity extends AppCompatActivity {
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_SHORT).show(); });
 
-        viewModel.getTotalCount().observe(this, count -> tvTotal.setText(String.valueOf(count)));
-        viewModel.getConfirmedCount().observe(this, count -> tvConfirmed.setText(String.valueOf(count)));
-        viewModel.getCancelledCount().observe(this, count -> tvCanceled.setText(String.valueOf(count)));
+        viewModel.getTotalCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvTotal, lastTotal, count);
+            lastTotal = count;
+        });
+        viewModel.getConfirmedCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvConfirmed, lastConfirmed, count);
+            lastConfirmed = count;
+        });
+        viewModel.getCancelledCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvCanceled, lastCanceled, count);
+            lastCanceled = count;
+        });
     }
 
     private void setupChips() {
@@ -143,8 +157,14 @@ public class DriverHistoryActivity extends AppCompatActivity {
     }
 
     private void updateUI(boolean isEmpty, int size) {
-        if (isEmpty) { recyclerHistory.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.VISIBLE); }
-        else { recyclerHistory.setVisibility(View.VISIBLE); layoutEmptyState.setVisibility(View.GONE); }
+        if (isEmpty) {
+            recyclerHistory.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.VISIBLE);
+        } else {
+            recyclerHistory.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
+            recyclerHistory.scheduleLayoutAnimation(); // 🔥 Disparar animación de entrada
+        }
         tvListTitle.setText(getString(R.string.historial_viajes_count, size));
     }
 
