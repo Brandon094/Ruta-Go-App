@@ -132,10 +132,27 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 btnReserve.setOnClickListener(v -> {
                     if (listener != null) listener.onReservarClick(schedule);
                 });
-                // Deshabilitar si ya pasó el horario o no hay cupos
-                boolean canReserve = available > 0 && !isPast;
-                btnReserve.setEnabled(canReserve);
-                btnReserve.setAlpha(canReserve ? 1.0f : 0.4f);
+
+                if (isPast) {
+                    // Animación del bus arrancando
+                    btnReserve.setImageResource(R.drawable.ic_bus);
+                    btnReserve.setEnabled(false);
+                    // Solo disparar si aún no se ha ido de la pantalla
+                    if (btnReserve.getVisibility() == View.VISIBLE && btnReserve.getTranslationX() == 0) {
+                        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playBusDepartureAnimation(btnReserve);
+                    } else {
+                        btnReserve.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    // Estado normal (Disponible)
+                    btnReserve.setVisibility(View.VISIBLE);
+                    btnReserve.setTranslationX(0);
+                    btnReserve.setAlpha(1.0f);
+                    btnReserve.setImageResource(R.drawable.ic_add);
+                    boolean canReserve = available > 0;
+                    btnReserve.setEnabled(canReserve);
+                    btnReserve.setAlpha(canReserve ? 1.0f : 0.4f);
+                }
             }
         }
 

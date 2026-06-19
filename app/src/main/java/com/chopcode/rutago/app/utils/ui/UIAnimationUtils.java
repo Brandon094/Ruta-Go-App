@@ -254,4 +254,33 @@ public class UIAnimationUtils {
         };
         handler.postDelayed(runnable, 2000);
     }
+
+    /**
+     * 🚌 Animación de "Salida del Bus" (Bus Departure).
+     * El elemento hace un pequeño retroceso (arranque) y sale disparado hacia la derecha.
+     */
+    public static void playBusDepartureAnimation(View view) {
+        if (view == null) return;
+        
+        view.animate().cancel();
+        view.setTranslationX(0);
+        view.setAlpha(1.0f);
+
+        // 1. Pequeño retroceso (preparando motores)
+        view.animate()
+                .translationX(-30f)
+                .setDuration(400)
+                .setInterpolator(new android.view.animation.AccelerateInterpolator())
+                .withEndAction(() -> {
+                    // 2. Sale disparado a la derecha y desaparece
+                    view.animate()
+                            .translationX(500f) // Fuera de la pantalla
+                            .alpha(0f)
+                            .setDuration(800)
+                            .setInterpolator(new android.view.animation.AccelerateInterpolator())
+                            .withEndAction(() -> view.setVisibility(View.INVISIBLE))
+                            .start();
+                })
+                .start();
+    }
 }
