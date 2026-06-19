@@ -98,7 +98,7 @@ public class ReservationDataProcessor {
                 intent.putExtra("destino", parts[1].trim());
             }
         }
-        intent.putExtra("precio", routePrice != null ? routePrice : 12000.0);
+        intent.putExtra("precio", routePrice != null ? routePrice : com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
         intent.putExtra("tiempoEstimado", route != null && route.contains("Natagá") ? "60 min" : "55 min");
     }
 }

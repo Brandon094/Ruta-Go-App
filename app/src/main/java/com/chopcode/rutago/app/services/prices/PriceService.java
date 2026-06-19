@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public class PriceService {
     private static final String TAG = "PriceService";
+    public static final double DEFAULT_PRICE = 12000.0;
     private final DatabaseReference pricesRef;
 
     public interface PriceCallback {
@@ -76,7 +77,7 @@ public class PriceService {
      */
     public void getRoutePrice(String origin, String destination, PriceCallback callback) {
         if (origin == null || destination == null) {
-            callback.onPriceLoaded(12000.0);
+            callback.onPriceLoaded(DEFAULT_PRICE);
             return;
         }
 
@@ -93,38 +94,37 @@ public class PriceService {
                 if (snapshot.exists()) {
                     resolvePrice(snapshot, callback);
                 } else {
-                    // Si no existe, intentar con la estructura de tu JSON: precios/ruta/origen -> destino
+                    // Si no existe, intentar con la estructura legacy: precios/ruta/origen -> destino
                     pricesRef.child("ruta").child(legacyKey).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshotLegacy) {
                             if (snapshotLegacy.exists()) {
                                 resolvePrice(snapshotLegacy, callback);
                             } else {
-                                Log.w(TAG, "⚠️ Precio no encontrado en ninguna estructura. Usando 12000.");
-                                callback.onPriceLoaded(12000.0);
+                                Log.w(TAG, "⚠️ Precio no encontrado en ninguna estructura. Usando " + DEFAULT_PRICE);
+                                callback.onPriceLoaded(DEFAULT_PRICE);
                             }
                         }
-                        @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(12000.0); }
+                        @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(DEFAULT_PRICE); }
                     });
                 }
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(12000.0); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onPriceLoaded(DEFAULT_PRICE); }
         });
     }
 
     private void resolvePrice(DataSnapshot snapshot, PriceCallback callback) {
         try {
             Object value = snapshot.getValue();
-            if (value instanceof Number) {
-                callback.onPriceLoaded(((Number) value).doubleValue());
-            } else if (value instanceof String) {
-                callback.onPriceLoaded(Double.parseDouble((String) value));
+            Double price = convertToDouble(value);
+            if (price != null) {
+                callback.onPriceLoaded(price);
             } else {
-                callback.onPriceLoaded(12000.0);
+                callback.onPriceLoaded(DEFAULT_PRICE);
             }
         } catch (Exception e) {
             Log.e(TAG, "❌ Error al convertir precio: " + e.getMessage());
-            callback.onPriceLoaded(12000.0);
+            callback.onPriceLoaded(DEFAULT_PRICE);
         }
     }
 }

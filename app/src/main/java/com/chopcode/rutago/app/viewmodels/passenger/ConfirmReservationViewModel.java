@@ -63,7 +63,7 @@ public class ConfirmReservationViewModel extends ViewModel {
         data.put("conductorId", intent.getStringExtra("conductorId"));
         data.put("vehiculoPlaca", intent.getStringExtra("vehiculoPlaca"));
         data.put("vehiculoModelo", intent.getStringExtra("vehiculoModelo"));
-        data.put("precio", intent.getDoubleExtra("precio", 12000.0));
+        data.put("precio", intent.getDoubleExtra("precio", PriceService.DEFAULT_PRICE));
         data.put("tiempoEstimado", intent.getStringExtra("tiempoEstimado"));
         data.put("origen", intent.getStringExtra("origen"));
         data.put("destino", intent.getStringExtra("destino"));

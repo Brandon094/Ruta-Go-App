@@ -57,6 +57,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         
         viewModel = new ViewModelProvider(this).get(ManageSeatsViewModel.class);
         viewModel.setRoutePrice(routePrice);
+        viewModel.fetchRoutePrice(routeName);
         
         initViews();
         setupManagers();

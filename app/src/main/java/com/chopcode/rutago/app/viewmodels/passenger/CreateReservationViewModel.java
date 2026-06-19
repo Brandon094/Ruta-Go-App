@@ -39,7 +39,7 @@ public class CreateReservationViewModel extends ViewModel {
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
     private final MutableLiveData<Driver> currentDriver = new MutableLiveData<>();
     private final MutableLiveData<Vehicle> currentVehicle = new MutableLiveData<>();
-    private final MutableLiveData<Double> routePrice = new MutableLiveData<>(12000.0);
+    private final MutableLiveData<Double> routePrice = new MutableLiveData<>(PriceService.DEFAULT_PRICE);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
@@ -74,7 +74,7 @@ public class CreateReservationViewModel extends ViewModel {
     public void loadPrice(String origin, String destination) {
         priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
             @Override public void onPriceLoaded(double price) { routePrice.postValue(price); }
-            @Override public void onError(String error) { routePrice.postValue(12000.0); }
+            @Override public void onError(String error) { routePrice.postValue(PriceService.DEFAULT_PRICE); }
         });
     }
 

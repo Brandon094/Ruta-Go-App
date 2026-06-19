@@ -40,15 +40,42 @@ public class ManageSeatsViewModel extends ViewModel {
 
     private final SeatsDataProcessor seatsDataProcessor;
     private final com.chopcode.rutago.app.services.reservations.driver.DriverReservationService driverReservationService;
+    private final com.chopcode.rutago.app.services.prices.PriceService priceService;
     private ValueEventListener seatsListener;
     private ValueEventListener reservesListener;
     private String currentScheduleId;
     private Set<Integer> lastTotalOccupied = new HashSet<>();
-    private double routePrice = 12000.0;
+    private double routePrice = com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE;
 
     public ManageSeatsViewModel() {
         this.seatsDataProcessor = new SeatsDataProcessor();
         this.driverReservationService = new com.chopcode.rutago.app.services.reservations.driver.DriverReservationService();
+        this.priceService = new com.chopcode.rutago.app.services.prices.PriceService();
+    }
+
+    /**
+     * 🔥 Carga el precio oficial de la ruta desde Firebase para garantizar consistencia.
+     */
+    public void fetchRoutePrice(String routeName) {
+        if (routeName == null || !routeName.contains("->")) return;
+        
+        String[] parts = routeName.split("->");
+        if (parts.length == 2) {
+            String origin = parts[0].trim();
+            String destination = parts[1].trim();
+            priceService.getRoutePrice(origin, destination, new com.chopcode.rutago.app.services.prices.PriceService.PriceCallback() {
+                @Override
+                public void onPriceLoaded(double price) {
+                    routePrice = price;
+                    Log.d(TAG, "💰 Precio de ruta actualizado desde Firebase: " + price);
+                }
+
+                @Override
+                public void onError(String errorMsg) {
+                    Log.e(TAG, "❌ Error al cargar precio: " + errorMsg);
+                }
+            });
+        }
     }
 
     public void setRoutePrice(double price) {

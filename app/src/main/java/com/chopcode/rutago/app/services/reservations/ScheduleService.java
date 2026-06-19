@@ -88,20 +88,24 @@ public class ScheduleService {
 
                             // Resolver precio dinámico
                             if (routeStr != null) {
-                                String separator = routeStr.contains(" → ") ? " → " : " -> ";
-                                String[] parts = routeStr.split(separator);
-                                String origin = "Natagá";
-                                String destination = "La Plata";
-                                
-                                if (parts.length == 2) {
+                                String origin, destination;
+                                if (routeStr.contains("->")) {
+                                    String[] parts = routeStr.split("->");
                                     origin = parts[0].trim();
                                     destination = parts[1].trim();
+                                } else if (routeStr.contains("→")) {
+                                    String[] parts = routeStr.split("→");
+                                    origin = parts[0].trim();
+                                    destination = parts[1].trim();
+                                } else {
+                                    origin = "Natagá";
+                                    destination = "La Plata";
                                 }
                                 
                                 String normOrigin = FormatUtils.normalizarTexto(origin);
                                 String normDest = FormatUtils.normalizarTexto(destination);
                                 
-                                double price = 12000.0;
+                                double price = PriceService.DEFAULT_PRICE;
                                 if (allPrices.containsKey(normOrigin) && allPrices.get(normOrigin).containsKey(normDest)) {
                                     price = allPrices.get(normOrigin).get(normDest);
                                 }
@@ -111,7 +115,7 @@ public class ScheduleService {
                                 else if (normOrigin.contains("plata")) laPlataList.add(schedule);
                                 else natagaList.add(schedule);
                             } else {
-                                schedule.setPrice("12000");
+                                schedule.setPrice(String.valueOf(PriceService.DEFAULT_PRICE));
                                 natagaList.add(schedule);
                             }
                         }
