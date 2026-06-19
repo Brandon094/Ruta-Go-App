@@ -18,6 +18,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
 
     private List<Route> routeList;
     private OnRutaClickListener listener;
+    private int nextRouteIndex = -1;
 
     public interface OnRutaClickListener {
         void onRutaClick(Route route);
@@ -26,6 +27,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
     public RouteAdapter(List<Route> routeList, OnRutaClickListener listener) {
         this.routeList = routeList;
         this.listener = listener;
+        calcularIndiceSiguienteRuta();
     }
 
     @NonNull
@@ -39,7 +41,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
         if (routeList == null || position >= routeList.size()) return;
         Route route = routeList.get(position);
-        holder.bind(route);
+        holder.bind(route, position == nextRouteIndex);
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onRutaClick(route);
         });
@@ -52,11 +54,30 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
 
     public void actualizarRutas(List<Route> newRoutes) {
         this.routeList = newRoutes;
+        calcularIndiceSiguienteRuta();
         notifyDataSetChanged();
     }
 
+    private void calcularIndiceSiguienteRuta() {
+        nextRouteIndex = -1;
+        if (routeList == null || routeList.isEmpty()) return;
+
+        for (int i = 0; i < routeList.size(); i++) {
+            Route r = routeList.get(i);
+            if (r.getTime() != null && !FormatUtils.esHorarioPasado(r.getTime().getTime())) {
+                nextRouteIndex = i;
+                break;
+            }
+        }
+        
+        // Fallback: Si todos pasaron hoy, el siguiente es el primero (mañana)
+        if (nextRouteIndex == -1 && !routeList.isEmpty()) {
+            nextRouteIndex = 0;
+        }
+    }
+
     public static class RouteViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvOrigin, tvDestination, tvTime, tvPrice;
+        private TextView tvOrigin, tvDestination, tvTime, tvPrice, tvBadgeNext;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,9 +85,10 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             tvDestination = itemView.findViewById(R.id.tvDestino);
             tvTime = itemView.findViewById(R.id.tvHorario);
             tvPrice = itemView.findViewById(R.id.tvPrecioRuta);
+            tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximoRuta);
         }
 
-        public void bind(Route route) {
+        public void bind(Route route, boolean isNext) {
             Log.d("RouteAdapter", "Binding route: " + route.getOrigin() + " to " + route.getDestination());
             tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : itemView.getContext().getString(R.string.no_disponible));
             tvDestination.setText(route.getDestination() != null ? route.getDestination() : itemView.getContext().getString(R.string.no_disponible));
@@ -81,6 +103,17 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             if (tvPrice != null) {
                 tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, route.getFare());
+            }
+
+            // Feedback dinámico para el conductor
+            if (tvBadgeNext != null) {
+                if (isNext) {
+                    tvBadgeNext.setVisibility(View.VISIBLE);
+                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startPulseAnimation(tvBadgeNext);
+                } else {
+                    tvBadgeNext.setVisibility(View.GONE);
+                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.stopAnimation(tvBadgeNext);
+                }
             }
         }
     }

@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="160dp"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -81,6 +82,22 @@
             android:drawableStart="@drawable/ic_price"
             android:drawablePadding="4dp"
             android:drawableTint="@color/warning_500"/>
+
+        <!-- Badge Siguiente (Feedback Conductor) -->
+        <TextView
+            android:id="@+id/tvBadgeProximoRuta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_status_next"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="@string/badge_siguiente"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
