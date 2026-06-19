@@ -1,14 +1,15 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
-import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public class DriverStatsViewModel extends BaseViewModel {
     private List<String> assignedSchedules;
     private List<com.chopcode.rutago.app.models.Route> activeRoutes = new ArrayList<>();
     private ValueEventListener statsListener;
+    private ValueEventListener availabilityListener;
+    private final Map<String, Integer> scheduleAvailabilityMap = new HashMap<>();
+    private final Map<String, Integer> scheduleTotalMap = new HashMap<>();
 
     public DriverStatsViewModel() {
         this.driverReservationService = new DriverReservationService();
@@ -112,6 +116,34 @@ public class DriverStatsViewModel extends BaseViewModel {
                         setError(error);
                     }
                 });
+
+        // 🔥 NUEVO: Escuchar disponibilidad real de asientos (incluye ventas físicas)
+        startAvailabilityListener();
+    }
+
+    private void startAvailabilityListener() {
+        if (assignedSchedules == null || assignedSchedules.isEmpty()) return;
+        
+        DatabaseReference dispRef = com.chopcode.rutago.app.config.MyApp.getDatabaseReference("disponibilidadAsientos");
+        availabilityListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                for (String sid : assignedSchedules) {
+                    com.google.firebase.database.DataSnapshot s = snapshot.child(sid);
+                    if (s.exists()) {
+                        Integer avail = s.child("asientosDisponibles").getValue(Integer.class);
+                        Integer total = s.child("totalAsientos").getValue(Integer.class);
+                        if (avail != null) scheduleAvailabilityMap.put(sid, avail);
+                        if (total != null) scheduleTotalMap.put(sid, total);
+                    }
+                }
+                // Forzar refresco del desglose con los nuevos datos de disponibilidad
+                calculateRouteStatistics();
+            }
+
+            @Override public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+        };
+        dispRef.addValueEventListener(availabilityListener);
     }
 
     /**
@@ -121,6 +153,10 @@ public class DriverStatsViewModel extends BaseViewModel {
         if (statsListener != null) {
             com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas").removeEventListener(statsListener);
             statsListener = null;
+        }
+        if (availabilityListener != null) {
+            com.chopcode.rutago.app.config.MyApp.getDatabaseReference("disponibilidadAsientos").removeEventListener(availabilityListener);
+            availabilityListener = null;
         }
     }
 
@@ -137,53 +173,17 @@ public class DriverStatsViewModel extends BaseViewModel {
         int totalOccupied = stats.confirmedReservations + stats.pendingReservations;
         availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - totalOccupied));
 
-        // Procesar desglose individual por ruta
-        processReservationsForDetailedStats(stats.confirmedReservationsList, stats.pendingReservationsList);
+        // 🔥 Disparar actualización del desglose detallado
+        calculateRouteStatistics();
     }
 
+    /**
+     * 🔥 Genera dinámicamente la lista de estadísticas por ruta.
+     * Mantiene el orden de activeRoutes y cruza datos de reservas con disponibilidad real.
+     */
     public void calculateRouteStatistics() {
-        refreshStatistics();
-    }
-
-    /**
-     * Agrupa las reservas por scheduleId para un desglose preciso por turno.
-     * Garantiza que todas las rutas activas aparezcan en el desglose, incluso con 0 reservas.
-     */
-    private void processReservationsForDetailedStats(List<Reservation> confirmed, List<Reservation> pending) {
-        Map<String, Integer> resMap = new HashMap<>(); // Conteo de reservas confirmadas
-        Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total (confirmadas + pendientes)
+        if (activeRoutes == null || activeRoutes.isEmpty()) return;
         
-        // 1. Inicializar con las rutas activas asignadas al conductor
-        for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
-            String sid = route.getScheduleId();
-            if (sid != null) {
-                resMap.put(sid, 0);
-                occMap.put(sid, 0);
-            }
-        }
-
-        // 2. Procesar las reservas recibidas agrupando por scheduleId
-        List<Reservation> allToProcess = new ArrayList<>(confirmed);
-        allToProcess.addAll(pending);
-
-        for (Reservation r : allToProcess) {
-            String sid = r.getScheduleId();
-            if (sid != null && resMap.containsKey(sid)) {
-                if (confirmed.contains(r)) {
-                    resMap.put(sid, resMap.getOrDefault(sid, 0) + 1);
-                }
-                occMap.put(sid, occMap.getOrDefault(sid, 0) + 1);
-            }
-        }
-        
-        updateRouteDetailsDynamic(resMap, occMap);
-    }
-
-    /**
-     * Genera dinámicamente la lista de estadísticas por ruta.
-     * Mantiene el orden de activeRoutes (que ya viene ordenado: Siguiente primero).
-     */
-    private void updateRouteDetailsDynamic(Map<String, Integer> resMap, Map<String, Integer> occMap) {
         List<com.chopcode.rutago.app.models.RouteStat> newStats = new ArrayList<>();
         int[] brandColors = {R.color.primary_500, R.color.secondary_400, R.color.secondary_300};
         int colorIndex = 0;
@@ -192,23 +192,29 @@ public class DriverStatsViewModel extends BaseViewModel {
             String sid = route.getScheduleId();
             if (sid == null) continue;
 
-            int res = resMap.getOrDefault(sid, 0);
-            int occ = occMap.getOrDefault(sid, 0);
-            int ava = Math.max(0, capacityPerRoute - occ);
+            // 🔥 Ocupación Real: Obtenida directamente de la disponibilidad (incluye App y Ventas Físicas)
+            Integer totalObj = scheduleTotalMap.get(sid);
+            int total = (totalObj != null) ? totalObj : capacityPerRoute;
+            
+            Integer availObj = scheduleAvailabilityMap.get(sid);
+            int available = (availObj != null) ? availObj : total;
+            
+            int realOccupied = Math.max(0, total - available);
             
             // Nombre descriptivo con horario para diferenciar turnos iguales
             String time = (route.getTime() != null) ? route.getTime().getTime() : "--:--";
             String displayName = route.getOrigin() + " → " + route.getDestination() + " (" + time + ")";
             
             int color = brandColors[colorIndex % brandColors.length];
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat(displayName, res, ava, color));
+            // 'realOccupied' ahora se muestra en el campo de 'reservations' de la tarjeta (representa pasajeros totales)
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat(displayName, realOccupied, available, color));
             colorIndex++;
         }
         
         // Fallback básico si la lista sigue vacía
         if (newStats.isEmpty()) {
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata (06:00 AM)", 0, capacityPerRoute, R.color.primary_500));
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá (07:30 AM)", 0, capacityPerRoute, R.color.secondary_400));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata", 0, capacityPerRoute, R.color.primary_500));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá", 0, capacityPerRoute, R.color.secondary_400));
         }
         
         routeStatsLiveData.postValue(newStats);
