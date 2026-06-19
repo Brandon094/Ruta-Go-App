@@ -56,7 +56,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Animaciones de Vanguardia:** 
   - **Splash Pro:** Efecto de crecimiento desde un punto diminuto (`scale 0.01`). Primero crece el Pin de fondo y luego el Logo con efecto `Overshoot` marcado.
   - **Logo Vivo (Tilt):** Los logos en Login, Registro y Dashboards realizan un balanceo de **15 grados** cada 5 segundos para dar sensación de vida.
-  - **Next Trip Indicator:** Resaltar dinámicamente el horario más próximo a salir con un badge **"SIGUIENTE"** animado (Pulse) en color Navy.
+  - **Next Trip Indicator:** Resaltar dinámicamente el horario más próximo a salir con un badge **"SIGUIENTE"** animado (Pulse) en color **Navy Medio (`secondary_400`)** para garantizar contraste en ambos temas.
 - **Departure Animation:** Al expirar un horario ("Finalizado"), el botón de reserva cambia a un icono de bus (`ic_bus`) y realiza una animación de arranque saliendo de la pantalla hacia la derecha.
 - **Soporte Multi-tema (DayNight):** 
   - Prohibido hardcodear colores (`@color/...`) para fondos y textos.

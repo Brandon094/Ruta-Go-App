@@ -170,7 +170,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:background="@drawable/bg_badge_status"
-                android:backgroundTint="@color/secondary_900"
+                android:backgroundTint="@color/secondary_400"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp"
                 android:text="@string/badge_siguiente"

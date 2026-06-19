@@ -204,7 +204,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 badgeText = "Últimos cupos";
             } else {
                 textColor = itemView.getContext().getColor(R.color.primary_200); 
-                badgeColor = isNextTrip ? itemView.getContext().getColor(R.color.secondary_500) : itemView.getContext().getColor(R.color.primary_500); 
+                badgeColor = isNextTrip ? itemView.getContext().getColor(R.color.secondary_400) : itemView.getContext().getColor(R.color.primary_500);
                 badgeText = "Disponible";
             }
 
