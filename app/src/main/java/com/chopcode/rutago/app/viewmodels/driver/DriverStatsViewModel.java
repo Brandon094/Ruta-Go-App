@@ -148,12 +148,26 @@ public class DriverStatsViewModel extends BaseViewModel {
 
     /**
      * Agrupa las reservas por origen/destino usando normalización de texto (quitar tildes).
+     * Garantiza que todas las rutas activas aparezcan en el desglose, incluso con 0 reservas.
      */
     private void processReservationsForDetailedStats(List<Reservation> confirmed, List<Reservation> pending) {
-        Map<String, Integer> resMap = new HashMap<>(); // Conteo de reservas
-        Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total
+        Map<String, Integer> resMap = new HashMap<>(); // Conteo de reservas confirmadas
+        Map<String, Integer> occMap = new HashMap<>(); // Conteo de ocupación total (confirmadas + pendientes)
         Map<String, String> names = new HashMap<>();  // Nombres descriptivos
         
+        // 1. Inicializar con las rutas activas asignadas al conductor
+        for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
+            String origin = route.getOrigin();
+            String dest = route.getDestination();
+            if (origin != null && dest != null) {
+                String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
+                names.put(key, origin + " → " + dest);
+                resMap.put(key, 0);
+                occMap.put(key, 0);
+            }
+        }
+
+        // 2. Procesar las reservas recibidas
         List<Reservation> allToProcess = new ArrayList<>(confirmed);
         allToProcess.addAll(pending);
 
@@ -161,7 +175,7 @@ public class DriverStatsViewModel extends BaseViewModel {
             String origin = r.getOrigin();
             String dest = r.getDestination();
             
-            // 🔥 FIX: Si faltan datos, intentar resolver desde la lista de rutas usando scheduleId
+            // 🔥 Resolver datos faltantes desde activeRoutes si es necesario
             if ((origin == null || origin.isEmpty() || origin.equalsIgnoreCase("N/A")) && r.getScheduleId() != null) {
                 for (com.chopcode.rutago.app.models.Route route : activeRoutes) {
                     if (r.getScheduleId().equals(route.getScheduleId())) {
@@ -176,7 +190,11 @@ public class DriverStatsViewModel extends BaseViewModel {
             if (dest == null || dest.isEmpty()) dest = "N/A";
             
             String key = FormatUtils.normalizarTexto(origin) + "|" + FormatUtils.normalizarTexto(dest);
-            names.put(key, origin + " → " + dest);
+            
+            // Solo agregar si no existe ya para evitar duplicados si las rutas varían ligeramente en texto
+            if (!names.containsKey(key)) {
+                names.put(key, origin + " → " + dest);
+            }
             
             if (confirmed.contains(r)) {
                 resMap.put(key, resMap.getOrDefault(key, 0) + 1);
