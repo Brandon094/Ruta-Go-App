@@ -20,6 +20,7 @@ import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.chopcode.rutago.app.viewmodels.passenger.UserProfileViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.card.MaterialCardView;
@@ -105,6 +106,9 @@ public class UserProfileActivity extends AppCompatActivity {
         if (tvUserStatus != null) tvUserStatus.setOnClickListener(v -> viewModel.toggleUserStatus());
     }
 
+    private double lastTotalSpent = 0;
+    private int lastPoints = 0;
+
     private void setupObservers() {
         viewModel.getUserData().observe(this, user -> {
             if (user != null) {
@@ -125,9 +129,24 @@ public class UserProfileActivity extends AppCompatActivity {
             if (stats != null) {
                 if (shimmerPremium != null) { shimmerPremium.stopShimmer(); shimmerPremium.setVisibility(View.GONE); }
                 cardPremiumStats.setVisibility(View.VISIBLE);
+                
                 Double gastado = (Double) stats.get("totalGastado");
-                tvTotalGastadoPremium.setText(FormatUtils.formatearPrecio(gastado != null ? gastado : 0.0));
-                tvPuntosLealtad.setText(getString(R.string.puntos_format, String.valueOf(stats.get("puntosLealtad"))));
+                double newSpent = gastado != null ? gastado : 0.0;
+                UIAnimationUtils.animateCurrencyText(tvTotalGastadoPremium, lastTotalSpent, newSpent);
+                lastTotalSpent = newSpent;
+
+                Object puntosObj = stats.get("puntosLealtad");
+                int newPoints = 0;
+                if (puntosObj instanceof Number) newPoints = ((Number) puntosObj).intValue();
+                
+                final int finalPoints = newPoints;
+                // Animación personalizada para mantener el sufijo "pts"
+                android.animation.ValueAnimator animator = android.animation.ValueAnimator.ofInt(lastPoints, newPoints);
+                animator.setDuration(1000);
+                animator.addUpdateListener(animation -> tvPuntosLealtad.setText(getString(R.string.puntos_format, animation.getAnimatedValue().toString())));
+                animator.start();
+                lastPoints = finalPoints;
+
                 tvRutaFavorita.setText(getString(R.string.ruta_favorita_label, (String)stats.get("rutaMasFrecuente")));
             }
         });
