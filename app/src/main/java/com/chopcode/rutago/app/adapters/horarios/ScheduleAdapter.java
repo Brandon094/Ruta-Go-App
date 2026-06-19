@@ -14,9 +14,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
+public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "ScheduleAdapter";
+    private static final int TYPE_SCHEDULE = 1;
+    private static final int TYPE_FOOTER = 2;
+
     private List<Schedule> schedules;
     private OnReservarClickListener listener;
     private int nextTripIndex = -1;
@@ -31,23 +34,36 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         calcularIndiceSiguienteViaje();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (position == schedules.size()) {
+            return TYPE_FOOTER;
+        }
+        return TYPE_SCHEDULE;
+    }
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == TYPE_FOOTER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_footer_reset_info, parent, false);
+            return new FooterViewHolder(view);
+        }
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_horario, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (position < schedules.size()) {
-            holder.bind(schedules.get(position), position == nextTripIndex, listener);
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof ViewHolder) {
+            ((ViewHolder) holder).bind(schedules.get(position), position == nextTripIndex, listener);
         }
     }
 
     @Override
     public int getItemCount() {
-        return schedules.size();
+        // +1 para el Footer
+        return schedules.isEmpty() ? 0 : schedules.size() + 1;
     }
 
     public int getNextTripIndex() {
@@ -81,6 +97,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        // ... (resto del ViewHolder igual)
         public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext;
         public FloatingActionButton btnReserve;
 
@@ -196,6 +213,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             if (tvPrice != null) {
                 tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
             }
+        }
+    }
+
+    /**
+     * ℹ️ ViewHolder simple para el Footer informativo.
+     */
+    public static class FooterViewHolder extends RecyclerView.ViewHolder {
+        public FooterViewHolder(@NonNull View itemView) {
+            super(itemView);
         }
     }
 }
