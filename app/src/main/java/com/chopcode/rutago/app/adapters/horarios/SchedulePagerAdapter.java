@@ -43,19 +43,15 @@ public class SchedulePagerAdapter extends FragmentStateAdapter {
         }
 
         if (parentActivity != null) {
-            fragment.setUserDataListener(new HorarioFragment.OnUserDataListener() {
-                @Override
-                public User getUserActual() {
-                    return parentActivity.getUserActual();
-                }
-            });
+            fragment.setUserDataListener(() -> parentActivity.getUserActual());
         }
 
-        if (fragments.size() > position) {
-            fragments.set(position, fragment);
-        } else {
-            fragments.add(position, fragment);
+        // Asegurar que la lista de fragmentos sea consistente
+        while (fragments.size() <= position) {
+            fragments.add(null);
         }
+        fragments.set(position, fragment);
+
         return fragment;
     }
 

@@ -81,6 +81,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (newSchedules != null) {
             this.schedules.addAll(newSchedules);
         }
+        this.departureAnimationsEnabled = false; // Resetear para el nuevo ciclo de scroll + partida
         calcularIndiceSiguienteViaje();
         notifyDataSetChanged();
     }

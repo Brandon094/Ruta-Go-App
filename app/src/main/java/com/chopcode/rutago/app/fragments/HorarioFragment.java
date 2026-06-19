@@ -107,7 +107,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
      * 🔥 Desplaza el scroll automáticamente hasta el horario marcado como "SIGUIENTE".
      * Ejecuta primero el scroll y luego dispara las animaciones de salida de buses.
      */
-    private void desplazarAlSiguienteViajeConDelay() {
+    public void desplazarAlSiguienteViajeConDelay() {
         if (adapter == null || recyclerView == null) return;
 
         int targetIndex = adapter.getNextTripIndex();

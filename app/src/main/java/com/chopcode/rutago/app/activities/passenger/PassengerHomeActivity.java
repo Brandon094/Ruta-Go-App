@@ -181,6 +181,20 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         viewPagerSchedules.setAdapter(pagerAdapter);
         setupViewPagerAnimation();
         uiManager.setupTabLayout(tabLayout, viewPagerSchedules);
+
+        // 🔥 Auto-scroll al cambiar de pestaña (Trayecto)
+        viewPagerSchedules.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (pagerAdapter != null) {
+                    HorarioFragment fragment = pagerAdapter.getFragment(position);
+                    if (fragment != null) {
+                        fragment.desplazarAlSiguienteViajeConDelay();
+                    }
+                }
+            }
+        });
     }
 
     private void setupNetworkMonitor() {
