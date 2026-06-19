@@ -61,7 +61,7 @@ public class DriverHomeActivity extends AppCompatActivity {
 
     private boolean isDataLoaded = false;
     private RecyclerView rvReservas, rvProximasRutas;
-    private TextView tvConductor, tvPlacaVehiculo;
+    private TextView tvConductor, tvPlacaVehiculo, tvDriverStatusBadge;
     private TextView tvEmptyReservas, tvEmptyRutas;
     private ImageView ivConductorAvatar;
     private ShimmerFrameLayout shimmerLayout;
@@ -153,6 +153,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         shimmerLayout = findViewById(R.id.shimmer_inicio_conductor);
         fabVentaFisica = findViewById(R.id.fabVentaFisica);
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
+        tvDriverStatusBadge = findViewById(R.id.tvDriverStatusBadge);
         actualizarTiempoActualizacion();
     }
 
@@ -255,7 +256,10 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         perfilViewModel.getConductorLiveData().observe(this, driver -> {
-            if (driver != null) ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivConductorAvatar);
+            if (driver != null) {
+                ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivConductorAvatar);
+                actualizarBadgeEstado(driver.getStatus());
+            }
         });
 
         reservasViewModel.getReservasPendientesLiveData().observe(this, reservations -> {
@@ -377,6 +381,30 @@ public class DriverHomeActivity extends AppCompatActivity {
 
     private void showEmptyReservations() { tvEmptyReservas.setVisibility(View.VISIBLE); rvReservas.setVisibility(View.GONE); }
     private void showEmptyRoutes() { tvEmptyRutas.setVisibility(View.VISIBLE); rvProximasRutas.setVisibility(View.GONE); }
+
+    private void actualizarBadgeEstado(String status) {
+        if (tvDriverStatusBadge == null) return;
+        
+        if (status == null) status = "active";
+        
+        switch (status.toLowerCase()) {
+            case "active":
+                tvDriverStatusBadge.setText(R.string.status_conductor_activo);
+                tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
+                tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
+                break;
+            case "inactive":
+                tvDriverStatusBadge.setText(R.string.status_conductor_descanso);
+                tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_inactive);
+                tvDriverStatusBadge.setTextColor(getColor(R.color.status_inactive));
+                break;
+            default:
+                tvDriverStatusBadge.setText(R.string.status_conductor_activo);
+                tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
+                tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
+                break;
+        }
+    }
 
     @Override
     protected void onPause() { super.onPause(); reservasViewModel.pausarActualizacionesTiempoReal(); }

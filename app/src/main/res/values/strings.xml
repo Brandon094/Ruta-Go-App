@@ -259,6 +259,7 @@
     <string name="ruta_favorita_label">Ruta Favorita: %s</string>
     <string name="puntos_format">%s pts</string>
     <string name="status_conductor_activo">Conductor Activo</string>
+    <string name="status_conductor_descanso">En Descanso</string>
     <string name="informacion_vehiculo">Información del Vehículo</string>
     <string name="capacidad_label">Capacidad</string>
     <string name="anio_label">Año</string>

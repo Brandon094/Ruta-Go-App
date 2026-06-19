@@ -61,7 +61,7 @@
                 app:layout_constraintTop_toTopOf="@id/ivConductorAvatar"
                 app:layout_constraintBottom_toBottomOf="@id/ivConductorAvatar"
                 app:layout_constraintStart_toEndOf="@id/ivConductorAvatar"
-                app:layout_constraintEnd_toStartOf="@id/driverStatusBadge">
+                app:layout_constraintEnd_toStartOf="@id/tvDriverStatusBadge">
 
                 <TextView
                     android:id="@+id/tvConductor"
@@ -86,18 +86,8 @@
                     android:alpha="0.8" />
             </LinearLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/driverStatusBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/secondary_900"
-                app:layout_constraintTop_toTopOf="@id/ivConductorAvatar"
-                app:layout_constraintBottom_toBottomOf="@id/ivConductorAvatar"
-                app:layout_constraintEnd_toEndOf="parent">
-
                 <TextView
+                    android:id="@+id/tvDriverStatusBadge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="12dp"
@@ -105,8 +95,12 @@
                     android:text="@string/activo"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:textStyle="bold" />
-            </com.google.android.material.card.MaterialCardView>
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_badge_active"
+                    app:layout_constraintTop_toTopOf="@id/ivConductorAvatar"
+                    app:layout_constraintBottom_toBottomOf="@id/ivConductorAvatar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Conductor Activo" />
 
             <!-- Resumen Estadístico (Igual al Pasajero) -->
             <com.google.android.material.card.MaterialCardView

@@ -36,7 +36,7 @@ public class DriverProfileActivity extends AppCompatActivity {
     private static final String TAG = "DriverProfileActivity";
 
     // Views
-    private TextView tvConductor, tvEmail, tvTelefono, tvPlacaVehiculoHeader;
+    private TextView tvConductor, tvEmail, tvTelefono, tvDriverStatus;
     private ImageView ivProfilePicture;
     private View headerContent, layoutInfoReal;
     private ShimmerFrameLayout shimmerHeader, shimmerCard;
@@ -85,7 +85,7 @@ public class DriverProfileActivity extends AppCompatActivity {
         tvConductor = findViewById(R.id.tvNombreUser);
         tvEmail = findViewById(R.id.tvEmail);
         tvTelefono = findViewById(R.id.tvPhone);
-        tvPlacaVehiculoHeader = findViewById(R.id.tvPlacaVehiculoHeader);
+        tvDriverStatus = findViewById(R.id.tvDriverStatus);
         tvPlaca = findViewById(R.id.tvPlacaVehiculo);
         tvModVehiculo = findViewById(R.id.tvModeloVehiculo);
         tvCapacidad = findViewById(R.id.tvCapacidadVehiculo);
@@ -102,7 +102,7 @@ public class DriverProfileActivity extends AppCompatActivity {
                 tvConductor.setText(driver.getNombre());
                 tvEmail.setText(driver.getEmail());
                 tvTelefono.setText(driver.getTelefono());
-                tvPlacaVehiculoHeader.setText(getString(R.string.placa_label_format, driver.getVehiclePlate()));
+                updateStatusBadge(driver.getStatus());
                 ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivProfilePicture);
             }
         });
@@ -127,6 +127,30 @@ public class DriverProfileActivity extends AppCompatActivity {
         viewModel.getPhotoUploadStatus().observe(this, status -> {
             if (status != null) Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void updateStatusBadge(String status) {
+        if (tvDriverStatus == null) return;
+        
+        if (status == null) status = "active";
+        
+        switch (status.toLowerCase()) {
+            case "active":
+                tvDriverStatus.setText(R.string.status_conductor_activo);
+                tvDriverStatus.setBackgroundResource(R.drawable.bg_badge_active);
+                tvDriverStatus.setTextColor(getColor(R.color.status_confirmed));
+                break;
+            case "inactive":
+                tvDriverStatus.setText(R.string.status_conductor_descanso);
+                tvDriverStatus.setBackgroundResource(R.drawable.bg_badge_inactive);
+                tvDriverStatus.setTextColor(getColor(R.color.status_inactive));
+                break;
+            default:
+                tvDriverStatus.setText(R.string.status_conductor_activo);
+                tvDriverStatus.setBackgroundResource(R.drawable.bg_badge_active);
+                tvDriverStatus.setTextColor(getColor(R.color.status_confirmed));
+                break;
+        }
     }
 
     private void detenerShimmer() {

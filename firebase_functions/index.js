@@ -82,6 +82,8 @@ exports.automatedRotation = onSchedule({
         if (brayanId) {
             const horariosFijos = ["h005", "h015"];
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
+            updates[`conductores/${brayanId}/status`] = "active";
+            updates[`usuarios/${brayanId}/status`] = "active";
             horariosFijos.forEach(hId => {
                 updates[`horarios/${hId}/conductorId`] = brayanId;
             });
@@ -91,8 +93,12 @@ exports.automatedRotation = onSchedule({
         conductoresParaRotar.forEach((c, index) => {
             const shiftIndex = (index + dayCounter) % ROTATING_SHIFTS.length;
             const misHorarios = ROTATING_SHIFTS[shiftIndex];
+            const esDescanso = misHorarios.length === 0;
 
             updates[`conductores/${c.id}/horariosAsignados`] = misHorarios;
+            updates[`conductores/${c.id}/status`] = esDescanso ? "inactive" : "active";
+            updates[`usuarios/${c.id}/status`] = esDescanso ? "inactive" : "active";
+
             misHorarios.forEach(hId => {
                 updates[`horarios/${hId}/conductorId`] = c.id;
             });
