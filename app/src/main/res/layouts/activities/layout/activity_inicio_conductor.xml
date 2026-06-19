@@ -22,16 +22,24 @@
             android:background="?attr/colorPrimaryDark"
             style="@style/Widget.MaterialComponents.Toolbar.Primary">
 
-            <ImageView
+            <!-- Logo Icon con Fondo Navy Premium (Sincronizado con Ticket) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="start"
-                android:src="@drawable/logo_icon"
-                android:background="@drawable/bg_circle_logout"
-                android:backgroundTint="@color/secondary_900"
-                android:padding="6dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/app_name" />
+                app:cardBackgroundColor="@color/secondary_900"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="6dp"
+                    android:src="@drawable/logo_main"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="@string/app_name" />
+            </com.google.android.material.card.MaterialCardView>
 
         </com.google.android.material.appbar.MaterialToolbar>
 

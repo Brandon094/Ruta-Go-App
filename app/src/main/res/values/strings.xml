@@ -18,7 +18,7 @@
     <string name="network_error">Sin conexión a internet. Los datos pueden no estar actualizados.</string>
     <string name="network_error_driver">Sin conexión a internet. No se podrán confirmar reservas.</string>
     <string name="network_restored">Conexión restablecida</string>
-    <string name="powered_by">Desarrollado por</string>
+    <string name="powered_by">Powered By</string>
     <string name="chop_code">ChopCode</string>
     <string name="activo">Activo</string>
     <string name="desactivo">Inactivo</string>
