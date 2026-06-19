@@ -75,14 +75,26 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ScheduleAdapter(schedules, this);
         recyclerView.setAdapter(adapter);
+        
+        if (!schedules.isEmpty()) {
+            recyclerView.scheduleLayoutAnimation();
+        }
+
         return view;
     }
 
     public void actualizarHorarios(List<Schedule> newSchedules) {
         if (adapter != null) {
             schedules.clear();
-            if (newSchedules != null) schedules.addAll(newSchedules);
-            adapter.actualizarHorarios(schedules);
+            if (newSchedules != null) {
+                schedules.addAll(newSchedules);
+                adapter.actualizarHorarios(schedules);
+                if (recyclerView != null) {
+                    recyclerView.scheduleLayoutAnimation();
+                }
+            } else {
+                adapter.actualizarHorarios(new ArrayList<>());
+            }
         } else {
             schedules.clear();
             if (newSchedules != null) schedules.addAll(newSchedules);
