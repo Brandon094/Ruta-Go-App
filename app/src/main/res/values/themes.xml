@@ -87,6 +87,7 @@
     <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/primary_500</item>
         <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
@@ -108,6 +109,7 @@
     <style name="ButtonStyleSecondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textColor">@color/primary_500</item>
         <item name="strokeColor">@color/primary_500</item>
+        <item name="iconTint">@color/primary_500</item>
         <item name="strokeWidth">1.5dp</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:paddingStart">16dp</item>
