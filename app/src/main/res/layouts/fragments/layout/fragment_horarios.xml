@@ -3,15 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="8dp">
+    android:fillViewport="true">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewHorarios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
-        android:layoutAnimation="@anim/layout_animation_from_bottom"
-        android:background="@color/dark_chip_background"/>
+        android:layoutAnimation="@anim/layout_animation_from_bottom"/>
 
 </androidx.core.widget.NestedScrollView>
