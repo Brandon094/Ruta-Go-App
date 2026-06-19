@@ -134,29 +134,32 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 Para mantener la limpieza del proyecto, solo se deben usar los recursos listados. Cualquier archivo huérfano o legacy fuera de esta lista debe ser depurado.
 
 ### A. Iconografía (`res/drawable/`)
-- `ic_person`, `ic_driver`, `ic_person_pin`: Identidad de usuario.
-- `ic_seat`, `ic_bus`, `ic_steering_wheel`: Operación de transporte.
-- `ic_route`, `ic_location_from`, `ic_location_to`: Navegación y trayectos.
-- `ic_schedule`, `ic_time`, `ic_calendar`: Gestión temporal.
-- `ic_price`, `ic_monetization`, `ic_trending_up`: Finanzas y puntos.
+- `ic_person`, `ic_driver`, `ic_person_pin`, `ic_person_add`: Identidad de usuario.
+- `ic_seat`, `ic_bus`, `ic_steering_wheel`, `ic_car_model`, `ic_license`: Operación de transporte.
+- `ic_route`, `ic_location_from`, `ic_location_to`, `ic_history`, `ic_arrow_back`, `ic_arrow_right`: Navegación y trayectos.
+- `ic_schedule`, `ic_time`, `ic_calendar`, `ic_calendar_today`: Gestión temporal.
+- `ic_price`, `ic_monetization`, `ic_trending_up`, `ic_cash`: Finanzas y puntos.
 - `ic_check`, `ic_cancel`, `ic_pending`, `ic_checklist`: Estados y validación.
-- `ic_email`, `ic_phone`, `ic_chat`: Comunicación.
-- `ic_add`, `ic_edit`, `ic_delete`, `ic_refresh`: Acciones CRUD.
-- `ic_visibility_on`, `ic_visibility_off`: Seguridad.
-- `ic_expand_more`, `ic_expand_less`: Interactividad.
+- `ic_email`, `ic_phone`, `ic_phone_enabled`, `ic_chat`, `ic_send`: Comunicación.
+- `ic_add`, `ic_edit`, `ic_delete`, `ic_refresh`, `ic_add_photo`, `ic_share`: Acciones CRUD y Social.
+- `ic_visibility_on`, `ic_visibility_off`, `ic_key`, `ic_lock`, `ic_login`, `ic_logout`: Seguridad.
+- `ic_expand_more`, `ic_expand_less`, `ic_info`, `ic_bolt`, `ic_notification`: Sistemas e Info.
+- `asiento_disponible`, `asiento_seleccionado`, `asiento_ocupado`, `asiento_fisico`: Mapa de asientos.
+- `logo_splash`, `logo_icon`, `logo_main`: Branding oficial.
 
 ### B. Fondos y Formas (`res/drawable/components/drawable/`)
 - **Badges de Estado:** `bg_estado_confirmado`, `bg_estado_cancelado`, `bg_estado_pendiente`.
 - **Badges de Perfil:** `bg_badge_active`, `bg_badge_inactive`, `bg_badge_blocked`.
-- **Items de Lista:** `bg_ruta_item`, `bg_time_circle`, `bg_badge_status`.
-- **Contenedores:** `bg_info_card`, `bg_contact_card`, `bg_info_stats`.
+- **Items de Lista:** `bg_ruta_item`, `bg_time_circle`, `bg_badge_status`, `tab_selector_light`.
+- **Contenedores:** `bg_info_card`, `bg_contact_card`, `bg_info_stats`, `bg_circle_logout`, `splash_background`, `gradient_divider`.
 - **Fotos:** `bg_circle_photo`, `bg_profile_placeholder`.
+- **Sistemas:** `skeleton_shape`, `snackbar_background`.
 
 ### C. Layouts Maestro (`res/layout/`)
-- **Actividades:** `activity_inicio_usuarios`, `activity_inicio_conductor`, `activity_perfil_pasajero`, `activity_editar_perfil`, `activity_historial_reservas`, `activity_historial_conductor`, `activity_ticket`, `activity_chat`.
-- **Componentes de Lista:** `item_horario`, `item_ruta`, `item_historial_general`, `item_reserva`, `item_chat_message`.
+- **Actividades:** `activity_inicio_usuarios`, `activity_inicio_conductor`, `activity_perfil_pasajero`, `activity_editar_perfil`, `activity_historial_reservas`, `activity_historial_conductor`, `activity_ticket`, `activity_chat`, `activity_inicio_de_sesion`, `activity_registro_usuarios`, `activity_crear_reservas`, `activity_confirmar_reserva`, `activity_recuperar_contrasena`, `activity_editar_perfil_pasajero`.
+- **Componentes de Lista:** `item_horario`, `item_ruta`, `item_historial_general`, `item_reserva`, `item_message_me`, `item_message_other`, `item_historial_reserva`.
 - **Esqueletos (Shimmer):** `skeleton_item_historial`, `skeleton_stat_item`, `skeleton_inicio_card`.
-- **Diálogos:** `dialog_calificar_viaje`, `dialog_delete_account`, `dialog_privacy_policy`.
+- **Diálogos:** `dialog_calificar_viaje`, `dialog_delete_account`, `dialog_privacy_policy`, `dialog_select_route`.
 
 ### D. Colores Maestro (`res/values/colors.xml`)
 - **Primario:** `primary_500` (#FF7A1A - Naranja).
