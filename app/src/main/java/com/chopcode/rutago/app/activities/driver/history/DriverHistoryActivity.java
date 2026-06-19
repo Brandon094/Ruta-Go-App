@@ -113,22 +113,39 @@ public class DriverHistoryActivity extends AppCompatActivity {
             updateUI(reservations.isEmpty(), reservations.size());
         });
 
-        viewModel.getIsLoading().observe(this, this::showLoading);
+        viewModel.getIsLoading().observe(this, loading -> {
+            showLoading(loading);
+            if (Boolean.FALSE.equals(loading)) {
+                // 🔥 Disparar animaciones de conteo tras el Shimmer
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::animateStats, 400);
+            }
+        });
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, getString(R.string.error_prefijo, msg), Toast.LENGTH_SHORT).show(); });
 
-        viewModel.getTotalCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvTotal, lastTotal, count);
-            lastTotal = count;
-        });
-        viewModel.getConfirmedCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvConfirmed, lastConfirmed, count);
-            lastConfirmed = count;
-        });
-        viewModel.getCancelledCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvCanceled, lastCanceled, count);
-            lastCanceled = count;
-        });
+        // Observadores pasivos
+        viewModel.getTotalCount().observe(this, count -> { });
+        viewModel.getConfirmedCount().observe(this, count -> { });
+        viewModel.getCancelledCount().observe(this, count -> { });
+    }
+
+    private void animateStats() {
+        Integer total = viewModel.getTotalCount().getValue();
+        Integer confirmed = viewModel.getConfirmedCount().getValue();
+        Integer canceled = viewModel.getCancelledCount().getValue();
+
+        if (total != null) {
+            UIAnimationUtils.animateNumericText(tvTotal, lastTotal, total);
+            lastTotal = total;
+        }
+        if (confirmed != null) {
+            UIAnimationUtils.animateNumericText(tvConfirmed, lastConfirmed, confirmed);
+            lastConfirmed = confirmed;
+        }
+        if (canceled != null) {
+            UIAnimationUtils.animateNumericText(tvCanceled, lastCanceled, canceled);
+            lastCanceled = canceled;
+        }
     }
 
     private void setupChips() {
@@ -192,5 +209,15 @@ public class DriverHistoryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) { loadData(); return true; }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Resetear contadores para forzar animación
+        lastTotal = 0;
+        lastConfirmed = 0;
+        lastCanceled = 0;
+        loadData();
     }
 }

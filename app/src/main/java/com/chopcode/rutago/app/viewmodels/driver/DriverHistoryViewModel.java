@@ -52,8 +52,20 @@ public class DriverHistoryViewModel extends ViewModel {
     public LiveData<Integer> getConfirmedCount() { return confirmedCount; }
     public LiveData<Integer> getCancelledCount() { return cancelledCount; }
 
+    private String currentDriverId = null;
+
     public void loadReservations(String driverId, boolean isPremium) {
         if (driverId == null || driverId.isEmpty()) return;
+
+        // 🔥 CACHE: Evitar recargas innecesarias si ya tenemos la data
+        if (driverId.equals(currentDriverId) && !allReservations.isEmpty()) {
+            applyCurrentFilters();
+            calculateStats();
+            isLoading.setValue(false);
+            return;
+        }
+
+        this.currentDriverId = driverId;
         isLoading.setValue(true);
 
         if (isPremium && premiumStartDate != null && premiumEndDate != null) {

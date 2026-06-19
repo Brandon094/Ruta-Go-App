@@ -54,8 +54,17 @@ public class PassengerHistoryViewModel extends ViewModel {
 
     public void loadHistory(String userId) {
         if (userId == null || userId.isEmpty()) return;
-        this.currentUserId = userId;
+        
+        // 🔥 CACHE: Si ya tenemos los datos y es el mismo usuario
+        if (userId.equals(currentUserId) && !allReservations.isEmpty()) {
+            // Forzamos un refresco de los filtros y estadísticas para los observadores
+            applyFilters();
+            calculateStats();
+            isLoading.setValue(false);
+            return;
+        }
 
+        this.currentUserId = userId;
         stopListening();
         isLoading.setValue(true);
         historyListener = reservationService.listenPassengerHistory(userId, new ReservationService.HistoryCallback() {

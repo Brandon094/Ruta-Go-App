@@ -116,22 +116,40 @@ public class ReservationHistoryActivity extends AppCompatActivity {
             updateUI(reservations.isEmpty(), reservations.size());
         });
 
-        viewModel.getIsLoading().observe(this, this::showLoading);
+        viewModel.getIsLoading().observe(this, loading -> {
+            showLoading(loading);
+            if (Boolean.FALSE.equals(loading)) {
+                // 🔥 Asegurar que los contadores empiecen de 0 para la animación inicial si es necesario
+                // o simplemente disparar la animación tras el Shimmer
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::animateStats, 400);
+            }
+        });
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, "Error: " + msg, Toast.LENGTH_SHORT).show(); });
 
-        viewModel.getTotalCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvTotalTrips, lastTotal, count);
-            lastTotal = count;
-        });
-        viewModel.getConfirmedCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvConfirmedTrips, lastConfirmed, count);
-            lastConfirmed = count;
-        });
-        viewModel.getCancelledCount().observe(this, count -> {
-            UIAnimationUtils.animateNumericText(tvCanceledTrips, lastCanceled, count);
-            lastCanceled = count;
-        });
+        // No hacemos nada en los observadores individuales de conteo para evitar colisiones con animateStats
+        viewModel.getTotalCount().observe(this, count -> { });
+        viewModel.getConfirmedCount().observe(this, count -> { });
+        viewModel.getCancelledCount().observe(this, count -> { });
+    }
+
+    private void animateStats() {
+        Integer total = viewModel.getTotalCount().getValue();
+        Integer confirmed = viewModel.getConfirmedCount().getValue();
+        Integer canceled = viewModel.getCancelledCount().getValue();
+
+        if (total != null) {
+            UIAnimationUtils.animateNumericText(tvTotalTrips, lastTotal, total);
+            lastTotal = total;
+        }
+        if (confirmed != null) {
+            UIAnimationUtils.animateNumericText(tvConfirmedTrips, lastConfirmed, confirmed);
+            lastConfirmed = confirmed;
+        }
+        if (canceled != null) {
+            UIAnimationUtils.animateNumericText(tvCanceledTrips, lastCanceled, canceled);
+            lastCanceled = canceled;
+        }
     }
 
     private void setupListeners() {
@@ -213,5 +231,12 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override protected void onResume() { super.onResume(); loadData(); }
+    @Override protected void onResume() { 
+        super.onResume(); 
+        // Resetear contadores para forzar la animación de entrada
+        lastTotal = 0; 
+        lastConfirmed = 0; 
+        lastCanceled = 0;
+        loadData(); 
+    }
 }
