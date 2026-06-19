@@ -27,6 +27,7 @@ import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverStatsViewModel;
@@ -201,6 +202,10 @@ public class DriverHomeActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private int currentConfirmed = 0;
+    private int currentAvailable = 0;
+    private double currentIncome = 0;
+
     private void setupObservers() {
         perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
             if (isLoading != null) {
@@ -297,16 +302,23 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         estadisticasViewModel.getReservasConfirmadasLiveData().observe(this, count -> {
-            if (count != null) tvReservasConfirmadas.setText(String.valueOf(count));
+            if (count != null) {
+                UIAnimationUtils.animateNumericText(tvReservasConfirmadas, currentConfirmed, count);
+                currentConfirmed = count;
+            }
         });
 
         estadisticasViewModel.getAsientosDisponiblesLiveData().observe(this, asientos -> {
-            if (asientos != null) tvAsientosDisponibles.setText(String.valueOf(asientos));
+            if (asientos != null) {
+                UIAnimationUtils.animateNumericText(tvAsientosDisponibles, currentAvailable, asientos);
+                currentAvailable = asientos;
+            }
         });
 
         estadisticasViewModel.getIngresosLiveData().observe(this, ingresos -> {
             if (ingresos != null) {
-                tvTotalIngresos.setText(FormatUtils.formatearPrecio(ingresos));
+                UIAnimationUtils.animateCurrencyText(tvTotalIngresos, currentIncome, ingresos);
+                currentIncome = ingresos;
                 actualizarTiempoActualizacion();
             }
         });

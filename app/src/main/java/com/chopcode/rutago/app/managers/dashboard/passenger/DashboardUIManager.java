@@ -5,8 +5,10 @@ import androidx.appcompat.widget.Toolbar;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.analytics.DashboardAnalyticsHelper;
 import com.chopcode.rutago.app.models.User;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
 
 public class DashboardUIManager {
 
@@ -77,10 +79,18 @@ public class DashboardUIManager {
         }
     }
 
+    private int currentConfirmed = 0;
+    private int currentCanceled = 0;
+    private int currentTotal = 0;
+
     public void updateCounters(int confirmed, int canceled, int total) {
-        if (tvReservasCount != null) tvReservasCount.setText(String.valueOf(confirmed));
-        if (tvCanceladasCount != null) tvCanceladasCount.setText(String.valueOf(canceled));
-        if (tvTotalCount != null) tvTotalCount.setText(String.valueOf(total));
+        UIAnimationUtils.animateNumericText(tvReservasCount, currentConfirmed, confirmed);
+        UIAnimationUtils.animateNumericText(tvCanceladasCount, currentCanceled, canceled);
+        UIAnimationUtils.animateNumericText(tvTotalCount, currentTotal, total);
+
+        currentConfirmed = confirmed;
+        currentCanceled = canceled;
+        currentTotal = total;
     }
 
     public void setupTabLayout(TabLayout tabLayout, androidx.viewpager2.widget.ViewPager2 viewPager) {

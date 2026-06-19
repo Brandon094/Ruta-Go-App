@@ -21,6 +21,7 @@ import com.chopcode.rutago.app.adapters.historial.PassengerHistoryAdapter;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerHistoryViewModel;
+import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
@@ -59,6 +60,10 @@ public class ReservationHistoryActivity extends AppCompatActivity {
 
     private String currentFilter = "TODOS";
     private String searchText = "";
+
+    private int lastTotal = 0;
+    private int lastConfirmed = 0;
+    private int lastCanceled = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +120,18 @@ public class ReservationHistoryActivity extends AppCompatActivity {
 
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, "Error: " + msg, Toast.LENGTH_SHORT).show(); });
 
-        viewModel.getTotalCount().observe(this, count -> tvTotalTrips.setText(String.valueOf(count)));
-        viewModel.getConfirmedCount().observe(this, count -> tvConfirmedTrips.setText(String.valueOf(count)));
-        viewModel.getCancelledCount().observe(this, count -> tvCanceledTrips.setText(String.valueOf(count)));
+        viewModel.getTotalCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvTotalTrips, lastTotal, count);
+            lastTotal = count;
+        });
+        viewModel.getConfirmedCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvConfirmedTrips, lastConfirmed, count);
+            lastConfirmed = count;
+        });
+        viewModel.getCancelledCount().observe(this, count -> {
+            UIAnimationUtils.animateNumericText(tvCanceledTrips, lastCanceled, count);
+            lastCanceled = count;
+        });
     }
 
     private void setupListeners() {
@@ -155,14 +169,27 @@ public class ReservationHistoryActivity extends AppCompatActivity {
     }
 
     private void updateUI(boolean isEmpty, int size) {
-        if (isEmpty) { recyclerHistory.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.VISIBLE); }
-        else { recyclerHistory.setVisibility(View.VISIBLE); layoutEmptyState.setVisibility(View.GONE); }
+        if (isEmpty) {
+            recyclerHistory.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.VISIBLE);
+        } else {
+            recyclerHistory.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.GONE);
+            recyclerHistory.scheduleLayoutAnimation(); // 🔥 Disparar animación de entrada
+        }
         tvHistoryTitle.setText(getString(R.string.historial_viajes_count, size));
     }
 
     private void showLoading(boolean show) {
-        if (show) { shimmerContainer.startShimmer(); shimmerContainer.setVisibility(View.VISIBLE); recyclerHistory.setVisibility(View.GONE); layoutEmptyState.setVisibility(View.GONE); }
-        else { shimmerContainer.stopShimmer(); shimmerContainer.setVisibility(View.GONE); }
+        if (show) {
+            shimmerContainer.startShimmer();
+            shimmerContainer.setVisibility(View.VISIBLE);
+            recyclerHistory.setVisibility(View.GONE);
+            layoutEmptyState.setVisibility(View.GONE);
+        } else {
+            shimmerContainer.stopShimmer();
+            shimmerContainer.setVisibility(View.GONE);
+        }
     }
 
     @Override
