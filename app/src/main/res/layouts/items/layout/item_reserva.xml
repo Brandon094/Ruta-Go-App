@@ -9,8 +9,8 @@
     android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/surface"
-    app:strokeColor="@color/outline"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorSurfaceVariant"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/tvEstado"
@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:textSize="13sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="?attr/android:textColorSecondary"
                     tools:text="300 123 4567" />
             </LinearLayout>
 
@@ -106,7 +106,7 @@
                     android:layout_marginStart="10dp"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="Natagá -> La Plata" />
             </LinearLayout>
 
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="?attr/android:textColorSecondary"
                         tools:text="15 Jun - 08:30 AM" />
                 </LinearLayout>
 
@@ -170,10 +170,10 @@
             android:gravity="end"
             android:layout_marginTop="16dp">
 
-            <!-- Botón Rechazar (Outline branded) -->
+            <!-- Botón Rechazar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelar"
-                style="@style/AppButton.Secondary.Small"
+                style="@style/ButtonStyleSecondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="44dp"
@@ -184,10 +184,10 @@
                 android:insetBottom="0dp"
                 app:iconSize="16dp" />
 
-            <!-- Botón Confirmar (Filled Orange) -->
+            <!-- Botón Confirmar -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnConfirmar"
-                style="@style/AppButton.Primary.Small"
+                style="@style/ButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="44dp"

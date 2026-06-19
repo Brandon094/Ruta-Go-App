@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?android:attr/colorBackground"
     tools:context=".activities.passenger.reservation.confirmReservation.ConfirmarReservaActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -19,10 +19,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/confirmarReserva"
-            app:titleTextColor="@color/secondary_900"
+            app:titleTextColor="?attr/colorOnPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationContentDescription="@string/volver"
-            app:navigationIconTint="@color/secondary_900" />
+            app:navigationIconTint="?attr/colorOnPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -46,7 +46,7 @@
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/secondary_800"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant"
                 app:strokeColor="@color/primary_500"
                 app:strokeWidth="1dp">
 
@@ -83,7 +83,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/verifica_info_reserva"
                             android:textSize="13sp"
-                            android:textColor="@color/text_secondary"
+                            android:textColor="?attr/android:textColorSecondary"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -97,8 +97,8 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/surface"
-                app:strokeColor="@color/outline"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -137,7 +137,7 @@
                             android:text="@string/detalles_viaje"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary"
+                            android:textColor="?attr/colorOnSurface"
                             android:layout_marginStart="10dp" />
                     </LinearLayout>
 
@@ -174,7 +174,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/origen"
                                 android:textSize="11sp"
-                                android:textColor="@color/text_tertiary"
+                                android:textColor="?attr/android:textColorTertiary"
                                 android:layout_marginTop="4dp" />
                         </LinearLayout>
 
@@ -208,7 +208,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/destino"
                                 android:textSize="11sp"
-                                android:textColor="@color/text_tertiary"
+                                android:textColor="?attr/android:textColorTertiary"
                                 android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -234,8 +234,8 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:layout_marginEnd="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fecha" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                                <TextView android:id="@+id/tvFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fecha" android:textSize="11sp" android:textColor="?attr/android:textColorTertiary" />
+                                <TextView android:id="@+id/tvFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_marginTop="2dp" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -243,8 +243,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora_salida" android:textColor="@color/text_tertiary" android:textSize="11sp" />
-                                <TextView android:id="@+id/tvHora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora_salida" android:textColor="?attr/android:textColorTertiary" android:textSize="11sp" />
+                                <TextView android:id="@+id/tvHora" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/hora" android:textSize="15sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_marginTop="2dp" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -261,8 +261,8 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical"
                                 android:layout_marginEnd="8dp">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/duracion" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                                <TextView android:id="@+id/tvTiempoEstimado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="2dp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/duracion" android:textSize="11sp" android:textColor="?attr/android:textColorTertiary" />
+                                <TextView android:id="@+id/tvTiempoEstimado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="15sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_marginTop="2dp" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -270,8 +270,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/asiento" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                                <TextView android:id="@+id/tvAsiento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="14sp" android:textStyle="bold" android:background="@drawable/bg_chip_primary" android:backgroundTint="@color/secondary_700" android:textColor="@color/primary_500" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:layout_marginTop="2dp" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/asiento" android:textSize="11sp" android:textColor="?attr/android:textColorTertiary" />
+                                <TextView android:id="@+id/tvAsiento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="14sp" android:textStyle="bold" android:background="@drawable/bg_chip_primary" android:backgroundTint="?attr/colorSurfaceVariant" android:textColor="@color/primary_500" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:layout_marginTop="2dp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -285,7 +285,7 @@
                         android:background="@drawable/bg_price_highlight"
                         android:padding="16dp"
                         app:cornerRadius="12dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/total_pagar" android:textSize="15sp" android:textColor="@color/text_secondary" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/total_pagar" android:textSize="15sp" android:textColor="?attr/android:textColorSecondary" />
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                             <TextView android:id="@+id/tvPrecio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/primary_500" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/moneda_cop" android:textSize="11sp" android:textColor="@color/primary_500" android:layout_marginStart="4dp" android:layout_marginTop="4dp" />
@@ -302,8 +302,8 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/surface"
-                app:strokeColor="@color/outline"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -321,40 +321,46 @@
                         <LinearLayout android:layout_width="28dp" android:layout_height="28dp" android:background="@drawable/bg_circle_primary" android:gravity="center" android:backgroundTint="@color/primary_500">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/_2" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/info_contacto" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginStart="10dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/info_contacto" android:textSize="18sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_marginStart="10dp" />
                     </LinearLayout>
 
                     <!-- Pasajero -->
                     <LinearLayout
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal" android:gravity="center_vertical"
-                        android:padding="12dp" android:background="@drawable/bg_contact_card"
-                        android:backgroundTint="@color/surface_variant" android:layout_marginBottom="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_contact_card"
+                        android:backgroundTint="?attr/colorSurfaceVariant" android:layout_marginBottom="12dp"
                         app:cornerRadius="12dp">
-                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_900" android:gravity="center">
+                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="?attr/colorPrimaryDark" android:gravity="center">
                             <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_person" app:tint="@color/primary_500" />
                         </LinearLayout>
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tu" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvUser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
-                            <TextView android:id="@+id/tvTelefonoP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tu" android:textSize="11sp" android:textColor="?attr/android:textColorTertiary" />
+                            <TextView android:id="@+id/tvUser" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
+                            <TextView android:id="@+id/tvTelefonoP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="?attr/android:textColorSecondary" android:layout_marginTop="2dp" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <!-- Conductor -->
                     <LinearLayout
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal" android:gravity="center_vertical"
-                        android:padding="12dp" android:background="@drawable/bg_contact_card"
-                        android:backgroundTint="@color/surface_variant" app:cornerRadius="12dp">
-                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_900" android:gravity="center">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="12dp"
+                        android:background="@drawable/bg_contact_card"
+                        android:backgroundTint="?attr/colorSurfaceVariant" app:cornerRadius="12dp">
+                        <LinearLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="?attr/colorPrimaryDark" android:gravity="center">
                             <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_driver" app:tint="@color/primary_500" />
                         </LinearLayout>
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/conductor" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvConductor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary" />
-                            <TextView android:id="@+id/tvPlaca" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" android:layout_marginTop="2dp" />
-                            <TextView android:id="@+id/tvTelefonoC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="@color/text_secondary" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/conductor" android:textSize="11sp" android:textColor="?attr/android:textColorTertiary" />
+                            <TextView android:id="@+id/tvConductor" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="16sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
+                            <TextView android:id="@+id/tvPlaca" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="?attr/android:textColorSecondary" android:layout_marginTop="2dp" />
+                            <TextView android:id="@+id/tvTelefonoC" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="13sp" android:textColor="?attr/android:textColorSecondary" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -368,8 +374,8 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/surface"
-                app:strokeColor="@color/outline"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -387,7 +393,7 @@
                         <LinearLayout android:layout_width="28dp" android:layout_height="28dp" android:background="@drawable/bg_circle_primary" android:gravity="center" android:backgroundTint="@color/primary_500">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/_3" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
                         </LinearLayout>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/metodoPago" android:textSize="18sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginStart="10dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/metodoPago" android:textSize="18sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:layout_marginStart="10dp" />
                     </LinearLayout>
 
                     <com.google.android.material.card.MaterialCardView
@@ -395,28 +401,32 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="12dp"
-                        android:backgroundTint="@color/secondary_900"
+                        app:cardBackgroundColor="?attr/colorPrimaryDark"
                         app:strokeColor="@color/primary_500"
                         app:strokeWidth="2dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp">
-                            <LinearLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="@color/secondary_800" android:gravity="center">
+                            <LinearLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_circle_primary" android:backgroundTint="?attr/colorSurfaceVariant" android:gravity="center">
                                 <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_cash" app:tint="@color/primary_500" />
                             </LinearLayout>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pago_efectivo" android:textSize="15sp" android:textStyle="bold" android:textColor="@color/primary_500" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pago_efectivo_desc" android:textSize="11sp" android:textColor="@color/text_secondary" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pago_efectivo_desc" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
                             </LinearLayout>
                             <ImageView android:id="@+id/checkIconEfectivo" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check" app:tint="@color/primary_500" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="horizontal" android:gravity="center_vertical"
-                        android:background="@drawable/bg_info_card" android:backgroundTint="@color/secondary_900"
-                        android:padding="12dp" android:layout_marginTop="12dp" app:cornerRadius="12dp">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/bg_info_card"
+                        android:padding="12dp"
+                        android:layout_marginTop="12dp"
+                        app:cornerRadius="12dp">
                         <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_info" app:tint="@color/primary_500" android:layout_marginEnd="10dp" />
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/info_pago_efectivo" android:textSize="11sp" android:textColor="@color/text_secondary" />
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/info_pago_efectivo" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -430,7 +440,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnConfirmar"
-                    style="@style/AppButton.Primary"
+                    style="@style/ButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="52dp"
@@ -443,7 +453,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancelar"
-                    style="@style/AppButton.Secondary"
+                    style="@style/ButtonStyleSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="52dp"
@@ -461,7 +471,7 @@
                 android:orientation="vertical"
                 android:padding="16dp"
                 android:background="@drawable/bg_info_card"
-                android:backgroundTint="@color/surface_1"
+                android:backgroundTint="?attr/colorSurfaceVariant"
                 app:cornerRadius="12dp"
                 android:layout_marginBottom="16dp">
                 <LinearLayout
@@ -471,14 +481,14 @@
                     android:gravity="center_vertical"
                     android:layout_marginBottom="12dp">
                     <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_info" app:tint="@color/info_600" android:layout_marginEnd="10dp" />
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/info_importante" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/info_importante" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
                 </LinearLayout>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/info_confirmacion_reserva"
                     android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="?attr/android:textColorSecondary"
                     android:lineSpacingExtra="4dp" />
             </LinearLayout>
 

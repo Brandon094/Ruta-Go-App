@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?android:attr/colorBackground">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:src="@drawable/ic_person"
-                        app:civ_border_color="@color/secondary_900"
+                        app:civ_border_color="?attr/colorPrimaryDark"
                         app:civ_border_width="3dp"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -74,8 +74,8 @@
                         android:layout_height="32dp"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
-                        app:cardBackgroundColor="@color/secondary_900"
-                        app:strokeColor="@color/white"
+                        app:cardBackgroundColor="?attr/colorPrimaryDark"
+                        app:strokeColor="?attr/colorSurface"
                         app:strokeWidth="1.5dp"
                         app:layout_constraintBottom_toBottomOf="@id/ivProfilePicture"
                         app:layout_constraintEnd_toEndOf="@id/ivProfilePicture"
@@ -87,7 +87,7 @@
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_add_photo"
                             android:padding="8dp"
-                            app:tint="@color/white" />
+                            app:tint="?attr/colorOnPrimary" />
                     </com.google.android.material.card.MaterialCardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="Nombre Pasajero"
-                    android:textColor="@color/secondary_900"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:gravity="center"
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/surface">
+                    app:cardBackgroundColor="?attr/colorSurface">
                     <include layout="@layout/skeleton_profile_card" />
                 </com.google.android.material.card.MaterialCardView>
             </com.facebook.shimmer.ShimmerFrameLayout>
@@ -148,8 +148,8 @@
                 android:visibility="gone"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/surface"
-                app:strokeColor="@color/outline"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeColor="?attr/colorSurfaceVariant"
                 app:strokeWidth="1dp"
                 app:layout_constraintTop_toTopOf="@id/guideline_header"
                 tools:visibility="visible">
@@ -188,8 +188,8 @@
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
                             android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Email" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvEmail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="correo@ejemplo.com" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Email" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
+                            <TextView android:id="@+id/tvEmail" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="correo@ejemplo.com" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -212,14 +212,14 @@
                             android:layout_weight="1"
                             android:layout_marginStart="12dp"
                             android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Teléfono" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+57 300 000 0000" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Teléfono" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
+                            <TextView android:id="@+id/tvPhone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+57 300 000 0000" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnEditarPerfil"
-                        style="@style/AppButton.Secondary"
+                        style="@style/ButtonStyleSecondary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="52dp"
@@ -247,7 +247,7 @@
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/secondary_800">
+                    app:cardBackgroundColor="?attr/colorSurface">
                     <include layout="@layout/skeleton_profile_card" />
                 </com.google.android.material.card.MaterialCardView>
             </com.facebook.shimmer.ShimmerFrameLayout>
@@ -262,7 +262,7 @@
                 android:visibility="gone"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/secondary_800"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:layout_constraintTop_toBottomOf="@id/cardPerfil"
                 app:strokeColor="@color/warning_500"
                 app:strokeWidth="1dp"
@@ -302,7 +302,7 @@
                             android:backgroundTint="@color/warning_500"
                             android:paddingHorizontal="8dp"
                             android:paddingVertical="2dp"
-                            android:textColor="@color/secondary_50"
+                            android:textColor="@color/white"
                             android:textSize="10sp"
                             android:textStyle="bold" />
                     </LinearLayout>
@@ -313,11 +313,11 @@
                         android:orientation="horizontal"
                         android:minHeight="48dp">
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Inversión total" android:textSize="11sp" android:textColor="@color/text_tertiary" />
-                            <TextView android:id="@+id/tvTotalGastadoPremium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0" android:textStyle="bold" android:textColor="@color/white" android:textSize="16sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Inversión total" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
+                            <TextView android:id="@+id/tvTotalGastadoPremium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="$0" android:textStyle="bold" android:textColor="?attr/colorOnSurface" android:textSize="16sp" />
                         </LinearLayout>
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Puntos" android:textSize="11sp" android:textColor="@color/text_tertiary" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Puntos" android:textSize="11sp" android:textColor="?attr/android:textColorSecondary" />
                             <TextView android:id="@+id/tvPuntosLealtad" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0 pts" android:textStyle="bold" android:textColor="@color/success" android:textSize="16sp" />
                         </LinearLayout>
                     </LinearLayout>
@@ -328,7 +328,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Ruta favorita: Cargando..."
-                        android:textColor="@color/text_secondary"
+                        android:textColor="?attr/android:textColorSecondary"
                         android:textSize="12sp"
                         android:textStyle="italic" />
                 </LinearLayout>
@@ -343,7 +343,7 @@
                 android:layout_marginTop="24dp"
                 android:text="Solicitar borrar cuenta"
                 android:textAllCaps="false"
-                android:textColor="@color/error_color"
+                android:textColor="@color/error_500"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

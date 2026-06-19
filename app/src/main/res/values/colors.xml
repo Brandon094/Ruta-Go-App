@@ -61,6 +61,11 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 
+    <!-- COLORES TEMA CLARO -->
+    <color name="light_background">#F8FAFC</color>
+    <color name="light_surface">#FFFFFF</color>
+    <color name="light_border">#E2E8F0</color>
+
     <!-- ==================== -->
     <!-- ASIGNACIÓN DE SUPERFICIES (ESTILO SERVICARGA) -->
     <!-- ==================== -->

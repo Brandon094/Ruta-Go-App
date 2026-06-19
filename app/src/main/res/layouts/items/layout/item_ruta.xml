@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,12 +24,12 @@
             android:layout_height="wrap_content"
             android:text="Origen"
             android:textSize="12sp"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/android:textColorSecondary"
             android:maxLines="1"
             android:ellipsize="end"
             android:drawableStart="@drawable/ic_location_from"
             android:drawablePadding="4dp"
-            android:drawableTint="@color/text_secondary"/>
+            android:drawableTint="?attr/android:textColorSecondary"/>
 
         <!-- Destino -->
         <TextView
@@ -50,7 +51,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider"
+            android:background="?attr/colorSurfaceVariant"
             android:layout_marginVertical="8dp"/>
 
         <!-- Horario -->
@@ -60,11 +61,11 @@
             android:layout_height="wrap_content"
             android:text="--:--"
             android:textSize="12sp"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/android:textColorSecondary"
             android:gravity="center_vertical"
             android:drawableStart="@drawable/ic_time"
             android:drawablePadding="4dp"
-            android:drawableTint="@color/text_secondary"/>
+            android:drawableTint="?attr/android:textColorSecondary"/>
 
         <!-- Precio -->
         <TextView

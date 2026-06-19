@@ -9,8 +9,8 @@
     android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/secondary_800"
-    app:strokeColor="@color/secondary_700"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorSurfaceVariant"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -55,7 +55,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="32dp"
-            android:background="@color/outline"
+            android:background="?attr/colorSurfaceVariant"
             android:layout_marginHorizontal="12dp"
             android:alpha="0.5" />
 
@@ -72,7 +72,7 @@
                 android:id="@+id/tvRuta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:lineSpacingExtra="2dp"
@@ -103,7 +103,7 @@
                         android:id="@+id/tvAsientos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="?attr/android:textColorSecondary"
                         android:textSize="11sp"
                         tools:text="13 asientos disponibles" />
                 </LinearLayout>
