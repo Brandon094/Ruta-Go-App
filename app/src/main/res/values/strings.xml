@@ -99,6 +99,7 @@
     <string name="leyenda_canceladas_desc">Anuladas por el conductor</string>
     <string name="leyenda_total_titulo">Total</string>
     <string name="leyenda_total_desc">Suma de confirmadas + canceladas</string>
+    <string name="badge_siguiente">SIGUIENTE</string>
 
     <!-- ========================================================================= -->
     <!-- 💺 RESERVATION PROCESS (PASSENGER)                                        -->

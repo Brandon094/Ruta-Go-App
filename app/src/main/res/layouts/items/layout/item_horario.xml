@@ -135,19 +135,42 @@
 
             </LinearLayout>
 
-            <!-- Estado de disponibilidad -->
-            <TextView
-                android:id="@+id/tvEstadoDisponibilidad"
+            <!-- Estado de disponibilidad y Badge de Próximo -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_badge_status"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:text="Disponible"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvEstadoDisponibilidad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_status"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="Disponible"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvBadgeProximo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_badge_status"
+                    android:backgroundTint="@color/primary_500"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="@string/badge_siguiente"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Botón de acción -->

@@ -115,10 +115,14 @@ public class FormatUtils {
     /**
      * Compara una cadena de hora contra la hora actual del sistema.
      */
-    private static boolean esHorarioPasado(String horario) {
+    public static boolean esHorarioPasado(String horario) {
         try {
+            // Normalizar formato para parseo (ej: "06:00 AM" -> "6:00 AM")
+            String limpia = horario.trim().toUpperCase().replace(" 0", " ");
+            if (limpia.startsWith("0")) limpia = limpia.substring(1);
+            
             SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
-            Date horaDate = sdf.parse(horario);
+            Date horaDate = sdf.parse(limpia);
             if (horaDate == null) return false;
 
             Calendar calHora = Calendar.getInstance();

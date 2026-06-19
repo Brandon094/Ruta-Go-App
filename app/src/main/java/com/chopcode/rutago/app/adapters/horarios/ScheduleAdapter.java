@@ -19,6 +19,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     private static final String TAG = "ScheduleAdapter";
     private List<Schedule> schedules;
     private OnReservarClickListener listener;
+    private int nextTripIndex = -1;
 
     public interface OnReservarClickListener {
         void onReservarClick(Schedule schedule);
@@ -27,6 +28,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public ScheduleAdapter(List<Schedule> schedules, OnReservarClickListener listener) {
         this.schedules = (schedules != null) ? new ArrayList<>(schedules) : new ArrayList<>();
         this.listener = listener;
+        calcularIndiceSiguienteViaje();
     }
 
     @NonNull
@@ -39,7 +41,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         if (position < schedules.size()) {
-            holder.bind(schedules.get(position), listener);
+            holder.bind(schedules.get(position), position == nextTripIndex, listener);
         }
     }
 
@@ -53,11 +55,29 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         if (newSchedules != null) {
             this.schedules.addAll(newSchedules);
         }
+        calcularIndiceSiguienteViaje();
         notifyDataSetChanged();
     }
 
+    private void calcularIndiceSiguienteViaje() {
+        nextTripIndex = -1;
+        if (schedules.isEmpty()) return;
+
+        for (int i = 0; i < schedules.size(); i++) {
+            if (!FormatUtils.esHorarioPasado(schedules.get(i).getTime())) {
+                nextTripIndex = i;
+                break;
+            }
+        }
+        
+        // Si todos pasaron hoy, el próximo es el primero (mañana)
+        if (nextTripIndex == -1 && !schedules.isEmpty()) {
+            nextTripIndex = 0;
+        }
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge;
+        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext;
         public FloatingActionButton btnReserve;
 
         public ViewHolder(@NonNull View itemView) {
@@ -68,10 +88,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             tvSeats = itemView.findViewById(R.id.tvAsientos);
             tvPrice = itemView.findViewById(R.id.tvPrecio);
             tvAvailabilityBadge = itemView.findViewById(R.id.tvEstadoDisponibilidad);
+            tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximo);
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
-        public void bind(Schedule schedule, OnReservarClickListener listener) {
+        public void bind(Schedule schedule, boolean isNextTrip, OnReservarClickListener listener) {
             String[] timeParts = FormatUtils.separarHoraYAmPm(schedule.getTime());
             if (tvTime != null) tvTime.setText(timeParts[0]);
             if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
@@ -82,12 +103,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
             
             if (tvSeats != null) {
-                // tvSeats.setText(itemView.getContext().getString(R.string.asientos_disponibles_label_adapter, available));
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateNumericText(tvSeats, 0, available);
-                // Concatenar el texto "Disponibles" después de la animación? 
-                // Mejor actualizar el texto con formato pero la animación numérica es solo para el número.
-                // Para simplificar, mantendremos el número animado y el color.
-                updateColors(available);
+                updateColors(available, isNextTrip);
             }
 
             if (tvPrice != null) {
@@ -96,6 +113,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, priceVal);
                 } catch (Exception e) {
                     tvPrice.setText(FormatUtils.formatearPrecio(schedule.getPrice()));
+                }
+            }
+
+            if (tvBadgeNext != null) {
+                if (isNextTrip && available > 0) {
+                    tvBadgeNext.setVisibility(View.VISIBLE);
+                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startPulseAnimation(tvBadgeNext);
+                } else {
+                    tvBadgeNext.setVisibility(View.GONE);
+                    com.chopcode.rutago.app.utils.ui.UIAnimationUtils.stopAnimation(tvBadgeNext);
                 }
             }
 
@@ -108,7 +135,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         }
 
-        private void updateColors(int available) {
+        private void updateColors(int available, boolean isNextTrip) {
             int textColor;
             int badgeColor;
             String badgeText;
@@ -122,8 +149,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 badgeColor = itemView.getContext().getColor(R.color.warning_500);
                 badgeText = "Últimos cupos";
             } else {
-                textColor = itemView.getContext().getColor(R.color.primary_200); // Color suave para el texto de asientos
-                badgeColor = itemView.getContext().getColor(R.color.primary_500); // Naranja corporativo para Disponible
+                textColor = itemView.getContext().getColor(R.color.primary_200); 
+                badgeColor = isNextTrip ? itemView.getContext().getColor(R.color.secondary_500) : itemView.getContext().getColor(R.color.primary_500); 
                 badgeText = "Disponible";
             }
 
@@ -137,7 +164,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 tvAvailabilityBadge.getBackground().setTint(badgeColor);
             }
 
-            // Eliminar verde del precio si existiera y usar naranja corporativo
             if (tvPrice != null) {
                 tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
             }
