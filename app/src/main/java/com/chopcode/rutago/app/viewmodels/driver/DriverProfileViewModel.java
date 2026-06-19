@@ -68,6 +68,12 @@ public class DriverProfileViewModel extends BaseViewModel {
             return;
         }
 
+        // 🔥 CACHE: Si ya tenemos los datos, no reiniciar carga ni Shimmer
+        if (driverUID.equals(currentDriverUID) && driverLiveData.getValue() != null) {
+            setLoading(false);
+            return;
+        }
+
         this.currentDriverUID = driverUID;
         setLoading(true);
 

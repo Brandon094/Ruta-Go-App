@@ -41,7 +41,16 @@ public class ScheduleViewModel extends ViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void loadSchedules() {
-        isLoading.setValue(true);
+        // 🔥 CACHE: Si ya tenemos horarios, no mostrar Shimmer pero refrescar en segundo plano
+        List<Schedule> currentNataga = natagaSchedules.getValue();
+        List<Schedule> currentLaPlata = laPlataSchedules.getValue();
+        
+        if ((currentNataga != null && !currentNataga.isEmpty()) || (currentLaPlata != null && !currentLaPlata.isEmpty())) {
+            isLoading.setValue(false);
+        } else {
+            isLoading.setValue(true);
+        }
+
         scheduleService.loadSchedules(new ScheduleService.ScheduleCallback() {
             @Override
             public void onSchedulesLoaded(List<Schedule> nataga, List<Schedule> laPlata) {

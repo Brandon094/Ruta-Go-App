@@ -48,8 +48,16 @@ public class PassengerProfileViewModel extends ViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void init() {
-        currentUserId = MyApp.getCurrentUserId();
-        if (currentUserId == null) return;
+        String newUserId = MyApp.getCurrentUserId();
+        if (newUserId == null) return;
+        
+        // 🔥 CACHE: Si ya tenemos el usuario, no reiniciar carga ni Shimmer
+        if (newUserId.equals(currentUserId) && userLiveData.getValue() != null) {
+            isLoading.setValue(false);
+            return;
+        }
+
+        currentUserId = newUserId;
         isLoading.setValue(true);
         setupRealTimeProfile();
         setupRealTimeCounters();

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.chopcode.rutago.app.R;
@@ -24,13 +25,15 @@ import java.io.FileOutputStream;
  * 🖼️ Image Utils
  * 
  * Clase de utilidad centralizada para la carga de imágenes y captura de vistas.
+ * Utiliza Glide con estrategias de caché agresivas para asegurar que las fotos
+ * de perfil sean visibles instantáneamente al navegar entre pantallas.
  */
 public class ImageUtils {
 
     private static final String TAG = "ImageUtils";
 
     /**
-     * Carga una foto de perfil de forma circular con optimizaciones de velocidad.
+     * Carga una foto de perfil de forma circular con optimizaciones de velocidad y caché.
      */
     public static void loadProfilePhoto(Context context, String url, ImageView imageView) {
         if (context == null || imageView == null) return;
@@ -38,25 +41,20 @@ public class ImageUtils {
         int placeholderRes = R.drawable.bg_profile_placeholder;
         boolean isCircleImageView = imageView.getClass().getName().contains("CircleImageView");
 
+        // Configuración de Glide para carga ultra-rápida desde caché
+        com.bumptech.glide.RequestBuilder<android.graphics.drawable.Drawable> requestBuilder = Glide.with(context)
+                .load(url)
+                .placeholder(placeholderRes)
+                .error(placeholderRes)
+                .fallback(placeholderRes)
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // Cachear tanto original como redimensionada
+                .priority(Priority.IMMEDIATE)            // Dar prioridad máxima
+                .transition(DrawableTransitionOptions.withCrossFade(150)); // Crossfade muy rápido
+
         if (isCircleImageView) {
-            Glide.with(context)
-                    .load(url)
-                    .placeholder(placeholderRes)
-                    .error(placeholderRes)
-                    .fallback(placeholderRes)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(DrawableTransitionOptions.withCrossFade(200))
-                    .into(imageView);
+            requestBuilder.into(imageView);
         } else {
-            Glide.with(context)
-                    .load(url)
-                    .placeholder(placeholderRes)
-                    .error(placeholderRes)
-                    .fallback(placeholderRes)
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(DrawableTransitionOptions.withCrossFade(200))
-                    .into(imageView);
+            requestBuilder.circleCrop().into(imageView);
         }
     }
 

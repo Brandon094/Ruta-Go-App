@@ -58,9 +58,23 @@ public class UserProfileViewModel extends ViewModel {
     public void loadProfile() {
         String userId = authManager.getUserId();
         if (userId == null) return;
+
+        // 🔥 CACHE: Si ya tenemos los datos, no reiniciar Shimmer
+        if (userData.getValue() != null && userId.equals(userData.getValue().getId())) {
+            isLoading.setValue(false);
+            // Refrescar estadísticas en segundo plano sin Shimmer invasivo
+            loadPremiumStats(userId);
+            return;
+        }
+
         isLoading.setValue(true);
         userService.loadUserData(userId, new UserService.UserDataCallback() {
-            @Override public void onUserDataLoaded(User user) { userData.postValue(user); isLoading.postValue(false); loadPremiumStats(userId); }
+            @Override public void onUserDataLoaded(User user) { 
+                user.setId(userId);
+                userData.postValue(user); 
+                isLoading.postValue(false); 
+                loadPremiumStats(userId); 
+            }
             @Override public void onError(String errorMsg) { error.postValue(errorMsg); isLoading.postValue(false); }
         });
     }
