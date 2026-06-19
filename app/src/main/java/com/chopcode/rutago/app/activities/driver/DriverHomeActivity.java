@@ -61,7 +61,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private static final String TAG = "DriverHomeActivity";
 
     private boolean isDataLoaded = false;
-    private RecyclerView rvReservas, rvProximasRutas;
+    private RecyclerView rvReservas, rvProximasRutas, rvRouteBreakdown;
     private TextView tvConductor, tvPlacaVehiculo, tvDriverStatusBadge;
     private TextView tvEmptyReservas, tvEmptyRutas;
     private ImageView ivConductorAvatar;
@@ -80,6 +80,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private AuthManager authManager;
     private ReservationAdapter reservationAdapter;
     private RouteAdapter routeAdapter;
+    private com.chopcode.rutago.app.adapters.rutas.RouteStatAdapter routeStatAdapter;
     private List<Reservation> reservationList = new ArrayList<>();
     private List<Route> routeList = new ArrayList<>();
     private SimpleDateFormat timeFormat;
@@ -90,7 +91,6 @@ public class DriverHomeActivity extends AppCompatActivity {
     private int currentConfirmed = 0;
     private int currentAvailable = 0;
     private double currentIncome = 0;
-    private int lastRes1 = 0, lastSeats1 = 0, lastRes2 = 0, lastSeats2 = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +154,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         rvReservas = findViewById(R.id.recyclerReservas);
         rvProximasRutas = findViewById(R.id.recyclerProximasRutas);
+        rvRouteBreakdown = findViewById(R.id.rvRouteBreakdown);
         tvEmptyReservas = findViewById(R.id.tvEmptyReservas);
         tvEmptyRutas = findViewById(R.id.tvEmptyRutas);
         shimmerLayout = findViewById(R.id.shimmer_inicio_conductor);
@@ -332,42 +333,10 @@ public class DriverHomeActivity extends AppCompatActivity {
             }
         });
 
-        // Detailed route stats
-        estadisticasViewModel.getNombreRuta1LiveData().observe(this, name -> {
-            TextView tv = findViewById(R.id.tvNombreRutaReservas);
-            if (tv != null) tv.setText(name);
-        });
-        estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> {
-            TextView tv = findViewById(R.id.tvReservasRuta);
-            if (tv != null) {
-                UIAnimationUtils.animateNumericText(tv, lastRes1, count != null ? count : 0);
-                lastRes1 = count != null ? count : 0;
-            }
-        });
-        estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> {
-            TextView tv = findViewById(R.id.tvAsientosRuta);
-            if (tv != null) {
-                UIAnimationUtils.animateNumericText(tv, lastSeats1, count != null ? count : 0);
-                lastSeats1 = count != null ? count : 0;
-            }
-        });
-
-        estadisticasViewModel.getNombreRuta2LiveData().observe(this, name -> {
-            TextView tv = findViewById(R.id.tvNombreRutaReservas2);
-            if (tv != null) tv.setText(name);
-        });
-        estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> {
-            TextView tv = findViewById(R.id.tvReservasRuta2);
-            if (tv != null) {
-                UIAnimationUtils.animateNumericText(tv, lastRes2, count != null ? count : 0);
-                lastRes2 = count != null ? count : 0;
-            }
-        });
-        estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> {
-            TextView tv = findViewById(R.id.tvAsientosRuta2);
-            if (tv != null) {
-                UIAnimationUtils.animateNumericText(tv, lastSeats2, count != null ? count : 0);
-                lastSeats2 = count != null ? count : 0;
+        // Desglose dinámico por ruta
+        estadisticasViewModel.getRouteStatsLiveData().observe(this, stats -> {
+            if (stats != null && routeStatAdapter != null) {
+                routeStatAdapter.updateStats(stats);
             }
         });
     }
@@ -404,6 +373,11 @@ public class DriverHomeActivity extends AppCompatActivity {
         routeAdapter = new RouteAdapter(routeList, route -> abrirGestionAsientos(route));
         rvProximasRutas.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvProximasRutas.setAdapter(routeAdapter);
+
+        // Desglose dinámico por ruta
+        routeStatAdapter = new com.chopcode.rutago.app.adapters.rutas.RouteStatAdapter();
+        rvRouteBreakdown.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvRouteBreakdown.setAdapter(routeStatAdapter);
     }
 
     private void loadDriverData() {
@@ -489,10 +463,6 @@ public class DriverHomeActivity extends AppCompatActivity {
             currentConfirmed = 0;
             currentAvailable = 0;
             currentIncome = 0;
-            lastRes1 = 0;
-            lastSeats1 = 0;
-            lastRes2 = 0;
-            lastSeats2 = 0;
             reloadAllData(); 
         }
     }

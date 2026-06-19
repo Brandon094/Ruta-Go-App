@@ -1,6 +1,7 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
 import com.chopcode.rutago.app.models.Reservation;
+import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
@@ -35,15 +36,8 @@ public class DriverStatsViewModel extends BaseViewModel {
     private final MutableLiveData<Integer> availableSeatsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Double> earningsLiveData = new MutableLiveData<>(0.0);
 
-    // --- Estadísticas Ruta 1 (Natagá → La Plata) ---
-    private final MutableLiveData<String> route1NameLiveData = new MutableLiveData<>("Natagá → La Plata");
-    private final MutableLiveData<Integer> route1ReservationsLiveData = new MutableLiveData<>(0);
-    private final MutableLiveData<Integer> route1AvailableSeatsLiveData = new MutableLiveData<>(13);
-
-    // --- Estadísticas Ruta 2 (La Plata → Natagá) ---
-    private final MutableLiveData<String> route2NameLiveData = new MutableLiveData<>("La Plata → Natagá");
-    private final MutableLiveData<Integer> route2ReservationsLiveData = new MutableLiveData<>(0);
-    private final MutableLiveData<Integer> route2AvailableSeatsLiveData = new MutableLiveData<>(13);
+    // --- Desglose Dinámico por Ruta ---
+    private final MutableLiveData<List<com.chopcode.rutago.app.models.RouteStat>> routeStatsLiveData = new MutableLiveData<>(new ArrayList<>());
 
     private String currentDriverId;
     private List<String> assignedSchedules;
@@ -96,12 +90,7 @@ public class DriverStatsViewModel extends BaseViewModel {
     public LiveData<Integer> getReservasConfirmadasLiveData() { return confirmedReservationsLiveData; }
     public LiveData<Integer> getAsientosDisponiblesLiveData() { return availableSeatsLiveData; }
     public LiveData<Double> getIngresosLiveData() { return earningsLiveData; }
-    public LiveData<String> getNombreRuta1LiveData() { return route1NameLiveData; }
-    public LiveData<Integer> getReservasRuta1LiveData() { return route1ReservationsLiveData; }
-    public LiveData<Integer> getAsientosRuta1LiveData() { return route1AvailableSeatsLiveData; }
-    public LiveData<String> getNombreRuta2LiveData() { return route2NameLiveData; }
-    public LiveData<Integer> getReservasRuta2LiveData() { return route2ReservationsLiveData; }
-    public LiveData<Integer> getAsientosRuta2LiveData() { return route2AvailableSeatsLiveData; }
+    public LiveData<List<com.chopcode.rutago.app.models.RouteStat>> getRouteStatsLiveData() { return routeStatsLiveData; }
 
     /**
      * Inicia el listener de Firebase para que las estadísticas salten al instante.
@@ -199,48 +188,32 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Determina qué ruta es la 1 (Ida) y cuál es la 2 (Regreso) basándose en el nombre normalizado.
+     * Genera dinámicamente la lista de estadísticas por ruta.
+     * Soporta N rutas (1, 2, 3 o más) asignando colores corporativos de forma cíclica.
      */
     private void updateRouteDetails(Map<String, Integer> resMap, Map<String, Integer> occMap, Map<String, String> names) {
-        boolean f1 = false, f2 = false;
-        
+        List<com.chopcode.rutago.app.models.RouteStat> newStats = new ArrayList<>();
+        int[] brandColors = {R.color.primary_500, R.color.secondary_400, R.color.secondary_300};
+        int colorIndex = 0;
+
         for (String key : names.keySet()) {
             int res = resMap.getOrDefault(key, 0);
             int occ = occMap.getOrDefault(key, 0);
             int ava = Math.max(0, capacityPerRoute - occ);
             String name = names.get(key);
             
-            String normKey = FormatUtils.normalizarTexto(key);
-            
-            // Lógica de detección bidireccional mejorada
-            if (normKey.contains("nataga") && normKey.contains("la plata")) {
-                if (normKey.indexOf("nataga") < normKey.indexOf("la plata")) {
-                    // Natagá -> La Plata (Ruta 1)
-                    route1NameLiveData.postValue(name);
-                    route1ReservationsLiveData.postValue(res);
-                    route1AvailableSeatsLiveData.postValue(ava);
-                    f1 = true;
-                } else {
-                    // La Plata -> Natagá (Ruta 2)
-                    route2NameLiveData.postValue(name);
-                    route2ReservationsLiveData.postValue(res);
-                    route2AvailableSeatsLiveData.postValue(ava);
-                    f2 = true;
-                }
-            }
+            int color = brandColors[colorIndex % brandColors.length];
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat(name, res, ava, color));
+            colorIndex++;
         }
         
-        // Valores por defecto si no hay datos detectados
-        if (!f1) { 
-            route1NameLiveData.postValue("Natagá → La Plata"); 
-            route1ReservationsLiveData.postValue(0); 
-            route1AvailableSeatsLiveData.postValue(capacityPerRoute); 
+        // Si no hay datos, agregar placeholders básicos
+        if (newStats.isEmpty()) {
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata", 0, capacityPerRoute, R.color.primary_500));
+            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá", 0, capacityPerRoute, R.color.secondary_400));
         }
-        if (!f2) { 
-            route2NameLiveData.postValue("La Plata → Natagá"); 
-            route2ReservationsLiveData.postValue(0); 
-            route2AvailableSeatsLiveData.postValue(capacityPerRoute); 
-        }
+        
+        routeStatsLiveData.postValue(newStats);
     }
 
     public void refreshStatistics() { 

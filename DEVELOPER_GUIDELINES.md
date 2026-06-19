@@ -48,6 +48,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Accesibilidad (Zoom 200%):** Prohibido usar alturas fijas (`android:layout_height`) en botones o contenedores con texto. Usar siempre `wrap_content` + `android:minHeight` (ej. 52dp) para evitar textos cortados.
 - **Inmersión (Scroll Infinito):** Para efectos premium, usar `android:clipToPadding="false"` junto con un `paddingBottom` generoso (ej. 88dp) en listas.
 - **Simetría Operativa (Mapa de Asientos):** Grilla de 5 columnas. Para garantizar responsividad, los asientos miden máximo **38dp** con **1.5dp** de margen y un pasillo central de **10dp**.
+- **Desglose Dinámico (Dashboard Conductor):** El resumen por ruta debe usar un `RecyclerView` horizontal para soportar N rutas (1, 2, 3 o más) sin romper el layout ni ocultar información.
 - **Compartición Segura:** El uso de `FileProvider` es obligatorio para compartir activos generados (como el tiquete digital).
 - **Estética de Logos:** 
   - **Splash Screen:** Usa el contenedor con forma de Pin Navy (`bg_pin_navy`) de **180dp**.
