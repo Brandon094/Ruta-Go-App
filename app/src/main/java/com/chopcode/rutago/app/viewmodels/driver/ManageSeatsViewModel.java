@@ -174,7 +174,13 @@ public class ManageSeatsViewModel extends ViewModel {
     public void freePhysical(int seatNumber) {
         if (currentScheduleId == null) return;
         seatsDataProcessor.freeSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
-            @Override public void onSuccess() {}
+            @Override public void onSuccess() {
+                // 🔥 Revertir la venta física de las estadísticas diarias del conductor
+                String driverId = MyApp.getCurrentUserId();
+                if (driverId != null) {
+                    driverReservationService.removerVentaDeEstadisticas(driverId, routePrice);
+                }
+            }
             @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_liberacion_puesto, msg)); }
         });
     }

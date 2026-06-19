@@ -149,8 +149,8 @@ public class SeatsDataProcessor {
                     return Transaction.success(currentData); // Ya está libre
                 }
 
-                // Liberar asiento (remover valor)
-                occupiedRef.setValue(null);
+                // Liberar asiento (marcar como libre)
+                occupiedRef.setValue(false);
 
                 // Incrementar contador de disponibles
                 Integer available = currentData.child("asientosDisponibles").getValue(Integer.class);

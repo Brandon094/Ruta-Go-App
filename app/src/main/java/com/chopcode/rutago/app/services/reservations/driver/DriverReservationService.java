@@ -250,6 +250,26 @@ public class DriverReservationService {
     }
 
     /**
+     * 🔥 Revierte una venta en las estadísticas diarias del conductor.
+     * Resta los ingresos y decrementa el contador de reservas confirmadas.
+     */
+    public void removerVentaDeEstadisticas(String driverUID, double price) {
+        if (driverUID == null || driverUID.isEmpty()) return;
+        
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        String today = sdf.format(new java.util.Date());
+        
+        DatabaseReference ref = MyApp.getDatabaseReference("estadisticas/" + driverUID + "/" + today);
+        
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("ingresosDiarios", com.google.firebase.database.ServerValue.increment(-price));
+        updates.put("reservasConfirmadas", com.google.firebase.database.ServerValue.increment(-1));
+        updates.put("ultimaActualizacion", com.google.firebase.database.ServerValue.TIMESTAMP);
+        
+        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "Error revirtiendo estadísticas: " + e.getMessage()));
+    }
+
+    /**
      * Guarda un resumen diario de las finanzas del conductor (Legacy / Sobrescritura).
      */
     public void guardarEstadisticasDiarias(String driverUID, int confirmed, double earnings, ReservationUpdateCallback callback) {
