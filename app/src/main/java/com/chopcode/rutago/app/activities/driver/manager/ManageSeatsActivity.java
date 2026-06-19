@@ -2,6 +2,8 @@ package com.chopcode.rutago.app.activities.driver.manager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,7 +76,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         topAppBar = findViewById(R.id.topAppBar);
         
         tvRouteName.setText(routeName != null ? routeName : "Route not available");
-        tvScheduleInfo.setText("Schedule: " + (scheduleTime != null ? scheduleTime : "--:--"));
+        tvScheduleInfo.setText("Horario: " + (scheduleTime != null ? scheduleTime : "--:--"));
         
         setSupportActionBar(topAppBar);
         topAppBar.setNavigationOnClickListener(v -> finish());
@@ -139,6 +141,21 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
                 .setPositiveButton(R.string.liberar_btn, (d, w) -> viewModel.freePhysical(seatNumber))
                 .setNegativeButton(R.string.volver, null)
                 .show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.gestionar_asientos_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            viewModel.startListening(scheduleId); // Re-start listening to refresh
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override public void onSeatDeselected(int seatNumber) {}

@@ -300,7 +300,11 @@
     <string name="formato_moneda">$%s</string>
     <string name="formato_porcentaje">%d%%</string>
 
-    <!-- TICKET STRINGS -->
+    <!-- Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_history">Historial</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_logout">Salir</string>
     <string name="ticket_title">Comprobante de Viaje</string>
     <string name="ticket_header">RUTA-GO</string>
     <string name="ticket_trayecto">Trayecto</string>
