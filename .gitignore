@@ -15,6 +15,7 @@ local.properties
 *.log
 
 # Firebase Functions
+node_modules/
 firebase_functions/node_modules/
 firebase_functions/firebase-debug.log
 firebase_functions/package-lock.json
