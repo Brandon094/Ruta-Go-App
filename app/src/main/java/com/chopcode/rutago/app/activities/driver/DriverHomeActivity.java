@@ -87,6 +87,10 @@ public class DriverHomeActivity extends AppCompatActivity {
     private NetworkMonitor networkMonitor;
     private Snackbar networkSnackbar;
 
+    private int currentConfirmed = 0;
+    private int currentAvailable = 0;
+    private double currentIncome = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,10 +206,6 @@ public class DriverHomeActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private int currentConfirmed = 0;
-    private int currentAvailable = 0;
-    private double currentIncome = 0;
-
     private void setupObservers() {
         perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
             if (isLoading != null) {
@@ -213,6 +213,7 @@ public class DriverHomeActivity extends AppCompatActivity {
                     if (shimmerLayout != null) { shimmerLayout.setVisibility(View.VISIBLE); shimmerLayout.startShimmer(); }
                 } else {
                     if (shimmerLayout != null) { shimmerLayout.stopShimmer(); shimmerLayout.setVisibility(View.GONE); }
+                    new android.os.Handler().postDelayed(this::animateDashboardStats, 300);
                 }
             }
         });
@@ -241,7 +242,6 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
-            Log.d(TAG, "Assigned schedules changed: " + (horarios != null ? horarios.size() : "null") + " -> " + horarios);
             if (horarios != null && !horarios.isEmpty()) {
                 rutasViewModel.loadRoutes(horarios);
                 reservasViewModel.setHorariosAsignados(horarios);
@@ -282,7 +282,6 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         rutasViewModel.getRutasLiveData().observe(this, routes -> {
-            Log.d(TAG, "Routes received: " + (routes != null ? routes.size() : "null"));
             if (routes != null && !routes.isEmpty()) {
                 routeList.clear();
                 routeList.addAll(routes);
@@ -290,7 +289,6 @@ public class DriverHomeActivity extends AppCompatActivity {
                 updateRoutesUI();
                 tvContadorRutas.setText(getString(R.string.contador_rutas, routes.size()));
                 
-                // 🔥 FIX: Sincronizar rutas con el ViewModel de estadísticas para resolver datos de reservas
                 estadisticasViewModel.setRutasActivas(routes);
                 if (!reservationList.isEmpty()) estadisticasViewModel.calculateRouteStatistics();
 
@@ -302,35 +300,68 @@ public class DriverHomeActivity extends AppCompatActivity {
         });
 
         estadisticasViewModel.getReservasConfirmadasLiveData().observe(this, count -> {
-            if (count != null) {
-                UIAnimationUtils.animateNumericText(tvReservasConfirmadas, currentConfirmed, count);
-                currentConfirmed = count;
+            if (count != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
+                animateDashboardStats();
             }
         });
 
         estadisticasViewModel.getAsientosDisponiblesLiveData().observe(this, asientos -> {
-            if (asientos != null) {
-                UIAnimationUtils.animateNumericText(tvAsientosDisponibles, currentAvailable, asientos);
-                currentAvailable = asientos;
+            if (asientos != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
+                animateDashboardStats();
             }
         });
 
         estadisticasViewModel.getIngresosLiveData().observe(this, ingresos -> {
-            if (ingresos != null) {
-                UIAnimationUtils.animateCurrencyText(tvTotalIngresos, currentIncome, ingresos);
-                currentIncome = ingresos;
-                actualizarTiempoActualizacion();
+            if (ingresos != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
+                animateDashboardStats();
             }
         });
 
         // Detailed route stats
-        estadisticasViewModel.getNombreRuta1LiveData().observe(this, name -> ((TextView)findViewById(R.id.tvNombreRutaReservas)).setText(name));
-        estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvReservasRuta)).setText(String.valueOf(count)));
-        estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvAsientosRuta)).setText(String.valueOf(count)));
+        estadisticasViewModel.getNombreRuta1LiveData().observe(this, name -> {
+            TextView tv = findViewById(R.id.tvNombreRutaReservas);
+            if (tv != null) tv.setText(name);
+        });
+        estadisticasViewModel.getReservasRuta1LiveData().observe(this, count -> {
+            TextView tv = findViewById(R.id.tvReservasRuta);
+            if (tv != null) tv.setText(String.valueOf(count));
+        });
+        estadisticasViewModel.getAsientosRuta1LiveData().observe(this, count -> {
+            TextView tv = findViewById(R.id.tvAsientosRuta);
+            if (tv != null) tv.setText(String.valueOf(count));
+        });
 
-        estadisticasViewModel.getNombreRuta2LiveData().observe(this, name -> ((TextView)findViewById(R.id.tvNombreRutaReservas2)).setText(name));
-        estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvReservasRuta2)).setText(String.valueOf(count)));
-        estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> ((TextView)findViewById(R.id.tvAsientosRuta2)).setText(String.valueOf(count)));
+        estadisticasViewModel.getNombreRuta2LiveData().observe(this, name -> {
+            TextView tv = findViewById(R.id.tvNombreRutaReservas2);
+            if (tv != null) tv.setText(name);
+        });
+        estadisticasViewModel.getReservasRuta2LiveData().observe(this, count -> {
+            TextView tv = findViewById(R.id.tvReservasRuta2);
+            if (tv != null) tv.setText(String.valueOf(count));
+        });
+        estadisticasViewModel.getAsientosRuta2LiveData().observe(this, count -> {
+            TextView tv = findViewById(R.id.tvAsientosRuta2);
+            if (tv != null) tv.setText(String.valueOf(count));
+        });
+    }
+
+    private void animateDashboardStats() {
+        Integer confirmed = estadisticasViewModel.getReservasConfirmadasLiveData().getValue();
+        Integer available = estadisticasViewModel.getAsientosDisponiblesLiveData().getValue();
+        Double income = estadisticasViewModel.getIngresosLiveData().getValue();
+
+        if (confirmed != null) {
+            UIAnimationUtils.animateNumericText(tvReservasConfirmadas, currentConfirmed, confirmed);
+            currentConfirmed = confirmed;
+        }
+        if (available != null) {
+            UIAnimationUtils.animateNumericText(tvAsientosDisponibles, currentAvailable, available);
+            currentAvailable = available;
+        }
+        if (income != null) {
+            UIAnimationUtils.animateCurrencyText(tvTotalIngresos, currentIncome, income);
+            currentIncome = income;
+        }
     }
 
     private void setupRecyclerView() {
@@ -421,7 +452,17 @@ public class DriverHomeActivity extends AppCompatActivity {
     @Override
     protected void onPause() { super.onPause(); reservasViewModel.pausarActualizacionesTiempoReal(); }
     @Override
-    protected void onResume() { super.onResume(); reservasViewModel.reanudarActualizacionesTiempoReal(); if (isDataLoaded) reloadAllData(); }
+    protected void onResume() { 
+        super.onResume(); 
+        reservasViewModel.reanudarActualizacionesTiempoReal(); 
+        if (isDataLoaded) {
+            // Resetear para forzar animación
+            currentConfirmed = 0;
+            currentAvailable = 0;
+            currentIncome = 0;
+            reloadAllData(); 
+        }
+    }
     @Override
     protected void onDestroy() { super.onDestroy(); perfilViewModel.limpiarDatos(); }
 }

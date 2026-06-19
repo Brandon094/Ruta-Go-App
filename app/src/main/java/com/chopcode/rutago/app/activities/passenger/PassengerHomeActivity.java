@@ -107,6 +107,8 @@ public class PassengerHomeActivity extends AppCompatActivity implements
                 shimmerStats.stopShimmer();
                 shimmerStats.setVisibility(View.GONE);
                 layoutRealStats.setVisibility(View.VISIBLE);
+                // 🔥 Delay para que la animación sea visible tras el shimmer
+                new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::updateCounters, 400);
             }
         });
 
@@ -224,5 +226,14 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     @Override
     public User getUserActual() {
         return profileViewModel.getUserLiveData().getValue();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Forzar animación si los datos ya están en cache
+        if (uiManager != null) {
+            uiManager.updateCounters(0, 0, 0);
+        }
     }
 }
