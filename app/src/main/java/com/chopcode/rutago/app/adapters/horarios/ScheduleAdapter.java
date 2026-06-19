@@ -187,24 +187,24 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         private void updateColors(int available, boolean isNextTrip, boolean isPast) {
             int textColor;
-            int badgeColor;
+            int badgeRes;
             String badgeText;
 
             if (isPast) {
                 textColor = itemView.getContext().getColor(R.color.text_tertiary);
-                badgeColor = itemView.getContext().getColor(R.color.text_tertiary);
+                badgeRes = R.drawable.bg_badge_inactive;
                 badgeText = itemView.getContext().getString(R.string.estado_finalizado);
             } else if (available == 0) {
                 textColor = itemView.getContext().getColor(R.color.error_500);
-                badgeColor = itemView.getContext().getColor(R.color.error_500);
+                badgeRes = R.drawable.bg_estado_cancelado;
                 badgeText = "Agotado";
             } else if (available < 5) {
                 textColor = itemView.getContext().getColor(R.color.warning_500);
-                badgeColor = itemView.getContext().getColor(R.color.warning_500);
+                badgeRes = R.drawable.bg_estado_pendiente;
                 badgeText = "Últimos cupos";
             } else {
                 textColor = itemView.getContext().getColor(R.color.primary_200); 
-                badgeColor = isNextTrip ? itemView.getContext().getColor(R.color.secondary_400) : itemView.getContext().getColor(R.color.primary_500);
+                badgeRes = isNextTrip ? R.drawable.bg_status_next : R.drawable.bg_estado_confirmado;
                 badgeText = "Disponible";
             }
 
@@ -215,7 +215,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             
             if (tvAvailabilityBadge != null) {
                 tvAvailabilityBadge.setText(badgeText);
-                tvAvailabilityBadge.getBackground().setTint(badgeColor);
+                tvAvailabilityBadge.setBackgroundResource(badgeRes);
+                tvAvailabilityBadge.setTextColor(itemView.getContext().getColor(R.color.white));
             }
 
             if (tvPrice != null) {

@@ -131,21 +131,19 @@ public class DriverHistoryAdapter extends RecyclerView.Adapter<DriverHistoryAdap
                 tvDate.setText(sdf.format(new Date(reservation.getReservationDate())));
                 tvStatus.setText(status);
 
-                // Aplicar Estilo Unificado de Estado
+                // Aplicar Estilo Unificado de Estado (Navy bg + Colored stroke + White text)
                 if (status != null) {
+                    tvStatus.setTextColor(itemView.getContext().getColor(R.color.white));
                     switch (status.toLowerCase()) {
                         case "confirmada":
                         case "completada":
                             tvStatus.setBackgroundResource(R.drawable.bg_estado_confirmado);
-                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_confirmed));
                             break;
                         case "cancelada":
                             tvStatus.setBackgroundResource(R.drawable.bg_estado_cancelado);
-                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_cancelled));
                             break;
                         default:
                             tvStatus.setBackgroundResource(R.drawable.bg_estado_pendiente);
-                            tvStatus.setTextColor(itemView.getContext().getColor(R.color.status_pending));
                             break;
                     }
                 }

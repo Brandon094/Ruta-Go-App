@@ -54,6 +54,7 @@ public class DashboardUIManager {
         if (tvUserStatusBadge == null) return;
 
         UIAnimationUtils.stopAnimation(tvUserStatusBadge);
+        tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.white));
 
         if (status == null) status = "active";
 
@@ -61,23 +62,19 @@ public class DashboardUIManager {
             case "active":
                 tvUserStatusBadge.setText(R.string.status_pasajero_activo);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
-                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
                 UIAnimationUtils.startPulseAnimation(tvUserStatusBadge);
                 break;
             case "inactive":
                 tvUserStatusBadge.setText(R.string.status_pasajero_inactivo);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_inactive);
-                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_inactive));
                 break;
             case "blocked":
                 tvUserStatusBadge.setText(R.string.status_blocked);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_blocked);
-                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_cancelled));
                 break;
             default:
                 tvUserStatusBadge.setText(R.string.status_pasajero_activo);
                 tvUserStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
-                tvUserStatusBadge.setTextColor(tvUserStatusBadge.getContext().getColor(R.color.status_confirmed));
                 UIAnimationUtils.startPulseAnimation(tvUserStatusBadge);
                 break;
         }

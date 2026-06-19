@@ -456,6 +456,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         if (tvDriverStatusBadge == null) return;
         
         UIAnimationUtils.stopAnimation(tvDriverStatusBadge);
+        tvDriverStatusBadge.setTextColor(getColor(R.color.white));
 
         if (status == null) status = "active";
         
@@ -463,18 +464,15 @@ public class DriverHomeActivity extends AppCompatActivity {
             case "active":
                 tvDriverStatusBadge.setText(R.string.status_conductor_activo);
                 tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
-                tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
                 UIAnimationUtils.startPulseAnimation(tvDriverStatusBadge);
                 break;
             case "inactive":
                 tvDriverStatusBadge.setText(R.string.status_conductor_descanso);
                 tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_inactive);
-                tvDriverStatusBadge.setTextColor(getColor(R.color.status_inactive));
                 break;
             default:
                 tvDriverStatusBadge.setText(R.string.status_conductor_activo);
                 tvDriverStatusBadge.setBackgroundResource(R.drawable.bg_badge_active);
-                tvDriverStatusBadge.setTextColor(getColor(R.color.status_confirmed));
                 UIAnimationUtils.startPulseAnimation(tvDriverStatusBadge);
                 break;
         }

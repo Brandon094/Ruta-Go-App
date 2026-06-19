@@ -133,21 +133,19 @@ public class PassengerHistoryAdapter extends RecyclerView.Adapter<PassengerHisto
                 tvFecha.setText(sdf.format(new Date(reservation.getReservationDate())));
                 tvEstado.setText(status);
                 
-                // Aplicar Estilo Unificado de Estado
+                // Aplicar Estilo Unificado de Estado (Navy bg + Colored stroke + White text)
                 if (status != null) {
+                    tvEstado.setTextColor(itemView.getContext().getColor(R.color.white));
                     switch (status.toLowerCase()) {
                         case "confirmada":
                         case "completada":
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_confirmado);
-                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_confirmed));
                             break;
                         case "cancelada":
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_cancelado);
-                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_cancelled));
                             break;
                         default:
                             tvEstado.setBackgroundResource(R.drawable.bg_estado_pendiente);
-                            tvEstado.setTextColor(itemView.getContext().getColor(R.color.status_pending));
                             break;
                     }
                 }
