@@ -323,7 +323,7 @@
     <string name="ticket_conductor_label">Conductor: %s</string>
     <string name="ticket_vehiculo_label">Vehículo: %1$s (%2$s)</string>
     <string name="ticket_id_label">ID de Reserva:</string>
-    <string name="ticket_share">Compartir Ticket</string>
+    <string name="ticket_share">Compartir</string>
 
     <!-- 🧪 API KEYS & INTERNAL                                                    -->
     <!-- ========================================================================= -->
