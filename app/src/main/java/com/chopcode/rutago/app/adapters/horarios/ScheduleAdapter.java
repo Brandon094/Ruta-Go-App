@@ -23,6 +23,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Schedule> schedules;
     private OnReservarClickListener listener;
     private int nextTripIndex = -1;
+    private boolean departureAnimationsEnabled = false;
 
     public interface OnReservarClickListener {
         void onReservarClick(Schedule schedule);
@@ -32,6 +33,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.schedules = (schedules != null) ? new ArrayList<>(schedules) : new ArrayList<>();
         this.listener = listener;
         calcularIndiceSiguienteViaje();
+    }
+
+    public void enableDepartureAnimations() {
+        this.departureAnimationsEnabled = true;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -56,7 +62,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ViewHolder) {
-            ((ViewHolder) holder).bind(schedules.get(position), position == nextTripIndex, listener);
+            ((ViewHolder) holder).bind(schedules.get(position), position == nextTripIndex, departureAnimationsEnabled, listener);
         }
     }
 
@@ -113,7 +119,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
-        public void bind(Schedule schedule, boolean isNextTrip, OnReservarClickListener listener) {
+        public void bind(Schedule schedule, boolean isNextTrip, boolean animationsEnabled, OnReservarClickListener listener) {
             String[] timeParts = FormatUtils.separarHoraYAmPm(schedule.getTime());
             if (tvTime != null) tvTime.setText(timeParts[0]);
             if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
@@ -158,9 +164,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     // Animación del bus arrancando
                     btnReserve.setImageResource(R.drawable.ic_bus);
                     btnReserve.setEnabled(false);
-                    // Solo disparar si aún no se ha ido de la pantalla
-                    if (btnReserve.getVisibility() == View.VISIBLE && btnReserve.getTranslationX() == 0) {
+                    // Solo disparar si las animaciones están habilitadas (tras el scroll)
+                    if (animationsEnabled && btnReserve.getVisibility() == View.VISIBLE && btnReserve.getTranslationX() == 0) {
                         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playBusDepartureAnimation(btnReserve);
+                    } else if (!animationsEnabled) {
+                        btnReserve.setVisibility(View.VISIBLE); // Mantener visible hasta que habiliten la animación
                     } else {
                         btnReserve.setVisibility(View.INVISIBLE);
                     }

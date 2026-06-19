@@ -105,7 +105,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
 
     /**
      * 🔥 Desplaza el scroll automáticamente hasta el horario marcado como "SIGUIENTE".
-     * Se ejecuta con un delay para permitir que las animaciones de salida (buses) terminen.
+     * Ejecuta primero el scroll y luego dispara las animaciones de salida de buses.
      */
     private void desplazarAlSiguienteViajeConDelay() {
         if (adapter == null || recyclerView == null) return;
@@ -114,13 +114,20 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
         if (targetIndex != -1) {
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                 if (recyclerView != null && targetIndex < adapter.getItemCount()) {
-                    // Scroll suave para una experiencia premium
+                    // 1. Realizar el scroll inmediatamente (con un pequeño delay para estabilidad)
                     LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     if (layoutManager != null) {
-                        layoutManager.scrollToPositionWithOffset(targetIndex, 100);
+                        layoutManager.scrollToPositionWithOffset(targetIndex, 120);
                     }
+
+                    // 2. Habilitar animaciones de partida después del scroll
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        if (adapter != null) {
+                            adapter.enableDepartureAnimations();
+                        }
+                    }, 800); // Dar tiempo a que el scroll se asiente
                 }
-            }, 1800); // Esperar a que los buses "arranquen" y se vayan (1200ms aprox + margen)
+            }, 400); // Delay inicial corto para cargar la UI
         }
     }
 
