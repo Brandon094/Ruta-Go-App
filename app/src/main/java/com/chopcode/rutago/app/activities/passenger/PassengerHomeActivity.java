@@ -171,6 +171,12 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         uiManager.setStatusBadgeReference(tvUserStatusBadge);
         uiManager.setupToolbar(topAppBar);
 
+        // 🔥 Animación viva para el logo del home
+        View logoCard = findViewById(R.id.homeLogoCard);
+        if (logoCard != null) {
+            UIAnimationUtils.startLogoTiltAnimation(logoCard);
+        }
+
         pagerAdapter = new SchedulePagerAdapter(this, new java.util.ArrayList<>(), new java.util.ArrayList<>());
         viewPagerSchedules.setAdapter(pagerAdapter);
         setupViewPagerAnimation();

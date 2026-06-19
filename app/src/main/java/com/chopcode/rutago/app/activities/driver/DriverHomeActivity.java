@@ -161,6 +161,12 @@ public class DriverHomeActivity extends AppCompatActivity {
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
         tvDriverStatusBadge = findViewById(R.id.tvDriverStatusBadge);
 
+        // 🔥 Animación viva para el logo del home
+        View logoCard = findViewById(R.id.driverHomeLogoCard);
+        if (logoCard != null) {
+            UIAnimationUtils.startLogoTiltAnimation(logoCard);
+        }
+
         // 🔥 Animaciones Premium de Entrada para tarjetas
         UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardEstadisticas));
         UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardReservas));
