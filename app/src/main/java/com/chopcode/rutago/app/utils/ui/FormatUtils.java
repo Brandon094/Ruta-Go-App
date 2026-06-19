@@ -114,9 +114,19 @@ public class FormatUtils {
 
     /**
      * Compara una cadena de hora contra la hora actual del sistema.
+     * Considera la regla de negocio de Ruta-Go: Tras el reset de las 7:00 PM (19:00),
+     * todos los horarios se consideran para el día siguiente y por lo tanto no están 'pasados'.
      */
     public static boolean esHorarioPasado(String horario) {
         try {
+            Calendar ahora = Calendar.getInstance();
+            int hAct = ahora.get(Calendar.HOUR_OF_DAY);
+            
+            // Regla de Oro: Después de las 7 PM, nada es pasado (todo es para mañana)
+            if (hAct >= 19) {
+                return false;
+            }
+
             // Normalizar formato para parseo (ej: "06:00 AM" -> "6:00 AM")
             String limpia = horario.trim().toUpperCase().replace(" 0", " ");
             if (limpia.startsWith("0")) limpia = limpia.substring(1);
@@ -128,10 +138,8 @@ public class FormatUtils {
             Calendar calHora = Calendar.getInstance();
             calHora.setTime(horaDate);
             
-            Calendar ahora = Calendar.getInstance();
             int hSel = calHora.get(Calendar.HOUR_OF_DAY);
             int mSel = calHora.get(Calendar.MINUTE);
-            int hAct = ahora.get(Calendar.HOUR_OF_DAY);
             int mAct = ahora.get(Calendar.MINUTE);
 
             return (hSel < hAct) || (hSel == hAct && mSel <= mAct);

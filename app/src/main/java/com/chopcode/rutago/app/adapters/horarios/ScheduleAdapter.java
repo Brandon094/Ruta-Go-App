@@ -102,9 +102,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             int available = schedule.getAvailableSeats();
             if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
             
+            boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
+
             if (tvSeats != null) {
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateNumericText(tvSeats, 0, available);
-                updateColors(available, isNextTrip);
+                updateColors(available, isNextTrip, isPast);
             }
 
             if (tvPrice != null) {
@@ -117,7 +119,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
 
             if (tvBadgeNext != null) {
-                if (isNextTrip && available > 0) {
+                if (isNextTrip && available > 0 && !isPast) {
                     tvBadgeNext.setVisibility(View.VISIBLE);
                     com.chopcode.rutago.app.utils.ui.UIAnimationUtils.startPulseAnimation(tvBadgeNext);
                 } else {
@@ -130,17 +132,23 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 btnReserve.setOnClickListener(v -> {
                     if (listener != null) listener.onReservarClick(schedule);
                 });
-                btnReserve.setEnabled(available > 0);
-                btnReserve.setAlpha(available > 0 ? 1.0f : 0.5f);
+                // Deshabilitar si ya pasó el horario o no hay cupos
+                boolean canReserve = available > 0 && !isPast;
+                btnReserve.setEnabled(canReserve);
+                btnReserve.setAlpha(canReserve ? 1.0f : 0.4f);
             }
         }
 
-        private void updateColors(int available, boolean isNextTrip) {
+        private void updateColors(int available, boolean isNextTrip, boolean isPast) {
             int textColor;
             int badgeColor;
             String badgeText;
 
-            if (available == 0) {
+            if (isPast) {
+                textColor = itemView.getContext().getColor(R.color.text_tertiary);
+                badgeColor = itemView.getContext().getColor(R.color.text_tertiary);
+                badgeText = itemView.getContext().getString(R.string.estado_finalizado);
+            } else if (available == 0) {
                 textColor = itemView.getContext().getColor(R.color.error_500);
                 badgeColor = itemView.getContext().getColor(R.color.error_500);
                 badgeText = "Agotado";

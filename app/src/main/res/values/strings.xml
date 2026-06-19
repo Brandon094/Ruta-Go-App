@@ -20,6 +20,7 @@
     <string name="network_restored">Conexión restablecida</string>
     <string name="powered_by">Powered By</string>
     <string name="chop_code">ChopCode</string>
+    <string name="info_label">Información</string>
     <string name="activo">Activo</string>
     <string name="desactivo">Inactivo</string>
 
@@ -100,6 +101,8 @@
     <string name="leyenda_total_titulo">Total</string>
     <string name="leyenda_total_desc">Suma de confirmadas + canceladas</string>
     <string name="badge_siguiente">SIGUIENTE</string>
+    <string name="estado_finalizado">Finalizado</string>
+    <string name="feedback_reset_horarios">Los horarios finalizados se habilitarán para el día de mañana tras el reinicio de las 7:00 PM.</string>
 
     <!-- ========================================================================= -->
     <!-- 💺 RESERVATION PROCESS (PASSENGER)                                        -->
