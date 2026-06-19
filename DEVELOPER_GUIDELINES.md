@@ -9,15 +9,17 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Marca Desarrolladora:** Chop Code Solutions
 - **Nombre de la App:** Ruta-Go
 - **Package Name:** `com.chopcode.rutago.app`
-- **Identidad Visual:**
-  - `logo_icon`: Imagotipo principal de la marca (Premium).
-  - **Colores:** Primario (`primary_500`), Secundario (`secondary_900`).
+- **Identidad Visual (Iconografía Oficial):**
+  - `logo_splash`: Isotipo animado exclusivo para la pantalla de inicio (Splash Screen).
+  - `logo_icon`: Imagotipo circular oficial para el icono de la aplicación y notificaciones Push.
+  - `logo_main`: Versión horizontal/reducida para Top Bars (Toolbars) y componentes internos de la interfaz.
+  - **Colores:** Primario (`primary_500` - Naranja), Secundario (`secondary_900` - Navy).
 
 ## 3. Stack Tecnológico Obligatorio
 - **Lenguaje:** Java 17 (Toolchain configurado en `build.gradle`).
 - **Gradle:** Versión 8.11 (Estabilizada para entornos Linux/Parrot con I/O restringido).
 - **UI:** XML Layouts (View System) con Material Components.
-- **Backend:** Firebase (Auth, Realtime Database, Cloud Messaging).
+- **Backend:** Firebase (Auth, Realtime Database, Storage, Cloud Messaging, Cloud Functions, Crashlytics) y Google Analytics.
 - **Arquitectura:** **MVVM (Model-View-ViewModel)**. 
 - **Reactividad:** Uso estricto de `LiveData` y `ValueEventListener` (`addValueEventListener`) para actualizaciones en tiempo real.
 
@@ -48,14 +50,31 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Centralización de Navegación:** El `BottomNavFragment` debe estar vinculado a su propio `BottomNavViewModel` para gestionar eventos de cierre de sesión y analíticas de navegación.
 - **Consistencia en Diálogos:** Todos los diálogos deben heredar de `AppDialogTheme` y sus botones deben tener un `minHeight` mínimo de 48dp para accesibilidad.
 - **Cabeceras de Perfil:** Para avatares grandes (150dp), usar un `headerBackground` de 270dp y una `Guideline` horizontal de seguridad a 310dp para evitar solapamientos.
-- **Badges de Estado:** Usar el sistema de diseño unificado (Fondo con 15% opacidad + Borde sólido de 1dp) para etiquetas de Confirmado, Cancelado y Pendiente.
+- **Badges de Estado:** Usar el sistema de diseño unificado (Fondo Navy `secondary_900` + Borde sólido de 1dp del color de estado) para etiquetas de Confirmado, Cancelado, Pendiente, Activo e Inactivo.
 - **Gestión de Usuario:** Los pasajeros pueden alternar su estado entre Activo e Inactivo desde su perfil. El estado Bloqueado es administrativo y restringe funciones.
-### D. Documentación Técnica (Mantenimiento)
+- **Política de Errores (UX):** 
+  - *Snackbars:* Para avisos informativos o errores temporales (ej. reconexión). 
+  - *Diálogos:* Para errores críticos o confirmaciones de seguridad. 
+  - *TextInputLayout:* Solo para validaciones de formato en tiempo real.
+
+### D. Documentación Técnica & Analíticas
 - **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
 - **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc explicando la lógica de negocio y decisiones arquitectónicas (ej. por qué se usa Sync Atómico).
-- **Trazabilidad:** Inyectar logs estratégicos (`Log.d`) en flujos principales para facilitar el debug en producción.
+- **Analíticas Obligatorias:** Registrar eventos en Google Analytics para cada cambio de pantalla y acciones clave (ej. `reserva_creada`, `login_google`). Usar `BaseViewModel.registrarEventoAnalitico`.
+- **Trazabilidad:** Inyectar logs estratégicos (`Log.d`) en flujos principales para facilitar el debug en producción. Toda excepción en un `catch` debe ser reportada a Firebase Crashlytics.
 
-### E. Gestión de Lanzamientos (Play Store)
+### E. Estándares de Recursos (Clean Resources)
+- **Nomenclatura de Strings:** Usar prefijos por módulo: `[modulo]_[proposito]` (ej. `login_error_empty`, `history_label_date`).
+- **Nomenclatura de Assets:** 
+  - Iconos: `ic_[nombre]` (ej. `ic_seat`). 
+  - Fondos/Formas: `bg_[forma]_[proposito]` (ej. `bg_badge_active`).
+- **Centralización:** Prohibido el uso de strings hardcodeados en layouts XML.
+
+### F. Seguridad y Permisos
+- **PermissionManager:** Todo flujo que requiera permisos (Notificaciones Android 13+, Galería) debe centralizarse en `com.chopcode.rutago.app.managers.permissions.PermissionManager`.
+- **Sensibilidad:** Nunca persistir contraseñas en logs o analíticas.
+
+### G. Gestión de Lanzamientos (Play Store)
 - **Keystore Oficial:** El archivo de firma de producción (`key.jks`) reside exclusivamente en el entorno estabilizado (Linux/Parrot). **Prohibido borrar o mover sin backup externo.**
 - **Versionamiento:** Seguir el estándar `versionCode` incremental (entero) y `versionName` semántico (ej. 1.2.0).
 - **Huellas Digitales:** En caso de migración de entorno, se debe generar el certificado `.pem` y solicitar el restablecimiento de la "Clave de Carga" en la Play Console (proceso de 48 horas).
@@ -66,32 +85,37 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 Se debe seguir el estándar de **Conventional Commits** y los mensajes deben estar en **Español** para facilitar la comprensión del dueño del proyecto.
 
 ## 6. Estructura Crítica de Base de Datos
-- `conductores/$uid`: Perfil del conductor, referencia al `vehiculoId` y `horariosAsignados`.
+- `conductores/$uid`: Perfil del conductor, referencia al `vehiculoId`, `horariosAsignados` y `status`.
 - `vehiculos/$id`: Datos técnicos y capacidad dinámica (Campo: `capacidad`).
 - `precios/$origen/$destino`: Nodo de tarifas dinámicas. Permite escalabilidad sin actualizar la App.
 - `reservas/`: Nodo plano indexado por `driverId`, `userId` y `reservationDate`. Incluye campos `departureTime` y `rated` para consistencia operativa.
 - `reservas_archivadas/`: Nodo histórico para auditoría y rendimiento.
 - `chats/`: Mensajería en tiempo real vinculada al `reservationId`.
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Campos: `asientosDisponibles`, `totalAsientos`, `asientosOcupados`.
+- `usuarios/$uid`: Perfil de usuario, roles, tokens FCM y campo `status`.
 
-## 7. Estado Actual del Proyecto (v1.2.0 Stable)
-- **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards y historiales 100% reactivos.
-- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos.
-- **UI Responsiva & Accesible:** 100% de las actividades de Pasajero y Conductor optimizadas con guías porcentuales y soporte para zoom de fuente (200%).
+## 7. Estado Actual del Proyecto (v1.2.0 Stable - Ready for Play Store)
+- **Arquitectura:** 100% migrado a MVVM y LiveData. Dashboards, historiales y navegación 100% reactivos.
+- **Estandarización:** Código fuente y llaves de Firebase 100% en Inglés. Soporte bilingüe blindado en modelos. Limpieza total de emojis y caracteres no estándar.
+- **UI Responsiva & Accesible:** 100% de las actividades optimizadas con guías porcentuales y soporte para zoom de fuente (200%).
 - **Mapa de Asientos:** Unificado y simétrico con grilla de 5 columnas.
-- **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService` para mayor granularidad y mantenimiento.
-- **Tarifas Dinámicas:** Implementado `PriceService`. Los precios ahora se gestionan centralizadamente desde la base de datos, soportando cambios en tiempo real sin despliegues.
-- **Mensajería:** Implementación del **Chat en Tiempo Real** (Bidireccional) para reservas confirmadas. Incluye notificaciones Push mediante `NotificationManager`.
-- **Atomicidad:** Implementado el uso de `runTransaction` para la reserva y liberación de asientos.
-- **Rendimiento:** Implementado `ArchiveService` para limpieza automática de reservas antiguas y límites de carga inteligentes en UI (50 registros).
-- **Tiquete Digital:** Implementada visualización de comprobante de viaje detallado con acceso directo al chat integrado y funcionalidad de **Compartir como Imagen (PNG)**.
-- **Estabilidad de Datos:** Corregido bug de formato AM/PM mediante la normalización en `FormatUtils` y la persistencia de `departureTime`. Sistema de calificaciones estabilizado con refresco inmediato de UI.
-- **UX Optimizada:** Navegación en historial centralizada en botones para evitar interacciones accidentales con la tarjeta completa.
+- **Módulo de Autenticación:** Refactorizado. El antiguo `LoginService` se dividió en `EmailLoginService`, `GoogleLoginService` y `UserRoleService`.
+- **Tarifas Dinámicas:** Implementado `PriceService` centralizado en la base de datos.
+- **Mensajería:** Chat en Tiempo Real con notificaciones Push y **Deep Linking funcional** (enlaces directos) unificados en `NotificationService` con estilo Premium.
+- **Atomicidad y Sincronización:** Uso de `runTransaction` para reservas. Sincronización de capacidad de vehículo automática tras edición de perfil.
+- **Rendimiento:** `ArchiveService` para limpieza de reservas y límites de carga inteligentes en UI.
+- **Tiquete Digital:** Visualización detallada, chat integrado y funcionalidad de **Compartir como Imagen (PNG)** con branding Navy unificado.
+- **Automatización de Operaciones:** Cloud Function `automatedRotation` funcional para rotación de turnos a las 7:00 PM (Bogotá), reseteo de asientos y notificaciones automáticas.
+- **Gestión de Estados:** Sistema de estados (Activo/Inactivo/Bloqueado) implementado para Pasajeros y Conductores con badges de alta visibilidad.
 
 ## 8. Siguientes Pasos (Roadmap Actualizado)
-- **Hito 1 (DONE):** Optimizar Deep Linking para asegurar navegación directa al chat desde cualquier estado de la app.
-- **Hito 2:** Implementar sistema de pagos integrados (Pasarela de pagos).
-- **Hito 3:** Panel de analíticas avanzadas para el dueño del proyecto.
+- **Hito 1 (DONE):** Optimizar Deep Linking y navegación reactiva.
+- **Hito 2 (Lanzamiento):** Monitoreo de métricas en Play Console tras aprobación de Google.
+- **Refinamiento:** Validar estilo Premium y Deep Linking en disparadores de Cloud Functions.
+- **Hito 3:** Implementar sistema de pagos integrados (Pasarela de pagos).
+- **Hito 4:** Panel de analíticas avanzadas para administración centralizada.
+- **Mantenimiento:** Extraer el 100% de los strings hardcodeados en layouts XML hacia `strings.xml`.
+- **Accesibilidad Visual:** Implementar Tema Claro (Naranja/Blanco) para optimizar el uso bajo luz solar intensa.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*
