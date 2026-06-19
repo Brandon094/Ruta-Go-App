@@ -5,8 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,10 +39,12 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void setupBrandingAnimation() {
+        View pinContainer = findViewById(R.id.card_logo_splash);
         ImageView logo = findViewById(R.id.logo_splash);
-        if (logo != null) {
-            Animation anim = AnimationUtils.loadAnimation(this, R.anim.splash_animation);
-            logo.startAnimation(anim);
+        View poweredBy = findViewById(R.id.layout_powered_by);
+        
+        if (pinContainer != null && logo != null) {
+            com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playSophisticatedSplashAnimation(pinContainer, logo, poweredBy);
         }
     }
 

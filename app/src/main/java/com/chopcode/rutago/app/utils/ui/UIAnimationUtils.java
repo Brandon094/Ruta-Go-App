@@ -175,4 +175,59 @@ public class UIAnimationUtils {
                         .start())
                 .start();
     }
+
+    /**
+     * 🚀 Animación Sofisticada para el Splash Screen.
+     * Anima el contenedor (Pin), el logo interno y el texto de marca de forma secuencial.
+     */
+    public static void playSophisticatedSplashAnimation(View pinContainer, View logoIcon, View poweredBy) {
+        if (pinContainer == null || logoIcon == null) return;
+
+        // 1. Preparar estados iniciales
+        pinContainer.setAlpha(0f);
+        pinContainer.setScaleX(0.5f);
+        pinContainer.setScaleY(0.5f);
+        
+        logoIcon.setAlpha(0f);
+        logoIcon.setScaleX(0.7f);
+        logoIcon.setScaleY(0.7f);
+
+        if (poweredBy != null) {
+            poweredBy.setAlpha(0f);
+            poweredBy.setTranslationY(20f);
+        }
+
+        // 2. Animación del Pin (Fondo)
+        pinContainer.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(1000)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(1.5f))
+                .withEndAction(() -> {
+                    // Micro-interacción de latido suave al terminar de entrar
+                    startPulseAnimation(pinContainer);
+                })
+                .start();
+
+        // 3. Animación del Logo (Secuencial con delay)
+        logoIcon.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setStartDelay(400)
+                .setDuration(800)
+                .setInterpolator(new android.view.animation.OvershootInterpolator(2.0f))
+                .start();
+
+        // 4. Animación del "Powered By" (Sutil al final)
+        if (poweredBy != null) {
+            poweredBy.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setStartDelay(800)
+                    .setDuration(600)
+                    .start();
+        }
+    }
 }
