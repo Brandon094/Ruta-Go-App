@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Reservation;
@@ -91,6 +92,13 @@ public class TicketActivity extends AppCompatActivity {
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnShare);
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnChat);
 
+        // 🔥 Blindaje de Chat: Ocultar si la reserva está cancelada
+        if ("cancelada".equalsIgnoreCase(status)) {
+            btnChat.setVisibility(View.GONE);
+        } else {
+            btnChat.setVisibility(View.VISIBLE);
+        }
+
         btnShare.setOnClickListener(v -> {
             if (ticketCard != null) {
                 ImageUtils.shareViewAsImage(this, ticketCard, "Ticket_" + reservationId);
@@ -98,6 +106,11 @@ public class TicketActivity extends AppCompatActivity {
         });
 
         btnChat.setOnClickListener(v -> {
+            if ("cancelada".equalsIgnoreCase(status)) {
+                Toast.makeText(this, "No se puede abrir el chat de una reserva cancelada", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Intent chatIntent = new Intent(this, ChatActivity.class);
             chatIntent.putExtra("reservationId", reservationId);
             
@@ -106,7 +119,9 @@ public class TicketActivity extends AppCompatActivity {
             boolean isPassenger = currentUid != null && currentUid.equals(intent.getStringExtra("userId"));
             
             chatIntent.putExtra("receiverId", isPassenger ? intent.getStringExtra("driverId") : intent.getStringExtra("userId"));
+            chatIntent.putExtra("receiverName", isPassenger ? driverName : passengerName);
             chatIntent.putExtra("senderName", isPassenger ? passengerName : driverName);
+            chatIntent.putExtra("scheduleTime", time);
             startActivity(chatIntent);
         });
 

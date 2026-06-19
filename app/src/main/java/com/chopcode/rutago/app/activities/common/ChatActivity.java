@@ -25,8 +25,10 @@ public class ChatActivity extends AppCompatActivity {
     private ChatAdapter adapter;
     private RecyclerView rvChat;
     private EditText etMessage;
+    private android.widget.TextView tvEmptyChat;
     private FloatingActionButton btnSend;
     private String reservationId;
+    private String receiverName, scheduleTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class ChatActivity extends AppCompatActivity {
         reservationId = intent.getStringExtra("reservationId");
         String receiverId = intent.getStringExtra("receiverId");
         String senderName = intent.getStringExtra("senderName");
+        receiverName = intent.getStringExtra("receiverName");
+        scheduleTime = intent.getStringExtra("scheduleTime");
         
         android.util.Log.e("ChatActivity", "🚀 handleIntent - resId: " + reservationId + ", receiver: " + receiverId);
         
@@ -76,8 +80,21 @@ public class ChatActivity extends AppCompatActivity {
                 setupObservers();
             }
             viewModel.initChat(reservationId, receiverId, senderName);
+            updateToolbarInfo();
         } catch (Exception e) {
             android.util.Log.e("ChatActivity", "❌ Error en inicialización: " + e.getMessage());
+        }
+    }
+
+    private void updateToolbarInfo() {
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+        if (toolbar != null) {
+            if (receiverName != null) {
+                toolbar.setTitle(receiverName);
+            }
+            if (scheduleTime != null) {
+                toolbar.setSubtitle("Viaje: " + scheduleTime);
+            }
         }
     }
 
@@ -90,6 +107,7 @@ public class ChatActivity extends AppCompatActivity {
         rvChat = findViewById(R.id.rvChat);
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
+        tvEmptyChat = findViewById(R.id.tvEmptyChat);
 
         // 🔥 Micro-interacción de Botón
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnSend);
@@ -114,7 +132,12 @@ public class ChatActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getMessages().observe(this, messages -> {
             adapter.setMessages(messages);
-            if (adapter.getItemCount() > 0) {
+            boolean isEmpty = messages == null || messages.isEmpty();
+            if (tvEmptyChat != null) {
+                tvEmptyChat.setVisibility(isEmpty ? android.view.View.VISIBLE : android.view.View.GONE);
+            }
+            
+            if (!isEmpty) {
                 rvChat.smoothScrollToPosition(adapter.getItemCount() - 1);
             }
         });

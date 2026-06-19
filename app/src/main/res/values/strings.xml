@@ -13,6 +13,7 @@
     <string name="bienvenida">¡Bienvenido!</string>
     <string name="no_disponible">N/A</string>
     <string name="error_prefijo">Error: %s</string>
+    <string name="empty_chat_message">Inicia una conversación sobre tu viaje</string>
     <string name="error_carga_datos">Error al intentar cargar los datos</string>
     <string name="error_no_internet">Sin conexión a internet</string>
     <string name="network_error">Sin conexión a internet. Los datos pueden no estar actualizados.</string>
