@@ -401,7 +401,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="?attr/colorPrimaryDark"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant"
                         app:strokeColor="@color/primary_500"
                         app:strokeWidth="2dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:padding="12dp">

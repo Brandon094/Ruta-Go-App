@@ -2,7 +2,6 @@ package com.chopcode.rutago.app.managers.reservations.confirmation;
 
 import android.view.View;
 import android.widget.ImageView;
-import androidx.core.content.ContextCompat;
 import com.google.android.material.card.MaterialCardView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
@@ -50,8 +49,7 @@ public class ConfirmationUIManager {
         this.metodoPagoSeleccionado = metodo;
         
         if (cardEfectivo != null && metodo.equals("efectivo")) {
-            cardEfectivo.setStrokeColor(ContextCompat.getColor(cardEfectivo.getContext(), R.color.primary_300));
-            cardEfectivo.setCardBackgroundColor(ContextCompat.getColor(cardEfectivo.getContext(), R.color.primary_50));
+            // Ya configurado en XML para respetar el tema
             if (checkIconEfectivo != null) checkIconEfectivo.setVisibility(View.VISIBLE);
         }
 
