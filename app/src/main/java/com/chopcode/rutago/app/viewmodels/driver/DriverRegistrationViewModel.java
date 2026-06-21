@@ -1,17 +1,24 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
+import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.services.auth.RegistrationService;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +30,8 @@ public class DriverRegistrationViewModel extends ViewModel {
     private final MutableLiveData<Boolean> registrationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> registrationError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<List<Schedule>> schedulesRoute1 = new MutableLiveData<>();
+    private final MutableLiveData<List<Schedule>> schedulesRoute2 = new MutableLiveData<>();
 
     private final RegistrationService registrationService;
 
@@ -33,14 +42,38 @@ public class DriverRegistrationViewModel extends ViewModel {
     public LiveData<Boolean> getRegistrationSuccess() { return registrationSuccess; }
     public LiveData<String> getRegistrationError() { return registrationError; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
+    public LiveData<List<Schedule>> getSchedulesRoute1() { return schedulesRoute1; }
+    public LiveData<List<Schedule>> getSchedulesRoute2() { return schedulesRoute2; }
+
+    public void loadSchedules() {
+        MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Schedule> route1 = new ArrayList<>();
+                List<Schedule> route2 = new ArrayList<>();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Schedule s = child.getValue(Schedule.class);
+                    if (s != null) {
+                        s.setId(child.getKey());
+                        if ("Natagá -> La Plata".equalsIgnoreCase(s.getRoute())) route1.add(s);
+                        else route2.add(s);
+                    }
+                }
+                schedulesRoute1.postValue(route1);
+                schedulesRoute2.postValue(route2);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
 
     public void registerDriver(String name, String email, String phone, String password, 
-                               String plate, String model, String year, int capacity) {
+                               String plate, String model, String year, int capacity,
+                               String idS1, String idS2) {
         isLoading.setValue(true);
         registrationService.registrarSoloAuth(email, password, new RegistrationService.RegistrationCallback() {
             @Override
             public void onSuccess() {
-                saveDriverFullData(name, email, phone, plate, model, year, capacity);
+                saveDriverFullData(name, email, phone, plate, model, year, capacity, idS1, idS2);
             }
 
             @Override
@@ -52,7 +85,8 @@ public class DriverRegistrationViewModel extends ViewModel {
     }
 
     private void saveDriverFullData(String name, String email, String phone, 
-                                    String plate, String model, String year, int capacity) {
+                                    String plate, String model, String year, int capacity,
+                                    String idS1, String idS2) {
         FirebaseUser user = MyApp.getCurrentUser();
         if (user == null) {
             isLoading.postValue(false);
@@ -62,30 +96,14 @@ public class DriverRegistrationViewModel extends ViewModel {
 
         String userId = user.getUid();
 
-        // 1. Guardar SOLO en /vehiculos/
         saveToVehiculos(userId, plate, model, year, capacity);
-        
-        // 2. Guardar SOLO en /conductores/
-        saveToConductores(userId, name, email, phone, plate, model);
+        saveToConductores(userId, name, email, phone, plate, model, idS1, idS2);
+        syncGlobalSchedules(userId, idS1, idS2);
 
-        // Notificaciones configuradas para el nodo conductores
         NotificationManager.getInstance(MyApp.getAppContext()).saveFCMTokenToRealtimeDatabase(userId, "conductores");
 
         isLoading.postValue(false);
         registrationSuccess.postValue(true);
-    }
-
-    private void saveToUsuarios(String userId, String name, String email, String phone) {
-        DatabaseReference ref = MyApp.getDatabaseReference("usuarios/" + userId);
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", userId);
-        data.put("nombre", name);
-        data.put("email", email);
-        data.put("telefono", phone);
-        data.put("rol", "conductor");
-        data.put("status", "active"); // Siguiendo el JSON: status (English)
-        data.put("fechaRegistro", System.currentTimeMillis());
-        ref.setValue(data);
     }
 
     private void saveToVehiculos(String userId, String plate, String model, String year, int capacity) {
@@ -96,13 +114,14 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("modelo", model);
         data.put("ano", year);
         data.put("capacidad", capacity);
-        data.put("driverId", userId);     // 👈 REQUERIDO POR REGLAS DE SEGURIDAD
-        data.put("conductorId", userId);  // 👈 COMPATIBILIDAD HISTÓRICA
-        data.put("estado", "activo"); // Siguiendo el JSON: estado (Spanish)
+        data.put("driverId", userId);
+        data.put("conductorId", userId);
+        data.put("estado", "activo");
         ref.setValue(data);
     }
 
-    private void saveToConductores(String userId, String name, String email, String phone, String plate, String model) {
+    private void saveToConductores(String userId, String name, String email, String phone, 
+                                   String plate, String model, String idS1, String idS2) {
         DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
         Map<String, Object> data = new HashMap<>();
         data.put("id", userId);
@@ -112,7 +131,19 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("placaVehiculo", plate);
         data.put("modeloVehiculo", model);
         data.put("vehiculoId", plate);
-        data.put("status", "active"); // Siguiendo el JSON: status (English)
+        data.put("status", "active");
+        
+        List<String> schedules = new ArrayList<>();
+        if (idS1 != null) schedules.add(idS1);
+        if (idS2 != null) schedules.add(idS2);
+        data.put("horariosAsignados", schedules);
+        
         ref.setValue(data);
+    }
+
+    private void syncGlobalSchedules(String driverId, String idS1, String idS2) {
+        DatabaseReference ref = MyApp.getDatabaseReference("horarios");
+        if (idS1 != null) ref.child(idS1).child("conductorId").setValue(driverId);
+        if (idS2 != null) ref.child(idS2).child("conductorId").setValue(driverId);
     }
 }

@@ -60,6 +60,9 @@
     <string name="capacidad_vehiculo">Capacidad</string>
     <string name="security">Seguridad</string>
     <string name="registrar_conductor_btn">Registrar Conductor</string>
+    <string name="horario_ida">Horario de Ida (Natagá -> La Plata)</string>
+    <string name="horario_regreso">Horario de Regreso (La Plata -> Natagá)</string>
+    <string name="seleccionar_horario">Selecciona un horario</string>
     <string name="error_email_existe">Este correo ya está registrado en Ruta-Go.</string>
     <string name="error_campos_obligatorios">Por favor completa los campos obligatorios.</string>
     <string name="exito_registro_conductor">¡Bienvenido a bordo! Conductor registrado.</string>

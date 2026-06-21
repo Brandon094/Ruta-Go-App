@@ -1,15 +1,19 @@
 package com.chopcode.rutago.app.activities.driver;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.R;
+import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.viewmodels.driver.DriverRegistrationViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 🚛 Driver Registration Activity
@@ -18,12 +22,14 @@ import com.google.android.material.textfield.TextInputEditText;
  */
 public class DriverRegistrationActivity extends AppCompatActivity {
 
-    private static final String TAG = "DriverRegistrationAct";
-
     private TextInputEditText etName, etEmail, etPhone, etPlate, etModel, etYear, etCapacity, etPassword;
+    private AutoCompleteTextView spinnerIda, spinnerVuelta;
     private MaterialButton btnRegister;
     private MaterialToolbar topAppBar;
     private DriverRegistrationViewModel viewModel;
+
+    private String selectedIdIda = null;
+    private String selectedIdVuelta = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,8 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         initViews();
         setupObservers();
         setupListeners();
+
+        viewModel.loadSchedules();
     }
 
     private void initViews() {
@@ -46,6 +54,8 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         etYear = findViewById(R.id.etYear);
         etCapacity = findViewById(R.id.etCapacity);
         etPassword = findViewById(R.id.etPassword);
+        spinnerIda = findViewById(R.id.spinnerIda);
+        spinnerVuelta = findViewById(R.id.spinnerVuelta);
         btnRegister = findViewById(R.id.btnRegisterDriver);
         topAppBar = findViewById(R.id.topAppBar);
 
@@ -55,6 +65,22 @@ public class DriverRegistrationActivity extends AppCompatActivity {
     }
 
     private void setupObservers() {
+        viewModel.getSchedulesRoute1().observe(this, schedules -> {
+            List<String> times = new ArrayList<>();
+            for (Schedule s : schedules) times.add(s.getTime());
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
+            spinnerIda.setAdapter(adapter);
+            spinnerIda.setOnItemClickListener((parent, view, position, id) -> selectedIdIda = schedules.get(position).getId());
+        });
+
+        viewModel.getSchedulesRoute2().observe(this, schedules -> {
+            List<String> times = new ArrayList<>();
+            for (Schedule s : schedules) times.add(s.getTime());
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
+            spinnerVuelta.setAdapter(adapter);
+            spinnerVuelta.setOnItemClickListener((parent, view, position, id) -> selectedIdVuelta = schedules.get(position).getId());
+        });
+
         viewModel.getRegistrationSuccess().observe(this, success -> {
             if (success) {
                 Toast.makeText(this, R.string.exito_registro_conductor, Toast.LENGTH_SHORT).show();
@@ -93,7 +119,7 @@ public class DriverRegistrationActivity extends AppCompatActivity {
 
             if (validateFields(name, email, plate, model, year, capStr, pass)) {
                 int capacity = Integer.parseInt(capStr);
-                viewModel.registerDriver(name, email, phone, pass, plate, model, year, capacity);
+                viewModel.registerDriver(name, email, phone, pass, plate, model, year, capacity, selectedIdIda, selectedIdVuelta);
             }
         });
     }
@@ -101,6 +127,10 @@ public class DriverRegistrationActivity extends AppCompatActivity {
     private boolean validateFields(String name, String email, String plate, String model, String year, String cap, String pass) {
         if (name.isEmpty() || email.isEmpty() || plate.isEmpty() || model.isEmpty() || pass.isEmpty() || year.isEmpty() || cap.isEmpty()) {
             Toast.makeText(this, R.string.error_campos_obligatorios, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (selectedIdIda == null || selectedIdVuelta == null) {
+            Toast.makeText(this, "Por favor selecciona ambos horarios", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
