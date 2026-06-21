@@ -64,6 +64,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private RecyclerView rvReservas, rvProximasRutas, rvRouteBreakdown;
     private TextView tvConductor, tvPlacaVehiculo, tvDriverStatusBadge;
     private TextView tvEmptyReservas, tvEmptyRutas;
+    private View layoutFeedbackConductor;
     private ImageView ivConductorAvatar;
     private ShimmerFrameLayout shimmerLayout;
     private ProgressBar progressBar;
@@ -163,6 +164,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         rvRouteBreakdown = findViewById(R.id.rvRouteBreakdown);
         tvEmptyReservas = findViewById(R.id.tvEmptyReservas);
         tvEmptyRutas = findViewById(R.id.tvEmptyRutas);
+        layoutFeedbackConductor = findViewById(R.id.layoutFeedbackConductor);
         shimmerLayout = findViewById(R.id.shimmer_inicio_conductor);
         fabVentaFisica = findViewById(R.id.fabVentaFisica);
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
@@ -435,9 +437,32 @@ public class DriverHomeActivity extends AppCompatActivity {
     }
 
     private void updateRoutesUI() {
-        boolean hasRoutes = !routeList.isEmpty();
-        tvEmptyRutas.setVisibility(hasRoutes ? View.GONE : View.VISIBLE);
-        rvProximasRutas.setVisibility(hasRoutes ? View.VISIBLE : View.GONE);
+        if (routeList == null || routeList.isEmpty()) {
+            showEmptyRoutes();
+            if (layoutFeedbackConductor != null) layoutFeedbackConductor.setVisibility(View.GONE);
+            return;
+        }
+
+        boolean todasFinalizadas = true;
+        for (Route r : routeList) {
+            if (r.getTime() != null && !FormatUtils.esHorarioPasado(r.getTime().getTime())) {
+                todasFinalizadas = false;
+                break;
+            }
+        }
+
+        if (todasFinalizadas) {
+            findViewById(R.id.cardRutas).setVisibility(View.GONE);
+            if (layoutFeedbackConductor != null) {
+                layoutFeedbackConductor.setVisibility(View.VISIBLE);
+                UIAnimationUtils.playCardEntryAnimation(layoutFeedbackConductor);
+            }
+        } else {
+            findViewById(R.id.cardRutas).setVisibility(View.VISIBLE);
+            rvProximasRutas.setVisibility(View.VISIBLE);
+            tvEmptyRutas.setVisibility(View.GONE);
+            if (layoutFeedbackConductor != null) layoutFeedbackConductor.setVisibility(View.GONE);
+        }
     }
 
     private void actualizarTiempoActualizacion() {

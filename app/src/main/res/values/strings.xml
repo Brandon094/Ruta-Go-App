@@ -72,6 +72,10 @@
     <string name="titulo_jornada_completada">¡Jornada Completada!</string>
     <string name="desc_jornada_completada">Todos los horarios de hoy han finalizado. Las reservas para mañana estarán disponibles a partir de las 7:00 PM.</string>
 
+    <!-- Feedback Conductor Jornada -->
+    <string name="titulo_mision_cumplida">¡Misión Cumplida!</string>
+    <string name="desc_mision_cumplida">Has completado todos tus recorridos de hoy. Tus próximas rutas aparecerán aquí una vez sean asignadas o tras el reset de las 7:00 PM.</string>
+
     <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
