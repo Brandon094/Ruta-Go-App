@@ -257,52 +257,34 @@ public class DriverHomeActivity extends AppCompatActivity {
             }
         });
 
-        perfilViewModel.getConductorNombreLiveData().observe(this, nombre -> {
-            if (nombre != null && !nombre.isEmpty()) {
-                tvConductor.setText(nombre);
+        perfilViewModel.getConductorLiveData().observe(this, driver -> {
+            if (driver != null) {
+                tvConductor.setText(driver.getNombre());
+                tvPlacaVehiculo.setText(getString(R.string.placa_label_format, driver.getVehiclePlate()));
+                ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivConductorAvatar);
+                actualizarBadgeEstado(driver.getStatus());
+
+                if (driver.getVehicleCapacity() > 0) {
+                    estadisticasViewModel.setCapacidadVehiculo(driver.getVehicleCapacity());
+                }
+
+                if (driver.getAssignedSchedules() != null) {
+                    List<String> horarios = driver.getAssignedSchedules();
+                    rutasViewModel.loadRoutes(horarios);
+                    reservasViewModel.setHorariosAsignados(horarios);
+                    reservasViewModel.cargarReservasPendientes();
+                    estadisticasViewModel.setHorariosAsignados(new ArrayList<>(horarios));
+                    
+                    tvEmptyRutas.setVisibility(horarios.isEmpty() ? View.VISIBLE : View.GONE);
+                }
+
                 String userId = MyApp.getCurrentUserId();
-                if (userId != null) {
+                if (userId != null && !isDataLoaded) {
                     reservasViewModel.inicializarConIdConductor(userId);
                     estadisticasViewModel.setConductorActual(userId);
                     estadisticasViewModel.refreshStatistics();
+                    isDataLoaded = true;
                 }
-                isDataLoaded = true;
-            }
-        });
-
-        perfilViewModel.getPlacaVehiculoLiveData().observe(this, placa -> {
-            if (placa != null) tvPlacaVehiculo.setText(getString(R.string.placa_label_format, placa));
-        });
-
-        perfilViewModel.getCapacidadVehiculoLiveData().observe(this, capacity -> {
-            if (capacity != null && capacity > 0) {
-                estadisticasViewModel.setCapacidadVehiculo(capacity);
-            }
-        });
-
-        perfilViewModel.getHorariosAsignadosLiveData().observe(this, horarios -> {
-            if (horarios != null && !horarios.isEmpty()) {
-                rutasViewModel.loadRoutes(horarios);
-                reservasViewModel.setHorariosAsignados(horarios);
-                reservasViewModel.cargarReservasPendientes();
-                
-                estadisticasViewModel.setHorariosAsignados(new ArrayList<>(horarios));
-                String userId = MyApp.getCurrentUserId();
-                if (userId != null) {
-                    estadisticasViewModel.setConductorActual(userId);
-                }
-                estadisticasViewModel.refreshStatistics();
-
-                tvEmptyRutas.setVisibility(View.GONE);
-            } else {
-                tvEmptyRutas.setVisibility(View.VISIBLE);
-            }
-        });
-
-        perfilViewModel.getConductorLiveData().observe(this, driver -> {
-            if (driver != null) {
-                ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivConductorAvatar);
-                actualizarBadgeEstado(driver.getStatus());
             }
         });
 
