@@ -37,6 +37,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Robustez de Servicios:** Los servicios (`Service`) deben usar el contexto global de la aplicación (`MyApp.getInstance()`) para operaciones de UI, evitando crashes.
 - **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `driverId` en vehículos y cumplir con campos obligatorios).
 - **Caché de ViewModel:** Prohibido reiniciar estados de carga (Shimmer) si la data ya reside en memoria o el UID no ha cambiado. El Shimmer solo debe dispararse en la carga inicial para una experiencia instantánea.
+- **Tarifas Dinámicas:** Prohibido hardcodear precios (ej. "12000"). Usar siempre `PriceService` para consultar el nodo `precios/` de Firebase.
 
 ### C. UI/UX & Animaciones Premium
 - **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales. Una vez cargada la data, usar `UIAnimationUtils` para conteos progresivos, transiciones de tarjetas (`playCardEntryAnimation`) y micro-interacciones.
@@ -44,21 +45,21 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **Reactividad:** Los Dashboards deben reaccionar a cambios en la base de datos instantáneamente. Evitar `addListenerForSingleValueEvent` en pantallas principales.
 - **Notificaciones:** Seguir el estándar Premium unificado en `NotificationService` con identidad visual oficial.
 - **Responsividad (Guías):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en `ConstraintLayout` para que la UI "respire" en cualquier dispositivo.
-- **Botones Material (Standard):** Los `MaterialButton` deben tener `android:inset...="0dp"` para eliminar márgenes invisibles. Los botones tipo `Outlined` requieren `android:elevation="0dp"` y `android:stateListAnimator="@null"` para evitar artefactos visuales grises en tema claro.
+- **Botones Material (Standard):** Los `MaterialButton` deben tener `android:inset...="0dp"` para eliminar márgenes invisibles. Los botones tipo `Outlined` requieren `android:elevation="0dp"`, `android:stateListAnimator="@null"` y asegurar `iconTint` oficial para visibilidad en modo oscuro.
 - **Accesibilidad (Zoom 200%):** Prohibido usar alturas fijas (`android:layout_height`) en botones o contenedores con texto. Usar siempre `wrap_content` + `android:minHeight` (ej. 52dp) para evitar textos cortados.
 - **Inmersión (Scroll Infinito):** Para efectos premium, usar `android:clipToPadding="false"` junto con un `paddingBottom` generoso (ej. 88dp) en listas.
 - **Simetría Operativa (Mapa de Asientos):** Grilla de 5 columnas. Para garantizar responsividad, los asientos miden máximo **38dp** con **1.5dp** de margen y un pasillo central de **10dp**.
-- **Desglose Dinámico (Dashboard Conductor):** El resumen por ruta debe usar un `RecyclerView` horizontal para soportar N rutas (1, 2, 3 o más) sin romper el layout ni ocultar información.
+- **Desglose Dinámico (Dashboard Conductor):** El resumen por ruta debe usar un `RecyclerView` horizontal para soportar N rutas (1, 2, 3 o más). El conteo de "Reservas" debe representar la **ocupación real** (App + Ventas Físicas).
 - **Compartición Segura:** El uso de `FileProvider` es obligatorio para compartir activos generados (como el tiquete digital).
 - **Estética de Logos:** 
-  - **Splash Screen:** Usa el contenedor con forma de Pin Navy (`bg_pin_navy`) de **180dp**.
+  - **Splash Screen:** Usa el contenedor con forma de Pin Navy (`bg_pin_navy`) de **180dp**. El `splash_background.xml` debe estar sincronizado milimétricamente con `activity_splash.xml` para una transición invisible.
   - **UIs Internas:** Los logos usan un fondo circular Navy (`secondary_900`) con un padding interno de **5dp** para maximizar la visibilidad del isotipo.
   - **Tiquete:** El logo del comprobante debe permanecer **estático** por ser un documento de comprobación.
 - **Animaciones de Vanguardia:** 
   - **Splash Pro:** Efecto de crecimiento desde un punto diminuto (`scale 0.01`). Primero crece el Pin de fondo y luego el Logo con efecto `Overshoot` marcado.
   - **Logo Vivo (Tilt):** Los logos en Login, Registro y Dashboards realizan un balanceo de **15 grados** cada 5 segundos para dar sensación de vida.
-  - **Next Trip Indicator:** Resaltar dinámicamente el horario más próximo a salir con un badge **"SIGUIENTE"** animado (Pulse) en color **Navy Medio (`secondary_400`)** para garantizar contraste en ambos temas.
-- **Departure Animation:** Al expirar un horario ("Finalizado"), el botón de reserva cambia a un icono de bus (`ic_bus`) y realiza una animación de arranque saliendo de la pantalla hacia la derecha.
+  - **Next Trip Indicator:** Resaltar dinámicamente el horario más próximo a salir con un badge **"SIGUIENTE"** animado (Pulse) en color **Navy Medio (`secondary_400`)**.
+- **Departure Animation:** Al expirar un horario ("Finalizado"), la tarjeta aplica opacidad (0.6f), muestra el chip "FINALIZADA" y deshabilita la gestión de asientos.
 - **Soporte Multi-tema (DayNight):** 
   - Prohibido hardcodear colores (`@color/...`) para fondos y textos.
   - Uso obligatorio de **Atributos de Tema** (`?attr/...`).
@@ -80,11 +81,12 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 ### F. Seguridad y Permisos
 - **PermissionManager:** Centralización de solicitudes de permisos (Notificaciones Android 13+, Galería).
 - **Sensibilidad:** Nunca persistir contraseñas en logs o analíticas.
+- **Blindaje de Chat:** El acceso al chat solo se permite para reservas en estado "Confirmada" o "Por confirmar".
 
 ### G. Gestión de Lanzamientos (Play Store)
 - **Keystore Oficial:** El archivo `key.jks` reside exclusivamente en el entorno estabilizado.
 - **Versionamiento:** Estándar `versionCode` incremental y `versionName` semántico.
-- **Regla de Rotación (7:00 PM):** Los horarios que ya han pasado durante el día se deshabilitan visualmente ("Finalizado"). A las 7:00 PM (19:00), se ejecuta un reset global (Cloud Function) que habilita todos los horarios nuevamente para el día siguiente. La App (`FormatUtils.esHorarioPasado`) respeta esta ventana permitiendo reservas anticipadas a partir de las 7:00 PM.
+- **Regla de Rotación (7:00 PM):** Los horarios que ya han pasado durante el día se deshabilitan visualmente ("Finalizado"). A las 7:00 PM (19:00), se ejecuta un reset global (Cloud Function) que habilita todos los horarios nuevamente para el día siguiente.
 - **Integridad del Tiempo:** La `departureTime` debe persistirse atómicamente al crear la reserva para evitar errores de zona horaria.
 
 ## 5. Gestión del Proyecto (Git)
@@ -93,7 +95,7 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 ## 6. Estructura Crítica de Base de Datos
 - `conductores/$uid`: Perfil, referencia a vehículo, horarios y status.
 - `vehiculos/$id`: Datos técnicos y capacidad (Campo: `capacidad`).
-- `precios/$origen/$destino`: Nodo de tarifas dinámicas.
+- `precios/$origen/$destino`: Nodo de tarifas dinámicas. Estándar: minúsculas y sin tildes.
 - `reservas/`: Nodo plano indexado. Incluye `departureTime` y `rated`.
 - `disponibilidadAsientos/$horarioId`: Control operativo sincronizado.
 - `estadisticas/$uid/$fecha`: Resumen financiero diario (Campos: `ingresosDiarios`, `reservasConfirmadas`, `ultimaActualizacion`).
@@ -102,13 +104,14 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 ## 7. Estado Actual del Proyecto (v1.2.0 Stable - Ready for Play Store)
 - **Arquitectura:** 100% MVVM y LiveData. Dashboards e historiales 100% reactivos.
 - **Branding Vivo:** Implementación de animaciones de balanceo en logos y secuencia de entrada premium en Splash Screen.
-- **Inteligencia de Horarios:** Sistema dinámico que identifica y resalta el "Próximo Viaje" disponible con badges animados.
-- **UI Responsiva & Accesible:** Mapa de asientos optimizado (38dp) para evitar overflow. Botones Material pulidos sin artefactos visuales.
-- **Estandarización Visual:** Unificación de fondos Navy Premium para todos los logos con paddings optimizados.
+- **Inteligencia de Horarios:** Sistema dinámico que identifica y resalta el "Próximo Viaje" disponible. Las rutas pasadas se marcan como finalizadas y se bloquean operativamente.
+- **UI Responsiva & Accesible:** Mapa de asientos optimizado (38dp). Botones Material pulidos con soporte iconográfico DayNight.
+- **Estandarización Visual:** Unificación de fondos Navy Premium y sincronización milimétrica del Splash Background.
 - **Módulo de Autenticación:** Login con Email y Google One Tap funcional con animaciones de carga.
-- **Gestión de Estados:** Sistema de estados (Activo/Inactivo) con badges de pulso para conductores y pasajeros.
-- **Atomicidad:** Uso de `runTransaction` y `ServerValue.increment` para garantizar la integridad de las reservas de asientos y la precisión de las estadísticas financieras.
-- **Persistencia de Estadísticas:** El sistema registra cada venta (App o Venta Física) en el nodo `estadisticas/` usando incrementos atómicos por fecha (`yyyy-MM-dd`) para evitar colisiones de datos.
+- **Gestión de Estados:** Sistema de estados (Activo/Inactivo) con badges de pulso.
+- **Atomicidad Financiera:** Uso de `ServerValue.increment` para `ingresosDiarios` y `reservasConfirmadas`, asegurando integridad incluso en ventas físicas manuales.
+- **Chat Contextual:** Sistema de comunicación blindado por estado de reserva con barra superior informativa (Interlocutor + Horario).
+- **Tarifas en la Nube:** Centralización de precios en Firebase, eliminando hardcoding y permitiendo actualizaciones remotas.
 
 ## 8. Siguientes Pasos (Roadmap)
 - **Hito 1:** Monitoreo de métricas en Play Console tras aprobación.

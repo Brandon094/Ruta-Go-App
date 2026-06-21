@@ -272,7 +272,7 @@ public class UserService {
                             }
                             
                             // Resolver precio desde el mapa dinámico
-                            double price = 12000.0;
+                            double price = PriceService.DEFAULT_PRICE;
                             String normOrigin = FormatUtils.normalizarTexto(origin);
                             String normDest = FormatUtils.normalizarTexto(destination);
                             if (allPrices.containsKey(normOrigin) && allPrices.get(normOrigin).containsKey(normDest)) {

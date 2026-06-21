@@ -70,7 +70,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         scheduleId = getIntent().getStringExtra("horarioId");
         routeName = getIntent().getStringExtra("rutaNombre");
         scheduleTime = getIntent().getStringExtra("horarioHora");
-        routePrice = getIntent().getDoubleExtra("rutaPrecio", 12000.0);
+        routePrice = getIntent().getDoubleExtra("rutaPrecio", com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
     }
 
     private void initViews() {

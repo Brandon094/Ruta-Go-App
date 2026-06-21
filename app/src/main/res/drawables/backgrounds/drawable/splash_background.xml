@@ -3,10 +3,21 @@
     <!-- Fondo que se adapta al tema -->
     <item android:drawable="?android:attr/colorBackground" />
 
-    <!-- Logo Splash Centrado -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/logo_splash"/>
-    </item>
+    <!-- Pin Navy de fondo (180dp) para alineación perfecta con activity_splash -->
+    <item
+        android:width="180dp"
+        android:height="180dp"
+        android:gravity="center"
+        android:drawable="@drawable/bg_pin_navy" />
+
+    <!-- Logo Splash con el mismo padding del layout (15,15,15,30) -->
+    <item
+        android:width="100dp"
+        android:height="100dp"
+        android:gravity="center"
+        android:start="15dp"
+        android:end="15dp"
+        android:top="15dp"
+        android:bottom="30dp"
+        android:drawable="@drawable/logo_splash" />
 </layer-list>

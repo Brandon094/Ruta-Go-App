@@ -155,7 +155,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             scheduleTime = intent.getStringExtra("horarioHora");
             
             // 🔥 CAPTURAR PRECIO DEL INTENT
-            double initialPrice = intent.getDoubleExtra("precioSeleccionado", 12000.0);
+            double initialPrice = intent.getDoubleExtra("precioSeleccionado", com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
             if (viewModel != null) viewModel.setInitialPrice(initialPrice);
 
             reservationUserManager.updateFromIntent(intent.getStringExtra("usuarioId"), intent.getStringExtra("usuarioNombre"), intent.getStringExtra("usuarioTelefono"));

@@ -18,7 +18,7 @@ public class FormatUtils {
     private static final String TAG = "FormatUtils";
 
     /**
-     * Formatea un precio a moneda colombiana (ej: 12000 -> "$12.000").
+     * Formatea un precio a moneda colombiana (ej: 13000 -> "$13.000").
      * Soporta tanto String como Double.
      */
     public static String formatearPrecio(Object precio) {

@@ -153,7 +153,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
                 double priceValue = Double.parseDouble(schedule.getPrice());
                 intent.putExtra("precioSeleccionado", priceValue);
             } catch (Exception e) {
-                intent.putExtra("precioSeleccionado", 12000.0);
+                intent.putExtra("precioSeleccionado", com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
             }
 
             if (userDataListener != null) {
