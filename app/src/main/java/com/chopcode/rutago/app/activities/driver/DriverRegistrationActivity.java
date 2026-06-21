@@ -57,23 +57,31 @@ public class DriverRegistrationActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getRegistrationSuccess().observe(this, success -> {
             if (success) {
-                Toast.makeText(this, "Conductor registrado exitosamente", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.exito_registro_conductor, Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
 
         viewModel.getRegistrationError().observe(this, error -> {
-            Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
+            if (error.contains("already in use")) {
+                Toast.makeText(this, R.string.error_email_existe, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
+            }
         });
 
         viewModel.getIsLoading().observe(this, loading -> {
             btnRegister.setEnabled(!loading);
-            btnRegister.setText(loading ? "Registrando..." : "Registrar Conductor");
+            btnRegister.setText(loading ? getString(R.string.registering) : getString(R.string.registrar_conductor_btn));
         });
     }
 
     private void setupListeners() {
         btnRegister.setOnClickListener(v -> {
+            if (etName.getText() == null || etEmail.getText() == null || etPhone.getText() == null ||
+                etPlate.getText() == null || etModel.getText() == null || etYear.getText() == null ||
+                etCapacity.getText() == null || etPassword.getText() == null) return;
+
             String name = etName.getText().toString().trim();
             String email = etEmail.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
@@ -91,16 +99,16 @@ public class DriverRegistrationActivity extends AppCompatActivity {
     }
 
     private boolean validateFields(String name, String email, String plate, String model, String year, String cap, String pass) {
-        if (name.isEmpty() || email.isEmpty() || plate.isEmpty() || model.isEmpty() || pass.isEmpty()) {
-            Toast.makeText(this, "Por favor completa los campos obligatorios", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || email.isEmpty() || plate.isEmpty() || model.isEmpty() || pass.isEmpty() || year.isEmpty() || cap.isEmpty()) {
+            Toast.makeText(this, R.string.error_campos_obligatorios, Toast.LENGTH_SHORT).show();
             return false;
         }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, "Email inválido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.correo_valido, Toast.LENGTH_SHORT).show();
             return false;
         }
         if (pass.length() < 6) {
-            Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_password_length, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

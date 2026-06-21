@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary_500"
-            app:title="Registro de Conductor"
+            app:title="@string/registro_conductor_titulo"
             app:titleCentered="true"
             app:titleTextColor="?attr/colorOnPrimary"
             app:navigationIcon="@drawable/ic_arrow_back"
@@ -72,7 +72,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Información Personal"
+                        android:text="@string/info_personal"
                         android:textAppearance="?attr/textAppearanceTitleSmall"
                         android:textColor="@color/primary_500"
                         android:textStyle="bold"
@@ -126,7 +126,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Detalles del Vehículo"
+                        android:text="@string/detalles_vehiculo"
                         android:textAppearance="?attr/textAppearanceTitleSmall"
                         android:textColor="@color/primary_500"
                         android:textStyle="bold"
@@ -137,7 +137,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="Placa del Vehículo"
+                        android:hint="@string/placa_vehiculo"
                         app:startIconDrawable="@drawable/ic_license"
                         app:startIconTint="@color/primary_500">
                         <com.google.android.material.textfield.TextInputEditText
@@ -152,7 +152,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:hint="Modelo (Ej: Toyota Hilux)"
+                        android:hint="@string/modelo_ejemplo"
                         app:startIconDrawable="@drawable/ic_car_model"
                         app:startIconTint="@color/primary_500">
                         <com.google.android.material.textfield.TextInputEditText
@@ -166,6 +166,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:baselineAligned="false"
                         android:layout_marginBottom="24dp">
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -174,7 +175,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginEnd="6dp"
-                            android:hint="Año"
+                            android:hint="@string/ano_vehiculo"
                             app:startIconDrawable="@drawable/ic_calendar_today"
                             app:startIconTint="@color/primary_500">
                             <com.google.android.material.textfield.TextInputEditText
@@ -190,7 +191,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="6dp"
-                            android:hint="Capacidad"
+                            android:hint="@string/capacidad_vehiculo"
                             app:startIconDrawable="@drawable/ic_capacidad"
                             app:startIconTint="@color/primary_500">
                             <com.google.android.material.textfield.TextInputEditText
@@ -205,7 +206,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Seguridad"
+                        android:text="@string/security"
                         android:textAppearance="?attr/textAppearanceTitleSmall"
                         android:textColor="@color/primary_500"
                         android:textStyle="bold"
@@ -234,7 +235,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:minHeight="52dp"
-                        android:text="Registrar Conductor"
+                        android:text="@string/registrar_conductor_btn"
                         app:icon="@drawable/ic_driver"
                         app:iconGravity="textStart" />
 

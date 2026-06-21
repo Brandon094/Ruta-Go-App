@@ -49,6 +49,23 @@
     <string name="driver_onboarding_desc_3">Visualiza tus ingresos diarios y el resumen de ocupación por cada una de tus rutas asignadas.</string>
 
     <!-- ========================================================================= -->
+    <!-- 🚛 DRIVER REGISTRATION                                                    -->
+    <!-- ========================================================================= -->
+    <string name="registro_conductor_titulo">Registro de Conductor</string>
+    <string name="info_personal">Información Personal</string>
+    <string name="detalles_vehiculo">Detalles del Vehículo</string>
+    <string name="placa_vehiculo">Placa del Vehículo</string>
+    <string name="modelo_ejemplo">Modelo (Ej: Toyota Hilux)</string>
+    <string name="ano_vehiculo">Año</string>
+    <string name="capacidad_vehiculo">Capacidad</string>
+    <string name="security">Seguridad</string>
+    <string name="registrar_conductor_btn">Registrar Conductor</string>
+    <string name="error_email_existe">Este correo ya está registrado en Ruta-Go.</string>
+    <string name="error_campos_obligatorios">Por favor completa los campos obligatorios.</string>
+    <string name="exito_registro_conductor">¡Bienvenido a bordo! Conductor registrado.</string>
+    <string name="eres_conductor_registrate">¿Eres conductor? Regístrate aquí</string>
+
+    <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
     <string name="inicioSesion">Iniciar Sesión</string>
