@@ -1,6 +1,7 @@
 package com.chopcode.rutago.app.activities.driver;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import java.util.List;
  * Formulario especializado para el registro de nuevos conductores y sus vehículos.
  */
 public class DriverRegistrationActivity extends AppCompatActivity {
+    private static final String TAG = "DriverRegistrationAct";
 
     private TextInputEditText etName, etEmail, etPhone, etPlate, etModel, etYear, etCapacity, etPassword;
     private AutoCompleteTextView spinnerIda, spinnerVuelta;
@@ -48,6 +50,7 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardScheduleInfo));
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardSecurityInfo));
 
+        Log.d(TAG, "📡 Cargando horarios desde el ViewModel...");
         viewModel.loadSchedules();
     }
 
@@ -72,12 +75,16 @@ public class DriverRegistrationActivity extends AppCompatActivity {
 
     private void setupObservers() {
         viewModel.getSchedulesRoute1().observe(this, schedules -> {
+            Log.d(TAG, "🟢 Obtenidos horarios R1: " + (schedules != null ? schedules.size() : 0));
             if (schedules == null || schedules.isEmpty()) return;
+            
             List<String> times = new ArrayList<>();
             for (Schedule s : schedules) times.add(s.getTime());
+            
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerIda.setAdapter(adapter);
-            // 🔥 BUG FIX: Forzar despliegue al tocar
+            
+            // Forzar que el dropdown se vea al hacer clic
             spinnerIda.setOnClickListener(v -> spinnerIda.showDropDown());
             spinnerIda.setOnItemClickListener((parent, view, position, id) -> {
                 Schedule s = schedules.get(position);
@@ -87,17 +94,21 @@ public class DriverRegistrationActivity extends AppCompatActivity {
                     selectedIdIda = null;
                 } else {
                     selectedIdIda = s.getId();
+                    Log.d(TAG, "✅ Seleccionado Ida: " + selectedIdIda);
                 }
             });
         });
 
         viewModel.getSchedulesRoute2().observe(this, schedules -> {
+            Log.d(TAG, "🟢 Obtenidos horarios R2: " + (schedules != null ? schedules.size() : 0));
             if (schedules == null || schedules.isEmpty()) return;
+            
             List<String> times = new ArrayList<>();
             for (Schedule s : schedules) times.add(s.getTime());
+            
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerVuelta.setAdapter(adapter);
-            // 🔥 BUG FIX: Forzar despliegue al tocar
+            
             spinnerVuelta.setOnClickListener(v -> spinnerVuelta.showDropDown());
             spinnerVuelta.setOnItemClickListener((parent, view, position, id) -> {
                 Schedule s = schedules.get(position);
@@ -107,6 +118,7 @@ public class DriverRegistrationActivity extends AppCompatActivity {
                     selectedIdVuelta = null;
                 } else {
                     selectedIdVuelta = s.getId();
+                    Log.d(TAG, "✅ Seleccionado Vuelta: " + selectedIdVuelta);
                 }
             });
         });
@@ -119,25 +131,17 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         });
 
         viewModel.getRegistrationError().observe(this, error -> {
-            if (error.contains("already in use")) {
-                Toast.makeText(this, R.string.error_email_existe, Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
-            }
+            if (error != null) Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
         });
 
         viewModel.getIsLoading().observe(this, loading -> {
             btnRegister.setEnabled(!loading);
-            btnRegister.setText(loading ? getString(R.string.registering) : getString(R.string.registrar_conductor_btn));
+            btnRegister.setText(loading ? "Procesando..." : getString(R.string.registrar_conductor_btn));
         });
     }
 
     private void setupListeners() {
         btnRegister.setOnClickListener(v -> {
-            if (etName.getText() == null || etEmail.getText() == null || etPhone.getText() == null ||
-                etPlate.getText() == null || etModel.getText() == null || etYear.getText() == null ||
-                etCapacity.getText() == null || etPassword.getText() == null) return;
-
             String name = etName.getText().toString().trim();
             String email = etEmail.getText().toString().trim();
             String phone = etPhone.getText().toString().trim();
@@ -156,19 +160,15 @@ public class DriverRegistrationActivity extends AppCompatActivity {
 
     private boolean validateFields(String name, String email, String plate, String model, String year, String cap, String pass) {
         if (name.isEmpty() || email.isEmpty() || plate.isEmpty() || model.isEmpty() || pass.isEmpty() || year.isEmpty() || cap.isEmpty()) {
-            Toast.makeText(this, R.string.error_campos_obligatorios, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (selectedIdIda == null || selectedIdVuelta == null) {
-            Toast.makeText(this, "Por favor selecciona ambos horarios", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Debes seleccionar ambos horarios (Ida y Vuelta)", Toast.LENGTH_SHORT).show();
             return false;
         }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(this, R.string.correo_valido, Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (pass.length() < 6) {
-            Toast.makeText(this, R.string.error_password_length, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Correo inválido", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

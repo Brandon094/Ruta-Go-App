@@ -82,6 +82,7 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 - **PermissionManager:** Centralización de solicitudes de permisos (Notificaciones Android 13+, Galería).
 - **Sensibilidad:** Nunca persistir contraseñas en logs o analíticas.
 - **Blindaje de Chat:** El acceso al chat solo se permite para reservas en estado "Confirmada" o "Por confirmar".
+- **Segregación Total de Roles:** Los pasajeros residen exclusivamente en `/usuarios/` y los conductores en `/conductores/` y `/vehiculos/`. El sistema de Login detecta el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
 
 ### G. Gestión de Lanzamientos (Play Store)
 - **Keystore Oficial:** El archivo `key.jks` reside exclusivamente en el entorno estabilizado.
@@ -93,32 +94,27 @@ El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reacti
 Se debe seguir el estándar de **Conventional Commits** y los mensajes deben estar en **Español**.
 
 ## 6. Estructura Crítica de Base de Datos
-- `conductores/$uid`: Perfil, referencia a vehículo, horarios y status.
-- `vehiculos/$id`: Datos técnicos y capacidad (Campo: `capacidad`).
-- `precios/$origen/$destino`: Nodo de tarifas dinámicas. Estándar: minúsculas y sin tildes.
-- `reservas/`: Nodo plano indexado. Incluye `departureTime` y `rated`.
-- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado.
-- `estadisticas/$uid/$fecha`: Resumen financiero diario (Campos: `ingresosDiarios`, `reservasConfirmadas`, `ultimaActualizacion`).
-- `usuarios/$uid`: Perfil, roles, tokens FCM y status.
+- `conductores/$uid`: Perfil profesional, referencia a vehículo y lista de `horariosAsignados`. (Nodo Segregado).
+- `vehiculos/$placa`: Datos técnicos, capacidad y referencia al `driverId`.
+- `horarios/`: Nodo maestro de turnos. Incluye `conductorId` dinámico para asignación en tiempo real.
+- `precios/$origen/$destino`: Nodo de tarifas dinámicas centralizadas.
+- `reservas/`: Nodo de transacciones activas. Incluye `departureTime` y `rated`.
+- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Se autogestiona al registrar conductores.
+- `usuarios/$uid`: Exclusivo para Perfiles de Pasajeros.
 
-## 7. Estado Actual del Proyecto (v1.2.0 Stable - Ready for Play Store)
-- **Arquitectura:** 100% MVVM y LiveData. Dashboards e historiales 100% reactivos.
-- **Branding Vivo:** Implementación de animaciones de balanceo en logos y secuencia de entrada premium en Splash Screen.
-- **Inteligencia de Horarios:** Sistema dinámico que identifica y resalta el "Próximo Viaje" disponible. Las rutas pasadas se marcan como finalizadas y se bloquean operativamente.
-- **UI Responsiva & Accesible:** Mapa de asientos optimizado (38dp). Botones Material pulidos con soporte iconográfico DayNight.
-- **Estandarización Visual:** Unificación de fondos Navy Premium y sincronización milimétrica del Splash Background.
-- **Módulo de Autenticación:** Login con Email y Google One Tap funcional con animaciones de carga.
-- **Gestión de Estados:** Sistema de estados (Activo/Inactivo) con badges de pulso.
-- **Atomicidad Financiera:** Uso de `ServerValue.increment` para `ingresosDiarios` y `reservasConfirmadas`, asegurando integridad incluso en ventas físicas manuales.
-- **Chat Contextual:** Sistema de comunicación blindado por estado de reserva con barra superior informativa (Interlocutor + Horario).
-- **Tarifas en la Nube:** Centralización de precios en Firebase, eliminando hardcoding y permitiendo actualizaciones remotas.
-- **Onboarding Premium:** Introducción guiada para nuevos usuarios mediante slides animados con ViewPager2.
+## 7. Estado Actual del Proyecto (v1.2.1 Stable - Gold Master)
+- **Arquitectura:** 100% MVVM reactiva. Segregación física de roles (Conductores vs Pasajeros) completada.
+- **Registro Autónomo:** Formulario Step-by-Step para conductores que automatiza Auth, Perfil, Vehículo y Agenda inicial.
+- **Inteligencia de Turnos:** Sistema de detección de disponibilidad en tiempo real (Libre/Ocupado) con Sanity Check contra IDs huérfanos.
+- **Onboarding Dual:** Guías especializadas tanto para pasajeros (bienvenida) como para conductores (capacitación operativa).
+- **UI Premium:** Sincronización milimétrica de Splash Screen, animaciones de entrada en tarjetas y soporte DayNight total.
+- **Blindaje Operativo:** Bloqueo de reservas en horarios sin conductores asignados. Reseteo atómico de capacidad al cambiar de chofer.
+- **Finanzas Dinámicas:** Tarifas controladas desde la nube y abreviación financiera (K, M, COP) en toda la UI.
 
 ## 8. Siguientes Pasos (Roadmap)
 - **Hito 1:** Monitoreo de métricas en Play Console tras aprobación.
 - **Hito 2:** Implementar pasarela de pagos integrados.
 - **Hito 3:** Panel de analíticas avanzadas para administración.
-- **Accesibilidad:** Refinar el Tema Claro para optimizar visibilidad bajo luz solar intensa.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*

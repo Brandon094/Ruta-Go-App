@@ -68,6 +68,10 @@
     <string name="exito_registro_conductor">¡Bienvenido a bordo! Conductor registrado.</string>
     <string name="eres_conductor_registrate">¿Eres conductor? Regístrate aquí</string>
 
+    <!-- Feedback Jornada Finalizada -->
+    <string name="titulo_jornada_completada">¡Jornada Completada!</string>
+    <string name="desc_jornada_completada">Todos los horarios de hoy han finalizado. Las reservas para mañana estarán disponibles a partir de las 7:00 PM.</string>
+
     <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->

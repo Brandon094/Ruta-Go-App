@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -9,6 +10,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
 import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.services.auth.RegistrationService;
+import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,15 +19,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 🚛 Driver Registration ViewModel
+ * 
+ * Versión v1.2.6 - Corregido para carga pública de horarios
  */
 public class DriverRegistrationViewModel extends ViewModel {
+    private static final String TAG = "DriverRegistrationVM";
+
     private final MutableLiveData<Boolean> registrationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> registrationError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
@@ -45,43 +49,47 @@ public class DriverRegistrationViewModel extends ViewModel {
     public LiveData<List<Schedule>> getSchedulesRoute2() { return schedulesRoute2; }
 
     public void loadSchedules() {
-        // Consultar conductores y horarios en paralelo para máxima velocidad
-        MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
+        Log.d(TAG, "🚀 Cargando horarios (Modo Público)...");
+        
+        // Cargamos horarios directamente porque el nodo 'horarios' es público en las reglas
+        MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
-                Set<String> validDrivers = new HashSet<>();
-                for (DataSnapshot d : driversSnapshot.getChildren()) validDrivers.add(d.getKey());
-
-                MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<Schedule> r1 = new ArrayList<>();
-                        List<Schedule> r2 = new ArrayList<>();
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            String hora = child.child("hora").getValue(String.class);
-                            String ruta = child.child("ruta").getValue(String.class);
-                            String cId = child.child("conductorId").getValue(String.class);
-                            
-                            if (hora != null && ruta != null) {
-                                Schedule s = new Schedule();
-                                s.setId(child.getKey());
-                                s.setRoute(ruta);
-                                
-                                boolean isOccupied = cId != null && !cId.isEmpty() && validDrivers.contains(cId);
-                                s.setTime(hora + (isOccupied ? " (Ocupado)" : " (Libre)"));
-                                s.setConductorId(isOccupied ? cId : null);
-                                
-                                if (ruta.contains("La Plata") && ruta.startsWith("Natagá")) r1.add(s);
-                                else r2.add(s);
-                            }
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Schedule> r1 = new ArrayList<>();
+                List<Schedule> r2 = new ArrayList<>();
+                
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String hora = child.child("hora").getValue(String.class);
+                    String ruta = child.child("ruta").getValue(String.class);
+                    String cId = child.child("conductorId").getValue(String.class);
+                    
+                    if (hora != null && ruta != null) {
+                        Schedule s = new Schedule();
+                        s.setId(child.getKey());
+                        s.setRoute(ruta);
+                        
+                        // Si tiene cualquier ID, asumimos ocupado (para no chocar con reglas de auth)
+                        boolean isOccupied = cId != null && !cId.isEmpty();
+                        s.setTime(hora + (isOccupied ? " (Ocupado)" : " (Libre)"));
+                        s.setConductorId(isOccupied ? cId : null);
+                        
+                        // Clasificación flexible
+                        String norm = FormatUtils.normalizarTexto(ruta).toLowerCase();
+                        if (norm.contains("nataga") && norm.indexOf("nataga") < norm.indexOf("plata")) {
+                            r1.add(s);
+                        } else {
+                            r2.add(s);
                         }
-                        schedulesRoute1.postValue(r1);
-                        schedulesRoute2.postValue(r2);
                     }
-                    @Override public void onCancelled(@NonNull DatabaseError error) {}
-                });
+                }
+                
+                Log.d(TAG, "📦 Listas listas - R1: " + r1.size() + " | R2: " + r2.size());
+                schedulesRoute1.postValue(r1);
+                schedulesRoute2.postValue(r2);
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) {}
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "❌ Error Firebase: " + error.getMessage());
+            }
         });
     }
 
@@ -94,13 +102,20 @@ public class DriverRegistrationViewModel extends ViewModel {
             public void onSuccess() {
                 saveDriverFullData(name, email, phone, plate, model, year, capacity, idS1, idS2);
             }
-            @Override public void onFailure(String error) { isLoading.postValue(false); registrationError.postValue(error); }
+            @Override public void onFailure(String error) { 
+                isLoading.postValue(false); 
+                registrationError.postValue(error); 
+            }
         });
     }
 
     private void saveDriverFullData(String name, String email, String phone, String plate, String model, String year, int capacity, String idS1, String idS2) {
         FirebaseUser user = MyApp.getCurrentUser();
-        if (user == null) { isLoading.postValue(false); registrationError.postValue("Session Error"); return; }
+        if (user == null) { 
+            isLoading.postValue(false); 
+            registrationError.postValue("Session Error");
+            return; 
+        }
         String userId = user.getUid();
 
         saveToVehiculos(userId, plate, model, year, capacity);
@@ -128,7 +143,8 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("placaVehiculo", plate); data.put("modeloVehiculo", model); data.put("vehiculoId", plate);
         data.put("status", "active");
         List<String> schedules = new ArrayList<>();
-        if (idS1 != null) schedules.add(idS1); if (idS2 != null) schedules.add(idS2);
+        if (idS1 != null && !idS1.isEmpty()) schedules.add(idS1);
+        if (idS2 != null && !idS2.isEmpty()) schedules.add(idS2);
         data.put("horariosAsignados", schedules);
         ref.setValue(data);
     }
@@ -141,7 +157,13 @@ public class DriverRegistrationViewModel extends ViewModel {
         seatData.put("totalAsientos", capacity);
         seatData.put("asientosOcupados", null);
 
-        if (idS1 != null) { hRef.child(idS1).child("conductorId").setValue(driverId); sRef.child(idS1).updateChildren(seatData); }
-        if (idS2 != null) { hRef.child(idS2).child("conductorId").setValue(driverId); sRef.child(idS2).updateChildren(seatData); }
+        if (idS1 != null && !idS1.isEmpty()) { 
+            hRef.child(idS1).child("conductorId").setValue(driverId); 
+            sRef.child(idS1).updateChildren(seatData); 
+        }
+        if (idS2 != null && !idS2.isEmpty()) { 
+            hRef.child(idS2).child("conductorId").setValue(driverId); 
+            sRef.child(idS2).updateChildren(seatData); 
+        }
     }
 }

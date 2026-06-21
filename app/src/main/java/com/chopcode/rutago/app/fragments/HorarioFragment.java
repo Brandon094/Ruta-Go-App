@@ -30,7 +30,9 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
     private static final String ARG_TITLE = "title";
 
     private RecyclerView recyclerView;
+    private View layoutFeedback;
     private ScheduleAdapter adapter;
+
     private List<Schedule> schedules = new ArrayList<>();
     private String title;
     private AuthManager authManager;
@@ -72,11 +74,15 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_horarios, container, false);
         recyclerView = view.findViewById(R.id.recyclerViewHorarios);
+        layoutFeedback = view.findViewById(R.id.layoutFeedbackFinalizado);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ScheduleAdapter(schedules, this);
         recyclerView.setAdapter(adapter);
         
-        if (!schedules.isEmpty()) {
+        verificarYMostrarFeedback();
+
+        if (!schedules.isEmpty() && (layoutFeedback == null || layoutFeedback.getVisibility() == View.GONE)) {
             recyclerView.scheduleLayoutAnimation();
             desplazarAlSiguienteViajeConDelay();
         }
@@ -90,16 +96,45 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             if (newSchedules != null) {
                 schedules.addAll(newSchedules);
                 adapter.actualizarHorarios(schedules);
-                if (recyclerView != null) {
+                
+                verificarYMostrarFeedback();
+
+                if (recyclerView != null && (layoutFeedback == null || layoutFeedback.getVisibility() == View.GONE)) {
                     recyclerView.scheduleLayoutAnimation();
                     desplazarAlSiguienteViajeConDelay();
                 }
             } else {
                 adapter.actualizarHorarios(new ArrayList<>());
+                verificarYMostrarFeedback();
             }
         } else {
             schedules.clear();
             if (newSchedules != null) schedules.addAll(newSchedules);
+        }
+    }
+
+    private void verificarYMostrarFeedback() {
+        if (layoutFeedback == null || recyclerView == null) return;
+
+        boolean todosFinalizados = true;
+        if (schedules.isEmpty()) {
+            todosFinalizados = false; 
+        } else {
+            for (Schedule s : schedules) {
+                if (!com.chopcode.rutago.app.utils.ui.FormatUtils.esHorarioPasado(s.getTime())) {
+                    todosFinalizados = false;
+                    break;
+                }
+            }
+        }
+
+        if (todosFinalizados) {
+            recyclerView.setVisibility(View.GONE);
+            layoutFeedback.setVisibility(View.VISIBLE);
+            com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(layoutFeedback);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            layoutFeedback.setVisibility(View.GONE);
         }
     }
 
