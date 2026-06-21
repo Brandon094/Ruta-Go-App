@@ -52,14 +52,15 @@ public class DriverRegistrationViewModel extends ViewModel {
                 List<Schedule> route1 = new ArrayList<>();
                 List<Schedule> route2 = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    // Mapeo manual para asegurar compatibilidad con los nombres del JSON (hora/ruta)
                     String hora = child.child("hora").getValue(String.class);
                     String ruta = child.child("ruta").getValue(String.class);
+                    String conductorId = child.child("conductorId").getValue(String.class);
                     
-                    if (hora != null && ruta != null) {
+                    // 🛡️ FILTRO: Solo mostrar horarios que no tengan conductor asignado
+                    if (hora != null && ruta != null && (conductorId == null || conductorId.isEmpty() || conductorId.equals(""))) {
                         Schedule s = new Schedule();
                         s.setId(child.getKey());
-                        s.setTime(hora);
+                        s.setTime(hora + " (Libre)"); // Etiqueta visual de disponibilidad
                         s.setRoute(ruta);
                         
                         if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
