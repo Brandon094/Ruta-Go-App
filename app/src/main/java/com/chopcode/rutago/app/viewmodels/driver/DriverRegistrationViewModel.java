@@ -108,7 +108,7 @@ public class DriverRegistrationViewModel extends ViewModel {
 
         saveToVehiculos(userId, plate, model, year, capacity);
         saveToConductores(userId, name, email, phone, plate, model, idS1, idS2);
-        syncGlobalSchedules(userId, idS1, idS2);
+        syncGlobalSchedules(userId, idS1, idS2, capacity);
 
         NotificationManager.getInstance(MyApp.getAppContext()).saveFCMTokenToRealtimeDatabase(userId, "conductores");
 
@@ -151,9 +151,24 @@ public class DriverRegistrationViewModel extends ViewModel {
         ref.setValue(data);
     }
 
-    private void syncGlobalSchedules(String driverId, String idS1, String idS2) {
-        DatabaseReference ref = MyApp.getDatabaseReference("horarios");
-        if (idS1 != null) ref.child(idS1).child("conductorId").setValue(driverId);
-        if (idS2 != null) ref.child(idS2).child("conductorId").setValue(driverId);
+    private void syncGlobalSchedules(String driverId, String idS1, String idS2, int capacity) {
+        DatabaseReference schedulesRef = MyApp.getDatabaseReference("horarios");
+        DatabaseReference seatsRef = MyApp.getDatabaseReference("disponibilidadAsientos");
+
+        Map<String, Object> seatData = new HashMap<>();
+        seatData.put("asientosDisponibles", capacity);
+        seatData.put("totalAsientos", capacity);
+        // Al asignar conductor nuevo, reseteamos ocupación previa si existiera
+        seatData.put("asientosOcupados", null); 
+
+        if (idS1 != null && !idS1.isEmpty()) {
+            schedulesRef.child(idS1).child("conductorId").setValue(driverId);
+            seatsRef.child(idS1).updateChildren(seatData);
+        }
+
+        if (idS2 != null && !idS2.isEmpty()) {
+            schedulesRef.child(idS2).child("conductorId").setValue(driverId);
+            seatsRef.child(idS2).updateChildren(seatData);
+        }
     }
 }
