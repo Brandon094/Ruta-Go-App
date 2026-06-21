@@ -41,6 +41,12 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         initViews();
         setupObservers();
         setupListeners();
+        
+        // 🔥 Animaciones Premium de Entrada
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardPersonalInfo));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardVehicleInfo));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardScheduleInfo));
+        com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardSecurityInfo));
 
         viewModel.loadSchedules();
     }
@@ -66,14 +72,17 @@ public class DriverRegistrationActivity extends AppCompatActivity {
 
     private void setupObservers() {
         viewModel.getSchedulesRoute1().observe(this, schedules -> {
+            if (schedules == null || schedules.isEmpty()) return;
             List<String> times = new ArrayList<>();
             for (Schedule s : schedules) times.add(s.getTime());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerIda.setAdapter(adapter);
+            // 🔥 BUG FIX: Forzar despliegue al tocar
+            spinnerIda.setOnClickListener(v -> spinnerIda.showDropDown());
             spinnerIda.setOnItemClickListener((parent, view, position, id) -> {
                 Schedule s = schedules.get(position);
                 if (s.getConductorId() != null && !s.getConductorId().isEmpty()) {
-                    Toast.makeText(this, "Este horario ya está ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Horario ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
                     spinnerIda.setText("", false);
                     selectedIdIda = null;
                 } else {
@@ -83,14 +92,17 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         });
 
         viewModel.getSchedulesRoute2().observe(this, schedules -> {
+            if (schedules == null || schedules.isEmpty()) return;
             List<String> times = new ArrayList<>();
             for (Schedule s : schedules) times.add(s.getTime());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerVuelta.setAdapter(adapter);
+            // 🔥 BUG FIX: Forzar despliegue al tocar
+            spinnerVuelta.setOnClickListener(v -> spinnerVuelta.showDropDown());
             spinnerVuelta.setOnItemClickListener((parent, view, position, id) -> {
                 Schedule s = schedules.get(position);
                 if (s.getConductorId() != null && !s.getConductorId().isEmpty()) {
-                    Toast.makeText(this, "Este horario ya está ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Horario ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
                     spinnerVuelta.setText("", false);
                     selectedIdVuelta = null;
                 } else {

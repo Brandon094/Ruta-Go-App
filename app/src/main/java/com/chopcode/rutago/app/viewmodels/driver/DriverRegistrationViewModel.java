@@ -1,6 +1,5 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -18,15 +17,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 🚛 Driver Registration ViewModel
  */
 public class DriverRegistrationViewModel extends ViewModel {
-    private static final String TAG = "DriverRegVM";
-
     private final MutableLiveData<Boolean> registrationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> registrationError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
@@ -46,48 +45,38 @@ public class DriverRegistrationViewModel extends ViewModel {
     public LiveData<List<Schedule>> getSchedulesRoute2() { return schedulesRoute2; }
 
     public void loadSchedules() {
-        // 🛡️ Sanity Check: Obtener conductores reales para filtrar IDs huérfanos de pruebas
+        // Consultar conductores y horarios en paralelo para máxima velocidad
         MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
-                java.util.Set<String> validDrivers = new java.util.HashSet<>();
+                Set<String> validDrivers = new HashSet<>();
                 for (DataSnapshot d : driversSnapshot.getChildren()) validDrivers.add(d.getKey());
 
                 MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<Schedule> route1 = new ArrayList<>();
-                        List<Schedule> route2 = new ArrayList<>();
+                        List<Schedule> r1 = new ArrayList<>();
+                        List<Schedule> r2 = new ArrayList<>();
                         for (DataSnapshot child : snapshot.getChildren()) {
                             String hora = child.child("hora").getValue(String.class);
                             String ruta = child.child("ruta").getValue(String.class);
-                            String conductorId = child.child("conductorId").getValue(String.class);
+                            String cId = child.child("conductorId").getValue(String.class);
                             
                             if (hora != null && ruta != null) {
                                 Schedule s = new Schedule();
                                 s.setId(child.getKey());
                                 s.setRoute(ruta);
                                 
-                                // Validar disponibilidad real: el conductor asignado debe existir físicamente
-                                boolean isActuallyOccupied = conductorId != null && !conductorId.isEmpty() && validDrivers.contains(conductorId);
+                                boolean isOccupied = cId != null && !cId.isEmpty() && validDrivers.contains(cId);
+                                s.setTime(hora + (isOccupied ? " (Ocupado)" : " (Libre)"));
+                                s.setConductorId(isOccupied ? cId : null);
                                 
-                                if (!isActuallyOccupied) {
-                                    s.setTime(hora + " (Libre)");
-                                    s.setConductorId(null); 
-                                } else {
-                                    s.setTime(hora + " (Ocupado)");
-                                    s.setConductorId(conductorId);
-                                }
-                                
-                                if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
-                                    route1.add(s);
-                                } else if ("La Plata -> Natagá".equalsIgnoreCase(ruta)) {
-                                    route2.add(s);
-                                }
+                                if (ruta.contains("La Plata") && ruta.startsWith("Natagá")) r1.add(s);
+                                else r2.add(s);
                             }
                         }
-                        schedulesRoute1.postValue(route1);
-                        schedulesRoute2.postValue(route2);
+                        schedulesRoute1.postValue(r1);
+                        schedulesRoute2.postValue(r2);
                     }
                     @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
@@ -105,25 +94,13 @@ public class DriverRegistrationViewModel extends ViewModel {
             public void onSuccess() {
                 saveDriverFullData(name, email, phone, plate, model, year, capacity, idS1, idS2);
             }
-
-            @Override
-            public void onFailure(String error) {
-                isLoading.postValue(false);
-                registrationError.postValue(error);
-            }
+            @Override public void onFailure(String error) { isLoading.postValue(false); registrationError.postValue(error); }
         });
     }
 
-    private void saveDriverFullData(String name, String email, String phone, 
-                                    String plate, String model, String year, int capacity,
-                                    String idS1, String idS2) {
+    private void saveDriverFullData(String name, String email, String phone, String plate, String model, String year, int capacity, String idS1, String idS2) {
         FirebaseUser user = MyApp.getCurrentUser();
-        if (user == null) {
-            isLoading.postValue(false);
-            registrationError.postValue("Error: Session not found");
-            return;
-        }
-
+        if (user == null) { isLoading.postValue(false); registrationError.postValue("Session Error"); return; }
         String userId = user.getUid();
 
         saveToVehiculos(userId, plate, model, year, capacity);
@@ -131,7 +108,6 @@ public class DriverRegistrationViewModel extends ViewModel {
         syncGlobalSchedules(userId, idS1, idS2, capacity);
 
         NotificationManager.getInstance(MyApp.getAppContext()).saveFCMTokenToRealtimeDatabase(userId, "conductores");
-
         isLoading.postValue(false);
         registrationSuccess.postValue(true);
     }
@@ -139,56 +115,33 @@ public class DriverRegistrationViewModel extends ViewModel {
     private void saveToVehiculos(String userId, String plate, String model, String year, int capacity) {
         DatabaseReference ref = MyApp.getDatabaseReference("vehiculos/" + plate);
         Map<String, Object> data = new HashMap<>();
-        data.put("id", plate);
-        data.put("placa", plate);
-        data.put("modelo", model);
-        data.put("ano", year);
-        data.put("capacidad", capacity);
-        data.put("driverId", userId);
-        data.put("conductorId", userId);
-        data.put("estado", "activo");
+        data.put("id", plate); data.put("placa", plate); data.put("modelo", model);
+        data.put("ano", year); data.put("capacidad", capacity);
+        data.put("driverId", userId); data.put("conductorId", userId); data.put("estado", "activo");
         ref.setValue(data);
     }
 
-    private void saveToConductores(String userId, String name, String email, String phone, 
-                                   String plate, String model, String idS1, String idS2) {
+    private void saveToConductores(String userId, String name, String email, String phone, String plate, String model, String idS1, String idS2) {
         DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
         Map<String, Object> data = new HashMap<>();
-        data.put("id", userId);
-        data.put("nombre", name);
-        data.put("email", email);
-        data.put("telefono", phone);
-        data.put("placaVehiculo", plate);
-        data.put("modeloVehiculo", model);
-        data.put("vehiculoId", plate);
+        data.put("id", userId); data.put("nombre", name); data.put("email", email); data.put("telefono", phone);
+        data.put("placaVehiculo", plate); data.put("modeloVehiculo", model); data.put("vehiculoId", plate);
         data.put("status", "active");
-        
         List<String> schedules = new ArrayList<>();
-        if (idS1 != null) schedules.add(idS1);
-        if (idS2 != null) schedules.add(idS2);
+        if (idS1 != null) schedules.add(idS1); if (idS2 != null) schedules.add(idS2);
         data.put("horariosAsignados", schedules);
-        
         ref.setValue(data);
     }
 
     private void syncGlobalSchedules(String driverId, String idS1, String idS2, int capacity) {
-        DatabaseReference schedulesRef = MyApp.getDatabaseReference("horarios");
-        DatabaseReference seatsRef = MyApp.getDatabaseReference("disponibilidadAsientos");
-
+        DatabaseReference hRef = MyApp.getDatabaseReference("horarios");
+        DatabaseReference sRef = MyApp.getDatabaseReference("disponibilidadAsientos");
         Map<String, Object> seatData = new HashMap<>();
         seatData.put("asientosDisponibles", capacity);
         seatData.put("totalAsientos", capacity);
-        // Al asignar conductor nuevo, reseteamos ocupación previa si existiera
-        seatData.put("asientosOcupados", null); 
+        seatData.put("asientosOcupados", null);
 
-        if (idS1 != null && !idS1.isEmpty()) {
-            schedulesRef.child(idS1).child("conductorId").setValue(driverId);
-            seatsRef.child(idS1).updateChildren(seatData);
-        }
-
-        if (idS2 != null && !idS2.isEmpty()) {
-            schedulesRef.child(idS2).child("conductorId").setValue(driverId);
-            seatsRef.child(idS2).updateChildren(seatData);
-        }
+        if (idS1 != null) { hRef.child(idS1).child("conductorId").setValue(driverId); sRef.child(idS1).updateChildren(seatData); }
+        if (idS2 != null) { hRef.child(idS2).child("conductorId").setValue(driverId); sRef.child(idS2).updateChildren(seatData); }
     }
 }
