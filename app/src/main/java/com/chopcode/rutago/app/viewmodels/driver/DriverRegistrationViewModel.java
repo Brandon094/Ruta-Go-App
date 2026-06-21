@@ -96,7 +96,8 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("modelo", model);
         data.put("ano", year);
         data.put("capacidad", capacity);
-        data.put("conductorId", userId);
+        data.put("driverId", userId);     // 👈 REQUERIDO POR REGLAS DE SEGURIDAD
+        data.put("conductorId", userId);  // 👈 COMPATIBILIDAD HISTÓRICA
         data.put("estado", "activo"); // Siguiendo el JSON: estado (Spanish)
         ref.setValue(data);
     }
