@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     // Views
     private TextInputEditText editTextUser, editTextPassword;
     private Button buttonLogin, btnGoogleSignIn;
-    private TextView buttonRegistration, forgotPassword;
+    private TextView buttonRegistration, forgotPassword, btnRegisterAsDriver;
     private View overlay;
     private ProgressBar progressBar;
 
@@ -106,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonRegistration = findViewById(R.id.buttonRegistro);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
         forgotPassword = findViewById(R.id.olvidasteContraseña);
+        btnRegisterAsDriver = findViewById(R.id.btnRegisterAsDriver);
         overlay = findViewById(R.id.overlay);
         progressBar = findViewById(R.id.progressBar);
 
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
         UIAnimationUtils.setClickAnimation(btnGoogleSignIn);
         UIAnimationUtils.setClickAnimation(buttonRegistration);
         UIAnimationUtils.setClickAnimation(forgotPassword);
+        UIAnimationUtils.setClickAnimation(btnRegisterAsDriver);
 
         // 🔥 Animación viva para el logo
         View logoCard = findViewById(R.id.loginCardLogo);
@@ -167,6 +169,11 @@ public class LoginActivity extends AppCompatActivity {
         buttonRegistration.setOnClickListener(v -> {
             Log.d(TAG, "📝 Navigating to registration screen");
             startActivity(new Intent(this, RegistrationActivity.class));
+        });
+
+        btnRegisterAsDriver.setOnClickListener(v -> {
+            Log.d(TAG, "📝 Navigating to driver registration screen");
+            startActivity(new Intent(this, com.chopcode.rutago.app.activities.driver.DriverRegistrationActivity.class));
         });
 
         forgotPassword.setOnClickListener(v -> {

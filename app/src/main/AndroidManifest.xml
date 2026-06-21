@@ -57,6 +57,12 @@
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <activity
+            android:name=".activities.driver.DriverRegistrationActivity"
+            android:exported="false"
+            android:label="Registro Conductor"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
             android:name=".activities.common.ForgotPasswordActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
