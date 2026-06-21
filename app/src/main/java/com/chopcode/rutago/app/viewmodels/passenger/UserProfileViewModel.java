@@ -7,22 +7,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.user.UserService;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
 /**
  * 👤 User Profile ViewModel (Passenger)
  * 
- * Gestiona el estado y la lógica de negocio para la pantalla de perfil del pasajero.
- * Responsabilidades:
- * - Cargar datos de perfil y estadísticas Premium (calculadas mediante el servicio de reservas).
- * - Orquestar la subida de imágenes de perfil integrando Storage y Realtime Database.
- * - Gestionar solicitudes de borrado de cuenta para cumplimiento de privacidad.
+ * Gestiona el perfil del pasajero de forma reactiva.
  */
 public class UserProfileViewModel extends ViewModel {
     private static final String TAG = "UserProfileVM";
@@ -39,6 +37,7 @@ public class UserProfileViewModel extends ViewModel {
     private final StorageService storageService;
     private final PassengerReservationService passengerReservationService;
     private final AuthManager authManager;
+    private ValueEventListener userListener;
 
     public UserProfileViewModel() {
         this.userService = new UserService();
@@ -59,16 +58,10 @@ public class UserProfileViewModel extends ViewModel {
         String userId = authManager.getUserId();
         if (userId == null) return;
 
-        // 🔥 CACHE: Si ya tenemos los datos, no reiniciar Shimmer
-        if (userData.getValue() != null && userId.equals(userData.getValue().getId())) {
-            isLoading.setValue(false);
-            // Refrescar estadísticas en segundo plano sin Shimmer invasivo
-            loadPremiumStats(userId);
-            return;
-        }
+        if (userListener != null) return;
 
         isLoading.setValue(true);
-        userService.loadUserData(userId, new UserService.UserDataCallback() {
+        userListener = userService.listenToUserData(userId, new UserService.UserDataCallback() {
             @Override public void onUserDataLoaded(User user) { 
                 user.setId(userId);
                 userData.postValue(user); 
@@ -100,7 +93,7 @@ public class UserProfileViewModel extends ViewModel {
 
     private void updateProfilePictureUrl(String userId, String downloadUrl) {
         userService.updateProfilePicture(userId, downloadUrl, "usuarios", new UserService.UserUpdateCallback() {
-            @Override public void onSuccess() { loadProfile(); uploadStatus.postValue("Updated"); }
+            @Override public void onSuccess() { uploadStatus.postValue("Updated"); }
             @Override public void onError(String errorMsg) { error.postValue("DB error: " + errorMsg); uploadStatus.postValue(null); }
         });
     }
@@ -114,35 +107,25 @@ public class UserProfileViewModel extends ViewModel {
         });
     }
 
-    /**
-     * Alterna el estado del usuario entre "active" e "inactive".
-     */
     public void toggleUserStatus() {
         User current = userData.getValue();
         if (current == null || "blocked".equals(current.getStatus())) return;
-
         String newStatus = "active".equals(current.getStatus()) ? "inactive" : "active";
         String userId = authManager.getUserId();
         if (userId == null) return;
-
-        setLoading(true);
+        isLoading.postValue(true);
         userService.updateUserStatus(userId, newStatus, new UserService.UserUpdateCallback() {
-            @Override
-            public void onSuccess() {
-                current.setStatus(newStatus);
-                userData.postValue(current);
-                setLoading(false);
-            }
-
-            @Override
-            public void onError(String errorMsg) {
-                error.postValue(errorMsg);
-                setLoading(false);
-            }
+            @Override public void onSuccess() { isLoading.postValue(false); }
+            @Override public void onError(String errorMsg) { error.postValue(errorMsg); isLoading.postValue(false); }
         });
     }
 
-    private void setLoading(boolean loading) {
-        isLoading.postValue(loading);
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (userListener != null) {
+            String uid = authManager.getUserId();
+            if (uid != null) MyApp.getDatabaseReference("usuarios/" + uid).removeEventListener(userListener);
+        }
     }
 }

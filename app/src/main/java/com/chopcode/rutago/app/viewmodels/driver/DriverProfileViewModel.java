@@ -9,16 +9,16 @@ import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehicleService;
 import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.rutago.app.config.MyApp;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 👤 Driver Profile ViewModel
  * 
- * Orquesta la carga de información del conductor y su vehículo.
- * Es el responsable de activar la sincronización de capacidad dinámica
- * apenas el perfil es cargado, asegurando que los horarios asignados
- * reflejen los puestos reales del vehículo en Firebase.
+ * Gestiona el perfil del conductor y su vehículo de forma reactiva.
  */
 public class DriverProfileViewModel extends BaseViewModel {
 
@@ -29,7 +29,6 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final VehicleService vehicleService;
     private final SeatsDataProcessor seatsDataProcessor;
 
-    // --- LiveData para UI ---
     private final MutableLiveData<String> driverNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> vehiclePlateLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> vehicleCapacityLiveData = new MutableLiveData<>();
@@ -39,16 +38,15 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final MutableLiveData<String> photoUploadStatus = new MutableLiveData<>();
 
     private String currentDriverUID;
+    private ValueEventListener driverListener;
+    private String currentVehiclePlate;
+    private ValueEventListener vehicleListener;
 
     public DriverProfileViewModel() {
         this.userService = new UserService();
         this.storageService = new StorageService();
         this.vehicleService = new VehicleService();
         this.seatsDataProcessor = new SeatsDataProcessor();
-
-        this.driverNameLiveData.setValue(null);
-        this.vehiclePlateLiveData.setValue(null);
-        this.assignedSchedulesLiveData.setValue(new ArrayList<>());
     }
 
     public MutableLiveData<String> getConductorNombreLiveData() { return driverNameLiveData; }
@@ -58,75 +56,6 @@ public class DriverProfileViewModel extends BaseViewModel {
     public MutableLiveData<Driver> getConductorLiveData() { return driverLiveData; }
     public MutableLiveData<Vehicle> getVehiculoLiveData() { return vehicleLiveData; }
     public MutableLiveData<String> getPhotoUploadStatus() { return photoUploadStatus; }
-
-    /**
-     * Carga todos los datos del conductor y dispara la sincronización de capacidad.
-     */
-    public void cargarDatosCompletos(String driverUID) {
-        if (driverUID == null || driverUID.isEmpty()) {
-            setError("Invalid Driver ID");
-            return;
-        }
-
-        // 🔥 CACHE: Si ya tenemos los datos, no reiniciar carga ni Shimmer
-        if (driverUID.equals(currentDriverUID) && driverLiveData.getValue() != null) {
-            setLoading(false);
-            return;
-        }
-
-        this.currentDriverUID = driverUID;
-        setLoading(true);
-
-        userService.loadDriverData(driverUID, new UserService.DriverDataCallback() {
-            @Override
-            public void onDriverDataLoaded(Driver driver) {
-                Log.d(TAG, "Driver data loaded: " + driver.getNombre());
-
-                driverNameLiveData.postValue(driver.getNombre());
-                vehiclePlateLiveData.postValue(driver.getVehiclePlate());
-                vehicleCapacityLiveData.postValue(driver.getVehicleCapacity());
-                assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
-                driverLiveData.postValue(driver);
-
-                // 🔥 SYNC ATÓMICO: Propagar capacidad del vehículo a los nodos de disponibilidad
-                if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
-                    seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
-                }
-
-                if (driver.getVehiclePlate() != null && !driver.getVehiclePlate().isEmpty()) {
-                    cargarVehiculo(driver.getVehiclePlate());
-                }
-                setLoading(false);
-            }
-
-            @Override
-            public void onError(String error) {
-                setError(error);
-                setLoading(false);
-            }
-        });
-    }
-
-    /**
-     * Carga detalles técnicos del vehículo por placa.
-     */
-    private void cargarVehiculo(String plate) {
-        vehicleService.getVehicleByPlate(plate, new VehicleService.VehicleCallback() {
-            @Override
-            public void onVehicleLoaded(Vehicle vehicle) {
-                if (vehicle != null) {
-                    vehicleLiveData.postValue(vehicle);
-                    // Asegurar que la capacidad se actualice si el modelo de vehículo tiene el dato más fresco
-                    if (vehicle.getCapacity() > 0) vehicleCapacityLiveData.postValue(vehicle.getCapacity());
-                }
-            }
-
-            @Override
-            public void onError(String error) {
-                Log.e(TAG, "Error loading vehicle: " + error);
-            }
-        });
-    }
 
     /**
      * Sube una foto a Storage y actualiza la referencia en la DB del conductor.
@@ -141,7 +70,7 @@ public class DriverProfileViewModel extends BaseViewModel {
                     @Override
                     public void onSuccess() {
                         photoUploadStatus.postValue("Updated");
-                        cargarDatosCompletos(currentDriverUID);
+                        // La actualización reactiva se encargará del resto mediante el listener
                     }
                     @Override public void onError(String error) { setError(error); }
                 });
@@ -151,9 +80,91 @@ public class DriverProfileViewModel extends BaseViewModel {
         });
     }
 
-    public void refrescarDatos() {
-        if (currentDriverUID != null) cargarDatosCompletos(currentDriverUID);
+    public void cargarDatosCompletos(String driverUID) {
+        if (driverUID == null || driverUID.isEmpty()) return;
+
+        // 🔥 REACTIVIDAD: Si ya estamos escuchando a este ID, no duplicar el listener
+        if (driverUID.equals(currentDriverUID) && driverListener != null) {
+            // Asegurar que el shimmer se detenga si ya hay datos
+            if (driverLiveData.getValue() != null) {
+                setLoading(false);
+            }
+            return; 
+        }
+
+        limpiarListener();
+        this.currentDriverUID = driverUID;
+        setLoading(true);
+
+        driverListener = userService.listenToDriverData(driverUID, new UserService.DriverDataCallback() {
+            @Override
+            public void onDriverDataLoaded(Driver driver) {
+                if (driver == null) { 
+                    setLoading(false); 
+                    setError("Error al cargar perfil");
+                    return; 
+                }
+                
+                Log.d(TAG, "🔄 Perfil actualizado reactivamente: " + driver.getNombre());
+                
+                driverNameLiveData.postValue(driver.getNombre());
+                vehiclePlateLiveData.postValue(driver.getVehiclePlate());
+                vehicleCapacityLiveData.postValue(driver.getVehicleCapacity());
+                assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
+                driverLiveData.postValue(driver);
+
+                // Sincronizar capacidad si hay cambios
+                if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
+                    seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
+                }
+
+                if (driver.getVehiclePlate() != null && !driver.getVehiclePlate().isEmpty()) {
+                    cargarVehiculo(driver.getVehiclePlate());
+                }
+                setLoading(false);
+            }
+            @Override public void onError(String error) { 
+                setError(error); 
+                setLoading(false); 
+            }
+        });
     }
+
+    private void cargarVehiculo(String plate) {
+        if (plate == null || plate.isEmpty()) return;
+        if (plate.equals(currentVehiclePlate) && vehicleListener != null) return;
+
+        limpiarVehicleListener();
+        this.currentVehiclePlate = plate;
+
+        vehicleListener = vehicleService.listenToVehicleByPlate(plate, new VehicleService.VehicleCallback() {
+            @Override
+            public void onVehicleLoaded(Vehicle vehicle) {
+                if (vehicle != null) {
+                    vehicleLiveData.postValue(vehicle);
+                    if (vehicle.getCapacity() > 0) vehicleCapacityLiveData.postValue(vehicle.getCapacity());
+                }
+            }
+            @Override public void onError(String error) { Log.e(TAG, "Error loading vehicle: " + error); }
+        });
+    }
+
+    private void limpiarListener() {
+        if (driverListener != null && currentDriverUID != null) {
+            MyApp.getDatabaseReference("conductores/" + currentDriverUID).removeEventListener(driverListener);
+            driverListener = null;
+        }
+        limpiarVehicleListener();
+    }
+
+    private void limpiarVehicleListener() {
+        if (vehicleListener != null && currentVehiclePlate != null) {
+            MyApp.getDatabaseReference("vehiculos/" + currentVehiclePlate).removeEventListener(vehicleListener);
+            vehicleListener = null;
+        }
+    }
+
+    public void refrescarDatos() { if (currentDriverUID != null) cargarDatosCompletos(currentDriverUID); }
 
     public void limpiarDatos() {
         driverNameLiveData.postValue(null);
@@ -161,5 +172,11 @@ public class DriverProfileViewModel extends BaseViewModel {
         assignedSchedulesLiveData.postValue(new ArrayList<>());
         driverLiveData.postValue(null);
         vehicleLiveData.postValue(null);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        limpiarListener();
     }
 }
