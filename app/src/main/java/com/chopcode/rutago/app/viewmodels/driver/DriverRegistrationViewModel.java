@@ -37,7 +37,7 @@ public class DriverRegistrationViewModel extends ViewModel {
     public void registerDriver(String name, String email, String phone, String password, 
                                String plate, String model, String year, int capacity) {
         isLoading.setValue(true);
-        registrationService.registrarUser(name, email, phone, password, new RegistrationService.RegistrationCallback() {
+        registrationService.registrarSoloAuth(email, password, new RegistrationService.RegistrationCallback() {
             @Override
             public void onSuccess() {
                 saveDriverFullData(name, email, phone, plate, model, year, capacity);
@@ -85,7 +85,7 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("email", email);
         data.put("telefono", phone);
         data.put("rol", "conductor");
-        data.put("status", "active");
+        data.put("status", "active"); // Siguiendo el JSON: status (English)
         data.put("fechaRegistro", System.currentTimeMillis());
         ref.setValue(data);
     }
@@ -99,7 +99,7 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("ano", year);
         data.put("capacidad", capacity);
         data.put("conductorId", userId);
-        data.put("estado", "activo");
+        data.put("estado", "activo"); // Siguiendo el JSON: estado (Spanish)
         ref.setValue(data);
     }
 
@@ -113,7 +113,7 @@ public class DriverRegistrationViewModel extends ViewModel {
         data.put("placaVehiculo", plate);
         data.put("modeloVehiculo", model);
         data.put("vehiculoId", plate);
-        data.put("status", "active");
+        data.put("status", "active"); // Siguiendo el JSON: status (English)
         ref.setValue(data);
     }
 }

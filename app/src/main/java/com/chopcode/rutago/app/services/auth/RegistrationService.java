@@ -35,21 +35,29 @@ public class RegistrationService {
     }
 
     public void registrarUser(String name, String email, String phone, String password, RegistrationCallback callback) {
+        registrarSoloAuth(email, password, new RegistrationCallback() {
+            @Override
+            public void onSuccess() {
+                FirebaseUser currentUser = auth.getCurrentUser();
+                if (currentUser != null) {
+                    String uid = currentUser.getUid();
+                    Passenger passenger = new Passenger(uid, name, phone, email, password);
+                    databaseReference.child(uid).setValue(passenger)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess())
+                            .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                }
+            }
+            @Override public void onFailure(String error) { callback.onFailure(error); }
+        });
+    }
+
+    public void registrarSoloAuth(String email, String password, RegistrationCallback callback) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser currentUser = auth.getCurrentUser();
-                        if (currentUser != null) {
-                            String uid = currentUser.getUid();
-                            Passenger passenger = new Passenger(uid, name, phone, email, password);
-                            databaseReference.child(uid).setValue(passenger)
-                                    .addOnSuccessListener(aVoid -> callback.onSuccess())
-                                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-                        } else {
-                            callback.onFailure("User is null after creation");
-                        }
+                        callback.onSuccess();
                     } else {
-                        callback.onFailure(task.getException() != null ? task.getException().getMessage() : "Unknown error");
+                        callback.onFailure(task.getException() != null ? task.getException().getMessage() : "Auth Error");
                     }
                 });
     }
