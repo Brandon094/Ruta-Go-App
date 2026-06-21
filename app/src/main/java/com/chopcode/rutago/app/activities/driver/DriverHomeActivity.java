@@ -97,6 +97,12 @@ public class DriverHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio_conductor);
 
+        // 🔥 Verificar Onboarding del Conductor
+        com.chopcode.rutago.app.managers.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.settings.SessionManager(this);
+        if (sessionManager.isFirstTimeDriver()) {
+            startActivity(new Intent(this, DriverOnboardingActivity.class));
+        }
+
         authManager = AuthManager.getInstance();
         timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 

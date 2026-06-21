@@ -39,6 +39,16 @@
     <string name="onboarding_desc_3">Conoce a tu conductor y califica tu experiencia. Viajamos juntos, viajamos seguros.</string>
 
     <!-- ========================================================================= -->
+    <!-- 🚀 DRIVER ONBOARDING                                                      -->
+    <!-- ========================================================================= -->
+    <string name="driver_onboarding_title_1">Control de tu Vehículo</string>
+    <string name="driver_onboarding_desc_1">Gestiona el mapa de asientos en tiempo real. Bloquea puestos para ventas físicas de forma fácil.</string>
+    <string name="driver_onboarding_title_2">Gestión de Reservas</string>
+    <string name="driver_onboarding_desc_2">Confirma o cancela solicitudes de pasajeros al instante. Mantén tu bus siempre lleno.</string>
+    <string name="driver_onboarding_title_3">Tus Finanzas al Día</string>
+    <string name="driver_onboarding_desc_3">Visualiza tus ingresos diarios y el resumen de ocupación por cada una de tus rutas asignadas.</string>
+
+    <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
     <string name="inicioSesion">Iniciar Sesión</string>

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 public class SessionManager {
     private static final String PREF_NAME = "rutago_prefs";
     private static final String KEY_IS_FIRST_TIME = "is_first_time";
+    private static final String KEY_IS_FIRST_TIME_DRIVER = "is_first_time_driver";
     
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
@@ -22,5 +23,14 @@ public class SessionManager {
 
     public boolean isFirstTimeLaunch() {
         return pref.getBoolean(KEY_IS_FIRST_TIME, true);
+    }
+
+    public void setFirstTimeDriver(boolean isFirstTime) {
+        editor.putBoolean(KEY_IS_FIRST_TIME_DRIVER, isFirstTime);
+        editor.apply();
+    }
+
+    public boolean isFirstTimeDriver() {
+        return pref.getBoolean(KEY_IS_FIRST_TIME_DRIVER, true);
     }
 }
