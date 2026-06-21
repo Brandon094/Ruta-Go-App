@@ -46,38 +46,51 @@ public class DriverRegistrationViewModel extends ViewModel {
     public LiveData<List<Schedule>> getSchedulesRoute2() { return schedulesRoute2; }
 
     public void loadSchedules() {
-        MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
+        // 🛡️ Sanity Check: Obtener conductores reales para filtrar IDs huérfanos de pruebas
+        MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Schedule> route1 = new ArrayList<>();
-                List<Schedule> route2 = new ArrayList<>();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    String hora = child.child("hora").getValue(String.class);
-                    String ruta = child.child("ruta").getValue(String.class);
-                    String conductorId = child.child("conductorId").getValue(String.class);
-                    
-                    if (hora != null && ruta != null) {
-                        Schedule s = new Schedule();
-                        s.setId(child.getKey());
-                        s.setRoute(ruta);
-                        s.setConductorId(conductorId);
-                        
-                        // Etiquetar visualmente si está libre u ocupado
-                        if (conductorId == null || conductorId.isEmpty()) {
-                            s.setTime(hora + " (Libre)");
-                        } else {
-                            s.setTime(hora + " (Ocupado)");
+            public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
+                java.util.Set<String> validDrivers = new java.util.HashSet<>();
+                for (DataSnapshot d : driversSnapshot.getChildren()) validDrivers.add(d.getKey());
+
+                MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<Schedule> route1 = new ArrayList<>();
+                        List<Schedule> route2 = new ArrayList<>();
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            String hora = child.child("hora").getValue(String.class);
+                            String ruta = child.child("ruta").getValue(String.class);
+                            String conductorId = child.child("conductorId").getValue(String.class);
+                            
+                            if (hora != null && ruta != null) {
+                                Schedule s = new Schedule();
+                                s.setId(child.getKey());
+                                s.setRoute(ruta);
+                                
+                                // Validar disponibilidad real: el conductor asignado debe existir físicamente
+                                boolean isActuallyOccupied = conductorId != null && !conductorId.isEmpty() && validDrivers.contains(conductorId);
+                                
+                                if (!isActuallyOccupied) {
+                                    s.setTime(hora + " (Libre)");
+                                    s.setConductorId(null); 
+                                } else {
+                                    s.setTime(hora + " (Ocupado)");
+                                    s.setConductorId(conductorId);
+                                }
+                                
+                                if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
+                                    route1.add(s);
+                                } else if ("La Plata -> Natagá".equalsIgnoreCase(ruta)) {
+                                    route2.add(s);
+                                }
+                            }
                         }
-                        
-                        if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
-                            route1.add(s);
-                        } else if ("La Plata -> Natagá".equalsIgnoreCase(ruta)) {
-                            route2.add(s);
-                        }
+                        schedulesRoute1.postValue(route1);
+                        schedulesRoute2.postValue(route2);
                     }
-                }
-                schedulesRoute1.postValue(route1);
-                schedulesRoute2.postValue(route2);
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                });
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
