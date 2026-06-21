@@ -52,11 +52,21 @@ public class DriverRegistrationViewModel extends ViewModel {
                 List<Schedule> route1 = new ArrayList<>();
                 List<Schedule> route2 = new ArrayList<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Schedule s = child.getValue(Schedule.class);
-                    if (s != null) {
+                    // Mapeo manual para asegurar compatibilidad con los nombres del JSON (hora/ruta)
+                    String hora = child.child("hora").getValue(String.class);
+                    String ruta = child.child("ruta").getValue(String.class);
+                    
+                    if (hora != null && ruta != null) {
+                        Schedule s = new Schedule();
                         s.setId(child.getKey());
-                        if ("Natagá -> La Plata".equalsIgnoreCase(s.getRoute())) route1.add(s);
-                        else route2.add(s);
+                        s.setTime(hora);
+                        s.setRoute(ruta);
+                        
+                        if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
+                            route1.add(s);
+                        } else if ("La Plata -> Natagá".equalsIgnoreCase(ruta)) {
+                            route2.add(s);
+                        }
                     }
                 }
                 schedulesRoute1.postValue(route1);
