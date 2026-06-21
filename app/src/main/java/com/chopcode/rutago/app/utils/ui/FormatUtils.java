@@ -19,6 +19,7 @@ public class FormatUtils {
 
     /**
      * Formatea un precio a moneda colombiana (ej: 13000 -> "$13.000").
+     * Si el número tiene 6 o más cifras, lo abrevia (ej: 1.200.000 -> "1.2M COP").
      * Soporta tanto String como Double.
      */
     public static String formatearPrecio(Object precio) {
@@ -33,6 +34,13 @@ public class FormatUtils {
                 valor = ((Number) precio).doubleValue();
             } else {
                 return String.valueOf(precio);
+            }
+
+            // Lógica de abreviación para números grandes (Estilo Premium)
+            if (valor >= 1000000) {
+                return String.format(Locale.US, "%.1fM COP", valor / 1000000.0).replace(".0", "");
+            } else if (valor >= 100000) { // 6 cifras o más pero menos de un millón
+                return String.format(Locale.US, "%.0fK COP", valor / 1000.0);
             }
 
             NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("es", "CO"));
