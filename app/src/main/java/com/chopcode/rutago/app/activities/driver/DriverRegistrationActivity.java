@@ -70,7 +70,16 @@ public class DriverRegistrationActivity extends AppCompatActivity {
             for (Schedule s : schedules) times.add(s.getTime());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerIda.setAdapter(adapter);
-            spinnerIda.setOnItemClickListener((parent, view, position, id) -> selectedIdIda = schedules.get(position).getId());
+            spinnerIda.setOnItemClickListener((parent, view, position, id) -> {
+                Schedule s = schedules.get(position);
+                if (s.getConductorId() != null && !s.getConductorId().isEmpty()) {
+                    Toast.makeText(this, "Este horario ya está ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
+                    spinnerIda.setText("", false);
+                    selectedIdIda = null;
+                } else {
+                    selectedIdIda = s.getId();
+                }
+            });
         });
 
         viewModel.getSchedulesRoute2().observe(this, schedules -> {
@@ -78,7 +87,16 @@ public class DriverRegistrationActivity extends AppCompatActivity {
             for (Schedule s : schedules) times.add(s.getTime());
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, times);
             spinnerVuelta.setAdapter(adapter);
-            spinnerVuelta.setOnItemClickListener((parent, view, position, id) -> selectedIdVuelta = schedules.get(position).getId());
+            spinnerVuelta.setOnItemClickListener((parent, view, position, id) -> {
+                Schedule s = schedules.get(position);
+                if (s.getConductorId() != null && !s.getConductorId().isEmpty()) {
+                    Toast.makeText(this, "Este horario ya está ocupado. Elige uno (Libre).", Toast.LENGTH_SHORT).show();
+                    spinnerVuelta.setText("", false);
+                    selectedIdVuelta = null;
+                } else {
+                    selectedIdVuelta = s.getId();
+                }
+            });
         });
 
         viewModel.getRegistrationSuccess().observe(this, success -> {

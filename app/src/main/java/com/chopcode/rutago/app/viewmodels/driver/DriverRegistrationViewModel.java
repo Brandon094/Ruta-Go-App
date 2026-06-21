@@ -56,12 +56,18 @@ public class DriverRegistrationViewModel extends ViewModel {
                     String ruta = child.child("ruta").getValue(String.class);
                     String conductorId = child.child("conductorId").getValue(String.class);
                     
-                    // 🛡️ FILTRO: Solo mostrar horarios que no tengan conductor asignado
-                    if (hora != null && ruta != null && (conductorId == null || conductorId.isEmpty() || conductorId.equals(""))) {
+                    if (hora != null && ruta != null) {
                         Schedule s = new Schedule();
                         s.setId(child.getKey());
-                        s.setTime(hora + " (Libre)"); // Etiqueta visual de disponibilidad
                         s.setRoute(ruta);
+                        s.setConductorId(conductorId);
+                        
+                        // Etiquetar visualmente si está libre u ocupado
+                        if (conductorId == null || conductorId.isEmpty()) {
+                            s.setTime(hora + " (Libre)");
+                        } else {
+                            s.setTime(hora + " (Ocupado)");
+                        }
                         
                         if ("Natagá -> La Plata".equalsIgnoreCase(ruta)) {
                             route1.add(s);
