@@ -62,16 +62,14 @@ public class DriverRegistrationViewModel extends ViewModel {
 
         String userId = user.getUid();
 
-        // 1. Guardar en /usuarios/
-        saveToUsuarios(userId, name, email, phone);
-        
-        // 2. Guardar en /vehiculos/
+        // 1. Guardar SOLO en /vehiculos/
         saveToVehiculos(userId, plate, model, year, capacity);
         
-        // 3. Guardar en /conductores/
+        // 2. Guardar SOLO en /conductores/
         saveToConductores(userId, name, email, phone, plate, model);
 
-        NotificationManager.getInstance(MyApp.getAppContext()).saveFCMTokenToRealtimeDatabase(userId, "usuarios");
+        // Notificaciones configuradas para el nodo conductores
+        NotificationManager.getInstance(MyApp.getAppContext()).saveFCMTokenToRealtimeDatabase(userId, "conductores");
 
         isLoading.postValue(false);
         registrationSuccess.postValue(true);

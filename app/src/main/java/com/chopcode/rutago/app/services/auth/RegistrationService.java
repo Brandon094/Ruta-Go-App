@@ -66,16 +66,22 @@ public class RegistrationService {
         DatabaseReference rootRef = MyApp.getDatabaseReference("");
         String uid = user.getUid();
 
-        rootRef.child("usuarios").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        // 1. Verificar si ya es Conductor
+        rootRef.child("conductores").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot userSnapshot) {
-                if (userSnapshot.exists()) callback.onSuccess();
-                else {
-                    rootRef.child("conductores").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot driverSnapshot) {
+                if (driverSnapshot.exists()) {
+                    // Ya existe como conductor, no crear perfil de usuario
+                    callback.onSuccess();
+                } else {
+                    // 2. Si no es conductor, verificar si ya existe como usuario (pasajero)
+                    rootRef.child("usuarios").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot driverSnapshot) {
-                            if (driverSnapshot.exists()) callback.onSuccess();
-                            else {
+                        public void onDataChange(@NonNull DataSnapshot userSnapshot) {
+                            if (userSnapshot.exists()) {
+                                callback.onSuccess();
+                            } else {
+                                // 3. No existe en ningún lado, crear perfil de Pasajero
                                 Passenger passenger = new Passenger(uid, user.getDisplayName(), user.getPhoneNumber(), user.getEmail());
                                 Map<String, Object> userData = new HashMap<>();
                                 userData.put("id", uid);
@@ -83,6 +89,7 @@ public class RegistrationService {
                                 userData.put("email", passenger.getEmail());
                                 userData.put("telefono", passenger.getTelefono());
                                 userData.put("rol", "usuario");
+                                userData.put("status", "active");
                                 userData.put("fechaRegistro", System.currentTimeMillis());
                                 if (user.getPhotoUrl() != null) userData.put("photoUrl", user.getPhotoUrl().toString());
                                 rootRef.child("usuarios").child(uid).setValue(userData)

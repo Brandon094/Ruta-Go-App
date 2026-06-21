@@ -41,25 +41,20 @@ public class UserRoleService {
     }
 
     private void analyzeResults(DataSnapshot snapshotDriver, DataSnapshot snapshotUser, UserTypeCallback callback) {
-        if (snapshotUser.exists() && isUserComplete(snapshotUser)) {
-            callback.onTypeDetected("passenger");
-            return;
-        }
-        
+        // Prioridad 1: Es conductor si existe en el nodo conductores
         if (snapshotDriver.exists() && isDriverComplete(snapshotDriver)) {
             callback.onTypeDetected("driver");
             return;
         }
         
-        if (snapshotDriver.exists() && snapshotUser.exists()) {
-            if (isDriverComplete(snapshotDriver)) callback.onTypeDetected("driver");
-            else callback.onTypeDetected("passenger");
+        // Prioridad 2: Es pasajero si existe en el nodo usuarios
+        if (snapshotUser.exists()) {
+            callback.onTypeDetected("passenger");
             return;
         }
         
-        if (snapshotUser.exists()) callback.onTypeDetected("passenger");
-        else if (snapshotDriver.exists()) callback.onTypeDetected("passenger");
-        else callback.onError("User data not found.");
+        // Error: No está en ningún lado
+        callback.onError("User data not found in system.");
     }
 
     private boolean isDriverComplete(DataSnapshot snapshot) {
