@@ -45,10 +45,10 @@ public class FormatUtils {
 
             NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("es", "CO"));
             nf.setMaximumFractionDigits(0);
-            return nf.format(valor).replace(",00", "");
+            return nf.format(valor).replace(",00", "") + " COP";
         } catch (Exception e) {
             Log.e(TAG, "Error formateando precio: " + e.getMessage());
-            return "$" + precio;
+            return "$" + precio + " COP";
         }
     }
 

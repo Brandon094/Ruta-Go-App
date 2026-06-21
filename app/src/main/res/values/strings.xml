@@ -26,6 +26,19 @@
     <string name="desactivo">Inactivo</string>
 
     <!-- ========================================================================= -->
+    <!-- 🚀 ONBOARDING                                                             -->
+    <!-- ========================================================================= -->
+    <string name="siguiente">Siguiente</string>
+    <string name="omitir">Omitir</string>
+    <string name="comenzar">Comenzar</string>
+    <string name="onboarding_title_1">Bienvenido a Ruta-Go</string>
+    <string name="onboarding_desc_1">La forma más fácil y rápida de asegurar tu viaje intermunicipal entre Natagá y La Plata.</string>
+    <string name="onboarding_title_2">Reserva tu asiento</string>
+    <string name="onboarding_desc_2">Elige tu puesto favorito en tiempo real y evita filas. Tu viaje está a un clic de distancia.</string>
+    <string name="onboarding_title_3">Seguridad y Confianza</string>
+    <string name="onboarding_desc_3">Conoce a tu conductor y califica tu experiencia. Viajamos juntos, viajamos seguros.</string>
+
+    <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
     <string name="inicioSesion">Iniciar Sesión</string>

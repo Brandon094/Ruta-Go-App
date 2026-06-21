@@ -288,7 +288,6 @@
                         <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/total_pagar" android:textSize="15sp" android:textColor="?attr/android:textColorSecondary" />
                         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
                             <TextView android:id="@+id/tvPrecio" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/cargando" android:textSize="24sp" android:textStyle="bold" android:textColor="@color/primary_500" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/moneda_cop" android:textSize="11sp" android:textColor="@color/primary_500" android:layout_marginStart="4dp" android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

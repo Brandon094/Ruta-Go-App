@@ -112,6 +112,7 @@ Se debe seguir el estándar de **Conventional Commits** y los mensajes deben est
 - **Atomicidad Financiera:** Uso de `ServerValue.increment` para `ingresosDiarios` y `reservasConfirmadas`, asegurando integridad incluso en ventas físicas manuales.
 - **Chat Contextual:** Sistema de comunicación blindado por estado de reserva con barra superior informativa (Interlocutor + Horario).
 - **Tarifas en la Nube:** Centralización de precios en Firebase, eliminando hardcoding y permitiendo actualizaciones remotas.
+- **Onboarding Premium:** Introducción guiada para nuevos usuarios mediante slides animados con ViewPager2.
 
 ## 8. Siguientes Pasos (Roadmap)
 - **Hito 1:** Monitoreo de métricas en Play Console tras aprobación.

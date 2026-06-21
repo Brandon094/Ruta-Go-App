@@ -60,6 +60,8 @@ public class SplashActivity extends AppCompatActivity {
 
     private void redirectToTarget(String target) {
         Intent intent;
+        com.chopcode.rutago.app.managers.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.settings.SessionManager(this);
+
         switch (target.toLowerCase()) {
             case "driver":
             case "conductor":
@@ -71,7 +73,11 @@ public class SplashActivity extends AppCompatActivity {
                 intent = new Intent(this, PassengerHomeActivity.class);
                 break;
             default:
-                intent = new Intent(this, LoginActivity.class);
+                if (sessionManager.isFirstTimeLaunch()) {
+                    intent = new Intent(this, OnboardingActivity.class);
+                } else {
+                    intent = new Intent(this, LoginActivity.class);
+                }
                 break;
         }
         startActivity(intent);
