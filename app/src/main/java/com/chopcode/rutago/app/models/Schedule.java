@@ -13,8 +13,14 @@ public class Schedule implements Serializable {
     public String price;  
     public int availableSeats; 
     public int totalCapacity;      
+    private String conductorId;
 
     public Schedule() { }
+
+    @PropertyName("conductorId")
+    public String getConductorId() { return conductorId; }
+    @PropertyName("conductorId")
+    public void setConductorId(String conductorId) { this.conductorId = conductorId; }
 
     @PropertyName("route")
     public String getRoute() { return route; }

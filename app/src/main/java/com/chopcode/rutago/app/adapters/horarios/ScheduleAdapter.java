@@ -131,10 +131,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
             
             boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
+            boolean hasDriver = schedule.getConductorId() != null && !schedule.getConductorId().isEmpty();
 
             if (tvSeats != null) {
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateNumericText(tvSeats, 0, available);
-                updateColors(available, isNextTrip, isPast);
+                updateColors(available, isNextTrip, isPast, hasDriver);
             }
 
             if (tvPrice != null) {
@@ -158,7 +159,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             if (btnReserve != null) {
                 btnReserve.setOnClickListener(v -> {
-                    if (listener != null) listener.onReservarClick(schedule);
+                    if (hasDriver) {
+                        if (listener != null) listener.onReservarClick(schedule);
+                    } else {
+                        android.widget.Toast.makeText(itemView.getContext(), "Aún no se ha asignado un bus para este horario", android.widget.Toast.LENGTH_SHORT).show();
+                    }
                 });
 
                 if (isPast) {
@@ -174,19 +179,20 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         btnReserve.setVisibility(View.INVISIBLE);
                     }
                 } else {
-                    // Estado normal (Disponible)
+                    // Estado normal (Disponible o Sin conductor)
                     btnReserve.setVisibility(View.VISIBLE);
                     btnReserve.setTranslationX(0);
                     btnReserve.setAlpha(1.0f);
-                    btnReserve.setImageResource(R.drawable.ic_add);
-                    boolean canReserve = available > 0;
+                    btnReserve.setImageResource(hasDriver ? R.drawable.ic_add : R.drawable.ic_lock);
+                    
+                    boolean canReserve = available > 0 && hasDriver;
                     btnReserve.setEnabled(canReserve);
                     btnReserve.setAlpha(canReserve ? 1.0f : 0.4f);
                 }
             }
         }
 
-        private void updateColors(int available, boolean isNextTrip, boolean isPast) {
+        private void updateColors(int available, boolean isNextTrip, boolean isPast, boolean hasDriver) {
             int textColor;
             int badgeRes;
             String badgeText;
@@ -195,6 +201,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 textColor = itemView.getContext().getColor(R.color.text_tertiary);
                 badgeRes = R.drawable.bg_badge_inactive;
                 badgeText = itemView.getContext().getString(R.string.estado_finalizado);
+            } else if (!hasDriver) {
+                textColor = itemView.getContext().getColor(R.color.text_tertiary);
+                badgeRes = R.drawable.bg_badge_inactive;
+                badgeText = "Pendiente";
             } else if (available == 0) {
                 textColor = itemView.getContext().getColor(R.color.error_500);
                 badgeRes = R.drawable.bg_estado_cancelado;

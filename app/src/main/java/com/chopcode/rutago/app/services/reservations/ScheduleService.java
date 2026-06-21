@@ -79,12 +79,14 @@ public class ScheduleService {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             String time = snapshot.child("hora").getValue(String.class);
                             String routeStr = snapshot.child("ruta").getValue(String.class);
+                            String condId = snapshot.child("conductorId").getValue(String.class);
                             String id = snapshot.getKey();
 
                             Schedule schedule = new Schedule();
                             schedule.setId(id);
                             schedule.setTime(time != null ? time : "--:--");
                             schedule.setRoute(routeStr != null ? routeStr : "Route not available");
+                            schedule.setConductorId(condId);
 
                             // Resolver precio dinámico
                             if (routeStr != null) {

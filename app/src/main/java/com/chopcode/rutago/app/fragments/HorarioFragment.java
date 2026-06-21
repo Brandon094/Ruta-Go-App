@@ -138,6 +138,13 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             authManager.redirectToLogin(getActivity());
             return;
         }
+
+        // Blindaje extra: Verificar conductor antes de navegar
+        if (schedule.getConductorId() == null || schedule.getConductorId().isEmpty()) {
+            Toast.makeText(getContext(), "Este horario no tiene un conductor asignado aún.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         navigateToCreateReservation(schedule);
     }
 
