@@ -451,17 +451,24 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- 🚧 Barrera para evitar superposición de la actualización -->
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierRutasFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="cardRutas,layoutFeedbackConductor" />
+
             <TextView
                 android:id="@+id/tvUltimaActualizacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="Actualizado: --:--"
                 android:textColor="@color/text_tertiary"
                 android:textSize="10sp"
-                android:fontStyle="italic"
-                app:layout_constraintTop_toBottomOf="@id/cardRutas"/>
+                app:layout_constraintTop_toBottomOf="@id/barrierRutasFeedback"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
