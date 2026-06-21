@@ -26,6 +26,29 @@ public class VehicleService {
         void onError(String error);
     }
 
+    public ValueEventListener listenToVehicleByPlate(String plate, VehicleCallback callback) {
+        if (plate == null || plate.isEmpty()) {
+            callback.onVehicleLoaded(null);
+            return null;
+        }
+
+        DatabaseReference vehicleRef = MyApp.getDatabaseReference("vehiculos/" + plate);
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Vehicle vehicle = parseVehicle(snapshot);
+                    callback.onVehicleLoaded(vehicle);
+                } else {
+                    callback.onVehicleLoaded(null);
+                }
+            }
+            @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
+        };
+        vehicleRef.addValueEventListener(listener);
+        return listener;
+    }
+
     public void getVehicleByPlate(String plate, VehicleCallback callback) {
         if (plate == null || plate.isEmpty()) {
             callback.onVehicleLoaded(null);

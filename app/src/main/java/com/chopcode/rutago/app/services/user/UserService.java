@@ -1,18 +1,17 @@
 package com.chopcode.rutago.app.services.user;
 
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.models.Schedule;
-import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.models.Driver;
+import com.chopcode.rutago.app.models.Vehicle;
+import com.chopcode.rutago.app.models.Route;
+import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.services.prices.PriceService;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
+
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,16 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service to manage users and drivers operations.
+ * 👤 User Service (Clean Reactive Version)
  */
 public class UserService {
+    private static final String TAG = "UserService";
+
     public interface UserDataCallback {
         void onUserDataLoaded(User user);
-        void onError(String error);
-    }
-
-    public interface DriverCheckCallback {
-        void onDriverCheckComplete(boolean isDriver);
         void onError(String error);
     }
 
@@ -39,173 +35,151 @@ public class UserService {
         void onError(String error);
     }
 
-    public interface RoutesCallback {
-        void onRoutesLoaded(List<Route> routes);
-        void onError(String error);
-    }
-
     public interface UserUpdateCallback {
         void onSuccess();
         void onError(String error);
     }
 
-    public void loadUserData(String userId, UserDataCallback callback) {
-        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    public interface RoutesCallback {
+        void onRoutesLoaded(List<Route> routes);
+        void onError(String error);
+    }
+
+    public interface DriverCheckCallback {
+        void onDriverCheckComplete(boolean isDriver);
+        void onError(String error);
+    }
+
+    /**
+     * Escucha cambios en los datos del usuario en tiempo real.
+     */
+    public ValueEventListener listenToUserData(String userId, UserDataCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("usuarios/" + userId);
+        ValueEventListener listener = new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     User user = snapshot.getValue(User.class);
                     if (user != null) {
                         user.setId(userId);
                         callback.onUserDataLoaded(user);
-                    } else callback.onError("Error parsing user data");
-                } else callback.onError("User not found in DB");
+                    } else callback.onError("Error parsing user");
+                } else callback.onError("User not found");
             }
-            @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        };
+        ref.addValueEventListener(listener);
+        return listener;
+    }
+
+    /**
+     * Carga datos de usuario una sola vez.
+     */
+    public void loadUserData(String userId, UserDataCallback callback) {
+        MyApp.getDatabaseReference("usuarios/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        user.setId(userId);
+                        callback.onUserDataLoaded(user);
+                    } else callback.onError("Error parsing user");
+                } else callback.onError("User not found");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        });
+    }
+
+    /**
+     * Escucha cambios en los datos del conductor en tiempo real.
+     */
+    public ValueEventListener listenToDriverData(String userId, DriverDataCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Driver driver = snapshot.getValue(Driver.class);
+                    if (driver == null) { callback.onError("Error parsing driver"); return; }
+                    driver.setId(userId);
+                    ensureSchedules(snapshot, driver);
+                    if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) fetchVehicleCapacity(driver, callback);
+                    else callback.onDriverDataLoaded(driver);
+                } else callback.onError("Driver not found");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        };
+        ref.addValueEventListener(listener);
+        return listener;
+    }
+
+    /**
+     * Carga datos de conductor una sola vez.
+     */
+    public void loadDriverData(String userId, DriverDataCallback callback) {
+        MyApp.getDatabaseReference("conductores/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Driver driver = snapshot.getValue(Driver.class);
+                    if (driver == null) { callback.onError("Error parsing driver"); return; }
+                    driver.setId(userId);
+                    ensureSchedules(snapshot, driver);
+                    if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) fetchVehicleCapacity(driver, callback);
+                    else callback.onDriverDataLoaded(driver);
+                } else callback.onError("Driver not found");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        });
+    }
+
+    private void ensureSchedules(DataSnapshot snapshot, Driver driver) {
+        if (driver.getAssignedSchedules() == null) {
+            List<String> schedules = new ArrayList<>();
+            DataSnapshot hSnap = snapshot.child("horariosAsignados");
+            for (DataSnapshot s : hSnap.getChildren()) {
+                String val = String.valueOf(s.getValue());
+                if (val != null && !"null".equals(val)) schedules.add(val);
+            }
+            driver.setAssignedSchedules(schedules);
+        }
+    }
+
+    private void fetchVehicleCapacity(Driver driver, DriverDataCallback callback) {
+        MyApp.getDatabaseReference("vehiculos/" + driver.getVehicleId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer cap = snapshot.child("capacidad").getValue(Integer.class);
+                    if (cap != null && cap > 0) driver.setVehicleCapacity(cap);
+                }
+                callback.onDriverDataLoaded(driver);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onDriverDataLoaded(driver); }
         });
     }
 
     public void updateUserProfile(String userId, String name, String phone, UserUpdateCallback callback) {
-        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
         Map<String, Object> updates = new HashMap<>();
-        updates.put("nombre", name);
-        updates.put("telefono", phone);
-        userRef.updateChildren(updates).addOnSuccessListener(aVoid -> callback.onSuccess()).addOnFailureListener(e -> callback.onError(e.getMessage()));
+        updates.put("nombre", name); updates.put("telefono", phone);
+        MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    public void updateDriverProfile(String userId, String name, String phone, String plate, List<String> schedules, UserUpdateCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("nombre", name); updates.put("telefono", phone); updates.put("placaVehiculo", plate);
+        if (schedules != null) updates.put("horariosAsignados", schedules);
+        MyApp.getDatabaseReference("conductores/" + userId).updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     public void updateProfilePicture(String userId, String photoUrl, String node, UserUpdateCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference(node + "/" + userId);
-        ref.child("photoUrl").setValue(photoUrl)
+        MyApp.getDatabaseReference(node + "/" + userId).child("photoUrl").setValue(photoUrl)
                 .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onError(e.getMessage()));
-    }
-
-    public void updateUserStatus(String userId, String status, UserUpdateCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("usuarios/" + userId);
-        ref.child("status").setValue(status)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onError(e.getMessage()));
-    }
-
-    public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
-        DatabaseReference userRef = MyApp.getDatabaseReference("usuarios/" + userId);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("solicitudBorrado", true);
-        updates.put("fechaSolicitudBorrado", System.currentTimeMillis());
-        userRef.updateChildren(updates).addOnSuccessListener(aVoid -> callback.onSuccess()).addOnFailureListener(e -> callback.onError(e.getMessage()));
-    }
-
-    public void loadDriverData(String userId, DriverDataCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    Driver driver = snapshot.getValue(Driver.class);
-                    if (driver == null) { callback.onError("Error parsing driver data"); return; }
-                    driver.setId(userId);
-                    
-                    // Asegurar horariosAsignados manualmente si el mapeo falló
-                    if (driver.getAssignedSchedules() == null) {
-                        List<String> schedules = new ArrayList<>();
-                        DataSnapshot hSnap = snapshot.child("horariosAsignados");
-                        if (hSnap.exists()) {
-                            for (DataSnapshot s : hSnap.getChildren()) {
-                                String val = String.valueOf(s.getValue());
-                                if (val != null && !val.equals("null")) schedules.add(val);
-                            }
-                        }
-                        driver.setAssignedSchedules(schedules);
-                    }
-
-                    if (driver.getVehicleId() != null && !driver.getVehicleId().isEmpty()) fetchVehicleCapacity(driver, callback);
-                    else processDriverLoad(userId, driver, callback);
-                } else fetchNameFromUsers(userId, new Driver(), callback);
-            }
-            @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
-        });
-    }
-
-    private void fetchVehicleCapacity(Driver driver, DriverDataCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("vehiculos");
-        String vId = driver.getVehicleId();
-        if (vId != null && !vId.isEmpty()) {
-            ref.child(vId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        Integer cap = snapshot.child("capacidad").getValue(Integer.class);
-                        if (cap != null && cap > 0) {
-                            driver.setVehicleCapacity(cap);
-                            processDriverLoad(driver.getId(), driver, callback);
-                            return;
-                        }
-                    }
-                    fetchVehicleByOwner(driver, callback);
-                }
-                @Override public void onCancelled(@NonNull DatabaseError error) { fetchVehicleByOwner(driver, callback); }
-            });
-        } else fetchVehicleByOwner(driver, callback);
-    }
-
-    private void fetchVehicleByOwner(Driver driver, DriverDataCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("vehiculos");
-        ref.orderByChild("conductorId").equalTo(driver.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists() && snapshot.hasChildren()) {
-                    DataSnapshot vSnap = snapshot.getChildren().iterator().next();
-                    Integer cap = vSnap.child("capacidad").getValue(Integer.class);
-                    if (cap != null && cap > 0) {
-                        driver.setVehicleCapacity(cap);
-                        processDriverLoad(driver.getId(), driver, callback);
-                        return;
-                    }
-                }
-                processDriverLoad(driver.getId(), driver, callback);
-            }
-            @Override public void onCancelled(@NonNull DatabaseError error) { processDriverLoad(driver.getId(), driver, callback); }
-        });
-    }
-
-    private void processDriverLoad(String userId, Driver driver, DriverDataCallback callback) {
-        if (driver.getNombre() == null || driver.getNombre().isEmpty() || driver.getNombre().equalsIgnoreCase("No disponible") || driver.getNombre().contains("Driver ")) {
-            fetchNameFromUsers(userId, driver, callback);
-        } else callback.onDriverDataLoaded(driver);
-    }
-
-    private void fetchNameFromUsers(String userId, Driver driver, DriverDataCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("usuarios/" + userId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String name = getStringSafely(snapshot.child("nombre"));
-                    String tel = getStringSafely(snapshot.child("telefono"));
-                    String photo = getStringSafely(snapshot.child("photoUrl"));
-                    if (driver.getNombre() == null || driver.getNombre().isEmpty()) driver.setNombre(name.isEmpty() ? "Driver " + userId.substring(0, 5) : name);
-                    if (driver.getTelefono() == null || driver.getTelefono().isEmpty()) driver.setTelefono(tel);
-                    if (driver.getPhotoUrl() == null || driver.getPhotoUrl().isEmpty()) driver.setPhotoUrl(photo);
-                }
-                if (driver.getNombre() == null || driver.getNombre().isEmpty()) driver.setNombre("Driver " + userId.substring(0, 5));
-                callback.onDriverDataLoaded(driver);
-            }
-            @Override public void onCancelled(@NonNull DatabaseError error) {
-                if (driver.getNombre() == null || driver.getNombre().isEmpty()) driver.setNombre("Driver " + userId.substring(0, 5));
-                callback.onDriverDataLoaded(driver);
-            }
-        });
-    }
-
-    public void updateDriverProfile(String userId, String name, String phone, String plate, List<String> assignedSchedules, UserUpdateCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("nombre", name);
-        updates.put("telefono", phone);
-        updates.put("placaVehiculo", plate);
-        if (assignedSchedules != null) updates.put("horariosAsignados", assignedSchedules);
-        ref.updateChildren(updates).addOnSuccessListener(aVoid -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
@@ -215,13 +189,11 @@ public class UserService {
             return; 
         }
         
-        PriceService priceService = new PriceService();
-        priceService.getAllPrices(new PriceService.AllPricesCallback() {
+        new PriceService().getAllPrices(new PriceService.AllPricesCallback() {
             @Override
             public void onPricesLoaded(Map<String, Map<String, Double>> allPrices) {
                 fetchRoutesWithPrices(assignedSchedules, allPrices, callback);
             }
-
             @Override public void onError(String error) { fetchRoutesWithPrices(assignedSchedules, new HashMap<>(), callback); }
         });
     }
@@ -230,48 +202,32 @@ public class UserService {
         DatabaseReference ref = MyApp.getDatabaseReference("horarios");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<Route> routesList = new ArrayList<>();
-                if (!snapshot.exists()) {
-                    callback.onRoutesLoaded(routesList);
-                    return;
-                }
-
                 for (String scheduleId : assignedSchedules) {
-                    if (scheduleId == null) continue;
                     DataSnapshot hSnap = snapshot.child(scheduleId);
                     if (hSnap.exists()) {
                         String time = getStringSafely(hSnap.child("hora"));
-                        if (time.isEmpty()) time = getStringSafely(hSnap.child("time"));
-                        
-                        String routeName = getStringSafely(hSnap.child("ruta"));
-                        if (routeName.isEmpty()) routeName = getStringSafely(hSnap.child("route"));
-                        
-                        if (!time.isEmpty() && !routeName.isEmpty()) {
+                        String rName = getStringSafely(hSnap.child("ruta"));
+                        if (!time.isEmpty() && !rName.isEmpty()) {
                             Schedule schedule = new Schedule();
                             schedule.setId(scheduleId);
                             schedule.setTime(time);
-                            schedule.setRoute(routeName);
+                            schedule.setRoute(rName);
                             
-                            String lowRoute = routeName.toLowerCase();
+                            String lowRoute = rName.toLowerCase();
                             String origin, destination;
-
-                            // 🔄 Determinación dinámica de Origen y Destino basada en el texto de la ruta en DB
                             if (lowRoute.contains("natag") && lowRoute.contains("plata")) {
                                 if (lowRoute.indexOf("natag") < lowRoute.indexOf("plata")) {
-                                    origin = "Natagá";
-                                    destination = "La Plata";
+                                    origin = "Natagá"; destination = "La Plata";
                                 } else {
-                                    origin = "La Plata";
-                                    destination = "Natagá";
+                                    origin = "La Plata"; destination = "Natagá";
                                 }
                             } else {
-                                // Fallback por si la ruta no sigue el patrón estándar
-                                origin = routeName.contains("->") ? routeName.split("->")[0].trim() : "Natagá";
-                                destination = routeName.contains("->") ? routeName.split("->")[1].trim() : "La Plata";
+                                origin = rName.contains("->") ? rName.split("->")[0].trim() : "Natagá";
+                                destination = rName.contains("->") ? rName.split("->")[1].trim() : "La Plata";
                             }
                             
-                            // Resolver precio desde el mapa dinámico
                             double price = PriceService.DEFAULT_PRICE;
                             String normOrigin = FormatUtils.normalizarTexto(origin);
                             String normDest = FormatUtils.normalizarTexto(destination);
@@ -286,39 +242,43 @@ public class UserService {
                         }
                     }
                 }
-
-                // 🔄 Ordenar por tiempo (Primero el más cercano a salir)
                 Collections.sort(routesList, (r1, r2) -> {
                     if (r1.getTime() == null || r2.getTime() == null) return 0;
                     String t1 = r1.getTime().getTime();
                     String t2 = r2.getTime().getTime();
                     if (t1 == null || t2 == null) return 0;
-
                     boolean p1 = FormatUtils.esHorarioPasado(t1);
                     boolean p2 = FormatUtils.esHorarioPasado(t2);
-
-                    // Si uno pasó y el otro no, el que NO pasó va primero
                     if (p1 != p2) return p1 ? 1 : -1;
-
-                    // Si ambos tienen el mismo estado (ambos pasaron o ambos no), comparar por hora absoluta
                     return t1.compareTo(t2);
                 });
                 callback.onRoutesLoaded(routesList);
             }
-            @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
+    public void updateUserStatus(String userId, String status, UserUpdateCallback callback) {
+        MyApp.getDatabaseReference("usuarios/" + userId).child("status").setValue(status)
+                .addOnSuccessListener(aVoid -> callback.onSuccess());
+    }
+
+    public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("solicitudBorrado", true);
+        updates.put("fechaSolicitudBorrado", System.currentTimeMillis());
+        MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess());
+    }
+
     public void checkIfUserIsDriver(String userId, DriverCheckCallback callback) {
-        DatabaseReference ref = MyApp.getDatabaseReference("conductores/" + userId);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override public void onDataChange(DataSnapshot snapshot) { callback.onDriverCheckComplete(snapshot.exists()); }
-            @Override public void onCancelled(DatabaseError error) { callback.onError(error.getMessage()); }
+        MyApp.getDatabaseReference("conductores/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) { callback.onDriverCheckComplete(snapshot.exists()); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
     private String getStringSafely(DataSnapshot snapshot) {
-        Object value = snapshot.getValue();
-        return value == null ? "" : String.valueOf(value);
+        Object v = snapshot.getValue(); return v == null ? "" : String.valueOf(v);
     }
 }
