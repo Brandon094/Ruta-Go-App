@@ -1,4 +1,4 @@
-# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.2.1 Stable
+# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.2.3 Stable
 
 Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad, reactividad y seguridad de la aplicación antes de su publicación en la Play Store.
 
@@ -8,7 +8,7 @@ Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad,
 Para garantizar resultados reales, siga estos pasos en su consola de Firebase:
 1.  **Limpiar Auth**: Borrar todos los usuarios de prueba.
 2.  **Limpiar Database**: Eliminar los nodos `reservas`, `chats`, `notificaciones`, `estadisticas`.
-3.  **Importar Master JSON**: Subir el archivo JSON v1.2.1 sincronizado (Horarios, Precios y Administradores).
+3.  **Importar Master JSON**: Subir el archivo JSON v1.2.3 sincronizado (Horarios, Precios y Administradores).
 4.  **Limpiar App**: Desinstalar la versión anterior del celular para limpiar `SharedPreferences`.
 
 ---
@@ -70,7 +70,7 @@ Para garantizar resultados reales, siga estos pasos en su consola de Firebase:
 
 ---
 
-## 📝 Notas de Versión (v1.2.1 Stable)
+## 📝 Notas de Versión (v1.2.3 Stable)
 - **Centralización**: Todos los textos residen en `strings.xml`.
 - **Precios**: Gestionados dinámicamente desde el nodo `/precios/`.
 - **Formato**: Abreviación financiera (K, M) y sufijo COP activados.
