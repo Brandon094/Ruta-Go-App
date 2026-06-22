@@ -1,70 +1,62 @@
 # 🚀 Plan de Marketing y Crecimiento - Ruta-Go
 
-Este documento detalla la estrategia de adquisición, retención y evangelización para asegurar que **Ruta-Go** se convierta en el estándar de transporte entre Natagá y La Plata.
+Este documento detalla la estrategia de adquisición, retención y monetización para asegurar que **Ruta-Go** sea un modelo de negocio rentable y escalable en la región del Huila.
 
 ---
 
 ## 🎯 1. Propuesta de Valor (El "Gancho")
 
 ### 🚶 Para el Pasajero (B2C)
-*   **Se acabó la incertidumbre**: "No más esperar en la esquina a ver si pasa el bus. Reserva tu puesto desde la casa".
-*   **Tu asiento es tuyo**: Garantía de viaje cómodo, sin sobrecupos incómodos.
-*   **Seguridad**: Sabes quién te lleva (Nombre, Placa, Calificación).
+*   **Adiós a la incertidumbre**: Horarios reales y reserva desde casa.
+*   **Puntos Go**: Gana beneficios por cada viaje realizado. "Tu fidelidad tiene premio".
+*   **Estatus PRO**: Sube de nivel (Plata, Oro, Diamante) y desbloquea multiplicadores de puntos.
 
 ### 👨‍✈️ Para el Conductor (B2B)
-*   **Planilla llena**: Asegura pasajeros antes de salir de la terminal.
-*   **Control de Caja**: Estadísticas reales de cuánto dinero entra al día.
-*   **Profesionalismo**: Deja de ser un "chofer" para ser un "Conductor Ruta-Go" con tecnología de punta.
+*   **Optimización de Ingresos**: Asegura cupos y visualiza tu rentabilidad diaria.
+*   **Estatus Estrella**: Badge visual que atrae a más pasajeros por confiabilidad.
+*   **Prioridad Operativa**: Acceso temprano a los horarios más rentables para usuarios premium.
 
 ---
 
-## 📈 2. Estrategia de Adquisición (Cómo atraerlos)
+## 📈 2. Estrategia de Adquisición (Transición Digital)
 
-### 🚩 Fase de Lanzamiento "Puerta a Puerta"
-1.  **Toma de Terminales**: Presencia física en las paradas principales de Natagá y La Plata.
-2.  **Kit del Conductor**: Entrega de calcomanías de "Vehículo Vinculado a Ruta-Go" para los buses. Esto genera curiosidad en los pasajeros.
-3.  **QR en Ventanillas**: Pegar QRs de descarga en los vidrios de los buses para que el pasajero lo baje mientras viaja.
-
-### 📱 Marketing Digital Local
-*   **Facebook Ads Geocercados**: Campañas dirigidas estrictamente a personas en Natagá y La Plata.
-*   **Grupos de WhatsApp/Facebook**: Publicaciones constantes en grupos de "Ventas La Plata" o "Comunidad Natagá".
-*   **Influencers Locales**: Colaboración con personajes conocidos del pueblo para que graben un video haciendo su primera reserva.
+### 🚩 Estrategia "WhatsApp a App"
+1.  **Respuesta Automática**: Migración de la base de contactos tradicional al App.
+2.  **QR en Terminales y Buses**: Acceso inmediato a la descarga en los puntos de contacto físico.
+3.  **Evangelización**: El conductor como aliado principal, promoviendo el uso del app para su propio orden contable.
 
 ---
 
-## 💎 3. Estrategia de Retención (Cómo mantenerlos)
+## 💎 3. Estrategia de Retención y Monetización
 
-### 🌟 Programa de Puntos Go (Fidelización)
-*   "Viaja 10 veces con la App y el siguiente pasaje es gratis (o tiene descuento)".
-*   Esto obliga al pasajero a pedirle al conductor que "registre la reserva" por el app.
+### 🌟 Programa de Fidelización "Puntos Go"
+El objetivo es asegurar la retención mediante la gamificación:
+*   **Acumulación**: Cada viaje confirmado suma puntos.
+*   **Redención**: Puntos convertibles en descuentos directos o viajes gratuitos.
+*   **Gamificación**: Barras de progreso hacia el siguiente nivel de estatus.
 
-### 🏆 Incentivos para Conductores
-*   **Ranking de Estrellas**: El conductor con mejor calificación del mes recibe un distintivo de "Conductor Pro" o beneficios en la plataforma.
-*   **Venta Física Simplificada**: Promover el uso del app como su libreta de cuentas personal.
-
----
-
-## 🗣️ 4. El "Efecto Red" (Referidos)
-
-1.  **Bono por Referido**: "Invita a un amigo y cuando haga su primer viaje, ambos ganan 500 Puntos Go".
-2.  **Evangelización del Conductor**: El conductor es el mejor vendedor. Si él le dice al pasajero: "Cómpreme por el app que es más seguro", el pasajero lo hará.
+### 👑 Modelo Premium para Conductores (SaaS)
+La monetización de **ChopCode Solutions** se basa en ofrecer valor agregado al transportador:
+*   **Suscripción Premium**: Pago por acceso a Analítica Avanzada y Prioridad de Turnos.
+*   **Badge Estrella**: Mejora la tasa de conversión de pasajeros en el Itinerario.
+*   **Pasarela de Pagos**: Comisión por transacción electrónica (PSE, Nequi, Daviplata).
 
 ---
 
-## 🗓️ 5. Cronograma de Acción (Primeros 90 días)
+## 🗓️ 4. Cronograma de Crecimiento
 
-| Mes | Acción Principal | Objetivo |
+| Fase | Objetivo | Acción Clave |
 |:---|:---|:---|
-| **Mes 1** | Registro de Flota Crítica (10 buses) | Tener oferta real en el app. |
-| **Mes 2** | Lanzamiento con QRs en terminales | Conseguir los primeros 100 pasajeros. |
-| **Mes 3** | Activación de Puntos Go | Generar recurrencia (que vuelvan a usarla). |
+| **Sembrado** | Flota Crítica | Registro de los primeros 10 conductores clave. |
+| **Cosecha** | Adopción | Despliegue de QRs y activación de Puntos Go. |
+| **Escalado** | Monetización | Activación de suscripciones Premium para conductores. |
 
 ---
 
-## 📊 6. Métricas de Éxito (KPIs)
-*   **DAU (Usuarios Activos Diarios)**: ¿Cuánta gente abre el app al día?
-*   **Ocupación vía App**: % de asientos reservados por la plataforma vs venta física.
-*   **Churn Rate**: ¿Cuántos usuarios bajan el app y nunca vuelven a entrar?
+## 📊 5. Métricas de Éxito (KPIs)
+*   **LTV (Lifetime Value)**: Cuánto dinero genera un usuario a lo largo de su vida en el app.
+*   **CAC (Cost of Acquisition)**: Cuánto cuesta traer un nuevo conductor/pasajero.
+*   **Retención**: % de pasajeros que usan los Puntos Go para su segundo viaje.
 
 ---
 **Chop Code Solutions - Estrategia de Crecimiento 2026**

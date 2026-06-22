@@ -16,6 +16,8 @@ Almacena el perfil profesional y operativo de los choferes.
 | `vehiculoId` | `vehicleId` | String | ID único del vehículo (generalmente la placa). |
 | `horariosAsignados` | `assignedSchedules` | List<String> | IDs de los horarios de la planilla maestra. |
 | `status` | `status` | String | Estado de cuenta: `active`, `inactive`, `blocked`. |
+| `isPremium` | `isPremium` | Boolean | (Fase 3) Indica si el conductor tiene suscripción activa. |
+| `rating` | `rating` | Float | Calificación promedio del conductor. |
 | `photoUrl` | `photoUrl` | String | Link a la imagen en Firebase Storage. |
 
 ---
@@ -65,6 +67,20 @@ Transacciones generadas por los pasajeros.
 | `estado` | `status` | String | `Pendiente`, `Confirmada`, `Cancelada`. |
 | `precio` | `price` | Double | Valor cobrado al momento de la reserva. |
 | `fechaReserva` | `reservationDate` | Long | Timestamp del momento de creación. |
+
+---
+
+## 👥 Nodo 6: `/usuarios/`
+Perfiles de pasajeros y su historial de fidelización.
+
+| Campo (Firebase) | Atributo (Java) | Tipo | Descripción |
+|:---|:---|:---|:---|
+| `nombre` | `name` | String | Nombre del pasajero. |
+| `email` | `email` | String | Correo de contacto. |
+| `telefono` | `phone` | String | Teléfono de contacto. |
+| `status` | `status` | String | `active`, `inactive`, `blocked`. |
+| `puntosGo` | `puntosGo` | Integer | (Fase 3) Puntos acumulados por viajes. |
+| `nivelEstatus` | `levelStatus` | String | (Fase 3) Rango del usuario: `Plata`, `Oro`, `Diamante`. |
 
 ---
 **Chop Code Solutions - 2026**

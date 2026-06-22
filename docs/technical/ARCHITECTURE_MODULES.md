@@ -43,6 +43,11 @@ La plataforma implementa **Model-View-ViewModel** con un flujo de datos unidirec
 *   **Lógica de Filtrado**: Al cargar horarios, `ScheduleService` cruza el `conductorId` contra la lista activa de conductores.
 *   **Mitigación de Datos Huérfanos**: Si un administrador borra un conductor de Firebase, este módulo detecta que el ID en el horario ya no existe y lo "libera" visualmente marcándolo como **"(Libre)"**, evitando crashes por punteros nulos en el perfil del chofer.
 
+### 2.5 Motor de Fidelización (Loyalty Engine - Fase 3)
+**Responsabilidad**: Gestión de incentivos y estatus de usuario.
+*   **Lógica**: Algoritmos de cálculo de puntos basados en el valor de la reserva y multiplicadores por nivel de estatus (Plata, Oro, Diamante).
+*   **Integración**: Disparadores post-confirmación que actualizan el nodo `/usuarios/$uid/puntosGo`.
+
 ---
 
 ## 📊 3. Flujo de Datos (Data Flow Pipeline)

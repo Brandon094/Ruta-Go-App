@@ -33,6 +33,7 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles (RBAC)** int
 | **Tutorial Hub** | Capacitación interactiva y persistencia de guías. | `TutorialManager` |
 | **Finance Core** | Tarifas dinámicas desde la nube y cálculo de COP. | `PriceService` |
 | **Integridad (Sanity)** | Filtrado de datos huérfanos y normalización. | `ScheduleService` |
+| **Loyalty & Premium** | Gamificación, Puntos Go y suscripciones SaaS. | (Fase 3) |
 
 ---
 

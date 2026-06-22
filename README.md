@@ -11,12 +11,14 @@
 *   💺 **Reserva Atómica**: Motor de asignación de asientos con transacciones en milisegundos para evitar colisiones de datos.
 *   💰 **Tarifas Dinámicas**: Precios gestionados remotamente con visualización profesional en COP.
 *   🎓 **Tutorial Hub**: Sistema interactivo de capacitación integrada para una curva de aprendizaje mínima.
+*   🌟 **Fidelización (Fase 3)**: Sistema "Puntos Go" y niveles de estatus (Plata, Oro, Diamante) para recompensar la recurrencia.
 
 ### 👨‍✈️ Gestión para el Conductor (B2B)
 *   📝 **Onboarding Autónomo**: Alta técnica de conductores y vehículos con vinculación inmediata a la planilla maestra.
 *   📊 **Dashboard Financiero**: Estadísticas de ingresos y ocupación en tiempo real con animaciones fluidas.
 *   📱 **Motor de Venta Física**: Capacidad de bloqueo manual de inventario para ventas fuera de plataforma.
 *   🏁 **Feedback Operativo**: Notificaciones visuales de "Misión Cumplida" tras completar la jornada asignada.
+*   👑 **Modelo Premium (Fase 3)**: Acceso a analítica avanzada, prioridad de turnos e insignias de "Conductor Estrella".
 
 ---
 

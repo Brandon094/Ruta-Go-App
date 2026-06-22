@@ -40,6 +40,12 @@ Este documento detalla los requisitos funcionales, no funcionales y las reglas d
 *   **RF-15:** El sistema debe mostrar tutoriales interactivos paso a paso en el primer acceso a módulos clave.
 *   **RF-16:** El sistema debe notificar visualmente el fin de la jornada ("Misión Cumplida" / "Jornada Completada").
 
+### 2.6 Fidelización y Monetización (Fase 3)
+*   **RF-18:** El sistema debe calcular y acumular "Puntos Go" por cada reserva completada exitosamente.
+*   **RF-19:** El sistema permitirá la redención de puntos por descuentos o viajes gratuitos.
+*   **RF-20:** El sistema clasificará a los pasajeros en niveles de estatus (Plata, Oro, Diamante) según su actividad.
+*   **RF-21:** El sistema proveerá funciones premium para conductores (Analítica avanzada, prioridad de turnos y badge de estrella).
+
 ---
 
 ## ⚡ 3. Requisitos No Funcionales (RNF)
