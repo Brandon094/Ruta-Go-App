@@ -47,6 +47,7 @@ public class DriverProfileActivity extends AppCompatActivity {
     // ViewModel and Managers
     private DriverProfileViewModel viewModel;
     private AuthManager authManager;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -66,12 +67,14 @@ public class DriverProfileActivity extends AppCompatActivity {
         }
 
         viewModel = new ViewModelProvider(this).get(DriverProfileViewModel.class);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         inicializarVistas();
         setupObservers();
         setupBottomNavigation();
 
         cargarDatos();
+        tutorialManager.showDriverProfileGuide();
     }
 
     private void inicializarVistas() {

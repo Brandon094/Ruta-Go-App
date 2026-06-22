@@ -81,19 +81,7 @@ public class UserProfileActivity extends AppCompatActivity {
         setupBottomNavigation();
 
         viewModel.loadProfile();
-        checkTutorial();
-    }
-
-    private void checkTutorial() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            tutorialManager.showGuide(
-                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_PROFILE,
-                    R.drawable.ic_person,
-                    getString(R.string.tut_profile_title),
-                    getString(R.string.tut_profile_msg),
-                    null
-            );
-        }, 1500);
+        tutorialManager.showPassengerProfileGuide();
     }
 
     private void inicializarVistas() {

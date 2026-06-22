@@ -61,6 +61,7 @@ public class DriverHistoryActivity extends AppCompatActivity {
     private int lastTotal = 0;
     private int lastConfirmed = 0;
     private int lastCanceled = 0;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,10 @@ public class DriverHistoryActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupObservers();
 
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+
         loadData();
+        tutorialManager.showDriverHistoryGuide();
     }
 
     private void initViews() {

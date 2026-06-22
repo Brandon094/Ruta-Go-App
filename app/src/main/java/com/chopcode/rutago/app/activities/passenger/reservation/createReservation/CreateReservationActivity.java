@@ -115,19 +115,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         btnConfirm.setOnClickListener(v -> validateReservation());
         btnCancel.setOnClickListener(v -> goBack());
 
-        checkTutorial();
-    }
-
-    private void checkTutorial() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            tutorialManager.showGuide(
-                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_SEATS,
-                    R.drawable.ic_seat,
-                    getString(R.string.tut_seats_title),
-                    getString(R.string.tut_seats_msg),
-                    null
-            );
-        }, 1000);
+        tutorialManager.showPassengerSeatsGuide();
     }
 
     private void setupViewModelObservers() {

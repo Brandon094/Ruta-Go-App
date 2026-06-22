@@ -15,6 +15,12 @@ public class SessionManager {
     public static final String TUT_HISTORY = "tut_history";
     public static final String TUT_PROFILE = "tut_profile";
     
+    // Driver Tutorial Keys
+    public static final String TUT_DR_HOME = "tut_dr_home";
+    public static final String TUT_DR_SEATS = "tut_dr_seats";
+    public static final String TUT_DR_HISTORY = "tut_dr_history";
+    public static final String TUT_DR_PROFILE = "tut_dr_profile";
+    
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
 

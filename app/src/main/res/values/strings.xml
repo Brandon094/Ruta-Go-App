@@ -87,6 +87,16 @@
     <string name="tut_history_msg">Aquí verás el estado de tu viaje. Cuando el conductor acepte, tu tiquete dirá "Confirmado" y podrás chatear con él.</string>
     <string name="tut_profile_title">Paso 5: Gestiona tu perfil</string>
     <string name="tut_profile_msg">Aquí puedes ver tus estadísticas de viaje, editar tus datos o cambiar tu foto de perfil. ¡Y listo! Ya eres un experto en Ruta-Go.</string>
+
+    <!-- Tutorial Conductor -->
+    <string name="tut_dr_home_title">Control Total</string>
+    <string name="tut_dr_home_msg">Bienvenido al mando. Aquí verás tus ganancias del día y la lista de pasajeros que esperan tu confirmación.</string>
+    <string name="tut_dr_seats_title">Ventas Físicas</string>
+    <string name="tut_dr_seats_msg">¿Alguien subió al bus en la vía? Toca el asiento y dale a "Bloquear" para que nadie más lo reserve desde la App.</string>
+    <string name="tut_dr_history_title">Tus Cuentas Claras</string>
+    <string name="tut_dr_history_msg">Revisa el historial de todos tus viajes y verifica cuánto dinero has generado en cada ruta.</string>
+    <string name="tut_dr_profile_title">Tu Herramienta</string>
+    <string name="tut_dr_profile_msg">Desde aquí puedes actualizar los datos de tu bus o cambiar tus horarios si la empresa te asigna turnos nuevos.</string>
     <string name="entendido">¡Entendido!</string>
 
     <!-- ========================================================================= -->

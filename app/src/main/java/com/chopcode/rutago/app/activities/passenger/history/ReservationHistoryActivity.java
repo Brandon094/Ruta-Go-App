@@ -84,19 +84,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         loadData();
-        checkTutorial();
-    }
-
-    private void checkTutorial() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            tutorialManager.showGuide(
-                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_HISTORY,
-                    R.drawable.ic_history,
-                    getString(R.string.tut_history_title),
-                    getString(R.string.tut_history_msg),
-                    null
-            );
-        }, 1500);
+        tutorialManager.showPassengerHistoryGuide();
     }
 
     private void initViews() {

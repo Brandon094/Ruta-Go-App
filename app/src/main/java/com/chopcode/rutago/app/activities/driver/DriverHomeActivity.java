@@ -82,6 +82,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private ReservationAdapter reservationAdapter;
     private RouteAdapter routeAdapter;
     private com.chopcode.rutago.app.adapters.rutas.RouteStatAdapter routeStatAdapter;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
     private List<Reservation> reservationList = new ArrayList<>();
     private List<Route> routeList = new ArrayList<>();
     private SimpleDateFormat timeFormat;
@@ -111,6 +112,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         reservasViewModel = new ViewModelProvider(this).get(DriverReservationsViewModel.class);
         estadisticasViewModel = new ViewModelProvider(this).get(DriverStatsViewModel.class);
         rutasViewModel = new ViewModelProvider(this).get(DriverRoutesViewModel.class);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         initializeViews();
         setupRecyclerView();
@@ -120,6 +122,8 @@ public class DriverHomeActivity extends AppCompatActivity {
 
         loadDriverData();
         setupNetworkMonitor();
+
+        tutorialManager.showDriverHomeGuide();
     }
 
     private void setupNetworkMonitor() {

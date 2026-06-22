@@ -92,19 +92,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         setupNetworkMonitor();
         setupBottomNavigation();
         
-        checkTutorial();
-    }
-
-    private void checkTutorial() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            tutorialManager.showGuide(
-                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_HOME,
-                    R.drawable.ic_time,
-                    getString(R.string.tut_home_title),
-                    getString(R.string.tut_home_msg),
-                    null
-            );
-        }, 1500);
+        tutorialManager.showPassengerHomeGuide();
     }
 
     private void setupObservers() {

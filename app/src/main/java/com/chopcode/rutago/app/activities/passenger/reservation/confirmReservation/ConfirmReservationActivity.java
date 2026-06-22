@@ -74,19 +74,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         setupObservers();
         viewModel.processIntent(getIntent());
 
-        checkTutorial();
-    }
-
-    private void checkTutorial() {
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            tutorialManager.showGuide(
-                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_CONFIRM,
-                    R.drawable.ic_check,
-                    getString(R.string.tut_confirm_title),
-                    getString(R.string.tut_confirm_msg),
-                    null
-            );
-        }, 1000);
+        tutorialManager.showPassengerConfirmGuide();
     }
 
     private void initializeViews() {
