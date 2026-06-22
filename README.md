@@ -48,6 +48,7 @@
 | [**📄 Ficha Técnica**](./docs/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
 | [**🗺️ Arquitectura de Módulos**](./docs/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
 | [**🏁 Plan de Pruebas**](./docs/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
+| [**📜 Historial de Cambios**](./docs/CHANGELOG.md) | Registro detallado de la evolución del software. |
 | [**🚀 Roadmap**](./docs/ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
 
 ---
