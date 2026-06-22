@@ -53,7 +53,8 @@ Acceda a la documentación detallada dividida por dominios de especialidad:
 | 🏁 **Calidad** | [**Plan de Pruebas (QA)**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de certificación para lanzamientos. |
 | ⚙️ **Operativo** | [**Manual de Admin**](./docs/operations/MANUAL_ADMIN.md) | Guía de gestión operativa desde Firebase Console. |
 | 📜 **Historial** | [**Changelog**](./docs/operations/CHANGELOG.md) | Registro histórico de la evolución del software. |
-| 🚀 **Futuro** | [**Roadmap**](./docs/product/ROADMAP.md) | Hoja de ruta para la Fase 2 (Pagos) y Fase 3 (Encomiendas). |
+| 🚀 **Futuro** | [**🚀 Master Plan "Go"**](./docs/product/ECOSYSTEM_MASTER_PLAN.md) | Visión unificada: RutaGo, AgroGo y CargoGo. |
+| [**🚀 Roadmap RutaGo**](./docs/product/ROADMAP.md) | Hoja de ruta para la Fase 2 (Pagos) y Fase 3 (Loyalty). |
 
 ---
 
