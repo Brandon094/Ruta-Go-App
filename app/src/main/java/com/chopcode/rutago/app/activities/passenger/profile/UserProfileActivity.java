@@ -49,6 +49,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private View headerContent;
     private ShimmerFrameLayout shimmerHeader, shimmerCard, shimmerPremium;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     // ViewModel and Managers
     private UserProfileViewModel viewModel;
@@ -73,12 +74,26 @@ public class UserProfileActivity extends AppCompatActivity {
         }
 
         viewModel = new ViewModelProvider(this).get(UserProfileViewModel.class);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         inicializarVistas();
         setupObservers();
         setupBottomNavigation();
 
         viewModel.loadProfile();
+        checkTutorial();
+    }
+
+    private void checkTutorial() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            tutorialManager.showGuide(
+                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_PROFILE,
+                    R.drawable.ic_person,
+                    getString(R.string.tut_profile_title),
+                    getString(R.string.tut_profile_msg),
+                    null
+            );
+        }, 1500);
     }
 
     private void inicializarVistas() {

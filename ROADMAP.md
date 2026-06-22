@@ -13,7 +13,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 2.  **♿ Accesibilidad y Visibilidad**:
     *   Modo de alto contraste para visión bajo luz solar intensa.
     *   Optimización de tamaños de fuente para adultos mayores.
-3.  **📊 Panel de Control Administrativo (Web/Desktop)**:
+3.  **📊 Panel de Control Administrativo (Web/Desktop)**:[gradlew.bat](gradlew.bat)
     *   Gestión centralizada de conductores y flotas.
     *   Reportes de ocupación y exportación de datos contables.
 

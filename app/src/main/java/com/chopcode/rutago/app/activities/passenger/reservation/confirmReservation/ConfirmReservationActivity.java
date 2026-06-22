@@ -54,6 +54,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
     private ConfirmationAnalyticsHelper confirmationAnalytics;
     private ConfirmationDialogManager dialogManager;
     private ReservationAnalyticsHelper analyticsHelper;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,10 +68,25 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         analyticsHelper = new ReservationAnalyticsHelper("ConfirmReservation");
         confirmationAnalytics = new ConfirmationAnalyticsHelper(analyticsHelper);
         dialogManager = new ConfirmationDialogManager(this, confirmationAnalytics);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         initializeViews();
         setupObservers();
         viewModel.processIntent(getIntent());
+
+        checkTutorial();
+    }
+
+    private void checkTutorial() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            tutorialManager.showGuide(
+                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_CONFIRM,
+                    R.drawable.ic_check,
+                    getString(R.string.tut_confirm_title),
+                    getString(R.string.tut_confirm_msg),
+                    null
+            );
+        }, 1000);
     }
 
     private void initializeViews() {

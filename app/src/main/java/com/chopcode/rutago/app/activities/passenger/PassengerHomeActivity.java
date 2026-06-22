@@ -66,6 +66,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     private LinearLayout legendContent;
     private ImageView legendExpandIcon;
     private boolean isLegendExpanded = false;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         analyticsHelper = new DashboardAnalyticsHelper();
         uiManager = new DashboardUIManager(analyticsHelper);
         uiManager.setUIActionsListener(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         initializeViews();
         setupObservers();
@@ -89,6 +91,20 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         
         setupNetworkMonitor();
         setupBottomNavigation();
+        
+        checkTutorial();
+    }
+
+    private void checkTutorial() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            tutorialManager.showGuide(
+                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_HOME,
+                    R.drawable.ic_time,
+                    getString(R.string.tut_home_title),
+                    getString(R.string.tut_home_msg),
+                    null
+            );
+        }, 1500);
     }
 
     private void setupObservers() {

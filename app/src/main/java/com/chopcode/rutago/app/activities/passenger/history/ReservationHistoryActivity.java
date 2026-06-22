@@ -64,6 +64,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
     private int lastTotal = 0;
     private int lastConfirmed = 0;
     private int lastCanceled = 0;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,22 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupObservers();
 
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+
         loadData();
+        checkTutorial();
+    }
+
+    private void checkTutorial() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            tutorialManager.showGuide(
+                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_HISTORY,
+                    R.drawable.ic_history,
+                    getString(R.string.tut_history_title),
+                    getString(R.string.tut_history_msg),
+                    null
+            );
+        }, 1500);
     }
 
     private void initViews() {

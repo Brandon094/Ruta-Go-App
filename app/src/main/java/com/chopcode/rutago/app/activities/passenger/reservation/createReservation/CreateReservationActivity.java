@@ -78,6 +78,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
     private ReservationUserManager reservationUserManager;
     private ReservationNavigationManager reservationNavigationManager; 
     private CreateReservationViewModel viewModel;
+    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         seatManager = new SeatManager(this, analyticsHelper);
         seatManager.setSeatSelectionListener(this);
         reservationNavigationManager = new ReservationNavigationManager(this, analyticsHelper, seatManager);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
 
         getIntentData();
         initViews();
@@ -112,6 +114,20 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
 
         btnConfirm.setOnClickListener(v -> validateReservation());
         btnCancel.setOnClickListener(v -> goBack());
+
+        checkTutorial();
+    }
+
+    private void checkTutorial() {
+        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+            tutorialManager.showGuide(
+                    com.chopcode.rutago.app.managers.settings.SessionManager.TUT_SEATS,
+                    R.drawable.ic_seat,
+                    getString(R.string.tut_seats_title),
+                    getString(R.string.tut_seats_msg),
+                    null
+            );
+        }, 1000);
     }
 
     private void setupViewModelObservers() {

@@ -76,6 +76,19 @@
     <string name="titulo_mision_cumplida">¡Misión Cumplida!</string>
     <string name="desc_mision_cumplida">Has completado todos tus recorridos de hoy. Tus próximas rutas aparecerán aquí una vez sean asignadas o tras el reset de las 7:00 PM.</string>
 
+    <!-- Tutorial Interactivo -->
+    <string name="tut_home_title">Paso 1: Elige tu horario</string>
+    <string name="tut_home_msg">Bienvenido a Ruta-Go. Para empezar tu viaje, selecciona la ruta y la hora en que deseas salir. Los horarios con el badge azul son los más próximos.</string>
+    <string name="tut_seats_title">Paso 2: Reserva tu asiento</string>
+    <string name="tut_seats_msg">Toca el asiento que prefieras. Los rojos están ocupados y los verdes son los que tú seleccionas. Luego dale a "Continuar" para confirmar.</string>
+    <string name="tut_confirm_title">Paso 3: Envía tu solicitud</string>
+    <string name="tut_confirm_msg">Revisa los datos de tu viaje y dale a "Confirmar". El conductor recibirá tu solicitud al instante.</string>
+    <string name="tut_history_title">Paso 4: Espera la confirmación</string>
+    <string name="tut_history_msg">Aquí verás el estado de tu viaje. Cuando el conductor acepte, tu tiquete dirá "Confirmado" y podrás chatear con él.</string>
+    <string name="tut_profile_title">Paso 5: Gestiona tu perfil</string>
+    <string name="tut_profile_msg">Aquí puedes ver tus estadísticas de viaje, editar tus datos o cambiar tu foto de perfil. ¡Y listo! Ya eres un experto en Ruta-Go.</string>
+    <string name="entendido">¡Entendido!</string>
+
     <!-- ========================================================================= -->
     <!-- 🔐 AUTHENTICATION & REGISTRATION                                          -->
     <!-- ========================================================================= -->
@@ -105,7 +118,6 @@
     <string name="enviar_instrucciones">Enviar Instrucciones</string>
     <string name="correo_enviado">¡Correo Enviado!</string>
     <string name="correo_enviado_detalle">Revisa tu bandeja de entrada y sigue los pasos para restablecer tu cuenta.</string>
-    <string name="entendido">Entendido</string>
     <string name="todo_listo">¡Todo listo!</string>
     <string name="requisitos_contrasena">Mínimo 8 caracteres, 1 número y 1 letra</string>
     <string name="usuario_no_autenticado">Usuario no autenticado</string>

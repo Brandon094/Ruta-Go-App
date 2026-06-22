@@ -3,118 +3,87 @@
 Este documento define los estándares técnicos, arquitectónicos y de proceso para el desarrollo de la aplicación **Ruta-Go (Transporte Natagá - La Plata)** por parte de **Chop Code Solutions**. Cualquier agente de IA o desarrollador debe seguir estas directrices estrictamente.
 
 ## 1. Identidad y Propósito
-El objetivo es ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable, conectando a los habitantes de Natagá y La Plata con conductores en tiempo real.
+Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable, conectando a los habitantes de Natagá y La Plata con conductores profesionales mediante una gestión de turnos transparente y en tiempo real.
 
 ## 2. Parámetros de Marca (Branding)
-- **Marca Desarrolladora:** Chop Code Solutions
-- **Nombre de la App:** Ruta-Go
-- **Package Name:** `com.chopcode.rutago.app`
-- **Identidad Visual (Iconografía Oficial):**
-  - `logo_splash`: Isotipo animado exclusivo para la pantalla de inicio (Splash Screen).
-  - `logo_icon`: Imagotipo circular oficial para el icono de la aplicación y notificaciones Push.
-  - `logo_main`: Versión horizontal/reducida para Top Bars (Toolbars) y componentes internos de la interfaz.
-  - **Colores:** Primario (`primary_500` - Naranja), Secundario (`secondary_900` - Navy).
+- **Marca Desarrolladora:** Chop Code Solutions.
+- **Nombre de la App:** Ruta-Go.
+- **Identidad Visual:**
+  - `logo_splash`: Isotipo animado exclusivo para el inicio.
+  - `logo_icon`: Imagotipo circular oficial (Icono y Notificaciones).
+  - `logo_main`: Versión horizontal para Toolbars y UIs internas.
+  - **Colores Oficiales:** Primario (`primary_500` - Naranja #FF9800), Secundario (`secondary_900` - Navy #1A237E).
 
 ## 3. Stack Tecnológico Obligatorio
-- **Lenguaje:** Java 17 (Toolchain configurado en `build.gradle`).
-- **Gradle:** Versión 8.11 (Estabilizada para entornos Linux/Parrot con I/O restringido).
-- **UI:** XML Layouts (View System) con Material Components.
-- **Backend:** Firebase (Auth, Realtime Database, Storage, Cloud Messaging, Cloud Functions, Crashlytics) y Google Analytics.
-- **Arquitectura:** **MVVM (Model-View-ViewModel)**. 
-- **Multi-tema:** Soporte oficial para **Tema Claro** y **Tema Oscuro** (DayNight System).
-- **Reactividad:** Uso estricto de `LiveData` y `ValueEventListener` (`addValueEventListener`) para actualizaciones en tiempo real.
+- **Lenguaje:** Java 17 (Toolchain).
+- **Gradle:** Versión 8.11 (Entorno Linux/Parrot estable).
+- **UI:** XML View System con Material Components 3.
+- **Backend:** Firebase (Auth, Realtime DB, Storage, FCM, Analytics, Crashlytics).
+- **Arquitectura:** **MVVM (Model-View-ViewModel)** 100% reactiva.
+- **Multi-tema:** Soporte nativo DayNight (Claro/Oscuro).
 
 ## 4. Reglas de Oro del Código
 
-### A. Clean Architecture & Utils
-- **Centralización:** Prohibido duplicar lógica de formateo o manipulación de strings. Usar siempre `com.chopcode.rutago.app.utils.ui.FormatUtils` para precios, horas, fechas y normalización de texto (ej. quitar tildes para comparaciones).
-- **Mantenimiento:** El adaptador de listas (`Adapter`) solo debe mostrar datos; no debe realizar consultas a Firebase. La data debe llegar ya procesada desde el ViewModel.
-- **Recursos:** El 100% de los textos deben estar en `strings.xml` organizados por pantalla/módulo.
+### A. Clean Architecture & Centralización
+- **FormatUtils:** Prohibido el formateo manual de strings en Adapters o Activities. Usar siempre `com.chopcode.rutago.app.utils.ui.FormatUtils` para:
+  - **Precios:** Abreviación inteligente (>=100K: K, >=1M: M) + sufijo "COP".
+  - **Horas:** Normalización bilingüe (Spanish en DB -> 12h legible en UI).
+  - **Fechas:** Formateo largo descriptivo.
+  - **Normalización:** Método `normalizarTexto` para comparaciones lógicas (anti-tildes).
+- **Recursos:** 100% de los textos en `strings.xml`. Prohibido el uso de "hardcoded strings" en layouts o clases Java.
 
-### B. Gestión de Datos (Firebase)
-- **Modelos Bilingües:** Los modelos usan "Mapeo Dual" con `@PropertyName` y campos privados para garantizar compatibilidad entre datos históricos (Español) y el nuevo estándar del código (Inglés).
-- **Escucha Global:** Para listas de alta frecuencia, usar un solo listener global en el Service/ViewModel para optimizar el consumo de datos.
-- **Robustez de Servicios:** Los servicios (`Service`) deben usar el contexto global de la aplicación (`MyApp.getInstance()`) para operaciones de UI, evitando crashes.
-- **Seguridad:** Toda escritura debe cumplir con las reglas de validación de Firebase (ej. incluir `driverId` en vehículos y cumplir con campos obligatorios).
-- **Caché de ViewModel:** Prohibido reiniciar estados de carga (Shimmer) si la data ya reside en memoria o el UID no ha cambiado. El Shimmer solo debe dispararse en la carga inicial para una experiencia instantánea.
-- **Tarifas Dinámicas:** Prohibido hardcodear precios (ej. "12000"). Usar siempre `PriceService` para consultar el nodo `precios/` de Firebase.
+### B. Gestión de Datos Reactiva (Firebase)
+- **Escucha Global:** Uso estricto de `ValueEventListener` (`addValueEventListener`) en ViewModels para dashboards e itinerarios. Prohibido `addListenerForSingleValueEvent` en pantallas críticas.
+- **Segregación Total de Roles:** 
+  - Pasajeros residen en `/usuarios/`.
+  - Conductores residen en `/conductores/` y `/vehiculos/`.
+  - El Login debe detectar el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
+- **Atomicidad Operativa:** Uso de `updateChildren` para registros multi-nodo para garantizar que el conductor, su vehículo y su agenda inicial se creen como una sola transacción lógica.
 
 ### C. UI/UX & Animaciones Premium
-- **Feedback Visual:** Implementar `ShimmerFrameLayout` durante las cargas iniciales. Una vez cargada la data, usar `UIAnimationUtils` para conteos progresivos, transiciones de tarjetas (`playCardEntryAnimation`) y micro-interacciones.
-- **Carga de Imágenes:** Usar `ImageUtils` con Glide (DiskCacheStrategy.ALL y Priority.IMMEDIATE) para garantizar que las fotos de perfil sean visibles al instante al navegar.
-- **Reactividad:** Los Dashboards deben reaccionar a cambios en la base de datos instantáneamente. Evitar `addListenerForSingleValueEvent` en pantallas principales.
-- **Notificaciones:** Seguir el estándar Premium unificado en `NotificationService` con identidad visual oficial.
-- **Responsividad (Guías):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en `ConstraintLayout` para que la UI "respire" en cualquier dispositivo.
-- **Botones Material (Standard):** Los `MaterialButton` deben tener `android:inset...="0dp"` para eliminar márgenes invisibles. Los botones tipo `Outlined` requieren `android:elevation="0dp"`, `android:stateListAnimator="@null"` y asegurar `iconTint` oficial para visibilidad en modo oscuro.
-- **Accesibilidad (Zoom 200%):** Prohibido usar alturas fijas (`android:layout_height`) en botones o contenedores con texto. Usar siempre `wrap_content` + `android:minHeight` (ej. 52dp) para evitar textos cortados.
-- **Inmersión (Scroll Infinito):** Para efectos premium, usar `android:clipToPadding="false"` junto con un `paddingBottom` generoso (ej. 88dp) en listas.
-- **Simetría Operativa (Mapa de Asientos):** Grilla de 5 columnas. Para garantizar responsividad, los asientos miden máximo **38dp** con **1.5dp** de margen y un pasillo central de **10dp**.
-- **Desglose Dinámico (Dashboard Conductor):** El resumen por ruta debe usar un `RecyclerView` horizontal para soportar N rutas (1, 2, 3 o más). El conteo de "Reservas" debe representar la **ocupación real** (App + Ventas Físicas).
-- **Compartición Segura:** El uso de `FileProvider` es obligatorio para compartir activos generados (como el tiquete digital).
-- **Estética de Logos:** 
-  - **Splash Screen:** Usa el contenedor con forma de Pin Navy (`bg_pin_navy`) de **180dp**. El `splash_background.xml` debe estar sincronizado milimétricamente con `activity_splash.xml` para una transición invisible.
-  - **UIs Internas:** Los logos usan un fondo circular Navy (`secondary_900`) con un padding interno de **5dp** para maximizar la visibilidad del isotipo.
-  - **Tiquete:** El logo del comprobante debe permanecer **estático** por ser un documento de comprobación.
-- **Animaciones de Vanguardia:** 
-  - **Splash Pro:** Efecto de crecimiento desde un punto diminuto (`scale 0.01`). Primero crece el Pin de fondo y luego el Logo con efecto `Overshoot` marcado.
-  - **Logo Vivo (Tilt):** Los logos en Login, Registro y Dashboards realizan un balanceo de **15 grados** cada 5 segundos para dar sensación de vida.
-  - **Next Trip Indicator:** Resaltar dinámicamente el horario más próximo a salir con un badge **"SIGUIENTE"** animado (Pulse) en color **Navy Medio (`secondary_400`)**.
-- **Departure Animation:** Al expirar un horario ("Finalizado"), la tarjeta aplica opacidad (0.6f), muestra el chip "FINALIZADA" y deshabilita la gestión de asientos.
-- **Soporte Multi-tema (DayNight):** 
-  - Prohibido hardcodear colores (`@color/...`) para fondos y textos.
-  - Uso obligatorio de **Atributos de Tema** (`?attr/...`).
-  - Atributos clave: `?android:attr/colorBackground`, `?attr/colorSurface`, `?attr/colorOnSurface`, `?attr/colorSurfaceVariant`.
+- **Responsividad (8% Rule):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en todos los formularios para garantizar aire visual en cualquier densidad de pantalla.
+- **Layouts Limpios:** Uso de `Barrier` para evitar superposiciones dinámicas entre contenidos variables y footers/actualizaciones.
+- **Feedback Proactivo:**
+  - **Jornada Completada:** Tarjeta visual automática cuando todos los horarios de una ruta han pasado.
+  - **Misión Cumplida:** Feedback especializado para conductores tras finalizar su itinerario.
+- **Micro-interacciones:**
+  - `playCardEntryAnimation`: Efecto de deslizamiento hacia arriba para todas las tarjetas al cargar.
+  - `startLogoTiltAnimation`: Balanceo de 15 grados en logos para sensación de vida.
+  - `animateNumericText`: Conteo progresivo para estadísticas financieras y de ocupación.
 
-### D. Documentación Técnica & Analíticas
-- **Código Auto-explicativo:** Variables y funciones con nombres claros en inglés.
-- **Documentación de Negocio:** Toda clase crítica (ViewModels, Services) debe incluir Javadoc.
-- **Analíticas Obligatorias:** Registrar eventos en Google Analytics para cada acción clave. Usar `BaseViewModel.registrarEventoAnalitico`.
-- **Trazabilidad:** Inyectar logs estratégicos (`Log.d`) y reportar excepciones a Firebase Crashlytics.
+## 5. Módulos Críticos Implementados
 
-### E. Estándares de Recursos (Clean Resources)
-- **Nomenclatura de Strings:** Usar prefijos por módulo: `[modulo]_[proposito]`.
-- **Nomenclatura de Assets:** 
-  - Iconos: `ic_[nombre]`. 
-  - Fondos/Formas: `bg_[forma]_[proposito]`.
-- **Centralización:** Prohibido el uso de strings hardcodeados en layouts XML. El 100% debe residir en `strings.xml`.
+### A. Registro Autónomo de Conductores
+Proceso Step-by-Step que automatiza:
+1. Creación de cuenta en Firebase Auth.
+2. Alta técnica de vehículo por placa con capacidad dinámica.
+3. **Autogestión de Horarios:** Selección de turnos de ida/vuelta con validación de disponibilidad en tiempo real.
+4. **Sincronización de Asientos:** El sistema ajusta automáticamente `totalAsientos` y `asientosDisponibles` basándose en la ficha técnica del bus registrado.
 
-### F. Seguridad y Permisos
-- **PermissionManager:** Centralización de solicitudes de permisos (Notificaciones Android 13+, Galería).
-- **Sensibilidad:** Nunca persistir contraseñas en logs o analíticas.
-- **Blindaje de Chat:** El acceso al chat solo se permite para reservas en estado "Confirmada" o "Por confirmar".
-- **Segregación Total de Roles:** Los pasajeros residen exclusivamente en `/usuarios/` y los conductores en `/conductores/` y `/vehiculos/`. El sistema de Login detecta el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
+### B. Onboarding Dual
+- **Pasajero:** Enfoque en reserva ágil y seguridad.
+- **Conductor:** Enfoque operativo (Gestión de asientos, bloqueos manuales/ventas físicas y finanzas).
+- Activación única controlada por `SessionManager` post-instalación (Pasajero) y post-login (Conductor).
 
-### G. Gestión de Lanzamientos (Play Store)
-- **Keystore Oficial:** El archivo `key.jks` reside exclusivamente en el entorno estabilizado.
-- **Versionamiento:** Estándar `versionCode` incremental y `versionName` semántico.
-- **Regla de Rotación (7:00 PM):** Los horarios que ya han pasado durante el día se deshabilitan visualmente ("Finalizado"). A las 7:00 PM (19:00), se ejecuta un reset global (Cloud Function) que habilita todos los horarios nuevamente para el día siguiente.
-- **Integridad del Tiempo:** La `departureTime` debe persistirse atómicamente al crear la reserva para evitar errores de zona horaria.
+### C. Sistema de Turnos Inteligente
+- **Sanity Check:** El sistema detecta y filtra automáticamente "Conductores Fantasmas" (IDs huérfanos de pruebas previas) en la lista de horarios, marcándolos como "(Libre)".
+- **Resiliencia:** Si el nodo de disponibilidad no existe, el app lo crea bajo demanda basándose en la capacidad del bus asignado.
 
-## 5. Gestión del Proyecto (Git)
-Se debe seguir el estándar de **Conventional Commits** y los mensajes deben estar en **Español**.
+## 6. Seguridad y Reglas de Negocio (Firebase Rules)
+- **Horarios:** Escritura restringida al campo `conductorId` solo si el turno está vacío o pertenece al usuario autenticado.
+- **Vehículos:** El campo `driverId` es obligatorio y debe coincidir con el `auth.uid` del creador.
+- **Disponibilidad:** Solo el conductor asignado en el nodo de horarios puede modificar la capacidad total del bus.
+- **Sensibilidad:** Los nodos `/estadisticas/` y `/ingresos_conductores/` tienen privacidad total restringida al dueño del UID.
 
-## 6. Estructura Crítica de Base de Datos
-- `conductores/$uid`: Perfil profesional, referencia a vehículo y lista de `horariosAsignados`. (Nodo Segregado).
-- `vehiculos/$placa`: Datos técnicos, capacidad y referencia al `driverId`.
-- `horarios/`: Nodo maestro de turnos. Incluye `conductorId` dinámico para asignación en tiempo real.
-- `precios/$origen/$destino`: Nodo de tarifas dinámicas centralizadas.
-- `reservas/`: Nodo de transacciones activas. Incluye `departureTime` y `rated`.
-- `disponibilidadAsientos/$horarioId`: Control operativo sincronizado. Se autogestiona al registrar conductores.
-- `usuarios/$uid`: Exclusivo para Perfiles de Pasajeros.
+## 7. Estado Actual (v1.2.1 Stable - Gold Master)
+- **Estabilidad:** 100% de los flujos de carga infinita (Shimmer) resueltos mediante manejo de nulos y cache de ViewModels.
+- **Consistencia:** Unificación del idioma técnico (status/active para perfiles, estado/activo para hardware).
+- **Integridad:** Sincronización atómica entre el registro del conductor y la visibilidad para el pasajero.
 
-## 7. Estado Actual del Proyecto (v1.2.1 Stable - Gold Master)
-- **Arquitectura:** 100% MVVM reactiva. Segregación física de roles (Conductores vs Pasajeros) completada.
-- **Registro Autónomo:** Formulario Step-by-Step para conductores que automatiza Auth, Perfil, Vehículo y Agenda inicial.
-- **Inteligencia de Turnos:** Sistema de detección de disponibilidad en tiempo real (Libre/Ocupado) con Sanity Check contra IDs huérfanos.
-- **Onboarding Dual:** Guías especializadas tanto para pasajeros (bienvenida) como para conductores (capacitación operativa).
-- **UI Premium:** Sincronización milimétrica de Splash Screen, animaciones de entrada en tarjetas y soporte DayNight total.
-- **Blindaje Operativo:** Bloqueo de reservas en horarios sin conductores asignados. Reseteo atómico de capacidad al cambiar de chofer.
-- **Finanzas Dinámicas:** Tarifas controladas desde la nube y abreviación financiera (K, M, COP) en toda la UI.
-
-## 8. Siguientes Pasos (Roadmap)
-- **Hito 1:** Monitoreo de métricas en Play Console tras aprobación.
-- **Hito 2:** Implementar pasarela de pagos integrados.
-- **Hito 3:** Panel de analíticas avanzadas para administración.
+## 8. Siguientes Pasos
+- **Hito 1:** Implementación de pasarela de pagos integrados.
+- **Hito 2:** Panel de analíticas avanzado para la Central de Administradores.
+- **Hito 3:** Refinamiento de accesibilidad para visión bajo luz solar intensa.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*

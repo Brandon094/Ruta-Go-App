@@ -8,6 +8,13 @@ public class SessionManager {
     private static final String KEY_IS_FIRST_TIME = "is_first_time";
     private static final String KEY_IS_FIRST_TIME_DRIVER = "is_first_time_driver";
     
+    // Tutorial Keys
+    public static final String TUT_HOME = "tut_home";
+    public static final String TUT_SEATS = "tut_seats";
+    public static final String TUT_CONFIRM = "tut_confirm";
+    public static final String TUT_HISTORY = "tut_history";
+    public static final String TUT_PROFILE = "tut_profile";
+    
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
 
@@ -32,5 +39,16 @@ public class SessionManager {
 
     public boolean isFirstTimeDriver() {
         return pref.getBoolean(KEY_IS_FIRST_TIME_DRIVER, true);
+    }
+
+    // --- Logic for Interactive Tutorials ---
+    
+    public boolean shouldShowTutorial(String key) {
+        return pref.getBoolean(key, true);
+    }
+
+    public void markTutorialAsSeen(String key) {
+        editor.putBoolean(key, false);
+        editor.apply();
     }
 }
