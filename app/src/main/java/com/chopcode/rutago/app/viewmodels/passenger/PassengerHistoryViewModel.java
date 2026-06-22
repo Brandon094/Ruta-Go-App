@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.models.Reservation;
-import com.chopcode.rutago.app.services.reservations.ReservationService;
+import com.chopcode.rutago.app.services.reservations.common.ReservationService;
 
 import java.util.ArrayList;
 import java.util.List;

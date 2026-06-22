@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.adapters.historial;
+package com.chopcode.rutago.app.adapters.history;
 
 import android.util.Log;
 import android.view.LayoutInflater;

@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.managers.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -318,8 +319,8 @@ public class DriverReservationService {
                 if (snapshot.exists()) {
                     Reservation r = snapshot.getValue(Reservation.class);
                     if (r != null && r.getUserId() != null) {
-                        com.chopcode.rutago.app.managers.notificactions.NotificationManager nm = com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(context);
-                        com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback cb = new com.chopcode.rutago.app.managers.notificactions.NotificationManager.NotificationCallback() {
+                        NotificationManager nm = NotificationManager.getInstance(context);
+                        NotificationManager.NotificationCallback cb = new NotificationManager.NotificationCallback() {
                             @Override public void onSuccess() {}
                             @Override public void onError(String error) {}
                         };

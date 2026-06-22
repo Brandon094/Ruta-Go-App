@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.User;
-import com.chopcode.rutago.app.services.reservations.ReservationService;
+import com.chopcode.rutago.app.services.reservations.common.ReservationService;
 import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.services.prices.PriceService;
 import com.chopcode.rutago.app.R;

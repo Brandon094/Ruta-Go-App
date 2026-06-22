@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.notificactions;
+package com.chopcode.rutago.app.managers.notifications;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

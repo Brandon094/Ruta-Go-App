@@ -10,7 +10,7 @@ import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.user.UserService;
-import com.chopcode.rutago.app.services.reservations.VehicleService;
+import com.chopcode.rutago.app.services.reservations.common.VehicleService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

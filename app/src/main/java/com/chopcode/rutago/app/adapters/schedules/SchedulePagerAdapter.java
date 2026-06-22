@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.adapters.horarios;
+package com.chopcode.rutago.app.adapters.schedules;
 
 import android.util.Log;
 

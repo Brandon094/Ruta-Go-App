@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.services.reservations;
+package com.chopcode.rutago.app.services.reservations.common;
 
 import android.util.Log;
 import androidx.annotation.NonNull;

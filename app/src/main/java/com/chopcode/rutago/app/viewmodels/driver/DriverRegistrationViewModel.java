@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
+import com.chopcode.rutago.app.managers.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.services.auth.RegistrationService;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;

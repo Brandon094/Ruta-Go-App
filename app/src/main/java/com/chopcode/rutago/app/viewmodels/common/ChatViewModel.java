@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.chopcode.rutago.app.models.ChatMessage;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.services.chat.ChatService;
-import com.chopcode.rutago.app.services.reservations.ReservationService;
+import com.chopcode.rutago.app.services.reservations.common.ReservationService;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;

@@ -18,9 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.manager.ManageSeatsActivity;
-import com.chopcode.rutago.app.adapters.reservas.ReservationAdapter;
-import com.chopcode.rutago.app.adapters.rutas.RouteAdapter;
-import com.chopcode.rutago.app.adapters.rutas.SelectRouteAdapter;
+import com.chopcode.rutago.app.adapters.reservations.ReservationAdapter;
+import com.chopcode.rutago.app.adapters.routes.RouteAdapter;
+import com.chopcode.rutago.app.adapters.routes.SelectRouteAdapter;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
@@ -81,7 +81,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private AuthManager authManager;
     private ReservationAdapter reservationAdapter;
     private RouteAdapter routeAdapter;
-    private com.chopcode.rutago.app.adapters.rutas.RouteStatAdapter routeStatAdapter;
+    private com.chopcode.rutago.app.adapters.routes.RouteStatAdapter routeStatAdapter;
     private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
     private List<Reservation> reservationList = new ArrayList<>();
     private List<Route> routeList = new ArrayList<>();
@@ -384,7 +384,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         rvProximasRutas.setAdapter(routeAdapter);
 
         // Desglose dinámico por ruta
-        routeStatAdapter = new com.chopcode.rutago.app.adapters.rutas.RouteStatAdapter();
+        routeStatAdapter = new com.chopcode.rutago.app.adapters.routes.RouteStatAdapter();
         rvRouteBreakdown.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRouteBreakdown.setAdapter(routeStatAdapter);
     }

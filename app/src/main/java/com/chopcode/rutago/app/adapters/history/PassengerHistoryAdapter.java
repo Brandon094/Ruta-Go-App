@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.adapters.historial;
+package com.chopcode.rutago.app.adapters.history;
 
 import android.content.Intent;
 import android.util.Log;

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
-import com.chopcode.rutago.app.adapters.historial.PassengerHistoryAdapter;
+import com.chopcode.rutago.app.adapters.history.PassengerHistoryAdapter;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerHistoryViewModel;

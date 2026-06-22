@@ -3,6 +3,7 @@ package com.chopcode.rutago.app.services.chat;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.managers.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.ChatMessage;
 import com.google.firebase.database.*;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ChatService {
             // Disparar notificación push al receptor
             if (receiverId != null && !receiverId.isEmpty()) {
                 Log.d(TAG, "🔔 Notificando al receptor: " + receiverId);
-                com.chopcode.rutago.app.managers.notificactions.NotificationManager.getInstance(MyApp.getAppContext())
+                NotificationManager.getInstance(MyApp.getAppContext())
                         .notificarNuevoMensaje(receiverId, senderId, senderName, text, reservationId, null);
             }
         }).addOnFailureListener(e -> {

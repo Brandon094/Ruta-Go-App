@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.adapters.historial.DriverHistoryAdapter;
+import com.chopcode.rutago.app.adapters.history.DriverHistoryAdapter;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.viewmodels.driver.DriverHistoryViewModel;

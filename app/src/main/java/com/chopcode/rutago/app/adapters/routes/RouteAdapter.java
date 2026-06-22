@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.adapters.rutas;
+package com.chopcode.rutago.app.adapters.routes;
 
 import android.util.Log;
 import android.view.LayoutInflater;

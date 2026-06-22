@@ -7,7 +7,7 @@ import com.chopcode.rutago.app.services.user.UserService;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.storage.StorageService;
-import com.chopcode.rutago.app.services.reservations.VehicleService;
+import com.chopcode.rutago.app.services.reservations.common.VehicleService;
 import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.database.ValueEventListener;

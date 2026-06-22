@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.chopcode.rutago.app.R;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.chopcode.rutago.app.adapters.horarios.SchedulePagerAdapter;
+import com.chopcode.rutago.app.adapters.schedules.SchedulePagerAdapter;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.analytics.DashboardAnalyticsHelper;
 import com.chopcode.rutago.app.managers.dashboard.passenger.DashboardUIManager;

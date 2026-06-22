@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Schedule;
-import com.chopcode.rutago.app.services.reservations.ScheduleService;
+import com.chopcode.rutago.app.services.reservations.common.ScheduleService;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;

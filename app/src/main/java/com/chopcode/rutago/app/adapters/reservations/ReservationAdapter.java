@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.adapters.reservas;
+package com.chopcode.rutago.app.adapters.reservations;
 
 import android.util.Log;
 import android.view.LayoutInflater;

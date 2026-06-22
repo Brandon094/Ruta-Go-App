@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CreateReservationActivity;
-import com.chopcode.rutago.app.adapters.horarios.ScheduleAdapter;
+import com.chopcode.rutago.app.adapters.schedules.ScheduleAdapter;
 import com.chopcode.rutago.app.managers.auths.AuthManager;
 import com.chopcode.rutago.app.models.Schedule;
 import com.chopcode.rutago.app.models.User;
