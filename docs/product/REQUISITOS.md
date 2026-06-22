@@ -17,6 +17,7 @@ Este documento detalla los requisitos funcionales, no funcionales y las reglas d
 *   **RF-01:** El sistema permitirá el registro e inicio de sesión mediante correo/contraseña y Google One Tap.
 *   **RF-02:** El sistema debe identificar automáticamente el rol del usuario (Pasajero/Conductor) sin intervención manual.
 *   **RF-03:** Los datos de conductores y pasajeros deben estar físicamente segregados en la base de datos.
+*   **RF-17:** El sistema permitirá solicitar el borrado de cuenta con un periodo de gracia de 30 días antes de la eliminación definitiva.
 
 ### 2.2 Gestión de Conductores y Vehículos
 *   **RF-04:** Los conductores podrán realizar un registro autónomo incluyendo datos personales y técnicos del vehículo.

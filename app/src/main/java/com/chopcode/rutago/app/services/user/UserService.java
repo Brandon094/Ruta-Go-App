@@ -271,6 +271,17 @@ public class UserService {
                 .addOnSuccessListener(aVoid -> callback.onSuccess());
     }
 
+    /**
+     * Cancela una solicitud de borrado pendiente.
+     */
+    public void cancelAccountDeletion(String userId, UserUpdateCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("solicitudBorrado", false);
+        updates.put("fechaSolicitudBorrado", null);
+        MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess());
+    }
+
     public void checkIfUserIsDriver(String userId, DriverCheckCallback callback) {
         MyApp.getDatabaseReference("conductores/" + userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override public void onDataChange(@NonNull DataSnapshot snapshot) { callback.onDriverCheckComplete(snapshot.exists()); }

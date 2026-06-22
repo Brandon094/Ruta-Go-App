@@ -62,5 +62,23 @@ Este documento constituye la especificación técnica formal de la plataforma Ru
 *   **Conectividad:** Requerida para sincronización de datos y reservas.
 
 ---
+
+## 🔑 7. Gestión de APIs y Servicios Cloud
+La plataforma utiliza el ecosistema de Google Cloud Platform (GCP) mediante llaves de API restringidas:
+
+### 7.1 Google Maps Platform
+*   **Maps SDK for Android**: Renderizado de mapas de ruta.
+*   **Routes API**: Cálculo de trayectos entre Natagá y La Plata.
+*   **Places API**: Autocompletado de puntos de abordaje.
+
+### 7.2 Firebase Services
+*   **FCM API Key**: Gestión de notificaciones push.
+*   **Android Auth Key**: Autenticación y acceso a Realtime Database.
+*   **Service Account**: Credencial de alto privilegio (JSON) para envío de notificaciones V1 desde el `NotificationManager`.
+
+### 7.3 Inteligencia Artificial (Experimental)
+*   **Generative Language API (Gemini)**: Nodo preparado para futuras implementaciones de asistencia al usuario.
+
+---
 **© 2026 Chop Code Solutions - Todos los derechos reservados.**
 **Natagá - La Plata, Huila.**
