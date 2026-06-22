@@ -39,10 +39,10 @@ Ruta-Go está construido de forma modular para permitir el crecimiento escalable
 ## 🛠️ 4. Referencias Técnicas (Documentación Detallada)
 Para profundizar en cada área, consulte los siguientes manuales específicos:
 
-1.  [**Manual de Desarrollo**](./DEVELOPER_GUIDELINES.md): Estándares de código, stack tecnológico y "Reglas de Oro".
-2.  [**Arquitectura de Módulos**](./ARCHITECTURE_MODULES.md): Flujo de datos entre componentes e interfaces de comunicación.
-3.  [**Plan de Pruebas**](./RELEASE_TESTING_PLAN.md): Protocolo de QA para certificar la estabilidad de la versión.
-4.  [**Hoja de Ruta (Roadmap)**](./ROADMAP.md): Próximas funcionalidades (Pagos, Puntos Go, Encomiendas).
+1.  [**Manual de Desarrollo**](./technical/DEVELOPER_GUIDELINES.md): Estándares de código, stack tecnológico y "Reglas de Oro".
+2.  [**Arquitectura de Módulos**](./technical/ARCHITECTURE_MODULES.md): Flujo de datos entre componentes e interfaces de comunicación.
+3.  [**Plan de Pruebas**](./operations/RELEASE_TESTING_PLAN.md): Protocolo de QA para certificar la estabilidad de la versión.
+4.  [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Próximas funcionalidades (Pagos, Puntos Go, Encomiendas).
 
 ---
 

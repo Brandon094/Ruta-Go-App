@@ -42,14 +42,14 @@
 | Documento | Propósito |
 |:---|:---|
 | [**📖 Documentación Integral**](./docs/DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
-| [**🤖 Manual de Desarrollo**](./docs/DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
-| [**🎨 Identidad Visual**](./docs/BRANDING.md) | Paleta de colores, logos y tipografía oficial. |
-| [**📋 Requisitos del Sistema**](./docs/REQUISITOS.md) | Especificación de requisitos funcionales y reglas de negocio. |
-| [**📄 Ficha Técnica**](./docs/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
-| [**🗺️ Arquitectura de Módulos**](./docs/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
-| [**🏁 Plan de Pruebas**](./docs/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
-| [**📜 Historial de Cambios**](./docs/CHANGELOG.md) | Registro detallado de la evolución del software. |
-| [**🚀 Roadmap**](./docs/ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
+| [**🤖 Manual de Desarrollo**](./docs/technical/DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
+| [**🎨 Identidad Visual**](./docs/product/BRANDING.md) | Paleta de colores, logos y tipografía oficial. |
+| [**📋 Requisitos del Sistema**](./docs/product/REQUISITOS.md) | Especificación de requisitos funcionales y reglas de negocio. |
+| [**📄 Ficha Técnica**](./docs/technical/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
+| [**🗺️ Arquitectura de Módulos**](./docs/technical/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
+| [**🏁 Plan de Pruebas**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
+| [**📜 Historial de Cambios**](./docs/operations/CHANGELOG.md) | Registro detallado de la evolución del software. |
+| [**🚀 Roadmap**](./docs/product/ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
 
 ---
 
