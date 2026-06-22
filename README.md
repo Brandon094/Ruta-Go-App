@@ -46,6 +46,7 @@ Acceda a la documentación detallada dividida por dominios de especialidad:
 | 🏗️ **Técnico** | [**Arquitectura Detallada**](./docs/technical/ARCHITECTURE_MODULES.md) | Mapa de flujos, motores y patrones de diseño. |
 | 🤖 **Código** | [**Manual de Desarrollo**](./docs/technical/DEVELOPER_GUIDELINES.md) | Reglas de oro, Clean Code y estándares de ingeniería. |
 | 📋 **Producto** | [**Requisitos del Sistema**](./docs/product/REQUISITOS.md) | Especificación de RF, RNF y reglas de negocio. |
+| 🚀 **Crecimiento** | [**Plan de Marketing**](./docs/product/MARKETING_PLAN.md) | Estrategia de adquisición y retención local. |
 | 🎨 **Marca** | [**Identidad Visual**](./docs/product/BRANDING.md) | Branding, paleta de colores y lineamientos estéticos. |
 | 🏁 **Calidad** | [**Plan de Pruebas (QA)**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de certificación para lanzamientos. |
 | ⚙️ **Operativo** | [**Manual de Admin**](./docs/operations/MANUAL_ADMIN.md) | Guía de gestión operativa desde Firebase Console. |
