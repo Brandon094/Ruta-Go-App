@@ -1,46 +1,75 @@
-# Android Studio & Gradle
-.gradle/
-/build/
-!gradle/wrapper/gradle-wrapper.jar
-/captures/
-.externalNativeBuild/
-.cxx/
-local.properties
-.intellij
+# 🚀 Ruta-Go Gitignore - Clean Repo Standard
+
+# --- Android Studio & IntelliJ ---
 .idea/
 *.iml
-.DS_Store
-*.bak
-*.swp
-*.log
+*.iws
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/caches
+.idea/navEditor.xml
+.idea/deploymentTargetDropDown.xml
+.idea/render.experimental.xml
+.idea/gradle.xml
+out/
 
-# Firebase Functions
-node_modules/
-firebase_functions/node_modules/
-firebase_functions/firebase-debug.log
-firebase_functions/package-lock.json
+# --- Gradle & Build Artifacts ---
+.gradle/
+build/
+/build/
+app/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
 
-# Secrets & Keys
+# --- Local Configuration & Secrets ---
+local.properties
 secrets.properties
-*.pem
+secrets.xml
+google-services.json
+app/google-services.json
 *.jks
+*.keystore
 *.p12
 *.key
-google-services.json
-app/google-services.xml
+*.pem
 service-account.json
 app/src/main/assets/service-account.json
 
-# Firebase Config (Sensitive)
+# --- Firebase ---
+.firebase/
+firebase-debug.log*
 .firebaserc
+firestore-debug.log*
+ui-debug.log*
 
-# Project Specific Backups & Temporary Files
+# --- Node / Firebase Functions ---
+node_modules/
+functions/node_modules/
+firebase_functions/node_modules/
+package-lock.json
+npm-debug.log*
+
+# --- OS & System Junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*.swp
+*.tmp
+*~
+
+# --- Project Specific ---
 app_backup_refactored/
 *_backup.md
-.gitignore.git
 release/
 debug/
-
-# OS specific files
-Thumb.db
-desktop.ini
