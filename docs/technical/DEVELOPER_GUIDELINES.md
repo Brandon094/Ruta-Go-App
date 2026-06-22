@@ -41,7 +41,9 @@ Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable,
   - El Login debe detectar el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
 - **Atomicidad Operativa:** Uso de `updateChildren` para registros multi-nodo.
 - **Motores Especializados:** Lógica compleja desacoplada en el paquete `com.chopcode.rutago.app.engines`. Ejemplo: **Seat Engine** y **Reservation Engine**.
-- **Jerarquía de Managers:** Los auxiliares de UI deben organizarse en subcarpetas por módulo y funcionalidad (ej: `managers/reservations/creation/`).
+- **Jerarquía de Managers**: Los auxiliares se dividen por su naturaleza técnica:
+  - **Core**: Lógica de sistema desacoplada de la vista (`managers/core/`).
+  - **UI**: Controladores de flujo y ayuda visual (`managers/ui/`).
 
 ### C. UI/UX & Animaciones Premium
 - **Responsividad (8% Rule):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en todos los formularios para garantizar aire visual.

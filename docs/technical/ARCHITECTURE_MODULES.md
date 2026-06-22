@@ -11,7 +11,9 @@ La aplicación sigue el patrón **Model-View-ViewModel**, garantizando que la l�
 *   **ViewModel**: Gestiona el estado de la UI y se comunica con los Engines y Services.
 *   **Engine**: Lógica pesada, validaciones y procesamiento de datos desacoplado de la UI. (Ubicación: `app.engines`).
 *   **Service (Repository)**: Orquestadores de Firebase (Auth, Database, Storage). Organizados por dominio (Ubicación: `app.services`).
-*   **Manager**: Auxiliares de UI organizados por funcionalidad y etapa del flujo. (Ubicación: `app.managers`).
+*   **Manager**: Divididos por responsabilidad técnica:
+    *   **Core Managers**: Auxiliares de sistema (Analytics, Auth, Notifications, Permissions, Settings). (Ubicación: `app.managers.core`).
+    *   **UI Managers**: Auxiliares visuales y gestores de flujo (Dashboard, Reservations, Routes, Tutorials). (Ubicación: `app.managers.ui`).
 *   **Adapter**: Listas con nomenclatura estándar técnica en inglés. (Ubicación: `app.adapters`).
 *   **Model**: Clases POJO (User, Driver, Schedule, etc.) con mapeo dual.
 

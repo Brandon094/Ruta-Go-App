@@ -51,7 +51,7 @@ La plataforma se organiza siguiendo una arquitectura por capas para maximizar la
 
 *   **Engines**: Lógica de negocio pesada y validaciones transaccionales (Seats, Reservations).
 *   **Services**: Orquestadores de comunicación con Firebase, organizados por dominio.
-*   **Managers**: Auxiliares de UI y gestores de estado temporal, organizados jerárquicamente.
+*   **Managers**: Auxiliares organizados por responsabilidad (Core para sistema, UI para interfaz).
 *   **Adapters**: Controladores de listas con estandarización técnica en inglés.
 
 ### Estructura de Base de Datos (Firebase)

@@ -27,6 +27,7 @@
 ### **Frontend & Arquitectura**
 - **Lenguaje:** Java 17 (Toolchain Pro).
 - **Arquitectura:** **MVVM (Model-View-ViewModel)** robusto y reactivo.
+- **Motores (Engines):** Procesamiento de datos desacoplado para máxima eficiencia.
 - **UI/UX:** Material Components 3, animaciones de entrada premium y soporte **DayNight (Claro/Oscuro)** total.
 - **Tutorial Hub:** Sistema centralizado de guías interactivas para una curva de aprendizaje mínima.
 
