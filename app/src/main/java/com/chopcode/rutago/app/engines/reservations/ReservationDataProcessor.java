@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.reservations.dataprocessor;
+package com.chopcode.rutago.app.engines.reservations;
 
 import android.content.Intent;
 import android.util.Log;
@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class to process and prepare reservation data.
+ * 🛰️ Reservation Data Processor (Reservation Engine Component)
+ * 
+ * Procesa y valida los datos antes de pasar a la etapa de confirmación.
  */
 public class ReservationDataProcessor {
 
@@ -87,10 +89,9 @@ public class ReservationDataProcessor {
         intent.putExtra("usuarioTelefono", uPhone != null ? uPhone : "N/A");
         intent.putExtra("usuarioId", uId);
 
-        // ✅ CORRECCIÓN: Usar la flecha correcta (→) para separar origen y destino
         if (route != null) {
             String separator = " → "; 
-            if (!route.contains(separator)) separator = " -> "; // Fallback por si acaso
+            if (!route.contains(separator)) separator = " -> ";
             
             String[] parts = route.split(separator);
             if (parts.length == 2) {

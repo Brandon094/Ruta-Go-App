@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.reservations;
+package com.chopcode.rutago.app.managers.reservations.creation;
 
 import android.os.Bundle;
 
@@ -6,11 +6,10 @@ import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.ui.ExpandableSectionManager;
 
 /**
- * Manager para manejar el estado de la reserva (save/restore instance state)
+ * 💾 Reservation State Manager (Creation Flow)
  */
 public class ReservationStateManager {
 
-    // Keys for savedInstanceState
     private static final String KEY_ASIENTO_SELECCIONADO = "asientoSeleccionado";
     private static final String KEY_RUTA_SELECCIONADA = "rutaSeleccionada";
     private static final String KEY_CONDUCTOR_NOMBRE = "conductorNombre";
@@ -20,9 +19,6 @@ public class ReservationStateManager {
     private static final String KEY_USUARIO_TELEFONO = "usuarioTelefono";
     private static final String KEY_USUARIO_ID = "usuarioId";
 
-    /**
-     * Guarda el estado de la reserva en el Bundle
-     */
     public static void saveState(
             Bundle outState,
             SeatManager seatManager,
@@ -54,9 +50,6 @@ public class ReservationStateManager {
         if (usuarioId != null) outState.putString(KEY_USUARIO_ID, usuarioId);
     }
 
-    /**
-     * Restaura el estado desde el Bundle
-     */
     public static RestoredState restoreState(
             Bundle savedInstanceState,
             SeatManager seatManager,
@@ -89,9 +82,6 @@ public class ReservationStateManager {
         return restoredState;
     }
 
-    /**
-     * Clase para contener el estado restaurado
-     */
     public static class RestoredState {
         public Integer asientoSeleccionado;
         public String rutaSeleccionada;

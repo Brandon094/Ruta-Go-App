@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.reservations;
+package com.chopcode.rutago.app.managers.reservations.common;
 
 import android.util.Log;
 
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manager para cargar y manejar información del usuario en reservas
+ * 👤 Reservation User Manager (Common Utility)
  */
 public class ReservationUserManager {
 
@@ -20,13 +20,11 @@ public class ReservationUserManager {
     private final ReservationAnalyticsHelper analyticsHelper;
     private final UserService userService;
 
-    // Callback interface
     public interface UserDataCallback {
         void onUserDataLoaded(String usuarioId, String usuarioNombre, String usuarioTelefono);
         void onError(String error);
     }
 
-    // Data
     private String usuarioId;
     private String usuarioNombre;
     private String usuarioTelefono;
@@ -36,19 +34,11 @@ public class ReservationUserManager {
         this.userService = new UserService();
     }
 
-    /**
-     * Carga información del usuario autenticado
-     */
     public void loadAuthenticatedUser(UserDataCallback callback) {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) {
-            Log.e(TAG, "No se pudo obtener el ID del usuario");
-            analyticsHelper.logError("userid_null", "ID de usuario es null");
-
             establecerUserPorDefecto();
-            if (callback != null) {
-                callback.onUserDataLoaded(null, usuarioNombre, usuarioTelefono);
-            }
+            if (callback != null) callback.onUserDataLoaded(null, usuarioNombre, usuarioTelefono);
             return;
         }
 
@@ -63,85 +53,42 @@ public class ReservationUserManager {
                     usuarioNombre = usuario.getNombre();
                     usuarioTelefono = usuario.getTelefono();
                     usuarioId = usuario.getId();
-
                     analyticsHelper.logUserCargado(usuarioNombre, usuarioTelefono);
-                    Log.d(TAG, "User cargado: " + usuarioNombre);
-
-                    if (callback != null) {
-                        callback.onUserDataLoaded(usuarioId, usuarioNombre, usuarioTelefono);
-                    }
+                    if (callback != null) callback.onUserDataLoaded(usuarioId, usuarioNombre, usuarioTelefono);
                 } else {
-                    Log.e(TAG, "User es null");
-                    analyticsHelper.logError("usuario_null", "User es null");
-
                     establecerUserPorDefecto();
-                    if (callback != null) {
-                        callback.onUserDataLoaded(null, usuarioNombre, usuarioTelefono);
-                    }
+                    if (callback != null) callback.onUserDataLoaded(null, usuarioNombre, usuarioTelefono);
                 }
             }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "Error cargando usuario: " + errorMessage);
-                MyApp.logError(new Exception("Error cargando usuario: " + errorMessage));
-                analyticsHelper.logError("carga_usuario", errorMessage);
-
+            @Override public void onError(String errorMessage) {
                 establecerUserPorDefecto();
-                if (callback != null) {
-                    callback.onError(errorMessage);
-                }
+                if (callback != null) callback.onError(errorMessage);
             }
         });
     }
 
-    /**
-     * Establece valores por defecto para el usuario
-     */
     private void establecerUserPorDefecto() {
         usuarioNombre = "User";
         usuarioTelefono = "No disponible";
-
         Map<String, Object> params = new HashMap<>();
         params.put("accion", "usuario_por_defecto");
         analyticsHelper.logEvent("usuario_por_defecto", params);
-        Log.w(TAG, "Usando valores por defecto para el usuario");
     }
 
-    /**
-     * Verifica si los datos del usuario están disponibles
-     */
-    public boolean hasUserData() {
-        return usuarioId != null && usuarioNombre != null;
-    }
+    public boolean hasUserData() { return usuarioId != null && usuarioNombre != null; }
 
-    /**
-     * Actualiza datos del usuario desde intent
-     */
     public void updateFromIntent(String usuarioId, String usuarioNombre, String usuarioTelefono) {
         if (usuarioId != null) this.usuarioId = usuarioId;
         if (usuarioNombre != null) this.usuarioNombre = usuarioNombre;
         if (usuarioTelefono != null) this.usuarioTelefono = usuarioTelefono;
-
-        if (usuarioNombre != null && usuarioId != null) {
-            analyticsHelper.logUserCargado(usuarioNombre, usuarioTelefono);
-        }
+        if (usuarioNombre != null && usuarioId != null) analyticsHelper.logUserCargado(usuarioNombre, usuarioTelefono);
     }
 
-    // Getters
     public String getUserId() { return usuarioId; }
     public String getUserNombre() { return usuarioNombre; }
     public String getUserTelefono() { return usuarioTelefono; }
 
-    /**
-     * Obtiene un resumen del usuario para logging
-     */
     public String getUserSummary() {
-        return String.format(
-                "User: %s (ID: %s, Tel: %s)",
-                usuarioNombre != null ? usuarioNombre : "N/A",
-                usuarioId != null ? usuarioId : "N/A",
-                usuarioTelefono != null ? usuarioTelefono : "N/A"
-        );
+        return String.format("User: %s (ID: %s, Tel: %s)", usuarioNombre != null ? usuarioNombre : "N/A", usuarioId != null ? usuarioId : "N/A", usuarioTelefono != null ? usuarioTelefono : "N/A");
     }
 }

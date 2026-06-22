@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.reservations;
+package com.chopcode.rutago.app.managers.reservations.common;
 
 import android.content.Context;
 import android.util.Log;
@@ -16,11 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Manager to load and handle driver and vehicle information.
+ * 🚛 Driver Vehicle Manager (Common Utility)
  */
 public class DriverVehicleManager {
 

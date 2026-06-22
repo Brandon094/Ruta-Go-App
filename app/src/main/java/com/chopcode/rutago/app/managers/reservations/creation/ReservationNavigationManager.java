@@ -1,6 +1,5 @@
-package com.chopcode.rutago.app.managers.reservations;
+package com.chopcode.rutago.app.managers.reservations.creation;
 
-import android.app.AlertDialog;
 import android.content.Context;
 
 import com.chopcode.rutago.app.R;
@@ -11,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manager para manejar la navegación y diálogos de confirmación
+ * 🗺️ Reservation Navigation Manager (Creation Flow)
  */
 public class ReservationNavigationManager {
 
@@ -34,9 +33,6 @@ public class ReservationNavigationManager {
         this.seatManager = seatManager;
     }
 
-    /**
-     * Maneja la acción de volver atrás con confirmación si hay asiento seleccionado
-     */
     public void handleBackAction(NavigationCallback callback) {
         if (seatManager.hasAsientoSeleccionado()) {
             showCancelSeatDialog(callback);
@@ -48,9 +44,6 @@ public class ReservationNavigationManager {
         }
     }
 
-    /**
-     * Muestra diálogo de confirmación para cancelar selección de asiento
-     */
     private void showCancelSeatDialog(NavigationCallback callback) {
         Map<String, Object> params = new HashMap<>();
         params.put("asiento", seatManager.getAsientoSeleccionado());
@@ -75,18 +68,12 @@ public class ReservationNavigationManager {
                 .show();
     }
 
-    /**
-     * Log de navegación simple (sin asiento seleccionado)
-     */
     private void logSimpleNavigation() {
         Map<String, Object> params = new HashMap<>();
         params.put("accion", "navegacion_atras_simple");
         analyticsHelper.logEvent("navegacion_atras_simple", params);
     }
 
-    /**
-     * Log de botón back físico
-     */
     public void logPhysicalBackButton() {
         Map<String, Object> params = new HashMap<>();
         params.put("accion", "boton_back_fisico");

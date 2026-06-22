@@ -43,7 +43,16 @@ La aplicación sigue el patrón **Model-View-ViewModel**, garantizando que la l�
 *   **Componentes**:
     *   `SeatManager`: Controlador visual de la grilla de asientos en la UI.
     *   `SeatDataProcessor`: Procesador de persistencia atómica en Firebase.
-*   **Venta Física**: Permite al conductor bloquear asientos manualmente, actualizando las estadísticas financieras al instante.
+
+---
+
+## 🎫 9. Motor de Reservas (Reservation Engine)
+**Propósito**: Orquestar la validación y preparación de datos transaccionales.
+
+*   **Ubicación**: `com.chopcode.rutago.app.engines.reservations`
+*   **Componentes**:
+    *   `ReservationDataProcessor`: Validador y preparador de datos para el flujo de confirmación.
+*   **Estructura de Managers**: Los auxiliares de UI ahora se organizan por etapa (`creation`, `confirmation`, `common`).
 
 ---
 
