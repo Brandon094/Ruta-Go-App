@@ -1,4 +1,4 @@
-# 🗺️ Arquitectura de Módulos - Ruta-Go v1.2.1 Stable
+# 🗺️ Arquitectura de Módulos - Ruta-Go v1.2.3 Stable
 
 Este documento describe la interacción entre los componentes de la aplicación, el flujo de datos y las interfaces de comunicación que sostienen la plataforma.
 

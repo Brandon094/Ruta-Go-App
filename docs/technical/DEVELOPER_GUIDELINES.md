@@ -74,7 +74,7 @@ Proceso Step-by-Step que automatiza:
 - **Vehículos:** El campo `driverId` es obligatorio y debe coincidir con el `auth.uid`.
 - **Privacidad:** Los nodos `/estadisticas/` e `/ingresos_conductores/` tienen acceso restringido al dueño del UID.
 
-## 7. Estado Actual (v1.2.1 Stable - Gold Master)
+## 7. Estado Actual (v1.2.3 Stable - Gold Master)
 - **Estabilidad:** 100% de los flujos de carga infinita (Shimmer) resueltos mediante reactividad y manejo de nulos.
 - **Integridad:** Sincronización atómica entre el registro del conductor y la visibilidad para el pasajero.
 

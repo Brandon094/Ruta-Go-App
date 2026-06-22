@@ -1,4 +1,4 @@
-# 📖 Documentación Integral - Proyecto Ruta-Go v1.2.1 Stable
+# 📖 Documentación Integral - Proyecto Ruta-Go v1.2.3 Stable
 
 Bienvenido a la documentación oficial de **Ruta-Go**, la plataforma líder en optimización de transporte intermunicipal para la región de Natagá y La Plata. Este documento centraliza toda la información estratégica, operativa y técnica del ecosistema.
 
@@ -68,7 +68,7 @@ El sistema implementa **Firebase Security Rules** avanzadas que garantizan:
 
 ## 🚀 7. Guía de Inicio Rápido para Despliegue
 1.  Configurar `google-services.json` en la carpeta `/app`.
-2.  Importar el **JSON Maestro v1.2.1** en Realtime Database.
+2.  Importar el **JSON Maestro v1.2.3** en Realtime Database.
 3.  Validar la carga inicial de horarios y precios dinámicos.
 4.  Firmar el bundle usando la `key.jks` oficial de Chop Code Solutions.
 
