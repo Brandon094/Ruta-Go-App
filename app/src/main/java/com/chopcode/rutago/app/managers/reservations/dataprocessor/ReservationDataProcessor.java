@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.chopcode.rutago.app.activities.passenger.reservation.confirmReservation.ConfirmReservationActivity;
+import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.seats.SeatManager;
 
 import java.util.HashMap;
 import java.util.Map;

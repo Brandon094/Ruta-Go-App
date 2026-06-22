@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 
 import com.chopcode.rutago.app.R;
+import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.seats.SeatManager;
 
 import java.util.HashMap;
 import java.util.Map;

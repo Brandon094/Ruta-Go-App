@@ -10,7 +10,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.user.UserService;
-import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
 import com.chopcode.rutago.app.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,11 +24,6 @@ import java.util.Map;
  * 📝 Edit Driver Profile ViewModel
  * 
  * Gestiona el proceso masivo de actualización de perfil y vehículo.
- * Responsabilidades:
- * - Cargar datos actuales del conductor y su vehículo en paralelo.
- * - Ejecutar actualizaciones atómicas en los nodos /conductores/ y /vehiculos/.
- * - Disparar la sincronización de capacidad técnica hacia los horarios operativos (syncVehicleCapacityToSchedules).
- * - Garantizar la integridad de datos entre las pestañas de edición.
  */
 public class EditDriverProfileViewModel extends ViewModel {
     private static final String TAG = "EditDriverProfileVM";
@@ -38,10 +33,10 @@ public class EditDriverProfileViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
-    private final SeatsDataProcessor seatsDataProcessor;
+    private final SeatDataProcessor seatsDataProcessor;
 
     public EditDriverProfileViewModel() {
-        this.seatsDataProcessor = new SeatsDataProcessor();
+        this.seatsDataProcessor = new SeatDataProcessor();
     }
 
     public LiveData<Driver> getConductorData() { return driverData; }
@@ -134,7 +129,6 @@ public class EditDriverProfileViewModel extends ViewModel {
             driver.setVehicleId(vehicle.getId());
             driver.setVehiclePlate(vehicle.getPlate());
             
-            // Sync capacity to schedules
             if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty()) {
                 seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), vehicle.getCapacity());
             }

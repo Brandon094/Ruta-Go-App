@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.R;
 import com.google.firebase.database.DataSnapshot;
@@ -22,11 +22,6 @@ import java.util.Set;
  * 💺 Manage Seats ViewModel (Driver)
  * 
  * Motor de lógica para la gestión técnica de asientos de un viaje.
- * Responsabilidades:
- * - Escuchar simultáneamente las reservas de la App y el estado de disponibilidad en Firebase.
- * - Diferenciar visualmente los tipos de ocupación para el conductor.
- * - Procesar bloqueos manuales (Venta física) y liberaciones.
- * - Exponer la capacidad total dinámica basada en la sincronización del vehículo.
  */
 public class ManageSeatsViewModel extends ViewModel {
     private static final String TAG = "ManageSeatsViewModel";
@@ -38,7 +33,7 @@ public class ManageSeatsViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
-    private final SeatsDataProcessor seatsDataProcessor;
+    private final SeatDataProcessor seatsDataProcessor;
     private final com.chopcode.rutago.app.services.reservations.driver.DriverReservationService driverReservationService;
     private final com.chopcode.rutago.app.services.prices.PriceService priceService;
     private ValueEventListener seatsListener;
@@ -48,17 +43,13 @@ public class ManageSeatsViewModel extends ViewModel {
     private double routePrice = com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE;
 
     public ManageSeatsViewModel() {
-        this.seatsDataProcessor = new SeatsDataProcessor();
+        this.seatsDataProcessor = new SeatDataProcessor();
         this.driverReservationService = new com.chopcode.rutago.app.services.reservations.driver.DriverReservationService();
         this.priceService = new com.chopcode.rutago.app.services.prices.PriceService();
     }
 
-    /**
-     * 🔥 Carga el precio oficial de la ruta desde Firebase para garantizar consistencia.
-     */
     public void fetchRoutePrice(String routeName) {
         if (routeName == null || !routeName.contains("->")) return;
-        
         String[] parts = routeName.split("->");
         if (parts.length == 2) {
             String origin = parts[0].trim();
@@ -67,21 +58,14 @@ public class ManageSeatsViewModel extends ViewModel {
                 @Override
                 public void onPriceLoaded(double price) {
                     routePrice = price;
-                    Log.d(TAG, "💰 Precio de ruta actualizado desde Firebase: " + price);
+                    Log.d(TAG, "💰 Precio de ruta actualizado: " + price);
                 }
-
-                @Override
-                public void onError(String errorMsg) {
-                    Log.e(TAG, "❌ Error al cargar precio: " + errorMsg);
-                }
+                @Override public void onError(String errorMsg) { Log.e(TAG, "Error: " + errorMsg); }
             });
         }
     }
 
-    public void setRoutePrice(double price) {
-        this.routePrice = price;
-    }
-
+    public void setRoutePrice(double price) { this.routePrice = price; }
     public LiveData<Set<Integer>> getAppOccupiedSeats() { return appOccupiedSeats; }
     public LiveData<Set<Integer>> getPhysicalOccupiedSeats() { return physicalOccupiedSeats; }
     public LiveData<Integer> getAvailableCount() { return availableCount; }
@@ -128,10 +112,8 @@ public class ManageSeatsViewModel extends ViewModel {
                 if (snapshot.exists()) {
                     Integer disp = snapshot.child("asientosDisponibles").getValue(Integer.class);
                     Integer total = snapshot.child("totalAsientos").getValue(Integer.class);
-                    
                     availableCount.postValue(disp != null ? disp : 0);
                     if (total != null && total > 0) totalCapacity.postValue(total);
-
                     Set<Integer> allOccupied = new HashSet<>();
                     for (DataSnapshot s : snapshot.child("asientosOcupados").getChildren()) {
                         if (Boolean.TRUE.equals(s.getValue(Boolean.class))) {
@@ -159,13 +141,10 @@ public class ManageSeatsViewModel extends ViewModel {
 
     public void reservePhysical(int seatNumber) {
         if (currentScheduleId == null) return;
-        seatsDataProcessor.reserveSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
+        seatsDataProcessor.reserveSeat(currentScheduleId, seatNumber, new SeatDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() {
-                // 🔥 Registrar la venta física en las estadísticas diarias del conductor
                 String driverId = MyApp.getCurrentUserId();
-                if (driverId != null) {
-                    driverReservationService.registrarVentaEnEstadisticas(driverId, routePrice);
-                }
+                if (driverId != null) driverReservationService.registrarVentaEnEstadisticas(driverId, routePrice);
             }
             @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_reserva_puesto, msg)); }
         });
@@ -173,13 +152,10 @@ public class ManageSeatsViewModel extends ViewModel {
 
     public void freePhysical(int seatNumber) {
         if (currentScheduleId == null) return;
-        seatsDataProcessor.freeSeat(currentScheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
+        seatsDataProcessor.freeSeat(currentScheduleId, seatNumber, new SeatDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() {
-                // 🔥 Revertir la venta física de las estadísticas diarias del conductor
                 String driverId = MyApp.getCurrentUserId();
-                if (driverId != null) {
-                    driverReservationService.removerVentaDeEstadisticas(driverId, routePrice);
-                }
+                if (driverId != null) driverReservationService.removerVentaDeEstadisticas(driverId, routePrice);
             }
             @Override public void onError(String msg) { error.postValue(MyApp.getAppContext().getString(R.string.error_liberacion_puesto, msg)); }
         });

@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
+import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.seats.SeatManager;
 import com.chopcode.rutago.app.viewmodels.driver.ManageSeatsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;

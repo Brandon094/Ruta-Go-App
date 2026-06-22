@@ -2,7 +2,7 @@ package com.chopcode.rutago.app.managers.reservations;
 
 import android.os.Bundle;
 
-import com.chopcode.rutago.app.managers.seats.SeatManager;
+import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.ui.ExpandableSectionManager;
 
 /**

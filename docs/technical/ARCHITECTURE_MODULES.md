@@ -36,10 +36,13 @@ La aplicación sigue el patrón **Model-View-ViewModel**, garantizando que la l�
 
 ---
 
-## 💺 4. Módulo de Reservas y Gestión de Asientos (Seat-Engine)
+## 💺 4. Motor de Selección de Asientos (Seat Engine)
 **Propósito**: Control de ocupación en tiempo real y ventas físicas.
 
-*   **Componente Central**: `SeatManager` (Controlador visual de la grilla).
+*   **Ubicación**: `com.chopcode.rutago.app.engines.seats`
+*   **Componentes**:
+    *   `SeatManager`: Controlador visual de la grilla de asientos en la UI.
+    *   `SeatDataProcessor`: Procesador de persistencia atómica en Firebase.
 *   **Venta Física**: Permite al conductor bloquear asientos manualmente, actualizando las estadísticas financieras al instante.
 
 ---

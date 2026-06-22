@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
 import com.chopcode.rutago.app.managers.notificactions.NotificationManager;
-import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
 import com.chopcode.rutago.app.models.Reservation;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
@@ -20,18 +20,13 @@ import java.util.*;
  * 🎫 Reservation Service (Passenger Focus)
  * 
  * Gestiona el ciclo de vida de una reserva desde la creación hasta la consulta de historial.
- * Funcionalidades clave:
- * - Validar disponibilidad de asientos en tiempo real.
- * - Registrar nuevas reservas vinculando datos de pasajero, conductor y vehículo.
- * - Notificar automáticamente al conductor sobre nuevas reservas recibidas.
- * - Recuperar el historial de viajes del pasajero.
  */
 public class ReservationService {
 
     private static final String TAG = "ReservationService";
 
     private DatabaseReference databaseReference;
-    private SeatsDataProcessor seatsDataManager;
+    private SeatDataProcessor seatsDataManager;
 
     public interface ReservationCallback {
         void onSuccess();
@@ -60,7 +55,7 @@ public class ReservationService {
 
     public ReservationService() {
         this.databaseReference = MyApp.getDatabaseReference("");
-        this.seatsDataManager = new SeatsDataProcessor();
+        this.seatsDataManager = new SeatDataProcessor();
     }
 
     public void updateSeatAvailability(Context context, String scheduleId, int selectedSeat,
@@ -72,7 +67,7 @@ public class ReservationService {
                                                  ReservationCallback callback) {
 
         seatsDataManager.checkSeatAvailability(scheduleId, selectedSeat,
-                new SeatsDataProcessor.SeatAvailabilityCallback(){
+                new SeatDataProcessor.SeatAvailabilityCallback(){
                     @Override
                     public void onSeatAvailable(boolean available) {
                         if (!available) {
@@ -106,7 +101,7 @@ public class ReservationService {
                 String email = String.valueOf(snapshot.child("email").getValue());
 
                 seatsDataManager.reserveSeat(scheduleId, selectedSeat,
-                        new SeatsDataProcessor.SeatReservationCallback() {
+                        new SeatDataProcessor.SeatReservationCallback() {
                             @Override
                             public void onSuccess() {
                                 registerReservation(context, uid, name, phone, email, scheduleId, selectedSeat,
@@ -121,7 +116,7 @@ public class ReservationService {
     }
 
     public void freeReservedSeat(String scheduleId, int seatNumber, ReservationUpdateCallback callback) {
-        seatsDataManager.freeSeat(scheduleId, seatNumber, new SeatsDataProcessor.SeatReservationCallback() {
+        seatsDataManager.freeSeat(scheduleId, seatNumber, new SeatDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() { if (callback != null) callback.onSuccess(); }
             @Override public void onError(String error) { if (callback != null) callback.onError(error); }
         });
@@ -147,7 +142,6 @@ public class ReservationService {
             if (context != null) {
                 Toast.makeText(context, R.string.reserva_exitosa, Toast.LENGTH_SHORT).show();
             }
-            // Enviar notificación al conductor directamente usando su driverId
             if (driverId != null && !driverId.isEmpty()) {
                 NotificationManager.getInstance(context != null ? context : MyApp.getAppContext())
                         .notificarNuevaReservaAlConductor(driverId, name, origin + " -> " + destination, "Today", selectedSeat, price, paymentMethod, new NotificationManager.NotificationCallback() {
@@ -164,9 +158,6 @@ public class ReservationService {
             callback.onError(e.getMessage());
         });
     }
-
-    // Eliminamos el método notifyDriver antiguo que era ineficiente y no funcionaba bien
-    // ... rest of the code ...
 
     public void loadDriverReservations(String driverId, String status, ReservationsCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
@@ -210,9 +201,6 @@ public class ReservationService {
                 });
     }
 
-    /**
-     * Obtiene una reserva específica por su ID.
-     */
     public void getReservationById(String reservationId, @NonNull HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + reservationId);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -232,10 +220,6 @@ public class ReservationService {
         });
     }
 
-    /**
-     * ⚡ Escucha reactiva del historial de un pasajero con límite de seguridad.
-     * Trae solo las últimas 50 reservas para optimizar memoria.
-     */
     public ValueEventListener listenPassengerHistory(String passengerId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
         ValueEventListener listener = new ValueEventListener() {
@@ -250,18 +234,13 @@ public class ReservationService {
                     }
                 }
                 Collections.sort(list, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
-                
-                // Aplicar límite de UI: Solo las últimas 50
                 if (list.size() > 50) {
                     list = list.subList(0, 50);
                 }
-                
                 callback.onHistoryLoaded(list);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         };
-        
-        // Optimizamos la consulta de Firebase para que no procese toda la tabla
         ref.orderByChild("userId").equalTo(passengerId).limitToLast(100).addValueEventListener(listener);
         return listener;
     }

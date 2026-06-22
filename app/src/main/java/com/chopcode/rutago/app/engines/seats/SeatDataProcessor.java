@@ -1,4 +1,4 @@
-package com.chopcode.rutago.app.managers.seats.dataprocessor;
+package com.chopcode.rutago.app.engines.seats;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -8,11 +8,13 @@ import com.google.firebase.database.*;
 import java.util.*;
 
 /**
- * Manager dedicado a manejar la lógica de base de datos de los asientos.
- * Ahora soporta capacidad dinámica vinculada al vehículo.
+ * 🛰️ Seat Data Processor (Seat Engine Core)
+ * 
+ * Gestiona la persistencia y sincronización de asientos en Firebase.
+ * Parte integral del motor de selección de asientos.
  */
-public class SeatsDataProcessor {
-    private static final String TAG = "SeatsDataManager";
+public class SeatDataProcessor {
+    private static final String TAG = "SeatDataProcessor";
     private final DatabaseReference databaseReference;
 
     public interface SeatsDataCallback {
@@ -30,9 +32,9 @@ public class SeatsDataProcessor {
         void onError(String error);
     }
 
-    public SeatsDataProcessor() {
+    public SeatDataProcessor() {
         this.databaseReference = MyApp.getDatabaseReference("");
-        Log.d(TAG, "✅ SeatsDataManager inicializado");
+        Log.d(TAG, "🚀 SeatDataProcessor inicializado");
     }
 
     public void loadSeatsDataForSchedule(String horarioId, SeatsDataCallback callback) {
@@ -92,7 +94,6 @@ public class SeatsDataProcessor {
 
     /**
      * 🛡️ Reserva un asiento de forma atómica usando runTransaction.
-     * Garantiza que dos personas no puedan reservar el mismo asiento simultáneamente.
      */
     public void reserveSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
@@ -101,16 +102,13 @@ public class SeatsDataProcessor {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                // Verificar si el asiento ya está ocupado
                 MutableData occupiedRef = currentData.child("asientosOcupados").child(String.valueOf(seatNumber));
                 if (Boolean.TRUE.equals(occupiedRef.getValue(Boolean.class))) {
-                    return Transaction.abort(); // Abortar si ya está ocupado
+                    return Transaction.abort();
                 }
 
-                // Marcar asiento como ocupado
                 occupiedRef.setValue(true);
 
-                // Decrementar el contador de asientos disponibles
                 Integer available = currentData.child("asientosDisponibles").getValue(Integer.class);
                 if (available != null) {
                     currentData.child("asientosDisponibles").setValue(Math.max(0, available - 1));
@@ -122,11 +120,10 @@ public class SeatsDataProcessor {
             @Override
             public void onComplete(DatabaseError error, boolean committed, DataSnapshot currentData) {
                 if (committed) {
-                    Log.d(TAG, "✅ Asiento " + seatNumber + " reservado con éxito (Transaction)");
+                    Log.d(TAG, "✅ Asiento " + seatNumber + " reservado con éxito");
                     callback.onSuccess();
                 } else {
                     String errorMsg = (error != null) ? error.getMessage() : "Seat already occupied";
-                    Log.e(TAG, "❌ Fallo al reservar asiento " + seatNumber + ": " + errorMsg);
                     callback.onError(errorMsg);
                 }
             }
@@ -143,16 +140,13 @@ public class SeatsDataProcessor {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-                // Verificar si el asiento está realmente ocupado antes de liberar
                 MutableData occupiedRef = currentData.child("asientosOcupados").child(String.valueOf(seatNumber));
                 if (!Boolean.TRUE.equals(occupiedRef.getValue(Boolean.class))) {
-                    return Transaction.success(currentData); // Ya está libre
+                    return Transaction.success(currentData);
                 }
 
-                // Liberar asiento (marcar como libre)
                 occupiedRef.setValue(false);
 
-                // Incrementar contador de disponibles
                 Integer available = currentData.child("asientosDisponibles").getValue(Integer.class);
                 Integer total = currentData.child("totalAsientos").getValue(Integer.class);
                 if (total == null) total = 13;
@@ -177,12 +171,11 @@ public class SeatsDataProcessor {
     }
 
     /**
-     * 🔥 NUEVO: Sincroniza la capacidad del vehículo con los horarios asignados.
+     * 🔥 Sincroniza la capacidad del vehículo con los horarios asignados.
      */
     public void syncVehicleCapacityToSchedules(List<String> schedules, int capacity) {
         if (schedules == null || schedules.isEmpty() || capacity <= 0) return;
         
-        Log.d(TAG, "Syncing capacity " + capacity + " to schedules: " + schedules);
         DatabaseReference dispRef = databaseReference.child("disponibilidadAsientos");
         
         for (String hId : schedules) {

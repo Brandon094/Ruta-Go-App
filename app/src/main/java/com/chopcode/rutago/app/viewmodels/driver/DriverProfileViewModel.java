@@ -8,7 +8,7 @@ import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.storage.StorageService;
 import com.chopcode.rutago.app.services.reservations.VehicleService;
-import com.chopcode.rutago.app.managers.seats.dataprocessor.SeatsDataProcessor;
+import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
 import com.chopcode.rutago.app.config.MyApp;
 import com.google.firebase.database.ValueEventListener;
 
@@ -27,7 +27,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final UserService userService;
     private final StorageService storageService;
     private final VehicleService vehicleService;
-    private final SeatsDataProcessor seatsDataProcessor;
+    private final SeatDataProcessor seatsDataProcessor;
 
     private final MutableLiveData<String> driverNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> vehiclePlateLiveData = new MutableLiveData<>();
@@ -46,7 +46,7 @@ public class DriverProfileViewModel extends BaseViewModel {
         this.userService = new UserService();
         this.storageService = new StorageService();
         this.vehicleService = new VehicleService();
-        this.seatsDataProcessor = new SeatsDataProcessor();
+        this.seatsDataProcessor = new SeatDataProcessor();
     }
 
     public MutableLiveData<String> getConductorNombreLiveData() { return driverNameLiveData; }
@@ -57,9 +57,6 @@ public class DriverProfileViewModel extends BaseViewModel {
     public MutableLiveData<Vehicle> getVehiculoLiveData() { return vehicleLiveData; }
     public MutableLiveData<String> getPhotoUploadStatus() { return photoUploadStatus; }
 
-    /**
-     * Sube una foto a Storage y actualiza la referencia en la DB del conductor.
-     */
     public void subirFotoPerfil(android.net.Uri uri) {
         if (currentDriverUID == null) return;
         photoUploadStatus.setValue("Uploading...");
@@ -70,7 +67,6 @@ public class DriverProfileViewModel extends BaseViewModel {
                     @Override
                     public void onSuccess() {
                         photoUploadStatus.postValue("Updated");
-                        // La actualización reactiva se encargará del resto mediante el listener
                     }
                     @Override public void onError(String error) { setError(error); }
                 });
@@ -83,9 +79,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     public void cargarDatosCompletos(String driverUID) {
         if (driverUID == null || driverUID.isEmpty()) return;
 
-        // 🔥 REACTIVIDAD: Si ya estamos escuchando a este ID, no duplicar el listener
         if (driverUID.equals(currentDriverUID) && driverListener != null) {
-            // Asegurar que el shimmer se detenga si ya hay datos
             if (driverLiveData.getValue() != null) {
                 setLoading(false);
             }
@@ -113,7 +107,6 @@ public class DriverProfileViewModel extends BaseViewModel {
                 assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
                 driverLiveData.postValue(driver);
 
-                // Sincronizar capacidad si hay cambios
                 if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
                     seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
                 }
@@ -123,10 +116,7 @@ public class DriverProfileViewModel extends BaseViewModel {
                 }
                 setLoading(false);
             }
-            @Override public void onError(String error) { 
-                setError(error); 
-                setLoading(false); 
-            }
+            @Override public void onError(String error) { setError(error); setLoading(false); }
         });
     }
 

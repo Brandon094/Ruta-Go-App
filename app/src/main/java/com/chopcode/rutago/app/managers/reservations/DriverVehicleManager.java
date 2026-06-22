@@ -5,8 +5,8 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.engines.seats.SeatManager;
 import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.seats.SeatManager;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.services.user.UserService;

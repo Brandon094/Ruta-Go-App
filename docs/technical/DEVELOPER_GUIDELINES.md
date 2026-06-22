@@ -39,6 +39,7 @@ Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable,
   - Conductores residen en `/conductores/` y `/vehiculos/`.
   - El Login debe detectar el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
 - **Atomicidad Operativa:** Uso de `updateChildren` para registros multi-nodo.
+- **Motores Especializados:** Lógica compleja desacoplada en el paquete `com.chopcode.rutago.app.engines`. Ejemplo: **Seat Engine** para gestión técnica de asientos.
 
 ### C. UI/UX & Animaciones Premium
 - **Responsividad (8% Rule):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en todos los formularios para garantizar aire visual.
