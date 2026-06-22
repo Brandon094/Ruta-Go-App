@@ -49,6 +49,7 @@ Acceda a la documentación detallada dividida por dominios de especialidad:
 | 🤖 **Código** | [**Manual de Desarrollo**](./docs/technical/DEVELOPER_GUIDELINES.md) | Reglas de oro, Clean Code y estándares de ingeniería. |
 | 📋 **Producto** | [**Requisitos del Sistema**](./docs/product/REQUISITOS.md) | Especificación de RF, RNF y reglas de negocio. |
 | 🚀 **Crecimiento** | [**Plan de Marketing**](./docs/product/MARKETING_PLAN.md) | Estrategia de adquisición y retención local. |
+| 🌐 **Web Hub** | [**Portal Ecosistema**](./docs/product/GO_WEB_HUB.md) | Especificaciones del hub central en Firebase Hosting. |
 | 🎨 **Marca** | [**Identidad Visual**](./docs/product/BRANDING.md) | Branding, paleta de colores y lineamientos estéticos. |
 | 🏁 **Calidad** | [**Plan de Pruebas (QA)**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de certificación para lanzamientos. |
 | ⚙️ **Operativo** | [**Manual de Admin**](./docs/operations/MANUAL_ADMIN.md) | Guía de gestión operativa desde Firebase Console. |

@@ -16,8 +16,9 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *Objetivo: Cerrar el ciclo transaccional y mejorar la accesibilidad.*
 
 1.  **💳 Pasarela de Pagos Integrada**: Integración con PSE, Nequi y Daviplata para automatizar el flujo de dinero.
-2.  **♿ Accesibilidad**: Modo de alto contraste y fuentes optimizadas para visión bajo luz solar.
-3.  **📊 Panel Administrativo**: Gestión de flotas y reportes contables masivos para la central.
+2.  **🌐 Go Suite Web Hub**: Creación del portal central del ecosistema (Firebase Hosting) para información legal, términos de uso de la suite y presentación de ChopCode Solutions.
+3.  **♿ Accesibilidad**: Modo de alto contraste y fuentes optimizadas para visión bajo luz solar.
+4.  **📊 Panel Administrativo**: Gestión de flotas y reportes contables masivos para la central.
 
 ---
 

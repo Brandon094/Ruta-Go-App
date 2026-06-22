@@ -8,9 +8,11 @@ Este documento define la arquitectura unificada, el modelo de negocio y la ruta 
 El objetivo es crear una "SuperApp" rural descentralizada, conectando tres plataformas bajo un mismo motor en la nube para garantizar una experiencia de usuario sin fricciones.
 
 *   **Identidad Única (Firebase Auth):** Un solo proyecto raíz en Firebase. El usuario crea su cuenta una vez y su `UID` le sirve como "pasaporte" para usar RutaGo, AgroGo y CargoGo sin registros adicionales.
+*   **Web Hub Central (Ecosistema Go Online):** Una plataforma web unificada (go-suite.web.app) que centraliza la información legal, soporte técnico y presentación corporativa de ChopCode Solutions.
 *   **Arquitectura de Datos Híbrida:**
     *   `Realtime Database`: Exclusiva para **RutaGo** (gestión de asientos y turnos en milisegundos).
     *   `Cloud Firestore`: Exclusiva para **AgroGo** y **CargoGo** (consultas complejas de lotes, animales y subastas logísticas).
+    *   `Firebase Hosting`: Despliegue de la suite web y la plataforma interactiva de **CargoGo**.
 
 ---
 
