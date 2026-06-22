@@ -3,7 +3,7 @@ package com.chopcode.rutago.app.viewmodels.common;
 import android.app.Activity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
 
 /**

@@ -5,7 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.notifications.NotificationManager;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

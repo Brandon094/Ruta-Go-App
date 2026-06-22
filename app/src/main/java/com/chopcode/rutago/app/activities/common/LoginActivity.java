@@ -1,6 +1,6 @@
 package com.chopcode.rutago.app.activities.common;
 
-import static com.chopcode.rutago.app.managers.permissions.PermissionManager.requestNotificationPermission;
+import static com.chopcode.rutago.app.managers.core.permissions.PermissionManager.requestNotificationPermission;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +32,7 @@ import com.chopcode.rutago.app.activities.driver.DriverHomeActivity;
 import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CreateReservationActivity;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.permissions.PermissionManager;
+import com.chopcode.rutago.app.managers.core.permissions.PermissionManager;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;

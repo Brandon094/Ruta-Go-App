@@ -16,7 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
@@ -49,7 +49,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private View headerContent;
     private ShimmerFrameLayout shimmerHeader, shimmerCard, shimmerPremium;
     private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     // ViewModel and Managers
     private UserProfileViewModel viewModel;
@@ -74,7 +74,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
 
         viewModel = new ViewModelProvider(this).get(UserProfileViewModel.class);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         inicializarVistas();
         setupObservers();

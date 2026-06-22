@@ -1,6 +1,6 @@
 package com.chopcode.rutago.app.viewmodels.driver;
 
-import com.chopcode.rutago.app.managers.routes.RouteManager;
+import com.chopcode.rutago.app.managers.ui.routes.RouteManager;
 import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.viewmodels.BaseViewModel;
 

@@ -16,8 +16,8 @@ import com.chopcode.rutago.app.R;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.chopcode.rutago.app.adapters.schedules.SchedulePagerAdapter;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.analytics.DashboardAnalyticsHelper;
-import com.chopcode.rutago.app.managers.dashboard.passenger.DashboardUIManager;
+import com.chopcode.rutago.app.managers.core.analytics.DashboardAnalyticsHelper;
+import com.chopcode.rutago.app.managers.ui.dashboard.passenger.DashboardUIManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.fragments.HorarioFragment;
 import com.chopcode.rutago.app.models.User;
@@ -66,7 +66,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     private LinearLayout legendContent;
     private ImageView legendExpandIcon;
     private boolean isLegendExpanded = false;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         analyticsHelper = new DashboardAnalyticsHelper();
         uiManager = new DashboardUIManager(analyticsHelper);
         uiManager.setUIActionsListener(this);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
         setupObservers();

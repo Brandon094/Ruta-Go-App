@@ -13,10 +13,10 @@ import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.viewmodels.passenger.ConfirmReservationViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
-import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.reservations.confirmation.ConfirmationUIManager;
-import com.chopcode.rutago.app.managers.reservations.confirmation.ConfirmationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.reservations.confirmation.ConfirmationDialogManager;
+import com.chopcode.rutago.app.managers.core.analytics.ReservationAnalyticsHelper;
+import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationUIManager;
+import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationAnalyticsHelper;
+import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationDialogManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -54,7 +54,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
     private ConfirmationAnalyticsHelper confirmationAnalytics;
     private ConfirmationDialogManager dialogManager;
     private ReservationAnalyticsHelper analyticsHelper;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         analyticsHelper = new ReservationAnalyticsHelper("ConfirmReservation");
         confirmationAnalytics = new ConfirmationAnalyticsHelper(analyticsHelper);
         dialogManager = new ConfirmationDialogManager(this, confirmationAnalytics);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
         setupObservers();

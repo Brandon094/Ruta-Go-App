@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
+import com.chopcode.rutago.app.managers.core.analytics.ReservationAnalyticsHelper;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.google.android.material.button.MaterialButton;
 

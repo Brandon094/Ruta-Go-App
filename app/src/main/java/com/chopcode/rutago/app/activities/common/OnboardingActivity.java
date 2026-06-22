@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.adapters.onboarding.OnboardingAdapter;
-import com.chopcode.rutago.app.managers.settings.SessionManager;
+import com.chopcode.rutago.app.managers.core.settings.SessionManager;
 import com.chopcode.rutago.app.models.onboarding.OnboardingItem;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayoutMediator;

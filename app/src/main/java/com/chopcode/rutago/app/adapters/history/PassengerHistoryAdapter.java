@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.common.TicketActivity;
-import com.chopcode.rutago.app.managers.ratings.RatingManager;
+import com.chopcode.rutago.app.managers.core.ratings.RatingManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.google.android.material.button.MaterialButton;

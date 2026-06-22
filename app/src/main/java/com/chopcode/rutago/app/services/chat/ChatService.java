@@ -3,7 +3,7 @@ package com.chopcode.rutago.app.services.chat;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.notifications.NotificationManager;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.ChatMessage;
 import com.google.firebase.database.*;
 import java.util.ArrayList;

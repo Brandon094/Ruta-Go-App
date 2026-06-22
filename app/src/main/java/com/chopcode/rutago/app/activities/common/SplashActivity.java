@@ -60,7 +60,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void redirectToTarget(String target) {
         Intent intent;
-        com.chopcode.rutago.app.managers.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.settings.SessionManager(this);
+        com.chopcode.rutago.app.managers.core.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.core.settings.SessionManager(this);
 
         switch (target.toLowerCase()) {
             case "driver":

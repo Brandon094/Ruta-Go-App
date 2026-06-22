@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.notifications.NotificationManager;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.services.auth.RegistrationService;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;

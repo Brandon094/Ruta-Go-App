@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.viewmodels.passenger.EditProfileViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 

@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.engines.seats.SeatManager;
-import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
+import com.chopcode.rutago.app.managers.core.analytics.ReservationAnalyticsHelper;
 import com.chopcode.rutago.app.viewmodels.driver.ManageSeatsViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -46,7 +46,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     private SeatManager seatManager;
     private ManageSeatsViewModel viewModel;
     private ReservationAnalyticsHelper analyticsHelper;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         seatManager = new SeatManager(this, analyticsHelper);
         seatManager.setSeatSelectionListener(this);
         seatManager.configurarAsientos();
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
     }
 
     private void setupObservers() {

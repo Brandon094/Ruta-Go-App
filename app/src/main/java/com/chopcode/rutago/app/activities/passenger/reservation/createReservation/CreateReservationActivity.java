@@ -18,12 +18,12 @@ import com.chopcode.rutago.app.viewmodels.passenger.CreateReservationViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.engines.reservations.ReservationDataProcessor;
 import com.chopcode.rutago.app.engines.seats.SeatManager;
-import com.chopcode.rutago.app.managers.analytics.ReservationAnalyticsHelper;
-import com.chopcode.rutago.app.managers.reservations.common.DriverVehicleManager;
-import com.chopcode.rutago.app.managers.reservations.common.ReservationUserManager;
-import com.chopcode.rutago.app.managers.reservations.creation.ReservationNavigationManager;
-import com.chopcode.rutago.app.managers.reservations.creation.ReservationStateManager;
-import com.chopcode.rutago.app.managers.ui.ExpandableSectionManager;
+import com.chopcode.rutago.app.managers.core.analytics.ReservationAnalyticsHelper;
+import com.chopcode.rutago.app.managers.ui.reservations.common.DriverVehicleManager;
+import com.chopcode.rutago.app.managers.ui.reservations.common.ReservationUserManager;
+import com.chopcode.rutago.app.managers.ui.reservations.creation.ReservationNavigationManager;
+import com.chopcode.rutago.app.managers.ui.reservations.creation.ReservationStateManager;
+import com.chopcode.rutago.app.managers.ui.common.ExpandableSectionManager;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.HashMap;
@@ -78,7 +78,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
     private ReservationUserManager reservationUserManager;
     private ReservationNavigationManager reservationNavigationManager; 
     private CreateReservationViewModel viewModel;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         seatManager = new SeatManager(this, analyticsHelper);
         seatManager.setSeatSelectionListener(this);
         reservationNavigationManager = new ReservationNavigationManager(this, analyticsHelper, seatManager);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         getIntentData();
         initViews();

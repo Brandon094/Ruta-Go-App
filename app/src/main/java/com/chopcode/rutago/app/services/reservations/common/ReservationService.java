@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.engines.seats.SeatDataProcessor;
-import com.chopcode.rutago.app.managers.notifications.NotificationManager;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;

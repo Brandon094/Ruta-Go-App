@@ -15,7 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.editProfile.EditDriverProfileActivity;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverProfileViewModel;
@@ -47,7 +47,7 @@ public class DriverProfileActivity extends AppCompatActivity {
     // ViewModel and Managers
     private DriverProfileViewModel viewModel;
     private AuthManager authManager;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -67,7 +67,7 @@ public class DriverProfileActivity extends AppCompatActivity {
         }
 
         viewModel = new ViewModelProvider(this).get(DriverProfileViewModel.class);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         inicializarVistas();
         setupObservers();

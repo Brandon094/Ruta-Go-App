@@ -19,7 +19,7 @@ import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.adapters.history.PassengerHistoryAdapter;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerHistoryViewModel;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -64,7 +64,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
     private int lastTotal = 0;
     private int lastConfirmed = 0;
     private int lastCanceled = 0;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupObservers();
 
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         loadData();
         tutorialManager.showPassengerHistoryGuide();

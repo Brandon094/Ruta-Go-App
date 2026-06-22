@@ -23,7 +23,7 @@ import com.chopcode.rutago.app.adapters.routes.RouteAdapter;
 import com.chopcode.rutago.app.adapters.routes.SelectRouteAdapter;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
-import com.chopcode.rutago.app.managers.auths.AuthManager;
+import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
@@ -82,7 +82,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private ReservationAdapter reservationAdapter;
     private RouteAdapter routeAdapter;
     private com.chopcode.rutago.app.adapters.routes.RouteStatAdapter routeStatAdapter;
-    private com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager tutorialManager;
+    private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
     private List<Reservation> reservationList = new ArrayList<>();
     private List<Route> routeList = new ArrayList<>();
     private SimpleDateFormat timeFormat;
@@ -100,7 +100,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_inicio_conductor);
 
         // 🔥 Verificar Onboarding del Conductor
-        com.chopcode.rutago.app.managers.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.settings.SessionManager(this);
+        com.chopcode.rutago.app.managers.core.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.core.settings.SessionManager(this);
         if (sessionManager.isFirstTimeDriver()) {
             startActivity(new Intent(this, DriverOnboardingActivity.class));
         }
@@ -112,7 +112,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         reservasViewModel = new ViewModelProvider(this).get(DriverReservationsViewModel.class);
         estadisticasViewModel = new ViewModelProvider(this).get(DriverStatsViewModel.class);
         rutasViewModel = new ViewModelProvider(this).get(DriverRoutesViewModel.class);
-        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorial.TutorialManager(this);
+        tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
         setupRecyclerView();
