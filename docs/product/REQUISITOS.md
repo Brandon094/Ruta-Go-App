@@ -1,67 +1,39 @@
-# 📋 Especificación de Requisitos - Ruta-Go v1.2.3
+# 📋 Especificación de Requisitos - Ecosistema "Go"
 
-Este documento detalla los requisitos funcionales, no funcionales y las reglas de negocio que rigen el funcionamiento de la plataforma Ruta-Go.
-
----
-
-## 👥 1. Actores del Sistema
-*   **Pasajero:** Usuario final que consulta rutas, reserva asientos y gestiona sus viajes.
-*   **Conductor:** Usuario operativo que registra su vehículo, gestiona la ocupación y supervisa sus finanzas.
-*   **Administrador:** Usuario con privilegios para definir horarios maestros y ajustar tarifas globales.
+Este documento detalla los requisitos funcionales, no funcionales y la integración sistémica de la suite tecnológica de ChopCode Solutions.
 
 ---
 
-## 🛠️ 2. Requisitos Funcionales (RF)
-
-### 2.1 Módulo de Identidad y Acceso
-*   **RF-01:** El sistema permitirá el registro e inicio de sesión mediante correo/contraseña y Google One Tap.
-*   **RF-02:** El sistema debe identificar automáticamente el rol del usuario (Pasajero/Conductor) sin intervención manual.
-*   **RF-03:** Los datos de conductores y pasajeros deben estar físicamente segregados en la base de datos.
-*   **RF-17:** El sistema permitirá solicitar el borrado de cuenta con un periodo de gracia de 30 días antes de la eliminación definitiva.
-
-### 2.2 Gestión de Conductores y Vehículos
-*   **RF-04:** Los conductores podrán realizar un registro autónomo incluyendo datos personales y técnicos del vehículo.
-*   **RF-05:** El sistema debe vincular un vehículo único a cada conductor mediante su placa.
-*   **RF-06:** Los conductores deben seleccionar su agenda operativa (Ida y Vuelta) al momento del registro.
-
-### 2.3 Sistema de Reservas (Pasajero)
-*   **RF-07:** El sistema permitirá visualizar horarios en tiempo real filtrando los que ya han pasado.
-*   **RF-08:** El pasajero podrá seleccionar un asiento específico mediante un mapa interactivo.
-*   **RF-09:** Las reservas deben ser atómicas para evitar que dos usuarios tomen el mismo asiento simultáneamente.
-*   **RF-10:** El sistema debe generar un tiquete digital tras la confirmación de la reserva.
-
-### 2.4 Panel Operativo (Conductor)
-*   **RF-11:** El conductor podrá visualizar sus ingresos acumulados y ocupación diaria con animaciones en tiempo real.
-*   **RF-12:** El conductor podrá bloquear asientos manualmente (Venta Física) para pasajeros externos a la plataforma.
-*   **RF-13:** El sistema permitirá confirmar o cancelar solicitudes de pasajeros directamente desde el dashboard.
-
-### 2.5 Comunicación y Feedback
-*   **RF-14:** El sistema habilitará un chat bidireccional solo cuando exista una reserva confirmada.
-*   **RF-15:** El sistema debe mostrar tutoriales interactivos paso a paso en el primer acceso a módulos clave.
-*   **RF-16:** El sistema debe notificar visualmente el fin de la jornada ("Misión Cumplida" / "Jornada Completada").
-
-### 2.6 Fidelización y Monetización (Fase 3)
-*   **RF-18:** El sistema debe calcular y acumular "Puntos Go" por cada reserva completada exitosamente.
-*   **RF-19:** El sistema permitirá la redención de puntos por descuentos o viajes gratuitos.
-*   **RF-20:** El sistema clasificará a los pasajeros en niveles de estatus (Plata, Oro, Diamante) según su actividad.
-*   **RF-21:** El sistema proveerá funciones premium para conductores (Analítica avanzada, prioridad de turnos y badge de estrella).
+## 🛠️ 1. Requisitos de Integración (Suite)
+*   **RF-S01 (SSO):** El sistema permitirá el acceso a todas las plataformas (RutaGo, AgroGo, CargoGo) con una única cuenta de usuario.
+*   **RF-S02 (Deep Linking):** Las aplicaciones deben permitir la navegación cruzada mediante enlaces profundos (ej: desde AgroGo abrir la reserva de RutaGo).
+*   **RF-S03 (Hosting Central):** La información legal y el portal de subastas de CargoGo deben estar centralizados en un Web Hub bajo Firebase Hosting.
 
 ---
 
-## ⚡ 3. Requisitos No Funcionales (RNF)
-*   **RNF-01 (Latencia):** Las actualizaciones de disponibilidad de asientos deben reflejarse en menos de 500ms en todos los dispositivos conectados.
-*   **RNF-02 (Seguridad):** Los datos financieros de los conductores deben ser inaccesibles para cualquier otro usuario mediante reglas de Firebase.
-*   **RNF-03 (Disponibilidad):** El sistema debe estar operativo 24/7, con un proceso de mantenimiento automatizado a las 7:00 PM.
-*   **RNF-04 (Usability):** La interfaz debe seguir las guías de Material Design 3 y soportar temas Claro y Oscuro.
-*   **RNF-05 (Performance):** El app debe pesar menos de 40MB en su instalación base para facilitar la descarga en zonas rurales.
+## 🚌 2. Requisitos RutaGo (Movilidad)
+*   **RF-R01 (Reserva):** El pasajero debe poder reservar asientos con sincronización menor a 1 segundo (Latencia RTDB).
+*   **RF-R02 (SaaS):** Los conductores premium accederán a analítica avanzada de rentabilidad y prioridad algorítmica.
+*   **RF-R03 (Loyalty):** El sistema debe otorgar Puntos Go por cada viaje finalizado según el nivel (Plata, Oro, Diamante).
 
 ---
 
-## ⚖️ 4. Reglas de Negocio (RN)
-*   **RN-01 (Reset Global):** Todos los horarios se habilitan para el día siguiente automáticamente tras el proceso de las 7:00 PM.
-*   **RN-02 (Capacidad Técnica):** El mapa de asientos del horario debe coincidir estrictamente con la capacidad registrada en la ficha técnica del vehículo del conductor asignado.
-*   **RN-03 (Sanity Check):** Un horario sin conductor válido asignado debe mostrarse como "(Libre)" y bloquear el flujo de reserva.
-*   **RN-04 (Privacidad):** Un pasajero no podrá ver el nombre ni el teléfono de otro pasajero en el mapa de asientos.
+## 🌿 3. Requisitos AgroGo (Gestión Rural)
+*   **RF-A01 (Offline):** El app debe permitir el registro de datos de finca (nómina, lotes) sin conexión a internet.
+*   **RF-A02 (Sync):** Los datos deben sincronizarse automáticamente con Cloud Firestore al detectar red estable.
 
 ---
-**Chop Code Solutions - Documentación v1.2.3**
+
+## 🚛 4. Requisitos CargoGo (Logística)
+*   **RF-C01 (Subasta):** Los transportadores podrán ofertar por fletes sin conocer los precios de los competidores.
+*   **RF-C02 (Dashboard):** El productor podrá seleccionar la mejor oferta basada en precio y reputación del transportador.
+
+---
+
+## ⚡ 5. Requisitos No Funcionales (RNF)
+*   **RNF-01 (Escalabilidad):** El ecosistema debe soportar hasta 10,000 usuarios activos mensuales sin degradación de rendimiento.
+*   **RNF-02 (Seguridad):** Segregación total de datos entre aplicaciones mediante reglas de seguridad CloudFirestore y RTDB.
+*   **RNF-03 (Marca):** Consistencia visual 100% en la paleta de colores Naranja/Navy definida en el manual de Branding.
+
+---
+**Chop Code Solutions - Documentación del Ecosistema v1.2.3**

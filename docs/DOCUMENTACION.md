@@ -1,69 +1,61 @@
-# 📖 Enciclopedia Técnica Integral - Ruta-Go v1.2.3 Stable
+# 📖 Enciclopedia Técnica Integral - Ecosistema "Go" v1.2.3 Stable
 
-Bienvenido al centro de conocimiento oficial de **Ruta-Go**. Este documento sirve como punto de entrada de alto nivel para comprender la plataforma intermunicipal líder en optimización de transporte regional.
+Bienvenido al centro de conocimiento oficial de **ChopCode Solutions**. Este documento sirve como punto de entrada de alto nivel para comprender el **Ecosistema "Go"**, una suite tecnológica unificada diseñada para revolucionar la movilidad y la productividad rural en la región de Natagá y La Plata.
 
 ---
 
 ## 🏗️ 1. Visión y Propósito Estratégico
-Ruta-Go no es solo una aplicación de reserva; es una solución de **Logística Transaccional Reactiva**. Su objetivo es eliminar la ineficiencia en el transporte entre Natagá y La Plata mediante la automatización de la oferta (conductores) y la demanda (pasajeros).
+El Ecosistema "Go" es una solución de **Logística y Gestión Transaccional Reactiva**. Su objetivo es integrar tres pilares fundamentales bajo una sola identidad digital:
+1.  **RutaGo**: Movilidad intermunicipal y reserva de pasajes.
+2.  **AgroGo**: ERP para la administración de fincas cafeteras y ganaderas.
+3.  **CargoGo**: Plataforma de logística y subastas de fletes pesados.
 
 ---
 
-## 👥 2. Modelo de Actores y Permisos
-El sistema utiliza un modelo de **Control de Acceso basado en Roles (RBAC)** integrado con Firebase Auth:
+## 👥 2. Modelo de Actores y Permisos (RBAC)
+El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Auth, permitiendo que un solo `UID` acceda a toda la suite:
 
-1.  **Pasajero (Cliente)**:
-    *   *Capacidades*: Consulta itinerarios, reserva atómica de asientos, gestión de tiquetes digitales y fidelización.
-    *   *UX*: Guiada por el Tutorial Hub de 5 pasos.
-2.  **Conductor (Operador Técnico)**:
-    *   *Capacidades*: Autogestión de flota, ventas físicas fuera de plataforma, control de caja diario y agenda dinámica.
-    *   *UX*: Dashboard financiero con actualización de estadísticas en tiempo real.
-3.  **Administrador (Central)**:
-    *   *Capacidades*: Gestión de tarifas maestras, monitoreo de flotas y mantenimiento de planilla.
+*   **Pasajero / Productor**: El usuario que viaja en RutaGo y administra su finca en AgroGo.
+*   **Conductor (Operador Técnico)**: Gestiona su vehículo en RutaGo y participa en subastas en CargoGo.
+*   **Administrador (ChopCode)**: Control central de tarifas, monitoreo de flotas y gobernanza del ecosistema.
 
 ---
 
 ## 📦 3. Desglose de Motores y Módulos Core
 
-| Módulo | Responsabilidad Técnica | Componente Clave |
+| Módulo | Responsabilidad Técnica | Aplicación |
 |:---|:---|:---|
-| **Auth Engine** | Segregación física de roles y persistencia de sesión. | `UserRoleService` |
-| **Seat Engine** | Gestión transaccional de inventario (asientos). | `SeatDataProcessor` |
-| **Reservation Engine** | Orquestación de datos y flujo de confirmación. | `ReservationDataProcessor` |
-| **Tutorial Hub** | Capacitación interactiva y persistencia de guías. | `TutorialManager` |
-| **Finance Core** | Tarifas dinámicas desde la nube y cálculo de COP. | `PriceService` |
-| **Integridad (Sanity)** | Filtrado de datos huérfanos y normalización. | `ScheduleService` |
-| **Loyalty & Premium** | Gamificación, Puntos Go y suscripciones SaaS. | (Fase 3) |
+| **Auth Engine (SSO)** | Gestión de identidad unificada y segregación de roles. | Suite Go |
+| **Seat Engine** | Gestión transaccional de inventario móvil. | RutaGo |
+| **Loyalty Engine** | Gamificación (Puntos Go) y Niveles de Estatus. | RutaGo |
+| **Offline Sync Engine** | Sincronización local-nube vía Isar/Firestore. | AgroGo |
+| **Auction Engine** | Motor de subastas ciegas para fletes. | CargoGo |
+| **Web Hub** | Portal legal, corporativo y acceso a CargoGo. | Suite Go |
 
 ---
 
 ## 🛠️ 4. Ecosistema de Documentación (Nivel Senior)
-Para una comprensión profunda, consulte los manuales especializados organizados por dominio:
 
 ### 📗 Dominio Técnico (Engineering)
-*   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Patrones MVVM, flujos de datos y lógica de motores.
-*   [**Estándares de Código**](./technical/DEVELOPER_GUIDELINES.md): Reglas de oro para desarrolladores y estándares de Clean Code.
-*   [**Diccionario de Datos**](./technical/DICCIONARIO_DATOS.md): Mapeo bilingüe del esquema NoSQL en Firebase.
-*   [**Ficha Técnica**](./technical/FICHA_TECNICA.md): Especificaciones de infraestructura, hardware y librerías.
+*   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos de datos.
+*   [**Estándares de Código**](./technical/DEVELOPER_GUIDELINES.md): Reglas de oro (Java/Flutter) y Clean Code.
+*   [**Diccionario de Datos**](./technical/DICCIONARIO_DATOS.md): Mapeo del esquema NoSQL unificado.
+*   [**Ficha Técnica**](./technical/FICHA_TECNICA.md): Especificaciones de infraestructura y stack tecnológico.
 
 ### 📘 Dominio de Producto (Business)
-*   [**Especificación de Requisitos**](./product/REQUISITOS.md): Requisitos funcionales, no funcionales y reglas de negocio.
-*   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo, paleta de colores y uso de marca.
-*   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Visión a futuro y fases de expansión (Pagos, Encomiendas).
-
-### 📙 Dominio Operativo (QA & Ops)
-*   [**Plan de Pruebas**](./operations/RELEASE_TESTING_PLAN.md): Protocolo de certificación de calidad para lanzamientos.
-*   [**Manual de Administración**](./operations/MANUAL_ADMIN.md): Guía operativa para la gestión desde Firebase Console.
-*   [**Historial de Cambios**](./operations/CHANGELOG.md): Registro cronológico de la evolución del software.
+*   [**Master Plan Ecosistema**](./product/ECOSYSTEM_MASTER_PLAN.md): Visión estratégica de ChopCode Solutions.
+*   [**Especificación de Requisitos**](./product/REQUISITOS.md): RF, RNF y reglas de negocio de la suite.
+*   [**Portal Web Hub**](./product/GO_WEB_HUB.md): Especificaciones del centro web centralizado.
+*   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
+*   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión y monetización.
 
 ---
 
 ## 🛡️ 5. Seguridad y Gobernanza de Datos
-Ruta-Go implementa una capa de seguridad multi-nivel:
-*   **Transporte**: Encriptación SSL/TLS nativa de Firebase.
-*   **Persistencia**: Reglas de seguridad NoSQL basadas en `auth.uid`.
-*   **Privacidad**: Cumplimiento con la Ley 1581 de 2012 (Habeas Data). Los datos sensibles (teléfonos/ingresos) están segregados por rol y dueño.
+*   **Aislamiento**: Datos críticos de RutaGo en Realtime Database; datos complejos de AgroGo en Cloud Firestore.
+*   **Hosting**: Despliegue seguro en Firebase Hosting con SSL.
+*   **Privacidad**: Cumplimiento con Habeas Data (Ley 1581) para todo el ecosistema.
 
 ---
-**© 2026 Chop Code Solutions - Innovación en Movilidad Regional**
-**Desarrollado por: Brandon Daza Cerquera**
+**© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural**
+**Desarrollador Lead: Brandon Daza Cerquera**
