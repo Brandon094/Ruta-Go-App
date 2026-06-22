@@ -46,7 +46,15 @@ Para profundizar en cada área, consulte los siguientes manuales específicos:
 
 ---
 
-## 📊 5. Estructura de Datos (Firebase Core)
+## 📊 5. Estructura de Datos y Código
+La plataforma se organiza siguiendo una arquitectura por capas para maximizar la mantenibilidad:
+
+*   **Engines**: Lógica de negocio pesada y validaciones transaccionales (Seats, Reservations).
+*   **Services**: Orquestadores de comunicación con Firebase, organizados por dominio.
+*   **Managers**: Auxiliares de UI y gestores de estado temporal, organizados jerárquicamente.
+*   **Adapters**: Controladores de listas con estandarización técnica en inglés.
+
+### Estructura de Base de Datos (Firebase)
 La base de datos está diseñada bajo un modelo NoSQL segregado por roles:
 
 *   `conductores/`: Perfiles profesionales vinculados a una identidad de Auth.

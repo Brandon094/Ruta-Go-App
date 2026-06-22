@@ -8,8 +8,11 @@ Este documento describe la interacción entre los componentes de la aplicación,
 La aplicación sigue el patrón **Model-View-ViewModel**, garantizando que la lógica de negocio esté separada de la interfaz de usuario.
 
 *   **View (UI)**: Activities y Fragments (XML + Java). Observan al ViewModel.
-*   **ViewModel**: Gestiona el estado de la UI y se comunica con los Services.
-*   **Service (Repository)**: Encapsula las llamadas a Firebase (Auth, Database, Storage).
+*   **ViewModel**: Gestiona el estado de la UI y se comunica con los Engines y Services.
+*   **Engine**: Lógica pesada, validaciones y procesamiento de datos desacoplado de la UI. (Ubicación: `app.engines`).
+*   **Service (Repository)**: Orquestadores de Firebase (Auth, Database, Storage). Organizados por dominio (Ubicación: `app.services`).
+*   **Manager**: Auxiliares de UI organizados por funcionalidad y etapa del flujo. (Ubicación: `app.managers`).
+*   **Adapter**: Listas con nomenclatura estándar técnica en inglés. (Ubicación: `app.adapters`).
 *   **Model**: Clases POJO (User, Driver, Schedule, etc.) con mapeo dual.
 
 ---

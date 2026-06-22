@@ -30,7 +30,8 @@ Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable,
   - **Horas:** Normalización bilingüe (Spanish en DB -> 12h legible en UI).
   - **Fechas:** Formateo largo descriptivo.
   - **Normalización:** Método `normalizarTexto` para comparaciones lógicas (anti-tildes).
-- **Recursos:** 100% de los textos en `strings.xml`. Prohibido el uso de "hardcoded strings" en layouts o clases Java.
+- **Nomenclatura Técnica**: Se utiliza el inglés para nombres de variables, funciones, paquetes y carpetas del proyecto. Los adaptadores deben seguir el estándar `NombreAdapter` y ubicarse en `app.adapters.[modulo]`.
+- **Organización de Recursos**: 100% de los textos en `strings.xml`. Prohibido el uso de "hardcoded strings" en layouts o clases Java.
 
 ### B. Gestión de Datos Reactiva (Firebase)
 - **Escucha Global:** Uso estricto de `ValueEventListener` (`addValueEventListener`) en ViewModels para perfiles, estadísticas e itinerarios. Prohibido `addListenerForSingleValueEvent` en pantallas críticas para garantizar reactividad inmediata.
