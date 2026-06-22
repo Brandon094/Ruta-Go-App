@@ -4,17 +4,12 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 /**
- * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - RutaGo
+ * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go
  *
  * EJECUCIÓN: Todos los días a las 7:00 PM (Hora Bogotá).
- * PROPÓSITO:
- * 1. Rotar los turnos de los conductores para el día siguiente.
- * 2. Limpiar la disponibilidad de asientos (resetear a 13).
- * 3. Actualizar estados de actividad (Active/Inactive) según carga.
- * 4. Notificar a conductores y pasajeros sobre los nuevos horarios.
  */
 exports.automatedRotation = onSchedule({
-    schedule: "0 19 * * *", // 19:00 = 7:00 PM Bogotá
+    schedule: "0 19 * * *",
     timeZone: "America/Bogota",
     memory: "256MiB"
 }, async (event) => {
@@ -24,9 +19,8 @@ exports.automatedRotation = onSchedule({
     try {
         console.log("🔄 Iniciando ciclo de rotación nocturna...");
 
-        // 1. DEFINICIÓN DE ESCALAFÓN (Día 9 es descanso)
         const ROTATING_SHIFTS = [
-            ["h009"],                 // Día 1: ENTRADA
+            ["h009"],                 // Día 1
             ["h010", "h008", "h018"], // Día 2
             ["h007", "h017"],         // Día 3
             ["h006", "h016"],         // Día 4
@@ -37,11 +31,12 @@ exports.automatedRotation = onSchedule({
             []                        // Día 9: DESCANSO
         ];
 
-        // 2. CARGA DE DATOS (Sync Total)
-        const [conductoresSnap, horariosSnap, usuariosSnap] = await Promise.all([
+        // 1. CARGA DE DATOS COMPLETA
+        const [conductoresSnap, horariosSnap, usuariosSnap, vehiculosSnap] = await Promise.all([
             db.ref('conductores').once('value'),
             db.ref('horarios').once('value'),
-            db.ref('usuarios').once('value')
+            db.ref('usuarios').once('value'),
+            db.ref('vehiculos').once('value')
         ]);
 
         const tokenMap = {};
@@ -49,29 +44,29 @@ exports.automatedRotation = onSchedule({
             if (uSnap.val().tokenFCM) tokenMap[uSnap.key] = uSnap.val().tokenFCM;
         });
 
+        const vehiculosMap = {};
+        vehiculosSnap.forEach(vSnap => {
+            vehiculosMap[vSnap.key] = vSnap.val();
+        });
+
         const conductoresParaRotar = [];
         const tokensPasajeros = [];
         let brayanId = null;
 
-        // Clasificar conductores y capturar tokens
         conductoresSnap.forEach((snap) => {
             const data = snap.val();
             const uid = snap.key;
-            const token = data.tokenFCM || tokenMap[uid]; // Buscar en ambos nodos
-
+            const token = data.tokenFCM || tokenMap[uid];
             if (data.nombre && data.nombre.toLowerCase().includes("brayan")) {
                 brayanId = uid;
             } else {
-                conductoresParaRotar.push({ id: uid, nombre: data.nombre, token: token });
+                conductoresParaRotar.push({ id: uid, nombre: data.nombre, token: token, vehiculoId: data.vehiculoId });
             }
         });
 
-        // Recopilar tokens de pasajeros
         usuariosSnap.forEach((uSnap) => {
             const uData = uSnap.val();
-            if (uData.rol === "usuario" && uData.tokenFCM) {
-                tokensPasajeros.push(uData.tokenFCM);
-            }
+            if (uData.rol === "usuario" && uData.tokenFCM) tokensPasajeros.push(uData.tokenFCM);
         });
 
         conductoresParaRotar.sort((a, b) => a.id.localeCompare(b.id));
@@ -79,28 +74,17 @@ exports.automatedRotation = onSchedule({
         const updates = {};
         const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
         const notificationPromises = [];
+        const dispUpdates = {};
 
-        // 3. ASIGNACIÓN FIJA (REGLA BRAYAN)
+        // 2. ASIGNACIÓN FIJA (BRAYAN)
         if (brayanId) {
             const horariosFijos = ["h005", "h015"];
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
             updates[`conductores/${brayanId}/status`] = "active";
-            updates[`usuarios/${brayanId}/status`] = "active";
             horariosFijos.forEach(hId => { updates[`horarios/${hId}/conductorId`] = brayanId; });
-
-            const bToken = tokenMap[brayanId];
-            if (bToken) {
-                notificationPromises.push(
-                    messaging.send({
-                        token: bToken,
-                        notification: { title: "Turnos Actualizados", body: "Tus turnos fijos están listos para mañana." },
-                        data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
-                    }).catch(e => console.error("Error notif Brayan:", e))
-                );
-            }
         }
 
-        // 4. ALGORITMO DE ESCALAFÓN Y NOTIFICACIÓN A CONDUCTORES
+        // 3. ALGORITMO DE ESCALAFÓN Y RESET DE CAPACIDAD DINÁMICO
         conductoresParaRotar.forEach((c, index) => {
             const shiftIndex = (index + dayCounter) % ROTATING_SHIFTS.length;
             const misHorarios = ROTATING_SHIFTS[shiftIndex];
@@ -108,16 +92,27 @@ exports.automatedRotation = onSchedule({
 
             updates[`conductores/${c.id}/horariosAsignados`] = misHorarios;
             updates[`conductores/${c.id}/status`] = esDescanso ? "inactive" : "active";
-            updates[`usuarios/${c.id}/status`] = esDescanso ? "inactive" : "active";
 
-            misHorarios.forEach(hId => { updates[`horarios/${hId}/conductorId`] = c.id; });
+            // Obtener capacidad real del bus del conductor
+            let capacidadReal = 13;
+            if (c.vehiculoId && vehiculosMap[c.vehiculoId]) {
+                capacidadReal = vehiculosMap[c.vehiculoId].capacidad || 13;
+            }
+
+            misHorarios.forEach(hId => {
+                updates[`horarios/${hId}/conductorId`] = c.id;
+                // Preparar reset de asientos basado en la capacidad real de este bus
+                dispUpdates[`${hId}/asientosOcupados`] = null;
+                dispUpdates[`${hId}/asientosDisponibles`] = capacidadReal;
+                dispUpdates[`${hId}/totalAsientos`] = capacidadReal;
+            });
 
             if (c.token) {
                 notificationPromises.push(
                     messaging.send({
                         token: c.token,
                         notification: {
-                            title: esDescanso ? "Manana Descansas" : "Turnos Actualizados",
+                            title: esDescanso ? "Mañana Descansas" : "Turnos Actualizados",
                             body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app."
                         },
                         data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
@@ -126,40 +121,39 @@ exports.automatedRotation = onSchedule({
             }
         });
 
-        // 5. NOTIFICACIÓN MASIVA A PASAJEROS (Sin Emojis)
+        // 4. LIMPIEZA DE HORARIOS SIN CONDUCTOR (LIBRES)
+        horariosSnap.forEach(hSnap => {
+            const hId = hSnap.key;
+            if (!dispUpdates[hId]) { // Si no fue reseteado arriba por un conductor asignado
+                updates[`horarios/${hId}/conductorId`] = "";
+                dispUpdates[`${hId}/asientosOcupados`] = null;
+                dispUpdates[`${hId}/asientosDisponibles`] = 0;
+                dispUpdates[`${hId}/totalAsientos`] = 0;
+            }
+        });
+
+        // 5. NOTIFICACIÓN MASIVA PASAJEROS
         if (tokensPasajeros.length > 0) {
             for (let i = 0; i < tokensPasajeros.length; i += 500) {
                 const chunk = tokensPasajeros.slice(i, i + 500);
                 notificationPromises.push(
                     messaging.sendEachForMulticast({
                         tokens: chunk,
-                        notification: {
-                            title: "Horarios Listos",
-                            body: "Ya puedes reservar tu viaje para mañana en RutaGo. Asegura tu cupo."
-                        },
+                        notification: { title: "Horarios Listos", body: "Ya puedes reservar tu viaje para mañana en RutaGo." },
                         data: { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" }
-                    }).catch(e => console.error("Error notif masiva pasajeros:", e))
+                    }).catch(e => console.error("Error notif masiva:", e))
                 );
             }
         }
 
-        // 6. LIMPIEZA DE ASIENTOS (RESET TOTAL)
-        const dispUpdates = {};
-        horariosSnap.forEach(hSnap => {
-            const hId = hSnap.key;
-            dispUpdates[`${hId}/asientosOcupados`] = null;
-            dispUpdates[`${hId}/asientosDisponibles`] = 13;
-            dispUpdates[`${hId}/totalAsientos`] = 13;
-        });
-
-        // 7. EJECUCIÓN ATÓMICA FINAL
+        // EJECUCIÓN ATÓMICA
         await Promise.all([
             db.ref().update(updates),
             db.ref('disponibilidadAsientos').update(dispUpdates),
             ...notificationPromises
         ]);
 
-        console.log(`✅ Ciclo completado. ${tokensPasajeros.length} pasajeros y conductores procesados.`);
+        console.log(`✅ Ciclo completado exitosamente.`);
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
@@ -167,67 +161,54 @@ exports.automatedRotation = onSchedule({
 });
 
 /**
-  * 🧹 LIMPIEZA SEMANAL DE CUENTAS (Optimización de Costos)
-  *
-  * EJECUCIÓN: Todos los domingos a las 3:00 AM.
-  * PROPÓSITO: Borrar cuentas con más de 30 días de periodo de gracia.
-  */
- exports.cleanupMarkedAccounts = onSchedule({
-     schedule: "0 3 * * 0", // 0 = Domingo
-     timeZone: "America/Bogota",
-     memory: "256MiB"
- }, async (event) => {
+ * 🧹 LIMPIEZA SEMANAL DE CUENTAS (Domingos 3:00 AM)
+ */
+exports.cleanupMarkedAccounts = onSchedule({
+    schedule: "0 3 * * 0",
+    timeZone: "America/Bogota",
+    memory: "256MiB"
+}, async (event) => {
     const db = admin.database();
     const auth = admin.auth();
     const now = Date.now();
-    const GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000; // 30 días
+    const GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000;
     const limitTimestamp = now - GRACE_PERIOD;
 
-    console.log("🧹 Iniciando limpieza de cuentas con periodo de gracia vencido...");
+    console.log("🧹 Iniciando limpieza de cuentas...");
 
-    const deleteUser = async (uid, node) => {
+    const performDeletion = async (uid, node) => {
         try {
-            // 1. Borrar datos del vehículo si es conductor
             if (node === 'conductores') {
                 const driverSnap = await db.ref(`conductores/${uid}`).once('value');
                 const plate = driverSnap.val()?.placaVehiculo;
                 if (plate) await db.ref(`vehiculos/${plate}`).remove();
             }
-
-            // 2. Borrar del nodo de la base de datos
             await db.ref(`${node}/${uid}`).remove();
-
-            // 3. Borrar de Firebase Auth
             await auth.deleteUser(uid);
-
-            console.log(`✅ Usuario ${uid} (${node}) eliminado permanentemente.`);
+            return `✅ ${uid} eliminado.`;
         } catch (e) {
-            console.error(`❌ Error eliminando usuario ${uid}:`, e);
+            return `❌ Error en ${uid}: ${e.message}`;
         }
     };
 
     try {
-        // Buscar en Usuarios
-        const usuariosSnap = await db.ref('usuarios')
-            .orderByChild('solicitudBorrado').equalTo(true).once('value');
+        const [uSnap, cSnap] = await Promise.all([
+            db.ref('usuarios').orderByChild('solicitudBorrado').equalTo(true).once('value'),
+            db.ref('conductores').orderByChild('solicitudBorrado').equalTo(true).once('value')
+        ]);
 
-        usuariosSnap.forEach((snap) => {
-            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) {
-                deleteUser(snap.key, 'usuarios');
-            }
+        const deletionPromises = [];
+        uSnap.forEach(snap => {
+            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'usuarios'));
+        });
+        cSnap.forEach(snap => {
+            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'conductores'));
         });
 
-        // Buscar en Conductores
-        const conductoresSnap = await db.ref('conductores')
-            .orderByChild('solicitudBorrado').equalTo(true).once('value');
-
-        conductoresSnap.forEach((snap) => {
-            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) {
-                deleteUser(snap.key, 'conductores');
-            }
-        });
+        const results = await Promise.all(deletionPromises);
+        console.log("Resumen de limpieza:", results);
 
     } catch (error) {
-        console.error('❌ ERROR CRÍTICO EN LIMPIEZA DE CUENTAS:', error);
+        console.error('❌ ERROR CRÍTICO EN LIMPIEZA:', error);
     }
 });
