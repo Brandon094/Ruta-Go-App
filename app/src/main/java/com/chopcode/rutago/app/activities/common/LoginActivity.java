@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -147,6 +148,26 @@ public class LoginActivity extends AppCompatActivity {
             buttonLogin.setEnabled(!loading);
             btnGoogleSignIn.setEnabled(!loading);
         });
+
+        viewModel.getShowAccountReactivationDialog().observe(this, show -> {
+            if (show) mostrarDialogoRescateCuenta();
+        });
+    }
+
+    private void mostrarDialogoRescateCuenta() {
+        new AlertDialog.Builder(this, R.style.AppDialogTheme)
+                .setTitle(R.string.titulo_cuenta_en_borrado)
+                .setMessage(R.string.mensaje_cuenta_en_borrado)
+                .setCancelable(false)
+                .setPositiveButton(R.string.btn_cancelar_borrado, (d, w) -> {
+                    viewModel.cancelAccountDeletion();
+                    Toast.makeText(this, R.string.borrado_cancelado_exito, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.cancelar, (d, w) -> {
+                    MyApp.getFirebaseAuthInstance().signOut();
+                    clearSavedSession();
+                })
+                .show();
     }
 
     private void setupListeners() {

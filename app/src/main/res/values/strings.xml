@@ -142,6 +142,13 @@
     <string name="and_the">y la</string>
     <string name="privacy_policy">Política de Privacidad</string>
     <string name="must_accept_terms">Debes aceptar los términos y condiciones</string>
+
+    <!-- Rescate de Cuenta -->
+    <string name="titulo_cuenta_en_borrado">Solicitud de borrado detectada</string>
+    <string name="mensaje_cuenta_en_borrado">Tu cuenta está programada para eliminarse. ¿Deseas cancelar la solicitud y seguir usando Ruta-Go?</string>
+    <string name="btn_cancelar_borrado">Conservar mi cuenta</string>
+    <string name="borrado_cancelado_exito">Solicitud cancelada. ¡Bienvenido de vuelta!</string>
+
     <string name="user_registered_success">Usuario registrado exitosamente</string>
     <string name="registering">Registrando...</string>
     <string name="error_fill_fields">Por favor completa todos los campos obligatorios</string>

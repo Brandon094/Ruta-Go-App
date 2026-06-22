@@ -15,7 +15,7 @@ Este documento constituye la especificación técnica formal de la plataforma Ru
 
 ## 💻 2. Especificaciones de Software (Frontend)
 *   **Lenguaje de Programación:** Java 17 (OpenJDK).
-*   **Arquitectura de Software:** Model-View-ViewModel (MVVM).
+*   **Arquitectura de Software:** Model-View-ViewModel (MVVM) con Motores Desacoplados.
 *   **Sistema Operativo Objetivo:** Android (mínimo v7.0 Nougat - API 24).
 *   **SDK Objetivo:** Android 15 (API 35).
 *   **Framework de UI:** XML View System con Material Components 3.
@@ -31,7 +31,7 @@ Este documento constituye la especificación técnica formal de la plataforma Ru
 *   **Proveedor de Servicios:** Firebase (Google Cloud Platform).
 *   **Base de Datos:** Realtime Database (NoSQL de baja latencia).
 *   **Autenticación:** Firebase Auth (Email/Google One Tap).
-*   **Lógica de Servidor:** Cloud Functions (Node.js) para reset global de las 7:00 PM.
+*   **Lógica de Servidor:** Cloud Functions (Node.js) para reset global de las 7:00 PM y limpieza mensual de cuentas.
 *   **Almacenamiento:** Firebase Storage (Recursos multimedia y perfiles).
 *   **Notificaciones:** Firebase Cloud Messaging (FCM v1) con soporte para Deep Linking.
 *   **Monitoreo:** Firebase Crashlytics y Google Analytics for Firebase.
@@ -44,7 +44,7 @@ Este documento constituye la especificación técnica formal de la plataforma Ru
 3.  **Gestión de Inventario (Asientos):** Motor de asignación atómica con bloqueo manual para ventas físicas.
 4.  **Sincronización Reactiva:** Actualización de interfaces en tiempo real mediante listeners persistentes.
 5.  **Tutorial Hub:** Sistema de capacitación interactiva contextual integrado en la UI.
-6.  **Sanity Check:** Capa de integridad que valida la vigencia de los datos en la planilla de horarios.
+6.  **Derecho al Olvido:** Proceso de borrado de cuenta con 30 días de gracia y rescate automático en login.
 
 ---
 
@@ -64,20 +64,24 @@ Este documento constituye la especificación técnica formal de la plataforma Ru
 ---
 
 ## 🔑 7. Gestión de APIs y Servicios Cloud
-La plataforma utiliza el ecosistema de Google Cloud Platform (GCP) mediante llaves de API restringidas:
+La plataforma utiliza el ecosistema de Google Cloud Platform (GCP) mediante llaves de API restringidas para los siguientes servicios críticos:
 
-### 7.1 Google Maps Platform
-*   **Maps SDK for Android**: Renderizado de mapas de ruta.
-*   **Routes API**: Cálculo de trayectos entre Natagá y La Plata.
-*   **Places API**: Autocompletado de puntos de abordaje.
+### 7.1 Autenticación e Identidad
+*   **Identity Toolkit API**: Motor principal de autenticación y gestión de usuarios.
+*   **Token Service API**: Emisión y validación de tokens de sesión y seguridad.
+*   **Firebase Installations API**: Identificación única de instancias de la aplicación.
 
-### 7.2 Firebase Services
-*   **FCM API Key**: Gestión de notificaciones push.
-*   **Android Auth Key**: Autenticación y acceso a Realtime Database.
-*   **Service Account**: Credencial de alto privilegio (JSON) para envío de notificaciones V1 desde el `NotificationManager`.
+### 7.2 Almacenamiento y Datos
+*   **Firebase Realtime Database API**: Lectura y escritura transaccional de itinerarios y reservas.
+*   **Cloud Storage for Firebase API**: Gestión de recursos multimedia y fotos de perfil.
 
-### 7.3 Inteligencia Artificial (Experimental)
-*   **Generative Language API (Gemini)**: Nodo preparado para futuras implementaciones de asistencia al usuario.
+### 7.3 Mensajería y Notificaciones
+*   **Firebase Cloud Messaging API**: Envío de alertas contextuales.
+*   **FCM Registration API**: Registro y mantenimiento de tokens de dispositivos.
+
+### 7.4 Monitoreo y Analíticas
+*   **Google Analytics Hub API**: Seguimiento del embudo de conversión y comportamiento del usuario.
+*   **Mobile Crash Reporting API**: Reporte y diagnóstico de fallos en tiempo real (Crashlytics).
 
 ---
 **© 2026 Chop Code Solutions - Todos los derechos reservados.**

@@ -165,3 +165,69 @@ exports.automatedRotation = onSchedule({
         console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
     }
 });
+
+/**
+  * 🧹 LIMPIEZA SEMANAL DE CUENTAS (Optimización de Costos)
+  *
+  * EJECUCIÓN: Todos los domingos a las 3:00 AM.
+  * PROPÓSITO: Borrar cuentas con más de 30 días de periodo de gracia.
+  */
+ exports.cleanupMarkedAccounts = onSchedule({
+     schedule: "0 3 * * 0", // 0 = Domingo
+     timeZone: "America/Bogota",
+     memory: "256MiB"
+ }, async (event) => {
+    const db = admin.database();
+    const auth = admin.auth();
+    const now = Date.now();
+    const GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000; // 30 días
+    const limitTimestamp = now - GRACE_PERIOD;
+
+    console.log("🧹 Iniciando limpieza de cuentas con periodo de gracia vencido...");
+
+    const deleteUser = async (uid, node) => {
+        try {
+            // 1. Borrar datos del vehículo si es conductor
+            if (node === 'conductores') {
+                const driverSnap = await db.ref(`conductores/${uid}`).once('value');
+                const plate = driverSnap.val()?.placaVehiculo;
+                if (plate) await db.ref(`vehiculos/${plate}`).remove();
+            }
+
+            // 2. Borrar del nodo de la base de datos
+            await db.ref(`${node}/${uid}`).remove();
+
+            // 3. Borrar de Firebase Auth
+            await auth.deleteUser(uid);
+
+            console.log(`✅ Usuario ${uid} (${node}) eliminado permanentemente.`);
+        } catch (e) {
+            console.error(`❌ Error eliminando usuario ${uid}:`, e);
+        }
+    };
+
+    try {
+        // Buscar en Usuarios
+        const usuariosSnap = await db.ref('usuarios')
+            .orderByChild('solicitudBorrado').equalTo(true).once('value');
+
+        usuariosSnap.forEach((snap) => {
+            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) {
+                deleteUser(snap.key, 'usuarios');
+            }
+        });
+
+        // Buscar en Conductores
+        const conductoresSnap = await db.ref('conductores')
+            .orderByChild('solicitudBorrado').equalTo(true).once('value');
+
+        conductoresSnap.forEach((snap) => {
+            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) {
+                deleteUser(snap.key, 'conductores');
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ ERROR CRÍTICO EN LIMPIEZA DE CUENTAS:', error);
+    }
+});

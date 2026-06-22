@@ -101,9 +101,19 @@ public class UserProfileViewModel extends ViewModel {
     public void requestAccountDeletion() {
         String userId = authManager.getUserId();
         if (userId == null) return;
-        userService.requestAccountDeletion(userId, new UserService.UserUpdateCallback() {
+        userService.requestAccountDeletion(userId, "usuarios", new UserService.UserUpdateCallback() {
             @Override public void onSuccess() { accountDeletionSuccess.postValue(true); }
             @Override public void onError(String errorMsg) { error.postValue(errorMsg); }
+        });
+    }
+
+    public void cancelAccountDeletion() {
+        String userId = authManager.getUserId();
+        if (userId == null) return;
+        isLoading.setValue(true);
+        userService.cancelAccountDeletion(userId, "usuarios", new UserService.UserUpdateCallback() {
+            @Override public void onSuccess() { isLoading.postValue(false); }
+            @Override public void onError(String errorMsg) { error.postValue(errorMsg); isLoading.postValue(false); }
         });
     }
 

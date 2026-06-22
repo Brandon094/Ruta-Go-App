@@ -12,6 +12,8 @@ public class User {
     protected String password;
     protected String photoUrl;
     protected String status; // "active", "inactive", "blocked"
+    protected boolean solicitudBorrado;
+    protected Long fechaSolicitudBorrado;
 
     public User() { }
 
@@ -72,4 +74,14 @@ public class User {
     public String getStatus() { return status; }
     @PropertyName("status")
     public void setStatus(String status) { this.status = status; }
+
+    @PropertyName("solicitudBorrado")
+    public boolean isSolicitudBorrado() { return solicitudBorrado; }
+    @PropertyName("solicitudBorrado")
+    public void setSolicitudBorrado(boolean solicitudBorrado) { this.solicitudBorrado = solicitudBorrado; }
+
+    @PropertyName("fechaSolicitudBorrado")
+    public Long getFechaSolicitudBorrado() { return fechaSolicitudBorrado; }
+    @PropertyName("fechaSolicitudBorrado")
+    public void setFechaSolicitudBorrado(Long fechaSolicitudBorrado) { this.fechaSolicitudBorrado = fechaSolicitudBorrado; }
 }

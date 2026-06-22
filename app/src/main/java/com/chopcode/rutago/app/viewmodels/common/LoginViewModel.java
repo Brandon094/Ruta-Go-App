@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -18,8 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 /**
  * 🔑 Login ViewModel
  * 
- * Gestiona la lógica de negocio para la autenticación de usuarios.
- * Refactorizado para separar responsabilidades entre Email y Google.
+ * Gestiona la lógica de autenticación de usuarios.
+ * Permite el acceso incluso si existe una solicitud de borrado pendiente.
  */
 public class LoginViewModel extends ViewModel {
     private static final String TAG = "LoginViewModel";
@@ -36,12 +37,8 @@ public class LoginViewModel extends ViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void init(Activity activity) {
-        if (emailLoginService == null) {
-            emailLoginService = new EmailLoginService(activity);
-        }
-        if (googleLoginService == null) {
-            googleLoginService = new GoogleLoginService(activity);
-        }
+        if (emailLoginService == null) emailLoginService = new EmailLoginService(activity);
+        if (googleLoginService == null) googleLoginService = new GoogleLoginService(activity);
     }
 
     public void loginWithEmail(String email, String password) {
@@ -77,6 +74,9 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Sincroniza el token FCM únicamente en el nodo correspondiente al rol del usuario.
+     */
     private void syncFCMToken(String userType) {
         FirebaseUser user = MyApp.getCurrentUser();
         if (user == null) {
@@ -86,18 +86,15 @@ public class LoginViewModel extends ViewModel {
         }
 
         String userId = user.getUid();
+        String node = ("driver".equalsIgnoreCase(userType) || "conductor".equalsIgnoreCase(userType)) ? "conductores" : "usuarios";
+
         MyApp.getInstance().getFirebaseMessaging().getToken().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 String token = task.getResult();
-                DatabaseReference baseRef = MyApp.getDatabaseReference("");
-                baseRef.child("usuarios").child(userId).child("tokenFCM").setValue(token);
-                if ("driver".equalsIgnoreCase(userType) || "conductor".equalsIgnoreCase(userType)) {
-                    baseRef.child("conductores").child(userId).child("tokenFCM").setValue(token);
-                }
-                loginSuccess.postValue(userType);
-            } else {
-                loginSuccess.postValue(userType);
+                // 🛡️ SEGURIDAD: Solo escribir en el nodo que corresponde según el rol
+                MyApp.getDatabaseReference(node + "/" + userId + "/tokenFCM").setValue(token);
             }
+            loginSuccess.postValue(userType);
             isLoading.postValue(false);
         });
     }

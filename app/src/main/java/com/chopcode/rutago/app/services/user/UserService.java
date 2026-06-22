@@ -263,23 +263,26 @@ public class UserService {
                 .addOnSuccessListener(aVoid -> callback.onSuccess());
     }
 
-    public void requestAccountDeletion(String userId, UserUpdateCallback callback) {
+    public void requestAccountDeletion(String userId, String userType, UserUpdateCallback callback) {
+        String node = ("conductor".equals(userType) || "conductores".equals(userType)) ? "conductores" : "usuarios";
         Map<String, Object> updates = new HashMap<>();
         updates.put("solicitudBorrado", true);
         updates.put("fechaSolicitudBorrado", System.currentTimeMillis());
-        MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(updates)
+        MyApp.getDatabaseReference(node + "/" + userId).updateChildren(updates)
                 .addOnSuccessListener(aVoid -> callback.onSuccess());
     }
 
     /**
-     * Cancela una solicitud de borrado pendiente.
+     * Cancela una solicitud de borrado pendiente en el nodo correspondiente.
      */
-    public void cancelAccountDeletion(String userId, UserUpdateCallback callback) {
+    public void cancelAccountDeletion(String userId, String userType, UserUpdateCallback callback) {
+        String node = ("conductor".equals(userType) || "conductores".equals(userType)) ? "conductores" : "usuarios";
         Map<String, Object> updates = new HashMap<>();
         updates.put("solicitudBorrado", false);
         updates.put("fechaSolicitudBorrado", null);
-        MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(updates)
-                .addOnSuccessListener(aVoid -> callback.onSuccess());
+        MyApp.getDatabaseReference(node + "/" + userId).updateChildren(updates)
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     public void checkIfUserIsDriver(String userId, DriverCheckCallback callback) {

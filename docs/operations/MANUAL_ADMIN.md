@@ -43,6 +43,9 @@ La planilla maestra reside en el nodo `/horarios/`.
 
 ## 🧹 4. Mantenimiento y Emergencias
 
+### Limpieza Automática de Cuentas:
+El sistema ejecuta una tarea de mantenimiento **todos los domingos a las 3:00 AM** para eliminar permanentemente las cuentas que cumplieron su periodo de gracia de 30 días.
+
 ### Reset Manual de Jornada:
 Si la Cloud Function de las 7:00 PM llega a fallar:
 1.  Ve al nodo `/disponibilidadAsientos/`.

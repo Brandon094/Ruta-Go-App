@@ -6,14 +6,23 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ## [1.2.3] - 2026-05-24 (Stable Gold Master)
 ### Añadido
-- **Tutorial Interactivo Hub**: Sistema de guías paso a paso para pasajeros y conductores.
-- **Feedback de Cierre**: Tarjetas visuales de "Jornada Completada" y "Misión Cumplida".
+- **Tutorial Interactivo Hub**: Sistema de guías paso a paso centralizado para pasajeros y conductores.
+- **Rescate de Cuenta**: Flujo de reactivación automática si el usuario intenta ingresar durante el periodo de gracia de borrado.
+- **Borrado Automatizado (Gracia 30 días)**: Implementación de limpieza mensual programada (Domingos 3:00 AM) mediante Firebase Cloud Functions.
 - **Símbolos de Depuración**: Inclusión de símbolos nativos para mejor análisis de crashes en Play Console.
 
 ### Cambiado
+- **Arquitectura de Motores**: Desacoplamiento de lógica pesada en `Seat Engine` y `Reservation Engine`.
+- **Refactor de Managers**: Reorganización jerárquica en `/core` (Sistema) y `/ui` (Interfaz).
+- **Estandarización Técnica**: Unificación de nomenclatura en inglés para Adapters y carpetas del proyecto.
+- **Seguridad de API**: Implementación de restricciones granulares para 9 APIs críticas de Google Cloud y Firebase.
 - **Reactividad Total**: Refactorización de ViewModels para usar listeners permanentes en tiempo real.
 - **Optimización de SDK**: Actualización a targetSdkVersion 35 (Android 15).
-- **Estructura Documental**: Creación de la biblioteca técnica en `/docs/`.
+
+### Corregido
+- Bloqueo de UI (Spinner infinito) durante la reactivación de cuentas en el Login.
+- Error de validación de reglas de Firebase al intentar escribir tokens FCM en nodos cruzados.
+- Sincronización de capacidad de asientos al registrar nuevos vehículos.
 
 ---
 
@@ -31,7 +40,6 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ### Corregido
 - Error de "Shimmer Infinito" en el perfil de conductores.
-- Sincronización de capacidad de asientos al registrar nuevos vehículos.
 
 ---
 

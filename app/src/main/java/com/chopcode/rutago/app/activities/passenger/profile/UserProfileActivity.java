@@ -48,7 +48,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private MaterialCardView cardPremiumStats, cardPerfil, btnChangePhoto;
     private View headerContent;
     private ShimmerFrameLayout shimmerHeader, shimmerCard, shimmerPremium;
-    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
+    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount, btnCancelDeletion;
     private com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager tutorialManager;
 
     // ViewModel and Managers
@@ -102,15 +102,18 @@ public class UserProfileActivity extends AppCompatActivity {
         tvRutaFavorita = findViewById(R.id.tvRutaFavorita);
         btnEditarPerfil = findViewById(R.id.btnEditarPerfil);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+        btnCancelDeletion = findViewById(R.id.btnCancelDeletion);
 
         UIAnimationUtils.setClickAnimation(btnChangePhoto);
         UIAnimationUtils.setClickAnimation(btnEditarPerfil);
         UIAnimationUtils.setClickAnimation(btnDeleteAccount);
+        UIAnimationUtils.setClickAnimation(btnCancelDeletion);
         UIAnimationUtils.setClickAnimation(tvUserStatus);
 
         if (btnChangePhoto != null) btnChangePhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irAEditarPerfil());
         if (btnDeleteAccount != null) btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
+        if (btnCancelDeletion != null) btnCancelDeletion.setOnClickListener(v -> viewModel.cancelAccountDeletion());
         if (tvUserStatus != null) tvUserStatus.setOnClickListener(v -> viewModel.toggleUserStatus());
     }
 
@@ -130,6 +133,15 @@ public class UserProfileActivity extends AppCompatActivity {
                 tvTelefono.setText(user.getTelefono() != null ? user.getTelefono() : getString(R.string.no_disponible));
                 updateStatusBadge(user.getStatus());
                 ImageUtils.loadProfilePhoto(this, user.getPhotoUrl(), ivProfilePicture);
+
+                // 🛡️ GESTIÓN DE BOTONES DE BORRADO
+                if (user.isSolicitudBorrado()) {
+                    btnCancelDeletion.setVisibility(View.VISIBLE);
+                    btnDeleteAccount.setVisibility(View.GONE);
+                } else {
+                    btnCancelDeletion.setVisibility(View.GONE);
+                    btnDeleteAccount.setVisibility(View.VISIBLE);
+                }
             }
         });
 

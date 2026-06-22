@@ -42,7 +42,7 @@ public class DriverProfileActivity extends AppCompatActivity {
     private ShimmerFrameLayout shimmerHeader, shimmerCard;
     private TextView tvPlaca, tvModVehiculo, tvCapacidad, tvAnioVehiculo;
     private com.google.android.material.card.MaterialCardView btnChangePhoto;
-    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount;
+    private com.google.android.material.button.MaterialButton btnEditarPerfil, btnDeleteAccount, btnCancelDeletion;
     
     // ViewModel and Managers
     private DriverProfileViewModel viewModel;
@@ -97,6 +97,18 @@ public class DriverProfileActivity extends AppCompatActivity {
         if (btnEditarPerfil != null) btnEditarPerfil.setOnClickListener(v -> irEditarPerfil());
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
         if (btnDeleteAccount != null) btnDeleteAccount.setOnClickListener(v -> mostrarDialogoConfirmacionBorrado());
+        btnCancelDeletion = findViewById(R.id.btnCancelDeletion);
+        if (btnCancelDeletion != null) btnCancelDeletion.setOnClickListener(v -> cancelarSolicitudBorrado());
+    }
+
+    private void cancelarSolicitudBorrado() {
+        viewModel.cancelarBorradoCuenta(new com.chopcode.rutago.app.services.user.UserService.UserUpdateCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(DriverProfileActivity.this, R.string.borrado_cancelado_exito, Toast.LENGTH_SHORT).show();
+            }
+            @Override public void onError(String error) { Toast.makeText(DriverProfileActivity.this, error, Toast.LENGTH_SHORT).show(); }
+        });
     }
 
     private void setupObservers() {
@@ -107,6 +119,15 @@ public class DriverProfileActivity extends AppCompatActivity {
                 tvTelefono.setText(driver.getTelefono());
                 updateStatusBadge(driver.getStatus());
                 ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivProfilePicture);
+
+                // 🛡️ GESTIÓN DE BOTONES DE BORRADO
+                if (driver.isSolicitudBorrado()) {
+                    btnCancelDeletion.setVisibility(View.VISIBLE);
+                    btnDeleteAccount.setVisibility(View.GONE);
+                } else {
+                    btnCancelDeletion.setVisibility(View.GONE);
+                    btnDeleteAccount.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -176,7 +197,18 @@ public class DriverProfileActivity extends AppCompatActivity {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_account, null);
         androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this, R.style.AppDialogTheme)
                 .setView(dialogView).setCancelable(true).create();
-        dialogView.findViewById(R.id.btnConfirmDelete).setOnClickListener(v -> { dialog.dismiss(); Toast.makeText(this, "Request sent.", Toast.LENGTH_SHORT).show(); });
+        dialogView.findViewById(R.id.btnConfirmDelete).setOnClickListener(v -> { 
+            dialog.dismiss(); 
+            viewModel.solicitarBorradoCuenta(new com.chopcode.rutago.app.services.user.UserService.UserUpdateCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(DriverProfileActivity.this, R.string.solicitud_enviada_revision, Toast.LENGTH_LONG).show();
+                    authManager.signOut(DriverProfileActivity.this);
+                    finish();
+                }
+                @Override public void onError(String error) { Toast.makeText(DriverProfileActivity.this, error, Toast.LENGTH_SHORT).show(); }
+            });
+        });
         dialogView.findViewById(R.id.btnCancelDelete).setOnClickListener(v -> dialog.dismiss());
         if (dialog.getWindow() != null) dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.show();

@@ -164,6 +164,26 @@ public class DriverProfileViewModel extends BaseViewModel {
         vehicleLiveData.postValue(null);
     }
 
+    /**
+     * Solicita el borrado de la cuenta del conductor.
+     */
+    public void solicitarBorradoCuenta(UserService.UserUpdateCallback callback) {
+        if (currentDriverUID == null) return;
+        userService.requestAccountDeletion(currentDriverUID, "conductores", callback);
+    }
+
+    /**
+     * Cancela una solicitud de borrado pendiente.
+     */
+    public void cancelarBorradoCuenta(UserService.UserUpdateCallback callback) {
+        if (currentDriverUID == null) return;
+        setLoading(true);
+        userService.cancelAccountDeletion(currentDriverUID, "conductores", new UserService.UserUpdateCallback() {
+            @Override public void onSuccess() { setLoading(false); callback.onSuccess(); }
+            @Override public void onError(String error) { setLoading(false); callback.onError(error); }
+        });
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
