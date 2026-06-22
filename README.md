@@ -43,6 +43,7 @@
 |:---|:---|
 | [**📖 Documentación Integral**](./docs/DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
 | [**🤖 Manual de Desarrollo**](./docs/DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
+| [**📋 Requisitos del Sistema**](./docs/REQUISITOS.md) | Especificación de requisitos funcionales y reglas de negocio. |
 | [**📄 Ficha Técnica**](./docs/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
 | [**🗺️ Arquitectura de Módulos**](./docs/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
 | [**🏁 Plan de Pruebas**](./docs/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
