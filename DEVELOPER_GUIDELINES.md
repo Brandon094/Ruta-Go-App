@@ -33,19 +33,20 @@ Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable,
 - **Recursos:** 100% de los textos en `strings.xml`. Prohibido el uso de "hardcoded strings" en layouts o clases Java.
 
 ### B. Gestión de Datos Reactiva (Firebase)
-- **Escucha Global:** Uso estricto de `ValueEventListener` (`addValueEventListener`) en ViewModels para dashboards e itinerarios. Prohibido `addListenerForSingleValueEvent` en pantallas críticas.
+- **Escucha Global:** Uso estricto de `ValueEventListener` (`addValueEventListener`) en ViewModels para perfiles, estadísticas e itinerarios. Prohibido `addListenerForSingleValueEvent` en pantallas críticas para garantizar reactividad inmediata.
 - **Segregación Total de Roles:** 
   - Pasajeros residen en `/usuarios/`.
   - Conductores residen en `/conductores/` y `/vehiculos/`.
   - El Login debe detectar el rol mediante búsqueda secuencial inteligente sin duplicidad de datos.
-- **Atomicidad Operativa:** Uso de `updateChildren` para registros multi-nodo para garantizar que el conductor, su vehículo y su agenda inicial se creen como una sola transacción lógica.
+- **Atomicidad Operativa:** Uso de `updateChildren` para registros multi-nodo.
 
 ### C. UI/UX & Animaciones Premium
-- **Responsividad (8% Rule):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en todos los formularios para garantizar aire visual en cualquier densidad de pantalla.
-- **Layouts Limpios:** Uso de `Barrier` para evitar superposiciones dinámicas entre contenidos variables y footers/actualizaciones.
+- **Responsividad (8% Rule):** Uso obligatorio de `Guideline` porcentuales (8% inicio / 92% fin) en todos los formularios para garantizar aire visual.
+- **Layouts Limpios:** Uso de `Barrier` para evitar superposiciones dinámicas entre contenidos variables y pies de página.
 - **Feedback Proactivo:**
   - **Jornada Completada:** Tarjeta visual automática cuando todos los horarios de una ruta han pasado.
   - **Misión Cumplida:** Feedback especializado para conductores tras finalizar su itinerario.
+- **Tutorial Hub:** Uso estricto de `TutorialManager` para lanzar guías interactivas. Prohibido incluir lógica de tutoriales (inflado de diálogos o delays) dentro de las Activities.
 - **Micro-interacciones:**
   - `playCardEntryAnimation`: Efecto de deslizamiento hacia arriba para todas las tarjetas al cargar.
   - `startLogoTiltAnimation`: Balanceo de 15 grados en logos para sensación de vida.
@@ -57,33 +58,25 @@ Ofrecer una plataforma de transporte intermunicipal ágil, reactiva y confiable,
 Proceso Step-by-Step que automatiza:
 1. Creación de cuenta en Firebase Auth.
 2. Alta técnica de vehículo por placa con capacidad dinámica.
-3. **Autogestión de Horarios:** Selección de turnos de ida/vuelta con validación de disponibilidad en tiempo real.
-4. **Sincronización de Asientos:** El sistema ajusta automáticamente `totalAsientos` y `asientosDisponibles` basándose en la ficha técnica del bus registrado.
+3. **Sincronización de Agenda:** Selección de turnos con validación de disponibilidad en tiempo real.
+4. **Reseteo de Asientos:** El sistema ajusta automáticamente la disponibilidad basándose en el bus registrado.
 
-### B. Onboarding Dual
-- **Pasajero:** Enfoque en reserva ágil y seguridad.
-- **Conductor:** Enfoque operativo (Gestión de asientos, bloqueos manuales/ventas físicas y finanzas).
-- Activación única controlada por `SessionManager` post-instalación (Pasajero) y post-login (Conductor).
+### B. Onboarding Interactivo
+- **Dualidad:** Tutoriales específicos para Pasajeros y Conductores gestionados mediante un Hub centralizado.
+- **Activación:** Disparada automáticamente en el primer acceso a pantallas clave (Home, Seats, Profile, History).
 
 ### C. Sistema de Turnos Inteligente
-- **Sanity Check:** El sistema detecta y filtra automáticamente "Conductores Fantasmas" (IDs huérfanos de pruebas previas) en la lista de horarios, marcándolos como "(Libre)".
-- **Resiliencia:** Si el nodo de disponibilidad no existe, el app lo crea bajo demanda basándose en la capacidad del bus asignado.
+- **Sanity Check:** El sistema detecta y filtra automáticamente "Conductores Fantasmas" en la planilla de horarios.
+- **Visibilidad:** Etiquetado dinámico de horarios como "(Libre)" u "(Ocupado)" durante el registro.
 
 ## 6. Seguridad y Reglas de Negocio (Firebase Rules)
-- **Horarios:** Escritura restringida al campo `conductorId` solo si el turno está vacío o pertenece al usuario autenticado.
-- **Vehículos:** El campo `driverId` es obligatorio y debe coincidir con el `auth.uid` del creador.
-- **Disponibilidad:** Solo el conductor asignado en el nodo de horarios puede modificar la capacidad total del bus.
-- **Sensibilidad:** Los nodos `/estadisticas/` y `/ingresos_conductores/` tienen privacidad total restringida al dueño del UID.
+- **Horarios:** Escritura restringida al campo `conductorId` solo si el turno está vacío.
+- **Vehículos:** El campo `driverId` es obligatorio y debe coincidir con el `auth.uid`.
+- **Privacidad:** Los nodos `/estadisticas/` e `/ingresos_conductores/` tienen acceso restringido al dueño del UID.
 
 ## 7. Estado Actual (v1.2.1 Stable - Gold Master)
-- **Estabilidad:** 100% de los flujos de carga infinita (Shimmer) resueltos mediante manejo de nulos y cache de ViewModels.
-- **Consistencia:** Unificación del idioma técnico (status/active para perfiles, estado/activo para hardware).
+- **Estabilidad:** 100% de los flujos de carga infinita (Shimmer) resueltos mediante reactividad y manejo de nulos.
 - **Integridad:** Sincronización atómica entre el registro del conductor y la visibilidad para el pasajero.
-
-## 8. Siguientes Pasos
-- **Hito 1:** Implementación de pasarela de pagos integrados.
-- **Hito 2:** Panel de analíticas avanzado para la Central de Administradores.
-- **Hito 3:** Refinamiento de accesibilidad para visión bajo luz solar intensa.
 
 ---
 *Propiedad Intelectual de **Chop Code Solutions** - 2026*

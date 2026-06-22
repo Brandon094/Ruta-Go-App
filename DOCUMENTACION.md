@@ -9,16 +9,16 @@ Ruta-Go nace para profesionalizar el transporte regional, eliminando la incertid
 
 ### 🎯 Objetivos Clave
 *   **Fiabilidad**: Garantizar que el pasajero vea buses reales y horarios confirmados.
-*   **Agilidad**: Registro autónomo de conductores y vehículos.
-*   **Transparencia**: Cuentas claras para los conductores sobre sus ingresos diarios.
+*   **Agilidad**: Registro autónomo de conductores y vehículos con asignación de turnos inmediata.
+*   **Transparencia**: Cuentas claras para los conductores sobre sus ingresos diarios y ocupación real.
 
 ---
 
 ## 👥 2. Roles y Actores del Sistema
 El ecosistema se divide en tres niveles de acceso claramente segregados:
 
-1.  **Pasajero (Cliente)**: Consulta horarios, reserva asientos, chatea con el conductor y califica el servicio.
-2.  **Conductor (Operador)**: Gestiona su bus, confirma reservas, realiza ventas físicas y visualiza sus finanzas.
+1.  **Pasajero (Cliente)**: Consulta horarios, reserva asientos, chatea con el conductor y califica el servicio. Cuenta con un tutorial guiado paso a paso.
+2.  **Conductor (Operador)**: Gestiona su bus, confirma reservas, realiza ventas físicas y visualiza sus finanzas. Cuenta con un sistema de onboarding operativo especializado.
 3.  **Administrador (Central)**: Define horarios maestros, ajusta tarifas globales y supervisa la flota.
 
 ---
@@ -26,12 +26,13 @@ El ecosistema se divide en tres niveles de acceso claramente segregados:
 ## 📦 3. Módulos del Software
 Ruta-Go está construido de forma modular para permitir el crecimiento escalable:
 
-*   **Módulo Auth**: Gestión de identidad dual (Email/Google).
-*   **Módulo Itinerario**: Filtros inteligentes de horarios pasados y detección de disponibilidad.
-*   **Módulo Reserva**: Motor de asignación atómica de asientos.
-*   **Módulo Financiero**: Tarifas dinámicas desde la nube y cálculo de ingresos.
-*   **Módulo Chat**: Mensajería en tiempo real vinculada a tiquetes activos.
-*   **Módulo Sanity**: Limpieza automática de datos y validación de consistencia.
+*   **Módulo Auth**: Gestión de identidad dual (Email/Google) con segregación física de perfiles.
+*   **Módulo Itinerario**: Filtros inteligentes de horarios pasados, detección de disponibilidad y resaltado de "Próximo Viaje".
+*   **Módulo Reserva**: Motor de asignación atómica de asientos sincronizado en tiempo real.
+*   **Módulo Financiero**: Tarifas dinámicas desde la nube y cálculo de ingresos acumulados con animaciones numéricas.
+*   **Módulo Chat**: Mensajería en tiempo real vinculada a transacciones activas y con contexto informativo.
+*   **Módulo Tutorial (Hub)**: Centro de mando para guías interactivas que educan al usuario en cada pantalla.
+*   **Módulo Sanity**: Capa de integridad que filtra conductores inexistentes y normaliza datos históricos.
 
 ---
 
@@ -39,37 +40,37 @@ Ruta-Go está construido de forma modular para permitir el crecimiento escalable
 Para profundizar en cada área, consulte los siguientes manuales específicos:
 
 1.  [**Manual de Desarrollo**](./DEVELOPER_GUIDELINES.md): Estándares de código, stack tecnológico y "Reglas de Oro".
-2.  [**Arquitectura de Módulos**](./ARCHITECTURE_MODULES.md): Flujo de datos entre componentes e interfaces de Firebase.
+2.  [**Arquitectura de Módulos**](./ARCHITECTURE_MODULES.md): Flujo de datos entre componentes e interfaces de comunicación.
 3.  [**Plan de Pruebas**](./RELEASE_TESTING_PLAN.md): Protocolo de QA para certificar la estabilidad de la versión.
-4.  [**Hoja de Ruta (Roadmap)**](./ROADMAP.md): Próximas funcionalidades y visión a futuro.
+4.  [**Hoja de Ruta (Roadmap)**](./ROADMAP.md): Próximas funcionalidades (Pagos, Puntos Go, Encomiendas).
 
 ---
 
 ## 📊 5. Estructura de Datos (Firebase Core)
-La base de datos está diseñada bajo un modelo NoSQL segregado:
+La base de datos está diseñada bajo un modelo NoSQL segregado por roles:
 
-*   `conductores/`: Perfiles profesionales de los choferes.
-*   `usuarios/`: Base de datos de clientes (pasajeros).
-*   `vehiculos/`: Ficha técnica de la flota organizada por placas.
-*   `horarios/`: Planilla maestra de despachos diarios.
-*   `disponibilidadAsientos/`: Control dinámico de ocupación.
-*   `precios/`: Tarifario centralizado y remoto.
+*   `conductores/`: Perfiles profesionales vinculados a una identidad de Auth.
+*   `usuarios/`: Base de datos exclusiva para clientes (pasajeros).
+*   `vehiculos/`: Ficha técnica de la flota organizada por placas con vinculación al dueño.
+*   `horarios/`: Planilla maestra de despachos con asignación dinámica de conductores.
+*   `disponibilidadAsientos/`: Control dinámico de ocupación autogestionado por los conductores.
+*   `precios/`: Tarifario centralizado y remoto administrado por la Central.
 
 ---
 
 ## 🛡️ 6. Seguridad y Privacidad
-El sistema implementa **Firebase Security Rules** avanzadas para garantizar:
-*   Que un pasajero solo vea sus propias reservas.
-*   Que los ingresos de un conductor sean totalmente privados.
-*   Que solo la Central de Administradores pueda modificar precios.
+El sistema implementa **Firebase Security Rules** avanzadas que garantizan:
+*   Segregación total entre pasajeros y conductores.
+*   Privacidad financiera absoluta (solo el dueño ve sus ingresos).
+*   Integridad operativa (solo conductores asignados modifican disponibilidad).
 
 ---
 
 ## 🚀 7. Guía de Inicio Rápido para Despliegue
 1.  Configurar `google-services.json` en la carpeta `/app`.
 2.  Importar el **JSON Maestro v1.2.1** en Realtime Database.
-3.  Publicar las **Cloud Functions** para el reseteo de las 7:00 PM.
-4.  Firmar el APK usando la `key.jks` oficial de Chop Code Solutions.
+3.  Validar la carga inicial de horarios y precios dinámicos.
+4.  Firmar el bundle usando la `key.jks` oficial de Chop Code Solutions.
 
 ---
 **© 2026 Chop Code Solutions - Todos los derechos reservados.**
