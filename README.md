@@ -1,56 +1,56 @@
 # 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.2.3 Stable 🚀
 
-**Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila. Conectamos a pasajeros y conductores a través de una arquitectura **100% reactiva**, garantizando fiabilidad en los horarios y transparencia en la gestión de cupos. ✨
+**Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Mediante una arquitectura **100% reactiva** y una infraestructura cloud escalable, conectamos a pasajeros y conductores garantizando fiabilidad, transparencia y agilidad operativa. ✨
 
 ---
 
-## 🌟 Características Destacadas (v1.2.3)
+## 🌟 Valor Agregado y Capacidades
 
-### 🚶 Experiencia del Pasajero
-- **📅 Itinerario Inteligente:** Visualización en tiempo real de rutas con detección automática de "Próximo Viaje" y horarios pasados.
-- **💺 Reserva Atómica:** Mapa interactivo de asientos con sincronización instantánea para evitar duplicidad de puestos.
-- **💰 Tarifas Dinámicas:** Precios gestionados desde la nube con formatos financieros profesionales (COP).
-- **🏁 Feedback de Cierre:** Notificaciones visuales de "Jornada Completada" tras el último despacho del día.
-- **🎓 Academia Interactiva:** Tutorial guiado paso a paso para nuevos usuarios sobre el proceso de reserva.
+### 🚶 Experiencia del Pasajero (B2C)
+*   📅 **Itinerario Predictivo**: Detección automática de "Próximo Viaje" y filtrado inteligente de horarios expirados.
+*   💺 **Reserva Atómica**: Motor de asignación de asientos con transacciones en milisegundos para evitar colisiones de datos.
+*   💰 **Tarifas Dinámicas**: Precios gestionados remotamente con visualización profesional en COP.
+*   🎓 **Tutorial Hub**: Sistema interactivo de capacitación integrada para una curva de aprendizaje mínima.
 
-### 👨‍✈️ Centro de Control del Conductor
-- **📝 Registro Autónomo:** Alta técnica de conductor y vehículo (Placa, Modelo, Capacidad) con asignación de turnos inmediata.
-- **🕒 Autogestión de Agenda:** Selección dinámica de horarios disponibles con etiquetado inteligente (Libre/Ocupado).
-- **📊 Dashboard Pro:** Estadísticas financieras y operativas con animaciones numéricas para ingresos y ocupación real.
-- **📱 Venta Física:** Motor de bloqueo manual de asientos para pasajeros captados fuera de la plataforma.
-- **🏆 Misión Cumplida:** Reconocimiento visual especializado al finalizar los recorridos del día.
+### 👨‍✈️ Gestión para el Conductor (B2B)
+*   📝 **Onboarding Autónomo**: Alta técnica de conductores y vehículos con vinculación inmediata a la planilla maestra.
+*   📊 **Dashboard Financiero**: Estadísticas de ingresos y ocupación en tiempo real con animaciones fluidas.
+*   📱 **Motor de Venta Física**: Capacidad de bloqueo manual de inventario para ventas fuera de plataforma.
+*   🏁 **Feedback Operativo**: Notificaciones visuales de "Misión Cumplida" tras completar la jornada asignada.
 
 ---
 
-## 🛠️ Stack Tecnológico e Infraestructura
+## 🏗️ Stack Tecnológico e Ingeniería (QA Senior Approved)
 
-### **Frontend & Arquitectura**
-- **Lenguaje:** Java 17 (Toolchain Pro).
-- **Arquitectura:** **MVVM (Model-View-ViewModel)** robusto y reactivo.
-- **Motores (Engines):** Procesamiento de datos desacoplado para máxima eficiencia.
-- **UI/UX:** Material Components 3, animaciones de entrada premium y soporte **DayNight (Claro/Oscuro)** total.
-- **Tutorial Hub:** Sistema centralizado de guías interactivas para una curva de aprendizaje mínima.
+### **Arquitectura & Frontend**
+*   **Patrón**: Model-View-ViewModel (MVVM) con flujo de datos unidireccional.
+*   **Motores (Engines)**: Lógica de negocio desacoplada (Seat Engine, Reservation Engine).
+*   **UI/UX**: Material Components 3, soporte nativo DayNight y animaciones premium.
+*   **Toolchain**: Java 17, SDK 35 (Android 15 ready), Gradle 8.11.
 
-### **Backend (Firebase Ecosystem)**
-- **Realtime Database:** Base de datos NoSQL segregada por roles para máxima seguridad.
-- **Cloud Functions:** Automatización de reset global de las 7:00 PM.
-- **Sanity Check:** Capa lógica que filtra conductores inexistentes para mantener la integridad de la planilla.
+### **Infraestructura Backend (Firebase Ecosystem)**
+*   **Database**: Realtime Database con arquitectura NoSQL segregada por roles.
+*   **Serverless**: Cloud Functions para automatización de reset global y rotación de turnos.
+*   **Security**: Firebase Security Rules para protección de datos a nivel de registro (Habeas Data).
+*   **Monitor**: Crashlytics y Google Analytics integrados para mantenimiento proactivo.
 
 ---
 
-## 📂 Documentación Detallada (Biblioteca Técnica)
+## 📂 Biblioteca Técnica Integral (Documentación)
 
-| Documento | Propósito |
-|:---|:---|
-| [**📖 Documentación Integral**](./docs/DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
-| [**🤖 Manual de Desarrollo**](./docs/technical/DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
-| [**🎨 Identidad Visual**](./docs/product/BRANDING.md) | Paleta de colores, logos y tipografía oficial. |
-| [**📋 Requisitos del Sistema**](./docs/product/REQUISITOS.md) | Especificación de requisitos funcionales y reglas de negocio. |
-| [**📄 Ficha Técnica**](./docs/technical/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
-| [**🗺️ Arquitectura de Módulos**](./docs/technical/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
-| [**🏁 Plan de Pruebas**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
-| [**📜 Historial de Cambios**](./docs/operations/CHANGELOG.md) | Registro detallado de la evolución del software. |
-| [**🚀 Roadmap**](./docs/product/ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
+Acceda a la documentación detallada dividida por dominios de especialidad:
+
+| Dominio | Documento Maestro | Propósito |
+|:---|:---|:---|
+| 🏛️ **General** | [**Enciclopedia Ruta-Go**](./docs/DOCUMENTACION.md) | Punto de entrada y visión general del ecosistema. |
+| 🏗️ **Técnico** | [**Arquitectura Detallada**](./docs/technical/ARCHITECTURE_MODULES.md) | Mapa de flujos, motores y patrones de diseño. |
+| 🤖 **Código** | [**Manual de Desarrollo**](./docs/technical/DEVELOPER_GUIDELINES.md) | Reglas de oro, Clean Code y estándares de ingeniería. |
+| 📋 **Producto** | [**Requisitos del Sistema**](./docs/product/REQUISITOS.md) | Especificación de RF, RNF y reglas de negocio. |
+| 🎨 **Marca** | [**Identidad Visual**](./docs/product/BRANDING.md) | Branding, paleta de colores y lineamientos estéticos. |
+| 🏁 **Calidad** | [**Plan de Pruebas (QA)**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de certificación para lanzamientos. |
+| ⚙️ **Operativo** | [**Manual de Admin**](./docs/operations/MANUAL_ADMIN.md) | Guía de gestión operativa desde Firebase Console. |
+| 📜 **Historial** | [**Changelog**](./docs/operations/CHANGELOG.md) | Registro histórico de la evolución del software. |
+| 🚀 **Futuro** | [**Roadmap**](./docs/product/ROADMAP.md) | Hoja de ruta para la Fase 2 (Pagos) y Fase 3 (Encomiendas). |
 
 ---
 
@@ -62,4 +62,4 @@ Desarrollado por **Chop Code Solutions**.
 - **GitHub:** 🔗 [Brandon094](https://github.com/Brandon094)
 
 ---
-*Ruta-Go - Conectando caminos, facilitando viajes.* 🚌💨🎯
+*Ruta-Go - Conectando caminos, facilitando viajes.* 🚌💨🎯🏁

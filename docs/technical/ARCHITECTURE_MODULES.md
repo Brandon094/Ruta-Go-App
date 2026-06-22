@@ -1,95 +1,89 @@
-# 🗺️ Arquitectura de Módulos - Ruta-Go v1.2.3 Stable
+# 🗺️ Arquitectura Técnica Detallada - Ruta-Go v1.2.3 Stable
 
-Este documento describe la interacción entre los componentes de la aplicación, el flujo de datos y las interfaces de comunicación que sostienen la plataforma.
-
----
-
-## 🏗️ 1. Arquitectura General (MVVM Pattern)
-La aplicación sigue el patrón **Model-View-ViewModel**, garantizando que la lógica de negocio esté separada de la interfaz de usuario.
-
-*   **View (UI)**: Activities y Fragments (XML + Java). Observan al ViewModel.
-*   **ViewModel**: Gestiona el estado de la UI y se comunica con los Engines y Services.
-*   **Engine**: Lógica pesada, validaciones y procesamiento de datos desacoplado de la UI. (Ubicación: `app.engines`).
-*   **Service (Repository)**: Orquestadores de Firebase (Auth, Database, Storage). Organizados por dominio (Ubicación: `app.services`).
-*   **Manager**: Divididos por responsabilidad técnica:
-    *   **Core Managers**: Auxiliares de sistema (Analytics, Auth, Notifications, Permissions, Settings). (Ubicación: `app.managers.core`).
-    *   **UI Managers**: Auxiliares visuales y gestores de flujo (Dashboard, Reservations, Routes, Tutorials). (Ubicación: `app.managers.ui`).
-*   **Adapter**: Listas con nomenclatura estándar técnica en inglés. (Ubicación: `app.adapters`).
-*   **Model**: Clases POJO (User, Driver, Schedule, etc.) con mapeo dual.
+Este documento proporciona una visión profunda de la ingeniería detrás de Ruta-Go, diseñada bajo estándares de **Clean Architecture** y patrones reactivos para garantizar escalabilidad, mantenibilidad y robustez transaccional.
 
 ---
 
-## 📦 2. Módulo de Identidad y Segregación (Auth-Module)
-**Propósito**: Controlar el acceso y definir el rol del usuario sin ambigüedades.
+## 🏗️ 1. Patrón Arquitectónico: MVVM Reactivo
+La plataforma implementa **Model-View-ViewModel** con un flujo de datos unidireccional y reactivo mediante `LiveData` y `Firebase Realtime Database`.
 
-*   **Entrada**: Credenciales (Email/Pass) o Google Token.
-*   **Proceso**:
-    1.  `LoginViewModel` recibe datos.
-    2.  `UserRoleService` consulta secuencialmente en nodos independientes.
-*   **Salida**: UID autenticado + Redirección al Dashboard correspondiente.
-
----
-
-## 📝 3. Módulo de Registro Autónomo (Driver-Provisioning)
-**Propósito**: Alta técnica completa de un conductor y su activo (vehículo).
-
-*   **Interfaces Clave**: `DriverRegistrationViewModel`
-*   **Flujo de Datos**:
-    1.  **Captura**: Datos personales + Ficha técnica bus + 2 Horarios iniciales.
-    2.  **Sincronización**: Al guardar, se actualizan simultáneamente los nodos `/conductores/`, `/vehiculos/`, `/horarios/` y `/disponibilidadAsientos/`.
-*   **Integridad**: El sistema establece la capacidad técnica del bus en los horarios seleccionados de forma atómica.
+### Componentes de la Capa:
+*   **View (Activities/Fragments)**: Suscriptores pasivos al estado del ViewModel. Implementan lógica de renderizado y captura de eventos de usuario.
+*   **ViewModel**: El orquestador de estado. No posee referencias a la UI (Context/Views). Utiliza `MutableLiveData` para exponer estados y `BaseViewModel` para estandarizar el manejo de errores y analíticas.
+*   **Engines (Business Logic)**: Capa de procesamiento puro. Realiza cálculos, validaciones masivas y preparación de datos (DTOs) antes de persistir o navegar.
+*   **Services (Data Layer)**: Fachadas (Facades) para la comunicación con Firebase. Implementan el patrón Repository para abstraer el origen de los datos.
+*   **Managers**: Auxiliares especializados divididos en **Core** (lógica no visual) y **UI** (lógica visual compleja).
 
 ---
 
-## 💺 4. Motor de Selección de Asientos (Seat Engine)
-**Propósito**: Control de ocupación en tiempo real y ventas físicas.
+## 📦 2. Módulos Críticos: Profundidad Técnica
 
-*   **Ubicación**: `com.chopcode.rutago.app.engines.seats`
-*   **Componentes**:
-    *   `SeatManager`: Controlador visual de la grilla de asientos en la UI.
-    *   `SeatDataProcessor`: Procesador de persistencia atómica en Firebase.
+### 2.1 Módulo de Identidad y Segregación (Auth Engine)
+**Responsabilidad**: Garantizar la integridad de los roles y la seguridad de acceso.
+*   **Lógica de Detección**: Implementa un algoritmo de búsqueda secuencial en paralelo. Al autenticar, `UserRoleService` dispara consultas a `/conductores/$uid` y `/usuarios/$uid`. El sistema prioriza el nodo de conductores para evitar conflictos de identidad.
+*   **Blindaje**: Utiliza `AuthManager` como Singleton para centralizar el estado de la sesión.
+*   **Manejo de Errores**: Captura de errores de red y tokens expirados en `GoogleLoginService`.
 
----
+### 2.2 Motor de Selección de Asientos (Seat Engine)
+**Responsabilidad**: Gestión atómica de inventario móvil.
+*   **Clases Core**: `SeatManager` (UI) y `SeatDataProcessor` (Data).
+*   **Protocolo Transaccional**: Utiliza `DatabaseReference.runTransaction()` en Firebase. Esto garantiza que el decremento de `asientosDisponibles` y la marca en `asientosOcupados` ocurra de forma atómica. Si dos usuarios intentan tomar el mismo asiento al mismo milisegundo, Firebase rechaza uno automáticamente.
+*   **Sincronización de Capacidad**: El método `syncVehicleCapacityToSchedules` propaga cambios técnicos del bus a todos los horarios asignados al conductor de forma masiva.
 
-## 🎫 9. Motor de Reservas (Reservation Engine)
-**Propósito**: Orquestar la validación y preparación de datos transaccionales.
+### 2.3 Motor de Reservas (Reservation Engine)
+**Responsabilidad**: Preparación y validación de transacciones financieras/logísticas.
+*   **Flujo Preparatorio**: `ReservationDataProcessor` actúa como un convertidor de datos. Toma estados de la UI, información del conductor y del usuario, y construye un `Intent` complejo enriquecido con extras para la actividad de confirmación.
+*   **Validación de Requisitos**: Implementa un motor de reglas interno que impide avanzar si:
+    1. No hay ruta seleccionada.
+    2. El asiento no está marcado localmente.
+    3. Los datos del conductor no han terminado de cargar (Sync Check).
 
-*   **Ubicación**: `com.chopcode.rutago.app.engines.reservations`
-*   **Componentes**:
-    *   `ReservationDataProcessor`: Validador y preparador de datos para el flujo de confirmación.
-*   **Estructura de Managers**: Los auxiliares de UI ahora se organizan por etapa (`creation`, `confirmation`, `common`).
-
----
-
-## 💰 5. Módulo Financiero y Precios (Dynamic-Price-Service)
-**Propósito**: Gestión de tarifas sin necesidad de actualizar la App.
-
-*   **Fuente de Verdad**: Nodo remoto `/precios/`.
-*   **Formateo**: `FormatUtils` transforma valores brutos a COP con abreviación financiera (K/M).
-
----
-
-## 🎓 6. Módulo de Capacitación (Tutorial Hub)
-**Propósito**: Guiar al usuario mediante una experiencia interactiva paso a paso.
-
-*   **Componente Central**: `TutorialManager`.
-*   **Lógica**: Desacoplada de las actividades. Muestra diálogos informativos basados en el contexto (Pasajero o Conductor) y guarda el estado en `SessionManager`.
+### 2.4 Módulo de Integridad (Sanity Check)
+**Responsabilidad**: Autolimpieza y normalización de la planilla de horarios.
+*   **Lógica de Filtrado**: Al cargar horarios, `ScheduleService` cruza el `conductorId` contra la lista activa de conductores.
+*   **Mitigación de Datos Huérfanos**: Si un administrador borra un conductor de Firebase, este módulo detecta que el ID en el horario ya no existe y lo "libera" visualmente marcándolo como **"(Libre)"**, evitando crashes por punteros nulos en el perfil del chofer.
 
 ---
 
-## 🛰️ 7. Capa de Integridad (Sanity-Check Layer)
-**Propósito**: Garantizar que la planilla de horarios no tenga errores.
+## 📊 3. Flujo de Datos (Data Flow Pipeline)
 
-*   **Detección**: Filtra conductores inexistentes comparando el `conductorId` de horarios contra el nodo maestro de conductores.
-*   **Visibilidad**: Etiqueta automáticamente los turnos como "(Libre)" si el ID no es válido.
+### Caso: Reserva de Pasajero
+1.  **Trigger**: Usuario toca un asiento verde.
+2.  **UI Level**: `SeatManager` captura el ID, dispara animación de selección y notifica al `CreateReservationViewModel`.
+3.  **Validation**: El ViewModel consulta al `SeatDataProcessor` para validar disponibilidad en el servidor (Atomic Check).
+4.  **Preparation**: `ReservationDataProcessor` empaqueta los datos.
+5.  **Confirmation**: `ReservationService` ejecuta la escritura en `/reservas/` y actualiza la ocupación.
+6.  **Notification**: Se dispara un trigger hacia el `NotificationManager` para enviar un Push V1 al conductor asignado.
+
+---
+
+## 🛡️ 4. Estándares de QA y Estabilidad (Senior Checklist)
+
+### 4.1 Manejo de Nulos y Estados
+*   **Shimmer Consistency**: El estado `isLoading` se controla estrictamente desde el ViewModel. El Shimmer solo se detiene cuando la respuesta de Firebase (éxito o error) es recibida.
+*   **Safe Parsing**: Uso de `getStringSafely()` y conversiones de tipo robustas para evitar el error `ClassCastException` común al leer datos NoSQL dinámicos.
+
+### 4.2 Optimización de Recursos
+*   **Listener Lifecycle**: Todos los `ValueEventListener` se remueven en el método `onCleared()` del ViewModel o `onStop()` de la Activity para prevenir fugas de memoria (Memory Leaks).
+*   **Disk Cache**: Implementación de Glide con `DiskCacheStrategy.ALL` para fotos de perfil y activos pesados.
 
 ---
 
-## 🎢 8. Módulo de Animación y Feedback (UX-Core)
-**Propósito**: Proveer una sensación de fluidez y profesionalismo.
+## 📂 5. Jerarquía de Paquetes (Organización Industrial)
 
-*   **Feedback System**: Muestra tarjetas de cierre ("Jornada Completada" / "Misión Cumplida") basadas en el tiempo del sistema y el estado de las rutas.
-*   **UIAnimationUtils**: Centraliza efectos de entrada, pulsos y conteos numéricos.
+```plaintext
+com.chopcode.rutago.app/
+├── activities/     # Controladores de vista segmentados por Rol.
+├── adapters/       # Adaptadores estandarizados en inglés por módulo.
+├── engines/        # Lógica de negocio pesada (Seats, Reservations).
+├── managers/
+│   ├── core/       # Sistema: Auth, Analytics, Notif, Settings.
+│   └── ui/         # Interfaz: Tutorials, Dashboard, Flows.
+├── models/         # POJOs con anotaciones @PropertyName (Mapeo Dual).
+├── services/       # Repositorios Firebase agrupados por dominio.
+├── utils/          # Herramientas globales (Format, Network, UIAnim).
+└── viewmodels/     # Gestión de estado reactiva por pantalla.
+```
 
 ---
-*Documentación generada por el Agente de Desarrollo Ruta-Go - Chop Code Solutions 2026*
+**Documentación de Ingeniería - Chop Code Solutions - QA Senior Certified**

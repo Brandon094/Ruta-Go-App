@@ -1,36 +1,55 @@
-# 🛡️ Política de Seguridad y Privacidad – Ruta-Go
+# 🛡️ Marco de Seguridad y Gobernanza de Datos – Ruta-Go
 
-#### Última actualización: 17 de Junio, 2026
+#### Versión: 1.2.3 Stable | Última actualización: Mayo 24, 2026
 
-En **Chop Code Solutions**, la integridad de la plataforma y la confianza de nuestros usuarios son prioridad. Este documento detalla las medidas de seguridad técnica implementadas y el tratamiento de datos personales en cumplimiento con la **Ley 1581 de 2012 (Habeas Data)** de la República de Colombia.
+En **Chop Code Solutions**, aplicamos un enfoque de **Seguridad por Diseño** para proteger la integridad de la plataforma Ruta-Go y la privacidad de sus usuarios. Este documento detalla las capas de protección técnica y legal implementadas.
 
-## 1. Seguridad de la Infraestructura
-Ruta-Go utiliza una arquitectura de seguridad de nivel industrial respaldada por Google Cloud:
+---
 
-- **🔐 Reglas de Seguridad Firebase:** Hemos implementado **Firebase Security Rules** estrictas. Ningún usuario puede leer o escribir datos que no le correspondan. El acceso a los datos de los pasajeros está restringido exclusivamente al conductor asignado a su ruta.
-- **🛡️ Protección de Algoritmos:** La lógica crítica, incluyendo el **Algoritmo de Rotación Automática**, reside en Firebase Cloud Functions. Esto evita que la lógica de negocio sea vulnerable a ingeniería inversa en el dispositivo móvil.
-- **🚫 Ofuscación de Código (R8/ProGuard):** El binario de distribución (AAB/APK) está cifrado y ofuscado para proteger la propiedad intelectual de **Chop Code Solutions**.
+## 🔒 1. Capas de Seguridad Técnica
 
-## 2. Tratamiento de Datos (Privacidad)
-Para el correcto funcionamiento de las reservas y la logística, recopilamos:
+### 1.1 Seguridad a Nivel de Aplicación (Client-Side)
+*   **Ofuscación y Minificación (R8/ProGuard)**: El código fuente es transformado en binarios ofuscados antes de su distribución. Esto protege la propiedad intelectual y dificulta el análisis mediante ingeniería inversa.
+*   **Integridad de Firma**: Solo los paquetes firmados con la `key.jks` oficial pueden interactuar con los servicios cloud en modo producción.
+*   **Permisos Dinámicos**: Implementación del modelo de permisos de Android 13+ (Granular Permissions) para notificaciones y almacenamiento.
 
-- **Identidad:** Nombre, correo y foto vía Google Auth.
-- **Logística:** Número de teléfono (vital para la coordinación pasajero-conductor).
-- **Vehículo:** Datos técnicos del bus para seguridad del pasajero.
-- **Ubicación:** Datos de origen y destino para la gestión de rutas.
+### 1.2 Seguridad a Nivel de Datos (Cloud-Side)
+*   **Reglas de Seguridad NoSQL**: Firebase Realtime Database utiliza reglas declarativas que validan el `auth.uid` en cada transacción.
+    *   *Conductores*: Solo el dueño del perfil puede modificar sus datos financieros e itinerarios.
+    *   *Pasajeros*: Privacidad absoluta en el historial de viajes.
+*   **Transaccionalidad Atómica**: Uso de `runTransaction()` para prevenir condiciones de carrera (Race Conditions) en la reserva de asientos y gestión de cupos.
+*   **Cifrado en Tránsito**: Todas las comunicaciones entre el dispositivo móvil y los servidores de Firebase están cifradas mediante protocolos **SSL/TLS**.
 
-## 3. Uso Compartido de Información
-La transferencia de datos es estrictamente operativa. **Chop Code Solutions no comercializa datos personales**. La información de contacto del pasajero solo se revela al conductor una vez que la reserva es confirmada, con el único fin de coordinar el abordaje.
+---
 
-## 4. Derechos del Usuario
-En cumplimiento del **Habeas Data**, cualquier usuario puede:
-- **Acceder y Rectificar:** Modificar su información desde la sección "Editar Perfil".
-- **Eliminar:** Solicitar la supresión total de sus datos mediante la función "Eliminar Cuenta". Este proceso es irreversible y borra todo rastro en los servidores de Firebase.
+## 👤 2. Privacidad y Tratamiento de Información
 
-## 5. Reporte de Vulnerabilidades
-Si detectas un fallo de seguridad, te agradecemos reportarlo de forma privada para proteger a la comunidad:
+### 2.1 Cumplimiento Legal (Colombia)
+Ruta-Go cumple estrictamente con la **Ley 1581 de 2012 (Habeas Data)**. El usuario es el único dueño de su información y el sistema actúa como procesador de datos para fines logísticos de transporte.
+
+### 2.2 Datos Recolectados y Propósito
+| Dato | Naturaleza | Propósito |
+|:---|:---|:---|
+| **Identidad (Google/Email)** | Personal | Autenticación y prevención de fraude. |
+| **Teléfono Celular** | Sensible | Coordinación logística entre conductor y pasajero. |
+| **Ficha Técnica Vehicular** | Operativo | Seguridad del pasajero y cumplimiento de capacidad. |
+| **Ingresos Financieros** | Sensible | Reporte exclusivo para el conductor propietario. |
+
+---
+
+## ⚖️ 3. Gobernanza y Derechos del Usuario
+
+*   **Acceso y Rectificación**: Los usuarios pueden actualizar sus datos en tiempo real mediante los módulos de perfil.
+*   **Derecho al Olvido (Eliminación)**: El sistema provee una función de **"Eliminar Cuenta"** que ejecuta un borrado físico de la identidad en Firebase Auth y la metadata asociada en Realtime Database.
+*   **Segregación de Roles**: Un pasajero nunca podrá acceder a funciones de conductor, y un conductor no podrá suplantar identidades de pasajeros.
+
+---
+
+## 📧 4. Reporte de Incidentes
+Chop Code Solutions mantiene una política de puertas abiertas para investigadores de seguridad. Si detecta una vulnerabilidad, por favor notifique a:
+
 📧 **dazace94@gmail.com**
 
 ---
 © 2026 **Chop Code Solutions** - Ruta-Go App.
-*Entorno de Desarrollo Seguro: Parrot OS.*
+*Engineering for a safer journey.*
