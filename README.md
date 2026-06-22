@@ -1,79 +1,57 @@
-# 🚍 Ruta-Go (Transporte Natagá - La Plata)
+# 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.2.1 Stable 🚀
 
-**Ruta-Go** es una plataforma tecnológica integral diseñada para optimizar el transporte intermunicipal entre Natagá y La Plata (Huila). La solución conecta de manera eficiente a pasajeros y conductores a través de una arquitectura móvil moderna, reactiva y escalable. ✨
+**Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila. Conectamos a pasajeros y conductores a través de una arquitectura **100% reactiva**, garantizando fiabilidad en los horarios y transparencia en la gestión de cupos. ✨
 
 ---
 
-## 🚀 Características Principales
+## 🌟 Características Destacadas (v1.2.1)
 
-### 🚶 Para Pasajeros
-- **📅 Consulta en Tiempo Real:** Visualización de horarios y rutas con disponibilidad de asientos actualizada al instante.
-- **💺 Mapa Interactivo de Asientos:** Selección precisa de puestos con validación de ocupación en vivo.
-- **💬 Chat Directo:** Mensajería bidireccional con el conductor una vez confirmada la reserva.
-- **🎫 Tiquete Digital:** Comprobante de viaje detallado accesible desde el historial.
-- **⭐ Calificaciones:** Sistema de feedback para evaluar la calidad del servicio del conductor.
+### 🚶 Experiencia del Pasajero
+- **📅 Itinerario Inteligente:** Visualización en tiempo real de rutas con detección automática de "Próximo Viaje" y horarios pasados.
+- **💺 Reserva Atómica:** Mapa interactivo de asientos con sincronización instantánea para evitar duplicidad de puestos.
+- **💰 Tarifas Dinámicas:** Precios gestionados desde la nube (Firebase Remote) con formatos financieros profesionales (COP).
+- **🏁 Feedback de Cierre:** Notificaciones visuales de "Jornada Completada" tras el último despacho del día.
+- **🎓 Onboarding Guiado:** Tutorial animado para nuevos usuarios sobre el proceso de reserva y seguridad.
 
-### 👨‍✈️ Para Conductores
-- **📊 Dashboard Operativo:** Estadísticas diarias de ingresos, reservas confirmadas y ocupación por ruta (Ida y Vuelta).
-- **📋 Gestión de Reservas:** Flujo de trabajo ágil para confirmar o cancelar solicitudes de pasajeros.
-- **📱 Venta Física:** Posibilidad de bloquear asientos manualmente para pasajeros captados fuera de la app.
-- **🔔 Notificaciones Inteligentes:** Sistema de alertas Push para nuevas reservas y mensajes de chat.
+### 👨‍✈️ Centro de Control del Conductor
+- **📝 Registro Autónomo:** Alta técnica de conductor y vehículo (Placa, Modelo, Capacidad) sin intervención administrativa.
+- **🕒 Autogestión de Agenda:** Selección manual de turnos de ida y vuelta durante el registro o edición de perfil.
+- **📊 Dashboard Pro:** Estadísticas financieras y operativas con animaciones numéricas para ingresos y ocupación real.
+- **📱 Venta Física:** Motor de bloqueo manual de asientos para pasajeros captados fuera de la plataforma.
+- **🏆 Misión Cumplida:** Feedback especializado al finalizar los recorridos asignados del día.
 
 ---
 
 ## 🛠️ Stack Tecnológico e Infraestructura
 
-### **Frontend (Móvil)**
-- **Lenguaje:** Java 17 (Toolchain optimizado).
-- **Arquitectura:** **MVVM (Model-View-ViewModel)** para una separación clara de responsabilidades.
-- **UI:** XML Layouts con **Material Components**, implementando estándares Premium de UX.
-- **Reactividad:** Uso extensivo de `LiveData` y `ValueEventListener` para sincronización en tiempo real.
+### **Frontend & Arquitectura**
+- **Lenguaje:** Java 17 (Toolchain Pro).
+- **Arquitectura:** **MVVM (Model-View-ViewModel)** robusto y reactivo.
+- **UI/UX:** Material Components 3, animaciones de entrada premium y soporte **DayNight (Claro/Oscuro)** total.
+- **Reactividad:** Implementación estricta de `LiveData` y `ValueEventListener` para una UX sin recargas manuales.
 
-### **Backend (Firebase)**
-- **Auth:** Autenticación por Email/Password y **Google One Tap Sign-In**.
-- **Realtime Database:** Base de datos NoSQL para sincronización atómica de asientos y mensajería.
-- **Cloud Messaging (FCM):** Notificaciones Push con Deep Linking hacia actividades específicas.
-- **Cloud Functions:** El "cerebro" de la operación (Node.js). Gestiona la rotación automática de turnos, limpieza de datos y notificaciones masivas programadas.
-- **Storage:** Almacenamiento de perfiles y recursos multimedia.
-- **Crashlytics:** Monitoreo preventivo de errores en producción.
+### **Backend (Firebase Ecosystem)**
+- **Realtime Database:** Base de datos NoSQL segregada por roles para máxima seguridad y velocidad.
+- **Cloud Functions:** Automatización del escalafón ascendente y reset global de las 7:00 PM.
+- **FCM:** Notificaciones push contextuales vinculadas al estado de la reserva y chats activos.
+- **Sanity Check:** Capa lógica que filtra automáticamente "Conductores Fantasmas" para mantener la integridad del itinerario.
 
 ---
 
-## ⚙️ El Corazón del Sistema: Rotación Automática
-Ruta-Go no es solo una base de datos; cuenta con un algoritmo de **Escalafón Ascendente Real** ejecutado mediante Firebase Cloud Functions cada noche a las 7:00 PM (Hora Bogotá).
-
-- **🔄 Rotación de Turnos:** Automatiza el ciclo de 9 días de los conductores (8 días operativos con horarios rotativos y 1 día de descanso).
-- **🧹 Limpieza Atómica:** Resetea la disponibilidad de asientos (13 puestos por ruta) y limpia el estado operativo para el día siguiente de forma automática.
-- **🔔 Orquestación de Alertas:** Dispara notificaciones personalizadas a los conductores sobre su nuevo estado y alertas masivas a los pasajeros informando que los horarios del nuevo día están listos.
+## ⚙️ El Corazón del Sistema: Integridad y Segregación
+Ruta-Go v1.2.1 implementa una **Segregación Total de Roles**. Los datos de pasajeros (`/usuarios/`) y conductores (`/conductores/`) residen en nodos independientes, protegidos por reglas de seguridad de Firebase que garantizan la privacidad financiera de los choferes y la integridad de las reservas de los clientes.
 
 ---
 
-## 📌 Arquitectura de Datos: Mapeo Dual
-Ruta-Go utiliza una estrategia de **Mapeo Dual Bilingüe**. Los modelos en el código utilizan nombres en inglés (`driverId`, `reservationDate`) mientras mantienen compatibilidad total con los campos históricos en español de la base de datos (`conductorId`, `fechaReserva`) mediante anotaciones `@PropertyName`.
+## 📂 Documentación Detallada (Biblioteca Técnica)
 
----
-
-## 📂 Estructura del Proyecto
-
-```plaintext
-Ruta-Go-App/
-├── app/
-│   ├── src/main/java/com/chopcode/rutago/app/
-│   │   ├── activities/     # 🎨 Controladores de Vista (Login, Dashboards, Chat)
-│   │   ├── viewmodels/     # 🧠 Lógica de negocio y gestión de estado
-│   │   ├── services/       # 🔧 Orquestadores de Firebase (Auth, Chat, Prices)
-│   │   ├── models/         # 📌 POJOs con Mapeo Dual (User, Reservation, Route)
-│   │   ├── managers/       # 🛠️ Helpers especializados (Permissions, UI, Analytics)
-│   │   └── adapters/       # 🔗 Adaptadores de listas (RecyclerView)
-│   └── src/main/res/       # 🖼️ Recursos (Layouts organizados por módulos)
-├── DEVELOPER_GUIDELINES.md # 🤖 Manual de Instrucciones para desarrolladores
-└── build.gradle            # 📦 Configuración de dependencias y optimización
-```
-
----
-
-## 🤖 Guía para Desarrolladores
-Para mantener la integridad del código, el uso de Clean Architecture y la gestión de llaves, consulte obligatoriamente el archivo [DEVELOPER_GUIDELINES.md](./DEVELOPER_GUIDELINES.md).
+| Documento | Propósito |
+|:---|:---|
+| [**📖 Documentación Integral**](./DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
+| [**🤖 Manual de Desarrollo**](./DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
+| [**🗺️ Arquitectura de Módulos**](./ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
+| [**🏁 Plan de Pruebas**](./RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
+| [**🚀 Roadmap**](./ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
 
 ---
 
