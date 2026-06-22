@@ -41,11 +41,12 @@
 
 | Documento | Propósito |
 |:---|:---|
-| [**📖 Documentación Integral**](./DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
-| [**🤖 Manual de Desarrollo**](./DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
-| [**🗺️ Arquitectura de Módulos**](./ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
-| [**🏁 Plan de Pruebas**](./RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
-| [**🚀 Roadmap**](./ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
+| [**📖 Documentación Integral**](./docs/DOCUMENTACION.md) | Guía maestra y enciclopedia central del proyecto. |
+| [**🤖 Manual de Desarrollo**](./docs/DEVELOPER_GUIDELINES.md) | Reglas de oro, estándares de código y branding. |
+| [**📄 Ficha Técnica**](./docs/FICHA_TECNICA.md) | Especificaciones de hardware, software e infraestructura. |
+| [**🗺️ Arquitectura de Módulos**](./docs/ARCHITECTURE_MODULES.md) | Mapa técnico de flujos de datos e interfaces. |
+| [**🏁 Plan de Pruebas**](./docs/RELEASE_TESTING_PLAN.md) | Protocolo de QA para certificación de estabilidad. |
+| [**🚀 Roadmap**](./docs/ROADMAP.md) | Hoja de ruta: Pagos, Puntos Go y Encomiendas. |
 
 ---
 
