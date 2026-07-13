@@ -49,7 +49,7 @@ public class GoogleLoginService {
                 .setGoogleIdTokenRequestOptions(
                         BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                                 .setSupported(true)
-                                .setServerClientId(activity.getString(R.string.default_web_client_id))
+                                .setServerClientId("175264872585-abombvqq36bqqeet86onnhkf7uep6c60.apps.googleusercontent.com")
                                 .setFilterByAuthorizedAccounts(false)
                                 .build())
                 .build();
