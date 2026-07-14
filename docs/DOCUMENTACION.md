@@ -38,6 +38,7 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 
 ### 📗 Dominio Técnico (Engineering)
 *   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos de datos.
+*   [**Mapeo de Flujos Lógicos**](./technical/LOGICAL_FLOWS.md): Secuencias técnicas de reservas y rotación.
 *   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
 *   [**Gestión de Estado**](./technical/VIEWMODELS_DEEP_DIVE.md): Lógica de ViewModels y flujo reactivo LiveData.
 *   [**Capa de Managers**](./technical/MANAGERS_DEEP_DIVE.md): Controladores auxiliares de lógica (Core) y UI Helpers.

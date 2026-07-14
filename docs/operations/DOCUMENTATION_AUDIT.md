@@ -5,7 +5,7 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 ---
 
 ## 🛠️ 1. Documentación Técnica (Core)
-- [ ] **Mapeo de Flujos Lógicos**: Diagramas de secuencia para Reservas y Rotación Nocturna.
+- [x] **Mapeo de Flujos Lógicos**: Diagramas de secuencia para Reservas y Rotación Nocturna.
 - [x] **Manual de Seguridad Firebase**: Explicación detallada de las reglas `.read` y `.write`.
 - [x] **Guía de Integración FCM**: Estructura de los Payloads de notificación.
 - [x] **Cloud Functions Deep-Dive**: Documentación del código Node.js en `/firebase_functions`.
