@@ -1,65 +1,53 @@
-# ⚙️ Manual de Administración y Operación - Ruta-Go
+# ⚙️ Manual de Administración y Operación - Ecosistema Go v1.3.0
 
-Este documento guía al administrador de la plataforma en las tareas de gestión operativa, financiera y de mantenimiento preventivo a través de la consola de Firebase.
-
----
-
-## 💰 1. Gestión de Tarifas (Precios)
-Los precios son dinámicos y se controlan desde el nodo `/precios/`.
-
-1.  Entra a **Firebase Console > Realtime Database**.
-2.  Busca el nodo `precios`.
-3.  Desglosa por origen (ej: `nataga`) y destino (ej: `la plata`).
-4.  Cambia el valor numérico. El cambio se reflejará en el app del pasajero al instante.
+Este documento guía al administrador en la gestión estratégica, operativa y técnica de la plataforma Ruta-Go, utilizando las herramientas nativas de Firebase para garantizar la continuidad del servicio.
 
 ---
 
-## 🕒 2. Gestión de Horarios y Turnos
-La planilla maestra reside en el nodo `/horarios/`.
+## 💰 1. Gestión de Tarifas y Economía
+Los precios son dinámicos y se sincronizan en tiempo real mediante el nodo `/precios/`.
 
-### Asignar un Conductor Manualmente:
-1.  Busca el ID del horario (ej: `h001`).
-2.  En el campo `conductorId`, pega el UID del conductor (obtenido del nodo `/conductores/`).
-3.  **Importante:** Asegúrate de que el conductor no tenga otro turno a la misma hora.
-
-### Liberar un Horario:
-1.  Deja el campo `conductorId` vacío (`""`). El app lo mostrará automáticamente como **"(Libre)"**.
+1.  **Actualización**: Acceda a **Realtime Database > precios**.
+2.  **Mapeo**: Los valores están segmentados por los identificadores normalizados de las rutas (ej: `nataga`, `la plata`).
+3.  **Impacto**: Cualquier cambio afecta instantáneamente el cálculo de tiquetes en las pantallas de confirmación de los pasajeros.
 
 ---
 
-## 👤 3. Gestión de Usuarios y Conductores
+## 🕒 2. Planilla Maestra de Horarios
+La logística diaria reside en el nodo `/horarios/`. Aunque la rotación es automática, el administrador puede intervenir manualmente.
 
-### Bloquear una Cuenta:
-1.  Ve al nodo `/conductores/` o `/usuarios/` según corresponda.
-2.  Busca el UID del usuario.
-3.  Cambia el campo `status` de `active` a `blocked`. El usuario no podrá volver a iniciar sesión.
-
-### Verificar un Nuevo Conductor:
-1.  Revisa los datos en el nodo `/conductores/`.
-2.  Verifica que la placa en `/vehiculos/` coincida.
-3.  Si todo es correcto, asígnale sus horarios iniciales en el nodo `/horarios/`.
+### Asignación de Contingencia:
+*   Para asignar un conductor fuera del ciclo de rotación, reemplace el campo `conductorId` con el UID obtenido del nodo `/conductores/`.
+*   Para liberar un turno (ej: bus averiado), deje el campo `conductorId` vacío (`""`). El app lo marcará como **"(Libre)"**.
 
 ---
 
-## 🧹 4. Mantenimiento y Emergencias
+## 👤 3. Gobierno de Usuarios (Seguridad)
 
-### Limpieza Automática de Cuentas:
-El sistema ejecuta una tarea de mantenimiento **todos los domingos a las 3:00 AM** para eliminar permanentemente las cuentas que cumplieron su periodo de gracia de 30 días.
+### Bloqueo de Cuentas (Suspensión):
+*   Localice el UID del usuario o conductor.
+*   Cambie el atributo `status` a `blocked`. Esto impide el acceso al app y dispara el feedback visual de "Cuenta Suspendida".
 
-### Reset Manual de Jornada:
-Si la Cloud Function de las 7:00 PM llega a fallar:
-1.  Ve al nodo `/disponibilidadAsientos/`.
-2.  Para cada horario, resetea `asientosDisponibles` al valor de `totalAsientos`.
-3.  Elimina los registros dentro de `asientosOcupados`.
-
-### Limpieza de Reservas Viejas:
-Se recomienda exportar un JSON de respaldo cada mes y limpiar el nodo `/reservas/` para mantener la velocidad de consulta en dispositivos de gama baja.
+### Gestión de Identidad:
+*   **Verificación**: Antes de asignar horarios a un nuevo conductor, valide que su vehículo esté correctamente registrado en el nodo `/vehiculos/` con la capacidad técnica declarada.
 
 ---
 
-## 📊 5. Monitoreo de Salud
-*   **Crashlytics:** Revisa diariamente si hay "Crashes" para corregir errores de dispositivos específicos.
-*   **Analytics:** Observa la "Retención de Usuarios" para saber si los pasajeros están volviendo a usar el app.
+## 🧹 4. Protocolos de Mantenimiento
+
+### Tareas Serverless (Cloud Functions):
+*   **Rotación Nocturna (7:00 PM)**: Prepara los turnos del día siguiente. Si falla, el administrador debe resetear manualmente los nodos en `/disponibilidadAsientos/`.
+*   **Limpieza Semanal (Domingos 3:00 AM)**: Ejecuta el borrado definitivo de cuentas marcadas (Habeas Data).
+
+### Gestión de Historial:
+*   **Archivado**: Se recomienda exportar un JSON mensual del nodo `/reservas/` y mover los registros antiguos a un nodo de histórico para optimizar el rendimiento de los dispositivos de gama baja.
 
 ---
-**Chop Code Solutions - Operaciones 2026**
+
+## 📊 5. Monitoreo y Salud del Sistema
+*   **Firebase Crashlytics**: Monitorear diariamente para identificar fallos en nuevas versiones de Android (ej: SDK 35).
+*   **Firebase Analytics**: Revisar el embudo de conversión (Dashboard -> Selección de Asiento -> Confirmación) para detectar abandonos.
+*   **Auditoría Técnica**: Consulte periódicamente el [**Manual de Gestión de Datos**](../legal/DATA_MANAGEMENT_MANUAL.md) para asegurar el cumplimiento legal.
+
+---
+**Chop Code Solutions - Dirección de Operaciones v1.3.0**

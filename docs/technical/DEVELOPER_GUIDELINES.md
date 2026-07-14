@@ -1,74 +1,57 @@
-# 🤖 Manual de Ingeniería y Estándares de Código - Ruta-Go
+# 🤖 Manual de Ingeniería y Estándares de Código (Senior Edition)
 
-Este documento establece las directrices técnicas obligatorias para mantener la excelencia en el desarrollo de **Ruta-Go**. Está diseñado para garantizar la consistencia, seguridad y escalabilidad del ecosistema.
-
----
-
-## 1. Estándares de Codificación (Clean Code)
-
-### 1.1 Nomenclatura Profesional
-*   **Idioma Técnico**: Todo el código fuente (clases, variables, métodos, comentarios de desarrollo) debe escribirse en **Inglés**.
-*   **Variables**: Usar CamelCase descriptivo (ej: `currentVehiclePlate` en lugar de `placa`).
-*   **Constantes**: UPPER_SNAKE_CASE (ej: `MIN_PASSWORD_LENGTH`).
-*   **Paquetes**: Seguir la jerarquía modular definida en la arquitectura.
-
-### 1.2 Principio de Responsabilidad Única (SRP)
-*   **Activities**: Solo inflan la UI y delegan todo el procesamiento al ViewModel.
-*   **Engines**: Contienen algoritmos de negocio complejos. Prohibido incluir referencias a `View` o `Context` dentro de un Engine.
-*   **Utils**: Funciones puras que no mantienen estado.
+Este documento establece las directrices técnicas obligatorias para mantener la excelencia en el desarrollo del Ecosistema Go. Está diseñado para garantizar la consistencia, seguridad y escalabilidad de Ruta-Go hacia su Fase Premium.
 
 ---
 
-## 2. Gestión de Datos y Firebase
+## 🏛️ 1. Filosofía de Arquitectura (MVVM Reactivo)
+Ruta-Go se rige por el desacoplamiento total entre lógica y representación.
 
-### 2.1 Reactividad y Listeners
-*   **Real-time First**: Priorizar `addValueEventListener` sobre consultas de un solo disparo para garantizar una UX reactiva.
-*   **Lifecycle Awareness**: Es obligatorio limpiar los listeners en `onCleared()` (ViewModels) o `onDestroy()` (Activities).
-    ```java
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        databaseRef.removeEventListener(myListener);
-    }
-    ```
-
-### 2.2 Integridad Transaccional
-*   Toda modificación de inventario (asientos, cupos, saldos) **debe** usar `runTransaction()`. Prohibido el uso de `setValue()` para incrementos o decrementos de contadores concurrentes.
+*   **View**: `Activities` y `Fragments` actúan solo como observadores de estado. Está prohibido realizar cálculos de negocio o formateo de datos en esta capa.
+*   **ViewModel**: Gestiona el estado de la UI mediante `LiveData`. Debe heredar de `BaseViewModel` (si aplica) y gestionar el ciclo de vida de los listeners.
+*   **Engines**: Componentes puros (POJO) que encapsulan algoritmos complejos (ej: `Seat Engine`). No deben tener dependencias de Android (`Context`, `View`).
 
 ---
 
-## 3. UI/UX: La "Regla del 8%" y Guías Visuales
+## 📝 2. Estándares de Codificación (Clean Code)
 
-### 3.1 Layouts Responsivos
-*   **Guidelines**: Uso obligatorio de guías porcentuales al **8%** y **92%** en formularios para garantizar consistencia visual en diferentes densidades de pantalla.
-*   **Barriers**: Utilizar barreras para evitar que elementos dinámicos (nombres largos, descripciones) se superpongan con botones de acción.
-*   **Min-Height**: Todos los elementos interactivos deben tener un `minHeight` de al menos **48dp** para accesibilidad táctil.
+### 2.1 Nomenclatura y Bilingüismo
+*   **Código**: El 100% del código fuente (clases, métodos, variables y comentarios técnicos) debe escribirse en **Inglés**.
+*   **Recursos**: Los textos de usuario deben residir en `strings.xml` (Español por defecto) para facilitar la internacionalización futura.
+*   **Firebase Mapping**: Se reconoce y respeta el mapeo dual (DB en Español vs Modelos en Inglés) mediante el uso de `@PropertyName` o transformaciones manuales en los servicios.
 
-### 3.2 Animaciones de Marca
-*   **Feedback Inmediato**: Uso de `UIAnimationUtils.setClickAnimation()` en todos los botones para simular presión física.
-*   **Transiciones**: Implementar `playCardEntryAnimation()` para dar una sensación de fluidez al cargar listas de horarios o tiquetes.
-
----
-
-## 4. Gestión de Recursos (Clean Resources)
-
-### 4.1 Centralización de Textos
-*   **Prohibido** el uso de strings literales ("hardcoded"). El 100% de la información textual debe residir en `strings.xml`.
-*   **Prefijos**: Organizar por módulo (ej: `tut_dr_...`, `auth_err_...`).
-
-### 4.2 Iconografía y Colores
-*   Utilizar siempre los alias de color definidos en `BRANDING.md` (ej: `?attr/colorPrimary`). Evitar llamar directamente a colores hexadecimales en los layouts.
+### 2.2 Inmutabilidad y Flujos
+*   **Mutable vs. Immutable**: Exponer siempre `LiveData` (Inmutable) hacia la vista y mantener `MutableLiveData` (Privado) dentro del ViewModel.
+*   **Atomicidad**: Toda operación que afecte inventarios (asientos) o saldos debe ejecutarse mediante `runTransaction()` en el servidor para evitar condiciones de carrera.
 
 ---
 
-## 5. Protocolo de Calidad (QA Senior Standards)
+## 🎨 3. UI/UX: Estándares Premium
 
-### 5.1 Manejo de Excepciones
-*   No dejar bloques `catch` vacíos. Loguear errores mediante `Log.e()` y reportar excepciones críticas a Firebase Crashlytics.
-*   **Sanity Checks**: Validar siempre el estado del objeto antes de llamar a un getter (ej: `if (driver != null)`).
+### 3.1 La Regla del "Feedback Instantáneo"
+*   Todo botón o elemento interactivo debe implementar `UIAnimationUtils.setClickAnimation()` para simular una respuesta física.
+*   Las transiciones entre pantallas deben ser imperceptibles (Efecto Duolingo en la barra de navegación) para simular una App unificada.
 
-### 5.2 Analíticas
-*   Cada acción clave del usuario debe disparar un evento analítico mediante `registrarEventoAnalitico()`.
+### 3.2 Adaptabilidad y Accesibilidad
+*   **Edge-to-Edge**: Las pantallas deben configurarse para usar el 100% de la superficie (incluyendo barras de sistema) bajo los estándares de Android 15.
+*   **Targets Táctiles**: Ningún elemento interactivo debe medir menos de **48dp**.
 
 ---
-**Chop Code Solutions - Engineering Excellence 2026**
+
+## 🛡️ 4. Gestión de Errores y Calidad
+
+### 4.1 Resiliencia de Red
+*   Es obligatorio el uso de `NetworkMonitor` antes de iniciar transacciones críticas para informar al usuario sobre micro-desconexiones rurales.
+
+### 4.2 Logging y Telemetría
+*   **Crashlytics**: Todo bloque `catch` de una excepción crítica debe ser reportado vía `MyApp.logError()`.
+*   **Analytics**: Cada paso del embudo de conversión (Reserva) debe registrarse mediante los `AnalyticsHelpers` correspondientes.
+
+---
+
+## 📦 5. Flujo de Git (Senior)
+*   **Commits Semánticos**: `feat:`, `fix:`, `docs:`, `refactor:`.
+*   **Rama Activa**: Toda mejora debe desarrollarse en `feature/premium` antes de fusionarse a la rama principal de producción.
+
+---
+**Chop Code Solutions - Engineering Excellence v1.3.0**

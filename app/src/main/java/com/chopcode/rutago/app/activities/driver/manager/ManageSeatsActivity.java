@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 💺 Manage Seats Activity
+ * Manage Seats Activity
  *
  * Panel de control táctico para la gestión de inventario de asientos en tiempo real.
  * Responsabilidades:

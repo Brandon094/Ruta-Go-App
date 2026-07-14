@@ -23,7 +23,7 @@ import com.google.android.material.button.MaterialButton;
 import java.util.Map;
 
 /**
- * ✅ Confirm Reservation Activity
+ * Confirm Reservation Activity
  *
  * Etapa final de la pasarela de reserva de Ruta-Go.
  * Responsabilidades:
