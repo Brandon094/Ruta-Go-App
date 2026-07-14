@@ -64,6 +64,7 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Especificación de Requisitos**](./product/REQUISITOS.md): RF, RNF y reglas de negocio de la suite.
 *   [**Portal Web Hub**](./product/GO_WEB_HUB.md): Especificaciones del centro web centralizado.
 *   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
+*   [**Guía de Componentes**](./product/COMPONENT_GUIDE.md): Catálogo de elementos UI/UX (Material 3).
 *   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión y monetización.
 
 ### 📙 Dominio Operativo (QA & Ops)

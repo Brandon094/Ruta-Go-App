@@ -11,7 +11,7 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 - [x] **Cloud Functions Deep-Dive**: Documentación del código Node.js en `/firebase_functions`.
 
 ## 🎨 2. Interfaz y Experiencia (UI/UX)
-- [ ] **Guía de Componentes**: Catálogo de estilos Material3 usados en el app.
+- [x] **Guía de Componentes**: Catálogo de estilos Material3 usados en el app.
 - [x] **Flujos de Navegación**: Mapa de pantallas por cada rol.
 
 ## 🤖 3. Código Fuente (JavaDoc)
