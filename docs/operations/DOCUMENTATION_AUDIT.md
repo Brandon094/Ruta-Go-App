@@ -12,7 +12,7 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 
 ## 🎨 2. Interfaz y Experiencia (UI/UX)
 - [ ] **Guía de Componentes**: Catálogo de estilos Material3 usados en el app.
-- [ ] **Flujos de Navegación**: Mapa de pantallas por cada rol.
+- [x] **Flujos de Navegación**: Mapa de pantallas por cada rol.
 
 ## 🤖 3. Código Fuente (JavaDoc)
 - [x] **Modelos (POJOs)**: Documentar la estructura de datos y jerarquía de clases.

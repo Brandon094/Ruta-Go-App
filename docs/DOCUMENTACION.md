@@ -60,6 +60,7 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 
 ### 📘 Dominio de Producto (Business)
 *   [**Master Plan Ecosistema**](./product/ECOSYSTEM_MASTER_PLAN.md): Visión estratégica de ChopCode Solutions.
+*   [**Flujos de Navegación**](./product/NAVIGATION_FLOWS.md): Mapa de pantallas y experiencia de usuario (UX).
 *   [**Especificación de Requisitos**](./product/REQUISITOS.md): RF, RNF y reglas de negocio de la suite.
 *   [**Portal Web Hub**](./product/GO_WEB_HUB.md): Especificaciones del centro web centralizado.
 *   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
