@@ -41,6 +41,9 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
 *   [**Gestión de Estado**](./technical/VIEWMODELS_DEEP_DIVE.md): Lógica de ViewModels y flujo reactivo LiveData.
 *   [**Capa de Servicios**](./technical/SERVICES_DEEP_DIVE.md): Repositorios Firebase y lógica de persistencia.
+*   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y roles.
+*   [**Notificaciones Push**](./technical/FCM_INTEGRATION_GUIDE.md): Guía de integración FCM v1 y Deep Linking.
+*   [**Cloud Functions**](./technical/CLOUD_FUNCTIONS_DEEP_DIVE.md): Automatización de rotación y mantenimiento legal.
 *   [**Estándares de Código**](./technical/DEVELOPER_GUIDELINES.md): Reglas de oro (Java/Flutter) y Clean Code.
 *   [**Diccionario de Datos**](./technical/DICCIONARIO_DATOS.md): Mapeo del esquema NoSQL unificado.
 *   [**Ficha Técnica**](./technical/FICHA_TECNICA.md): Especificaciones de infraestructura y stack tecnológico.
