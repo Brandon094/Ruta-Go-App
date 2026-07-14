@@ -12,8 +12,13 @@ import java.util.Map;
 
 /**
  * 🛰️ Reservation Data Processor (Reservation Engine Component)
- * 
- * Procesa y valida los datos antes de pasar a la etapa de confirmación.
+ *
+ * Especialista en la validación, empaquetado y transporte de datos de reserva entre contextos.
+ * Responsabilidades:
+ * - Realizar un Sanity Check sobre los datos antes de permitir el avance a la confirmación.
+ * - Transformar estados complejos de la UI (como la selección del SeatManager) en un Payload transferible.
+ * - Enriquecer el Intent con metadatos de telemetría y constantes de negocio (ej: tiempos estimados).
+ * - Garantizar la integridad bilingüe de los campos durante el empaquetado de datos.
  */
 public class ReservationDataProcessor {
 
@@ -24,6 +29,10 @@ public class ReservationDataProcessor {
         this.analyticsHelper = analyticsHelper;
     }
 
+    /**
+     * Prepara el salto hacia la actividad de confirmación integrando todos los metadatos del viaje.
+     * @return Intent configurado con los extras de reserva o null si la validación falla.
+     */
     public Intent prepareReservationConfirmation(
             android.content.Context context,
             SeatManager seatManager,
@@ -42,6 +51,7 @@ public class ReservationDataProcessor {
             String travelDate,
             Double routePrice) {
 
+        // Validación de requisitos mínimos para evitar tiquetes huérfanos
         if (!validateRequiredData(seatManager, selectedRoute, scheduleId, scheduleTime)) return null;
 
         logReservationDataToAnalytics(seatManager.getAsientoSeleccionado(), selectedRoute, scheduleTime, driverName, vehiclePlate);
@@ -52,6 +62,9 @@ public class ReservationDataProcessor {
         return intent;
     }
 
+    /**
+     * Verifica que el estado actual del flujo sea consistente (Ruta y Asiento presentes).
+     */
     private boolean validateRequiredData(SeatManager seatManager, String selectedRoute, String scheduleId, String scheduleTime) {
         if (selectedRoute == null) { analyticsHelper.logValidacionFallida("sin_ruta"); return false; }
         if (!seatManager.hasAsientoSeleccionado()) { analyticsHelper.logValidacionFallida("sin_asiento"); return false; }
@@ -67,6 +80,9 @@ public class ReservationDataProcessor {
         analyticsHelper.logEvent("envio_a_confirmar_reserva", params);
     }
 
+    /**
+     * Inyecta masivamente los datos en el Intent. Implementa lógica de normalización de cadenas.
+     */
     private void populateIntentWithReservationData(
             Intent intent, SeatManager seatManager, String route, String sId, String sTime,
             String dName, String dPhone, String dId, String vPlate, String vModel, Integer vCap,
@@ -89,6 +105,7 @@ public class ReservationDataProcessor {
         intent.putExtra("usuarioTelefono", uPhone != null ? uPhone : "N/A");
         intent.putExtra("usuarioId", uId);
 
+        // Descomposición del nombre de la ruta para obtener origen/destino puros
         if (route != null) {
             String separator = " → "; 
             if (!route.contains(separator)) separator = " -> ";
@@ -100,6 +117,8 @@ public class ReservationDataProcessor {
             }
         }
         intent.putExtra("precio", routePrice != null ? routePrice : com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
+        
+        // Política de tiempos estimados basada en geografía local
         intent.putExtra("tiempoEstimado", route != null && route.contains("Natagá") ? "60 min" : "55 min");
     }
 }

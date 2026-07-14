@@ -9,9 +9,13 @@ import java.util.*;
 
 /**
  * 🛰️ Seat Data Processor (Seat Engine Core)
- * 
- * Gestiona la persistencia y sincronización de asientos en Firebase.
- * Parte integral del motor de selección de asientos.
+ *
+ * Motor de bajo nivel encargado de la integridad transaccional del inventario de asientos.
+ * Responsabilidades:
+ * - Ejecutar reservas atómicas mediante runTransaction() para evitar condiciones de carrera.
+ * - Sincronizar dinámicamente la capacidad de los vehículos con los despachos programados.
+ * - Implementar lógica de recuperación y reparación de estructuras de datos NoSQL.
+ * - Proveer flujos de validación de disponibilidad en tiempo real.
  */
 public class SeatDataProcessor {
     private static final String TAG = "SeatDataProcessor";
@@ -37,6 +41,10 @@ public class SeatDataProcessor {
         Log.d(TAG, "🚀 SeatDataProcessor inicializado");
     }
 
+    /**
+     * Carga el estado actual de ocupación para un despacho específico.
+     * @param horarioId Identificador del turno a consultar.
+     */
     public void loadSeatsDataForSchedule(String horarioId, SeatsDataCallback callback) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
 
@@ -73,13 +81,16 @@ public class SeatDataProcessor {
 
                     callback.onSeatsDataLoaded(occupiedSeats, availableSeats);
                 } catch (Exception e) {
-                    callback.onError("Error processing data: " + e.getMessage());
+                    callback.onError("Error al procesar datos de asientos: " + e.getMessage());
                 }
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
+    /**
+     * Consulta rápida de disponibilidad para un asiento individual.
+     */
     public void checkSeatAvailability(String horarioId, int seatNumber, SeatAvailabilityCallback callback) {
         DatabaseReference seatRef = databaseReference.child("disponibilidadAsientos").child(horarioId).child("asientosOcupados").child(String.valueOf(seatNumber));
         seatRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -93,7 +104,9 @@ public class SeatDataProcessor {
     }
 
     /**
-     * 🛡️ Reserva un asiento de forma atómica usando runTransaction.
+     * 🛡️ Reserva un asiento de forma atómica.
+     * Utiliza runTransaction() para garantizar que el decremento de disponibilidad y el marcado 
+     * de ocupación ocurran como una única operación indivisible en el servidor.
      */
     public void reserveSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
@@ -103,6 +116,8 @@ public class SeatDataProcessor {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 MutableData occupiedRef = currentData.child("asientosOcupados").child(String.valueOf(seatNumber));
+                
+                // Si el asiento ya fue tomado por otro cliente durante la latencia, abortamos.
                 if (Boolean.TRUE.equals(occupiedRef.getValue(Boolean.class))) {
                     return Transaction.abort();
                 }
@@ -123,7 +138,7 @@ public class SeatDataProcessor {
                     Log.d(TAG, "✅ Asiento " + seatNumber + " reservado con éxito");
                     callback.onSuccess();
                 } else {
-                    String errorMsg = (error != null) ? error.getMessage() : "Seat already occupied";
+                    String errorMsg = (error != null) ? error.getMessage() : "El asiento fue ocupado por otro usuario.";
                     callback.onError(errorMsg);
                 }
             }
@@ -132,6 +147,7 @@ public class SeatDataProcessor {
 
     /**
      * 🛡️ Libera un asiento de forma atómica.
+     * Incrementa la disponibilidad técnica y remueve la marca de ocupación.
      */
     public void freeSeat(String horarioId, int seatNumber, SeatReservationCallback callback) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
@@ -164,14 +180,16 @@ public class SeatDataProcessor {
                     Log.d(TAG, "✅ Asiento " + seatNumber + " liberado con éxito");
                     callback.onSuccess();
                 } else {
-                    callback.onError(error != null ? error.getMessage() : "Transaction failed");
+                    callback.onError(error != null ? error.getMessage() : "Error en transacción de liberación.");
                 }
             }
         });
     }
 
     /**
-     * 🔥 Sincroniza la capacidad del vehículo con los horarios asignados.
+     * 🔥 Motor de Sincronización Masiva:
+     * Propaga los cambios en la capacidad técnica de un vehículo hacia todos los horarios
+     * operativos asignados al conductor. Recalcula la disponibilidad restando las ventas previas.
      */
     public void syncVehicleCapacityToSchedules(List<String> schedules, int capacity) {
         if (schedules == null || schedules.isEmpty() || capacity <= 0) return;
@@ -201,6 +219,9 @@ public class SeatDataProcessor {
         }
     }
 
+    /**
+     * Mecanismo de auto-reparación para asegurar que cada despacho tenga su nodo de disponibilidad activo.
+     */
     public void repairSeatStructure(String horarioId, int defaultCapacity) {
         DatabaseReference scheduleRef = databaseReference.child("disponibilidadAsientos").child(horarioId);
         scheduleRef.addListenerForSingleValueEvent(new ValueEventListener() {

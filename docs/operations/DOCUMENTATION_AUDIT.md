@@ -17,7 +17,7 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 ## 🤖 3. Código Fuente (JavaDoc)
 - [x] **Modelos (POJOs)**: Documentar la estructura de datos y jerarquía de clases.
 - [x] **ViewModels**: Explicar la lógica de estado y los LiveData expuestos.
-- [ ] **Motores (Engines)**: Documentar clases core de Seats y Reservations.
+- [x] **Motores (Engines)**: Documentar clases core de Seats y Reservations.
 - [x] **Servicios**: Documentar cada repositorio de datos Firebase.
 
 ## ⚖️ 4. Legal y Compliance

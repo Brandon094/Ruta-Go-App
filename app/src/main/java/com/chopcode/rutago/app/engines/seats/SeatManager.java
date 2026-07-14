@@ -19,9 +19,14 @@ import java.util.Set;
 
 /**
  * 💺 Seat Manager (Seat Engine UI Handler)
- * 
- * Orquesta la visualización, selección y estados de los asientos en la UI.
- * Parte integral del motor de selección de asientos.
+ *
+ * Controlador especializado en la lógica visual y de interacción del mapa de asientos.
+ * Responsabilidades:
+ * - Renderizar dinámicamente el estado de los asientos (Disponible, Seleccionado, Ocupado, Bloqueo Físico).
+ * - Gestionar la exclusividad de selección: asegura que solo un asiento esté marcado a la vez.
+ * - Integrar animaciones premium para mejorar el feedback visual al usuario.
+ * - Coordinar con el motor de analíticas para rastrear el comportamiento del usuario en el Grid.
+ * - Adaptar el mapa visual según la capacidad técnica del vehículo (Ocultamiento de botones sobrantes).
  */
 public class SeatManager {
     private final Context context;
@@ -31,12 +36,13 @@ public class SeatManager {
     private final ReservationAnalyticsHelper analyticsHelper;
     private boolean isFirstLoad = true;
 
-    // Iconos de los asientos
+    // Recursos gráficos para los estados del asiento
     private final int VECTOR_ASIENTO_DISPONIBLE = R.drawable.asiento_disponible;
     private final int VECTOR_ASIENTO_SELECCIONADO = R.drawable.asiento_seleccionado;
     private final int VECTOR_ASIENTO_OCUPADO = R.drawable.asiento_ocupado;
     private final int VECTOR_ASIENTO_FISICO = R.drawable.asiento_fisico;
 
+    /** IDs de los botones definidos en los layouts XML de reserva. */
     private static final int[] BOTONES_ASIENTOS_IDS = {
             R.id.btnAsiento1, R.id.btnAsiento2, R.id.btnAsiento3, R.id.btnAsiento4,
             R.id.btnAsiento5, R.id.btnAsiento6, R.id.btnAsiento7, R.id.btnAsiento8,
@@ -44,6 +50,7 @@ public class SeatManager {
             R.id.btnAsiento13
     };
 
+    /** Interfaz para notificar cambios de selección a la actividad o ViewModel. */
     public interface SeatSelectionListener {
         void onSeatSelected(int seatNumber);
         void onSeatDeselected(int seatNumber);
@@ -61,6 +68,9 @@ public class SeatManager {
         this.listener = listener;
     }
 
+    /**
+     * Inicializa los componentes visuales del Grid de asientos.
+     */
     public void configurarAsientos() {
         for (int i = 0; i < BOTONES_ASIENTOS_IDS.length; i++) {
             MaterialButton btnAsiento = ((android.app.Activity) context).findViewById(BOTONES_ASIENTOS_IDS[i]);
@@ -75,6 +85,9 @@ public class SeatManager {
         Log.d("SeatManager", "✅ Asientos configurados automáticamente: " + BOTONES_ASIENTOS_IDS.length + " asientos");
     }
 
+    /**
+     * Permite la configuración manual con un set de IDs personalizado.
+     */
     public void configurarAsientos(int[] botonesIds) {
         for (int i = 0; i < botonesIds.length; i++) {
             MaterialButton btnAsiento = ((android.app.Activity) context).findViewById(botonesIds[i]);
@@ -97,10 +110,18 @@ public class SeatManager {
         mapaAsientos.put(numeroAsiento, btnAsiento);
     }
 
+    /**
+     * Actualiza el estado visual de cada botón basado en la data de ocupación remota.
+     * @param ocupadosApp Asientos tomados desde la aplicación.
+     * @param capacidadTotal Capacidad permitida para el vehículo actual.
+     */
     public void actualizarEstadoAsientos(Set<Integer> ocupadosApp, int capacidadTotal) {
         actualizarEstadoAsientos(ocupadosApp, null, capacidadTotal);
     }
 
+    /**
+     * Actualiza el estado visual integrando ocupación por App y bloqueos físicos de conductor.
+     */
     public void actualizarEstadoAsientos(Set<Integer> ocupadosApp, Set<Integer> ocupadosFisicos, int capacidadTotal) {
         this.asientosOcupados = new HashSet<>();
         if (ocupadosApp != null) this.asientosOcupados.addAll(ocupadosApp);
@@ -112,6 +133,7 @@ public class SeatManager {
             int numAsiento = entry.getKey();
             MaterialButton btn = entry.getValue();
 
+            // Lógica de Ocultamiento: Si el bus es de 13 y el botón es el 14, desaparece.
             if (numAsiento > capacidadTotal) {
                 btn.setVisibility(View.GONE);
                 continue;
@@ -130,6 +152,7 @@ public class SeatManager {
                 configurarAsientoDisponible(btn, numAsiento);
             }
 
+            // Efecto de cascada solo en la carga inicial
             if (stateChanged && isFirstLoad) {
                 UIAnimationUtils.playSeatPopAnimation(btn, animationDelay);
                 animationDelay += 50;
@@ -142,14 +165,14 @@ public class SeatManager {
 
     private void marcarAsientoFisico(MaterialButton btn) {
         btn.setIcon(ContextCompat.getDrawable(context, VECTOR_ASIENTO_FISICO));
-        btn.setEnabled(true);
+        btn.setEnabled(true); // Permitir que el conductor lo toque para liberarlo
         int numAsiento = (int) btn.getTag();
         btn.setOnClickListener(v -> manejarSeleccionAsiento(numAsiento));
     }
 
     private void marcarAsientoOcupado(MaterialButton btn) {
         btn.setIcon(ContextCompat.getDrawable(context, VECTOR_ASIENTO_OCUPADO));
-        btn.setEnabled(false);
+        btn.setEnabled(false); // Bloqueo total para pasajeros
         btn.setOnClickListener(null);
     }
 
@@ -159,6 +182,9 @@ public class SeatManager {
         btn.setOnClickListener(v -> manejarSeleccionAsiento(numAsiento));
     }
 
+    /**
+     * Orquesta el cambio de selección. Deselecciona el previo y marca el nuevo.
+     */
     private void manejarSeleccionAsiento(int numAsiento) {
         if (asientoSeleccionado != null) {
             deseleccionarAsiento(asientoSeleccionado);
@@ -219,6 +245,9 @@ public class SeatManager {
     public static int[] getBotonesAsientosIds() { return BOTONES_ASIENTOS_IDS.clone(); }
     public static int getNumeroTotalAsientos() { return BOTONES_ASIENTOS_IDS.length; }
 
+    /**
+     * Libera referencias para evitar memory leaks.
+     */
     public void cleanup() {
         mapaAsientos.clear();
         asientosOcupados.clear();
