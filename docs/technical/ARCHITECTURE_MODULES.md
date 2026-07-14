@@ -1,57 +1,72 @@
-# 🗺️ Arquitectura Técnica Detallada - Ecosistema "Go"
+# 🗺️ Arquitectura de Sistemas y Módulos Core - Ecosistema Go v1.3.0
 
-Este documento proporciona una visión profunda de la ingeniería detrás del ecosistema unificado de **ChopCode Solutions**, diseñada bajo el paradigma de **Microservicios Cloud** integrados por una identidad única.
-
----
-
-## 🏗️ 1. Arquitectura de Datos Híbrida
-El ecosistema utiliza dos motores de base de datos de Firebase para optimizar el rendimiento según el caso de uso:
-
-### 1.1 Realtime Database (RTDB) - Motor de RutaGo
-*   **Propósito**: Gestión de asientos, turnos y disponibilidad en milisegundos.
-*   **Justificación**: La baja latencia es crítica para evitar conflictos de reserva en tiempo real.
-*   **Patrón**: Árbol NoSQL sincronizado mediante WebSockets.
-
-### 1.2 Cloud Firestore - Motor de AgroGo y CargoGo
-*   **Propósito**: Almacenamiento de registros complejos (lotes, animales, subastas).
-*   **Justificación**: Soporta consultas estructuradas, indexación automática y escalado masivo para datos históricos.
-*   **Patrón**: Modelo basado en colecciones y documentos.
+Este documento detalla la arquitectura de ingeniería de Ruta-Go, diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa**, optimizado para Android 15 y el escalado hacia la Fase Premium.
 
 ---
 
-## 🔐 2. Motor de Identidad Unificada (SSO)
-Implementamos el sistema **Single Sign-On (SSO)** a través de Firebase Auth:
-*   **Pasaporte Universal**: El `UID` del usuario es el identificador primario en todas las plataformas.
-*   **Segregación de Roles**: Un sistema centralizado de claims define si el usuario es Pasajero, Productor o Conductor, habilitando funciones específicas en cada App.
+## 🏛️ 1. Macro-Arquitectura Híbrida Cloud
+El sistema opera sobre un núcleo de Firebase, distribuyendo la carga según la naturaleza de los datos y el stack tecnológico de cada vertical:
+
+### 1.1 Stack por Aplicación:
+*   **Ruta-Go (Movilidad)**: Java 17 + XML (Material 3) + Firebase Realtime Database. Enfoque nativo para máxima fluidez y reactividad en tiempo real.
+*   **Agro-Go (Productividad)**: Flutter + Isar Database (Offline-First) + Cloud Firestore. Diseñada para operar sin señal en el campo.
+*   **Cargo-Go (Logística)**: Portal Web Hub (Stack en definición) + Firebase Hosting. Centralizador de servicios y subastas.
+
+### 1.2 Motores de Persistencia:
+*   **Realtime Database (RTDB)**: Motor para **Ruta-Go**. Latencia ultra-baja necesaria para asientos y chat.
+*   **Cloud Firestore**: Motor para **Agro-Go y Cargo-Go**. Optimizado para consultas complejas de lotes e inventarios.
+*   **Cloud Functions**: Capa de lógica Serverless (Node.js) que orquesta procesos masivos como la rotación nocturna y limpieza legal.
+*   **FCM v1**: Sistema de mensajería push bidireccional (C2C y S2C) con soporte para OAuth2.
 
 ---
 
-## 🚌 3. RutaGo Architecture (MVVM Reactivo)
-La aplicación Android nativa sigue el patrón **Model-View-ViewModel**:
-*   **View**: Activities y Fragments observando estados reactivos.
-*   **ViewModel**: Lógica de pantalla desacoplada de la UI.
-*   **Engines (Seats/Reservations)**: Motores de negocio puros que ejecutan validaciones atómicas.
+## 🏗️ 2. Arquitectura de la Aplicación (Ruta-Go)
+Implementamos una variante avanzada del patrón **MVVM (Model-View-ViewModel)**, introduciendo capas de especialización para desacoplar la lógica de Firebase del ciclo de vida de Android.
+
+### 2.1 Capas del Sistema:
+1.  **View Layer (UI)**: Activities y Fragments. Observan estados a través de `LiveData`. No contienen lógica de negocio.
+2.  **ViewModel Layer**: Gestionan el estado de la vista y orquestan las llamadas a servicios. Son el puente reactivo.
+3.  **Manager Layer (Specialists)**:
+    *   **Core Managers**: Lógica de sistema (Auth, Permissions, Session).
+    *   **UI Managers**: Lógica visual compleja (Animations, Dialogs, Expandable Sections).
+4.  **Engine Layer (Domain Logic)**: Componentes POJO puros que encapsulan algoritmos críticos:
+    *   **Seat Engine**: Integridad transaccional de inventario.
+    *   **Reservation Engine**: Validación y transporte de datos.
+5.  **Service Layer (Data/Repository)**: Fachadas que interactúan directamente con Firebase. Realizan el mapeo dual (Español DB -> Inglés Java).
+6.  **Model Layer (Data Entities)**: POJOs que representan el dominio del negocio.
 
 ---
 
-## 🌿 4. AgroGo Architecture (Offline-First)
-Diseñada para entornos rurales sin señal:
-*   **Motor Local (Isar)**: Base de datos embebida de alto rendimiento.
-*   **Sync Logic**: El app opera 100% offline; al detectar conexión, el motor de sincronización empuja los cambios a Firestore.
+## 🎫 3. Motores de Negocio Desacoplados
+Ruta-Go separa las "reglas de oro" de la infraestructura técnica:
+
+*   **Integridad Atómica**: El uso de `runTransaction()` en la capa de servicios asegura que el decremento de asientos y la marca de ocupación ocurran como una única unidad lógica en el servidor, eliminando condiciones de carrera.
+*   **Validación de Salto**: El `ReservationDataProcessor` actúa como un guardián de calidad, verificando la consistencia de los datos antes de permitir la navegación hacia la pasarela de confirmación.
 
 ---
 
-## 🚛 5. CargoGo & Web Hub (Cloud Interface)
-*   **Backend**: Firebase Hosting + Cloud Functions.
-*   **Logic**: El sistema de subastas ciegas procesa las ofertas de los transportadores en el servidor para garantizar transparencia y evitar la manipulación de precios.
+## 🔐 4. Sistema de Identidad Única (SSO)
+El ecosistema utiliza **Firebase Auth** como proveedor de identidad universal:
+*   Un solo `UID` permite al usuario transitar entre Ruta-Go, AgroGo y CargoGo.
+*   La resolución de roles ocurre en el arranque (`SplashActivity`), determinando dinámicamente el perfil operativo (Pasajero vs Conductor).
 
 ---
 
-## 📊 6. Flujo de Integración (Cross-App)
-1.  **Activación**: Productor registra cosecha en **AgroGo**.
-2.  **Necesidad**: El sistema detecta excedente y sugiere transporte.
-3.  **Solicitud**: Se crea un pedido de flete en **CargoGo**.
-4.  **Movilidad**: El productor usa un *Deep Link* para reservar su propio pasaje al pueblo en **RutaGo** mediante su misma cuenta.
+## 📱 5. Optimizaciones Android 15 (SDK 35)
+La arquitectura está alineada con los estándares modernos de Google:
+*   **Edge-to-Edge Native**: Vistas que ocupan el 100% de la superficie de pantalla.
+*   **16 KB Page Alignment**: Soporte para binarios en procesadores de próxima generación.
+*   **Predictive Back**: Gestión de navegación compatible con gestos predictivos de Android.
+*   **Privacy First**: AD_ID desactivado y permisos de notificación (API 33+) gestionados proactivamente.
 
 ---
-**Documentación de Ingeniería - ChopCode Solutions - QA Senior Certified**
+
+## 📊 6. Flujo de Datos Reactivo
+1.  **Firebase RTDB** emite un cambio (WebSocket).
+2.  **Service** intercepta y mapea el dato al modelo POJO.
+3.  **ViewModel** actualiza el `MutableLiveData`.
+4.  **Activity** reacciona automáticamente refrescando la UI con animaciones premium.
+
+---
+**Chop Code Solutions - Arquitectura de Software v1.3.0**
+*Engineering for Rural Productivity.*
