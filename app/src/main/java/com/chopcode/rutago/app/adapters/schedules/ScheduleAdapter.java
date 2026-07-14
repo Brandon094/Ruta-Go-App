@@ -14,6 +14,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Schedule Adapter
+ *
+ * Motor de renderizado avanzado para la planilla de horarios de Ruta-Go.
+ * Responsabilidades:
+ * - Gestionar la visualización reactiva de los turnos de despacho.
+ * - Implementar lógica de "Próximo Viaje": identifica y resalta el turno más cercano a la hora actual.
+ * - Orquestar animaciones premium: incluye el efecto de "Bus Departure" para turnos finalizados.
+ * - Soporte de Vistas Múltiples: integra un Footer informativo sobre la rotación de horarios.
+ * - Manejo de Estados Operativos: diferencia visualmente turnos disponibles, agotados, sin conductor y finalizados.
+ */
 public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "ScheduleAdapter";
@@ -25,6 +36,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private int nextTripIndex = -1;
     private boolean departureAnimationsEnabled = false;
 
+    /** Interfaz para la delegación de la intención de reserva hacia el fragmento/actividad. */
     public interface OnReservarClickListener {
         void onReservarClick(Schedule schedule);
     }
@@ -35,6 +47,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         calcularIndiceSiguienteViaje();
     }
 
+    /**
+     * Habilita la ejecución de animaciones de partida tras haber completado el scroll inicial.
+     */
     public void enableDepartureAnimations() {
         this.departureAnimationsEnabled = true;
         notifyDataSetChanged();
@@ -42,9 +57,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        if (position == schedules.size()) {
-            return TYPE_FOOTER;
-        }
+        if (position == schedules.size()) return TYPE_FOOTER;
         return TYPE_SCHEDULE;
     }
 
@@ -68,24 +81,32 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
-        // +1 para el Footer
         return schedules.isEmpty() ? 0 : schedules.size() + 1;
     }
 
+    /**
+     * @return Índice del primer viaje cuya hora es posterior a la actual.
+     */
     public int getNextTripIndex() {
         return nextTripIndex;
     }
 
+    /**
+     * Actualiza masivamente los datos y recalcula el estado operativo de los turnos.
+     */
     public void actualizarHorarios(List<Schedule> newSchedules) {
         this.schedules.clear();
         if (newSchedules != null) {
             this.schedules.addAll(newSchedules);
         }
-        this.departureAnimationsEnabled = false; // Resetear para el nuevo ciclo de scroll + partida
+        this.departureAnimationsEnabled = false; 
         calcularIndiceSiguienteViaje();
         notifyDataSetChanged();
     }
 
+    /**
+     * Algoritmo de identificación del próximo servicio activo.
+     */
     private void calcularIndiceSiguienteViaje() {
         nextTripIndex = -1;
         if (schedules.isEmpty()) return;
@@ -97,14 +118,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         }
         
-        // Si todos pasaron hoy, el próximo es el primero (mañana)
         if (nextTripIndex == -1 && !schedules.isEmpty()) {
-            nextTripIndex = 0;
+            nextTripIndex = 0; // Si el día acabó, el foco va al primer turno de mañana.
         }
     }
 
+    /**
+     * ViewHolder especializado en la representación visual del despacho.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // ... (resto del ViewHolder igual)
         public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext;
         public FloatingActionButton btnReserve;
 
@@ -120,7 +142,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
+        /**
+         * Enlaza los datos del modelo con los componentes UI, aplicando lógica de estados.
+         */
         public void bind(Schedule schedule, boolean isNextTrip, boolean animationsEnabled, OnReservarClickListener listener) {
+            // Segmentación visual de la hora
             String[] timeParts = FormatUtils.separarHoraYAmPm(schedule.getTime());
             if (tvTime != null) tvTime.setText(timeParts[0]);
             if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
@@ -128,16 +154,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (tvRoute != null) tvRoute.setText(schedule.getRoute());
 
             int available = schedule.getAvailableSeats();
-            if (available <= 0 && schedule.getTotalCapacity() <= 0) available = schedule.getTotalCapacity();
-            
             boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
             boolean hasDriver = schedule.getConductorId() != null && !schedule.getConductorId().isEmpty();
 
+            // Animación reactiva de contadores
             if (tvSeats != null) {
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateNumericText(tvSeats, 0, available);
                 updateColors(available, isNextTrip, isPast, hasDriver);
             }
 
+            // Animación reactiva de precios
             if (tvPrice != null) {
                 try {
                     double priceVal = Double.parseDouble(schedule.getPrice());
@@ -147,6 +173,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
             }
 
+            // Gestión del indicador de "Próximo Viaje" con latido visual
             if (tvBadgeNext != null) {
                 if (isNextTrip && available > 0 && !isPast) {
                     tvBadgeNext.setVisibility(View.VISIBLE);
@@ -162,24 +189,22 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     if (hasDriver) {
                         if (listener != null) listener.onReservarClick(schedule);
                     } else {
-                        android.widget.Toast.makeText(itemView.getContext(), "Aún no se ha asignado un bus para este horario", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(itemView.getContext(), "Turno pendiente de asignación vehicular.", android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
 
+                // Lógica de visualización para turnos vencidos (Animación Bus Departure)
                 if (isPast) {
-                    // Animación del bus arrancando
                     btnReserve.setImageResource(R.drawable.ic_bus);
                     btnReserve.setEnabled(false);
-                    // Solo disparar si las animaciones están habilitadas (tras el scroll)
                     if (animationsEnabled && btnReserve.getVisibility() == View.VISIBLE && btnReserve.getTranslationX() == 0) {
                         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playBusDepartureAnimation(btnReserve);
                     } else if (!animationsEnabled) {
-                        btnReserve.setVisibility(View.VISIBLE); // Mantener visible hasta que habiliten la animación
+                        btnReserve.setVisibility(View.VISIBLE);
                     } else {
                         btnReserve.setVisibility(View.INVISIBLE);
                     }
                 } else {
-                    // Estado normal (Disponible o Sin conductor)
                     btnReserve.setVisibility(View.VISIBLE);
                     btnReserve.setTranslationX(0);
                     btnReserve.setAlpha(1.0f);
@@ -192,6 +217,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
         }
 
+        /**
+         * Aplica la semántica de colores y etiquetas de estado según la disponibilidad y vigencia.
+         */
         private void updateColors(int available, boolean isNextTrip, boolean isPast, boolean hasDriver) {
             int textColor;
             int badgeRes;
@@ -229,16 +257,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 tvAvailabilityBadge.setBackgroundResource(badgeRes);
                 tvAvailabilityBadge.setTextColor(itemView.getContext().getColor(R.color.white));
             }
-
-            if (tvPrice != null) {
-                tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
-            }
         }
     }
 
-    /**
-     * ℹ️ ViewHolder simple para el Footer informativo.
-     */
     public static class FooterViewHolder extends RecyclerView.ViewHolder {
         public FooterViewHolder(@NonNull View itemView) {
             super(itemView);

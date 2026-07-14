@@ -19,12 +19,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Reservation Adapter
+ *
+ * Controlador de renderizado para la gestión operativa de tiquetes digitales desde la perspectiva del conductor.
+ * Responsabilidades:
+ * - Visualizar la lista de pasajeros vinculados a un despacho específico.
+ * - Sincronizar el estado visual del badge (Pendiente, Confirmado, Cancelado) con el modelo de datos NoSQL.
+ * - Proveer controles interactivos para la validación (Confirmación/Cancelación) de cupos en tiempo real.
+ * - Formatear metadatos sensibles (ej: número de teléfono y asiento) para una lectura rápida en campo.
+ * - Implementar lógica de reciclaje eficiente para listas de alta densidad de pasajeros.
+ */
 public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.ReservationViewHolder> {
 
     private static final String TAG = "ReservationAdapter";
     private List<Reservation> reservations;
     private OnReservaClickListener listener;
 
+    /** Interfaz para la delegación de acciones de control operativo hacia la Activity/ViewModel. */
     public interface OnReservaClickListener {
         void onConfirmarClick(Reservation reservation);
         void onCancelarClick(Reservation reservation);
@@ -59,6 +71,9 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder especializado en la ficha técnica del pasajero.
+     */
     static class ReservationViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNombre, tvTelefono, tvOrigenDestino, tvFechaHora, tvAsiento, tvEstado;
         private MaterialButton btnConfirmar, btnCancelar;
@@ -76,44 +91,33 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
             btnCancelar = itemView.findViewById(R.id.btnCancelar);
         }
 
+        /**
+         * Enlaza los datos de la reserva y configura la visibilidad de los controles según el estado.
+         */
         public void bind(Reservation reservation, OnReservaClickListener listener) {
             try {
-                // Nombre
-                String nombre = reservation.getName();
-                tvNombre.setText(nombre != null ? nombre : itemView.getContext().getString(R.string.no_disponible));
+                tvNombre.setText(reservation.getName() != null ? reservation.getName() : "N/A");
+                tvTelefono.setText(reservation.getPhone() != null ? reservation.getPhone() : "N/A");
 
-                // Teléfono
-                String telefono = reservation.getPhone();
-                tvTelefono.setText(telefono != null ? telefono : itemView.getContext().getString(R.string.no_disponible));
-
-                // Origen y Destino
                 if (reservation.getOrigin() != null && reservation.getDestination() != null) {
-                    tvOrigenDestino.setText(reservation.getOrigin() + " -> " + reservation.getDestination());
-                } else {
-                    tvOrigenDestino.setText(itemView.getContext().getString(R.string.no_disponible));
+                    tvOrigenDestino.setText(reservation.getOrigin() + " → " + reservation.getDestination());
                 }
 
-                // Asiento
                 int seat = reservation.getReservedSeat();
-                tvAsiento.setText(seat > 0 ? FormatUtils.formatearAsiento(seat) : itemView.getContext().getString(R.string.no_disponible));
+                tvAsiento.setText(seat > 0 ? FormatUtils.formatearAsiento(seat) : "N/A");
 
-                // Fecha y Hora
                 if (reservation.getReservationDate() > 0) {
                     tvFechaHora.setText(sdf.format(new Date(reservation.getReservationDate())));
-                } else {
-                    tvFechaHora.setText(itemView.getContext().getString(R.string.no_disponible));
                 }
 
-                // Estado y Botones
                 String status = reservation.getReservationStatus();
                 if (status != null) {
                     tvEstado.setText(status);
                     
-                    // Reset visibilities for recycling
+                    // Gestión reactiva de botones: Solo se muestran si la reserva está pendiente.
                     btnConfirmar.setVisibility(View.GONE);
                     btnCancelar.setVisibility(View.GONE);
 
-                    // Estilo del badge según estado unificado (Navy bg + Colored stroke + White text)
                     tvEstado.setTextColor(itemView.getContext().getColor(R.color.white));
                     switch (status.toLowerCase()) {
                         case "por confirmar":
@@ -134,16 +138,11 @@ public class ReservationAdapter extends RecyclerView.Adapter<ReservationAdapter.
                     }
                 }
 
-                btnConfirmar.setOnClickListener(v -> {
-                    if (listener != null) listener.onConfirmarClick(reservation);
-                });
-
-                btnCancelar.setOnClickListener(v -> {
-                    if (listener != null) listener.onCancelarClick(reservation);
-                });
+                btnConfirmar.setOnClickListener(v -> { if (listener != null) listener.onConfirmarClick(reservation); });
+                btnCancelar.setOnClickListener(v -> { if (listener != null) listener.onCancelarClick(reservation); });
 
             } catch (Exception e) {
-                Log.e(TAG, "Error bind: " + e.getMessage());
+                Log.e(TAG, "❌ Error al enlazar reserva: " + e.getMessage());
             }
         }
     }

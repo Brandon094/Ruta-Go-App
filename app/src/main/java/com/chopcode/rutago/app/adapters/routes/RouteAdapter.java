@@ -12,6 +12,17 @@ import com.chopcode.rutago.app.models.Route;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import java.util.List;
 
+/**
+ * Route Adapter
+ *
+ * Controlador de renderizado para la agenda operativa del conductor.
+ * Responsabilidades:
+ * - Visualizar el catálogo de trayectos asignados para la jornada actual.
+ * - Implementar lógica de "Próxima Ruta": identifica y resalta el trayecto inminente según el reloj del sistema.
+ * - Gestionar el estado de "Ruta Finalizada": aplica efectos de opacidad y bloquea la navegación para turnos vencidos.
+ * - Formatear dinámicamente precios y horarios integrando animaciones de telemetría.
+ * - Proveer feedback visual mediante Badges (Siguiente, Finalizado) para facilitar la toma de decisiones del operador.
+ */
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHolder> {
 
     private static final String TAG = "RouteAdapter";
@@ -20,6 +31,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
     private OnRutaClickListener listener;
     private int nextRouteIndex = -1;
 
+    /** Interfaz para delegar la gestión del despacho hacia la actividad de administración de asientos. */
     public interface OnRutaClickListener {
         void onRutaClick(Route route);
     }
@@ -43,7 +55,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         Route route = routeList.get(position);
         holder.bind(route, position == nextRouteIndex);
 
-        // Bloquear clic si la ruta ya finalizó
+        // Bloqueo preventivo: No se puede gestionar una ruta cuyo horario ya expiró.
         boolean isPast = false;
         if (route.getTime() != null && route.getTime().getTime() != null) {
             isPast = FormatUtils.esHorarioPasado(route.getTime().getTime());
@@ -64,12 +76,18 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         return routeList != null ? routeList.size() : 0;
     }
 
+    /**
+     * Refresca la planilla y recalcula el enfoque operativo del conductor.
+     */
     public void actualizarRutas(List<Route> newRoutes) {
         this.routeList = newRoutes;
         calcularIndiceSiguienteRuta();
         notifyDataSetChanged();
     }
 
+    /**
+     * Algoritmo de priorización: localiza la primera ruta del listado que aún no ha pasado.
+     */
     private void calcularIndiceSiguienteRuta() {
         nextRouteIndex = -1;
         if (routeList == null || routeList.isEmpty()) return;
@@ -82,12 +100,14 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             }
         }
         
-        // Fallback: Si todos pasaron hoy, el siguiente es el primero (mañana)
         if (nextRouteIndex == -1 && !routeList.isEmpty()) {
-            nextRouteIndex = 0;
+            nextRouteIndex = 0; // Reset para jornada de mañana.
         }
     }
 
+    /**
+     * ViewHolder especializado en la tarjeta de despacho.
+     */
     public static class RouteViewHolder extends RecyclerView.ViewHolder {
         private TextView tvOrigin, tvDestination, tvTime, tvPrice, tvBadgeNext;
 
@@ -100,10 +120,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximoRuta);
         }
 
+        /**
+         * Enlaza el modelo Route y aplica la semántica visual de "Siguiente" o "Vencido".
+         */
         public void bind(Route route, boolean isNext) {
-            Log.d("RouteAdapter", "Binding route: " + route.getOrigin() + " to " + route.getDestination());
-            tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : itemView.getContext().getString(R.string.no_disponible));
-            tvDestination.setText(route.getDestination() != null ? route.getDestination() : itemView.getContext().getString(R.string.no_disponible));
+            tvOrigin.setText(route.getOrigin() != null ? route.getOrigin() : "N/A");
+            tvDestination.setText(route.getDestination() != null ? route.getDestination() : "N/A");
             
             String timeStr = "--:--";
             boolean isPast = false;
@@ -113,13 +135,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             }
             tvTime.setText(timeStr);
 
-            // Enlazar precio dinámico desde el modelo Route con animación y color de la marca
             if (tvPrice != null) {
                 tvPrice.setTextColor(itemView.getContext().getColor(R.color.primary_500));
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.animateCurrencyText(tvPrice, 0, route.getFare());
             }
 
-            // Feedback dinámico para el conductor (Siguiente o Finalizada)
+            // Gestión de indicadores dinámicos con latidos visuales para "Siguiente"
             if (tvBadgeNext != null) {
                 com.chopcode.rutago.app.utils.ui.UIAnimationUtils.stopAnimation(tvBadgeNext);
                 if (isNext && !isPast) {
@@ -136,7 +157,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
                 }
             }
 
-            // Opacidad de la tarjeta si ya pasó
+            // Opacidad de lectura para rutas ya completadas.
             itemView.setAlpha(isPast ? 0.6f : 1.0f);
         }
     }

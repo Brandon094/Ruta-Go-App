@@ -19,22 +19,19 @@ import com.chopcode.rutago.app.managers.ui.reservations.confirmation.Confirmatio
 import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationDialogManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.Map;
 
 /**
- * ✅ Confirm Reservation Activity (Passenger)
- */
-/**
- * ✅ Confirm Reservation Activity (Passenger)
- * 
- * Etapa final del flujo de reserva.
+ * ✅ Confirm Reservation Activity
+ *
+ * Etapa final de la pasarela de reserva de Ruta-Go.
  * Responsabilidades:
- * - Presentar un resumen detallado de la reserva (Ruta, Conductor, Vehículo, Asiento).
- * - Permitir la selección del método de pago.
- * - Procesar la reserva atómica en Firebase a través de ConfirmReservationViewModel.
- * - Mostrar diálogos de confirmación y feedback de éxito/error.
+ * - Consolidar y visualizar el resumen ejecutivo del viaje (Logística, Operador y Activo).
+ * - Gestionar la intención de pago mediante selectores interactivos coordinados por el UI Manager.
+ * - Orquestar la transacción atómica de reserva en Firebase mediante el ConfirmReservationViewModel.
+ * - Implementar flujos de confirmación de salida y cancelación de tiquetes.
+ * - Garantizar feedback visual premium mediante animaciones de entrada y estados de procesamiento.
  */
 public class ConfirmReservationActivity extends AppCompatActivity implements
         ConfirmationUIManager.ConfirmationListener,
@@ -42,14 +39,13 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
 
     private static final String TAG = "ConfirmReservationActivity";
 
-    // ViewModel
     private ConfirmReservationViewModel viewModel;
 
-    // UI Elements
+    // Componentes UI
     private MaterialButton btnConfirmReservation, btnCancel;
     private MaterialToolbar topAppBar;
 
-    // UI Managers
+    // Gestores de Lógica Visual y Telemetría
     private ConfirmationUIManager uiManager;
     private ConfirmationAnalyticsHelper confirmationAnalytics;
     private ConfirmationDialogManager dialogManager;
@@ -59,7 +55,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "🚀 onCreate - Starting ConfirmReservationActivity");
+        Log.d(TAG, "🚀 Iniciando etapa final de confirmación.");
 
         setContentView(R.layout.activity_confirmar_reserva);
 
@@ -77,16 +73,17 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         tutorialManager.showPassengerConfirmGuide();
     }
 
+    /**
+     * Configura el Toolbar y aplica animaciones de emergencia para los contenedores de resumen.
+     */
     private void initializeViews() {
         topAppBar = findViewById(R.id.topAppBar);
         btnConfirmReservation = findViewById(R.id.btnConfirmar);
         btnCancel = findViewById(R.id.btnCancelar);
 
-        // 🔥 Micro-interacciones de Botones
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnConfirmReservation);
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancel);
 
-        // 🔥 Animaciones Premium de Entrada para tarjetas
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardViaje));
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardContactos));
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardPago));
@@ -102,6 +99,9 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         btnCancel.setOnClickListener(v -> dialogManager.showCancellationDialog(this));
     }
 
+    /**
+     * Suscribe la UI a los cambios del estado transaccional (Éxito, Error, Procesando).
+     */
     private void setupObservers() {
         viewModel.getReservationData().observe(this, data -> { if (data != null && !data.isEmpty()) updateUI(data); });
 
@@ -119,7 +119,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         });
 
         viewModel.getConfirmationSuccess().observe(this, success -> {
-            if (success) {
+            if (Boolean.TRUE.equals(success)) {
                 Toast.makeText(this, getString(R.string.reserva_exitosa), Toast.LENGTH_SHORT).show();
                 navigateToHome();
             }
@@ -128,6 +128,9 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         viewModel.getError().observe(this, msg -> { if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); });
     }
 
+    /**
+     * Refresca la ficha técnica del tiquete con la información consolidada.
+     */
     private void updateUI(Map<String, Object> data) {
         ((TextView)findViewById(R.id.tvOrigen)).setText((String)data.get("origen"));
         ((TextView)findViewById(R.id.tvDestino)).setText((String)data.get("destino"));

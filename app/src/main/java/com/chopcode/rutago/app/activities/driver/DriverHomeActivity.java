@@ -46,17 +46,16 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * 🏠 Driver Home Activity
- * 
- * Centro de control principal para el conductor.
+ * Driver Home Activity
+ *
+ * Centro neurálgico de la experiencia del conductor.
  * Responsabilidades:
- * - Mostrar un resumen reactivo de estadísticas (Ingresos, Reservas, Asientos).
- * - Listar reservas pendientes para acción inmediata (Confirmar/Cancelar).
- * - Visualizar el itinerario del día con acceso a la gestión de asientos.
- * - Monitorear el estado de la red para garantizar la sincronización de datos.
- * 
- * Implementa una arquitectura multi-ViewModel para separar responsabilidades de perfil, 
- * reservas, estadísticas y rutas.
+ * - Orquestar la visualización consolidada de estadísticas financieras y operativas en tiempo real.
+ * - Gestionar la lista de reservas entrantes permitiendo confirmaciones o cancelaciones atómicas.
+ * - Presentar el itinerario diario del conductor mediante un catálogo de rutas horizontales.
+ * - Implementar flujos de contingencia para la venta física de asientos (fuera del ecosistema digital).
+ * - Monitorear la integridad de la red y el estado de actividad profesional (Active/Rest).
+ * - Centralizar múltiples ViewModels para la gestión de perfil, rutas y telemetría operativa.
  */
 public class DriverHomeActivity extends AppCompatActivity {
     private static final String TAG = "DriverHomeActivity";
@@ -72,8 +71,7 @@ public class DriverHomeActivity extends AppCompatActivity {
     private com.google.android.material.floatingactionbutton.FloatingActionButton fabVentaFisica;
 
     private TextView tvReservasConfirmadas, tvAsientosDisponibles, tvTotalIngresos;
-    private TextView tvUltimaActualizacion;
-    private TextView tvContadorReservas, tvContadorRutas;
+    private TextView tvUltimaActualizacion, tvContadorReservas, tvContadorRutas;
 
     private DriverProfileViewModel perfilViewModel;
     private DriverReservationsViewModel reservasViewModel;
@@ -101,7 +99,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio_conductor);
 
-        // 🔥 Verificar Onboarding del Conductor
+        // Validación de inducción para conductores primerizos.
         com.chopcode.rutago.app.managers.core.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.core.settings.SessionManager(this);
         if (sessionManager.isFirstTimeDriver()) {
             startActivity(new Intent(this, DriverOnboardingActivity.class));
@@ -140,7 +138,6 @@ public class DriverHomeActivity extends AppCompatActivity {
         if (networkSnackbar == null) {
             networkSnackbar = Snackbar.make(findViewById(android.R.id.content), getString(R.string.network_error_driver), Snackbar.LENGTH_INDEFINITE);
             networkSnackbar.setBackgroundTint(getColor(R.color.error_500));
-            networkSnackbar.setTextColor(getColor(R.color.white));
         }
         if (!networkSnackbar.isShown()) networkSnackbar.show();
     }
@@ -155,6 +152,9 @@ public class DriverHomeActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * Inicializa componentes y aplica animaciones premium de entrada escalonada.
+     */
     private void initializeViews() {
         tvConductor = findViewById(R.id.tvConductor);
         tvPlacaVehiculo = findViewById(R.id.tvPlacaVehiculo);
@@ -176,13 +176,9 @@ public class DriverHomeActivity extends AppCompatActivity {
         ivConductorAvatar = findViewById(R.id.ivConductorAvatar);
         tvDriverStatusBadge = findViewById(R.id.tvDriverStatusBadge);
 
-        // 🔥 Animación viva para el logo del home
         View logoCard = findViewById(R.id.driverHomeLogoCard);
-        if (logoCard != null) {
-            UIAnimationUtils.startLogoTiltAnimation(logoCard);
-        }
+        if (logoCard != null) UIAnimationUtils.startLogoTiltAnimation(logoCard);
 
-        // 🔥 Animaciones Premium de Entrada para tarjetas
         UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardEstadisticas));
         UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardReservas));
         UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.cardRutas));
@@ -203,29 +199,33 @@ public class DriverHomeActivity extends AppCompatActivity {
         }
         if (fabVentaFisica != null) {
             UIAnimationUtils.setClickAnimation(fabVentaFisica);
-            fabVentaFisica.setOnClickListener(view -> {
-                if (routeList == null || routeList.isEmpty()) {
-                    Toast.makeText(this, R.string.no_rutas_asignadas, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                
-                // Filtrar solo rutas que no han pasado
-                List<Route> activeRoutes = new ArrayList<>();
-                for (Route r : routeList) {
-                    if (r.getTime() != null && !FormatUtils.esHorarioPasado(r.getTime().getTime())) {
-                        activeRoutes.add(r);
-                    }
-                }
-
-                if (activeRoutes.isEmpty()) {
-                    Toast.makeText(this, R.string.no_rutas_activas_venta, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (activeRoutes.size() == 1) abrirGestionAsientos(activeRoutes.get(0));
-                else mostrarSelectorDeRuta(activeRoutes);
-            });
+            fabVentaFisica.setOnClickListener(view -> handlePhysicalSaleAction());
         }
+    }
+
+    /**
+     * Orquesta el flujo de venta manual filtrando solo rutas activas del itinerario.
+     */
+    private void handlePhysicalSaleAction() {
+        if (routeList == null || routeList.isEmpty()) {
+            Toast.makeText(this, R.string.no_rutas_asignadas, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        List<Route> activeRoutes = new ArrayList<>();
+        for (Route r : routeList) {
+            if (r.getTime() != null && !FormatUtils.esHorarioPasado(r.getTime().getTime())) {
+                activeRoutes.add(r);
+            }
+        }
+
+        if (activeRoutes.isEmpty()) {
+            Toast.makeText(this, R.string.no_rutas_activas_venta, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (activeRoutes.size() == 1) abrirGestionAsientos(activeRoutes.get(0));
+        else mostrarSelectorDeRuta(activeRoutes);
     }
 
     private void abrirGestionAsientos(Route route) {
@@ -251,15 +251,16 @@ public class DriverHomeActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Suscribe la UI a los cambios del repositorio Firebase mediante LiveData.
+     */
     private void setupObservers() {
         perfilViewModel.getLoadingLiveData().observe(this, isLoading -> {
-            if (isLoading != null) {
-                if (isLoading) {
-                    if (shimmerLayout != null) { shimmerLayout.setVisibility(View.VISIBLE); shimmerLayout.startShimmer(); }
-                } else {
-                    if (shimmerLayout != null) { shimmerLayout.stopShimmer(); shimmerLayout.setVisibility(View.GONE); }
-                    new android.os.Handler().postDelayed(this::animateDashboardStats, 300);
-                }
+            if (Boolean.TRUE.equals(isLoading)) {
+                if (shimmerLayout != null) { shimmerLayout.setVisibility(View.VISIBLE); shimmerLayout.startShimmer(); }
+            } else {
+                if (shimmerLayout != null) { shimmerLayout.stopShimmer(); shimmerLayout.setVisibility(View.GONE); }
+                new android.os.Handler().postDelayed(this::animateDashboardStats, 300);
             }
         });
 
@@ -270,9 +271,7 @@ public class DriverHomeActivity extends AppCompatActivity {
                 ImageUtils.loadProfilePhoto(this, driver.getPhotoUrl(), ivConductorAvatar);
                 actualizarBadgeEstado(driver.getStatus());
 
-                if (driver.getVehicleCapacity() > 0) {
-                    estadisticasViewModel.setCapacidadVehiculo(driver.getVehicleCapacity());
-                }
+                if (driver.getVehicleCapacity() > 0) estadisticasViewModel.setCapacidadVehiculo(driver.getVehicleCapacity());
 
                 if (driver.getAssignedSchedules() != null) {
                     List<String> horarios = driver.getAssignedSchedules();
@@ -280,7 +279,6 @@ public class DriverHomeActivity extends AppCompatActivity {
                     reservasViewModel.setHorariosAsignados(horarios);
                     reservasViewModel.cargarReservasPendientes();
                     estadisticasViewModel.setHorariosAsignados(new ArrayList<>(horarios));
-                    
                     tvEmptyRutas.setVisibility(horarios.isEmpty() ? View.VISIBLE : View.GONE);
                 }
 
@@ -302,9 +300,6 @@ public class DriverHomeActivity extends AppCompatActivity {
                 updateReservationsUI();
                 tvContadorReservas.setText(getString(R.string.contador_reservas, reservations.size()));
                 if (!routeList.isEmpty()) estadisticasViewModel.calculateRouteStatistics();
-            } else {
-                tvContadorReservas.setText(getString(R.string.contador_reservas, 0));
-                showEmptyReservations();
             }
         });
 
@@ -315,44 +310,27 @@ public class DriverHomeActivity extends AppCompatActivity {
                 if (routeAdapter != null) routeAdapter.actualizarRutas(new ArrayList<>(routes));
                 updateRoutesUI();
                 tvContadorRutas.setText(getString(R.string.contador_rutas, routes.size()));
-                
                 estadisticasViewModel.setRutasActivas(routes);
                 if (!reservationList.isEmpty()) estadisticasViewModel.calculateRouteStatistics();
-
                 actualizarTiempoActualizacion();
-            } else {
-                tvContadorRutas.setText(getString(R.string.contador_rutas, 0));
-                showEmptyRoutes();
             }
         });
 
-        estadisticasViewModel.getReservasConfirmadasLiveData().observe(this, count -> {
-            if (count != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
-                animateDashboardStats();
-            }
-        });
-
-        estadisticasViewModel.getAsientosDisponiblesLiveData().observe(this, asientos -> {
-            if (asientos != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
-                animateDashboardStats();
-            }
-        });
-
-        estadisticasViewModel.getIngresosLiveData().observe(this, ingresos -> {
-            if (ingresos != null && Boolean.FALSE.equals(perfilViewModel.getLoadingLiveData().getValue())) {
-                animateDashboardStats();
-            }
-        });
-
-        // Desglose dinámico por ruta
+        estadisticasViewModel.getReservasConfirmadasLiveData().observe(this, count -> animateDashboardStats());
+        estadisticasViewModel.getAsientosDisponiblesLiveData().observe(this, asientos -> animateDashboardStats());
+        estadisticasViewModel.getIngresosLiveData().observe(this, ingresos -> animateDashboardStats());
+        
         estadisticasViewModel.getRouteStatsLiveData().observe(this, stats -> {
-            if (stats != null && routeStatAdapter != null) {
-                routeStatAdapter.updateStats(stats);
-            }
+            if (stats != null && routeStatAdapter != null) routeStatAdapter.updateStats(stats);
         });
     }
 
+    /**
+     * Ejecuta interpolaciones numéricas para actualizar los indicadores financieros.
+     */
     private void animateDashboardStats() {
+        if (Boolean.TRUE.equals(perfilViewModel.getLoadingLiveData().getValue())) return;
+
         Integer confirmed = estadisticasViewModel.getReservasConfirmadasLiveData().getValue();
         Integer available = estadisticasViewModel.getAsientosDisponiblesLiveData().getValue();
         Double income = estadisticasViewModel.getIngresosLiveData().getValue();
@@ -385,7 +363,6 @@ public class DriverHomeActivity extends AppCompatActivity {
         rvProximasRutas.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvProximasRutas.setAdapter(routeAdapter);
 
-        // Desglose dinámico por ruta
         routeStatAdapter = new com.chopcode.rutago.app.adapters.routes.RouteStatAdapter();
         rvRouteBreakdown.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvRouteBreakdown.setAdapter(routeStatAdapter);
@@ -406,6 +383,9 @@ public class DriverHomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Muestra una advertencia antes de ejecutar acciones de control sobre tiquetes de pasajeros.
+     */
     private void showConfirmationDialog(Reservation reservation, boolean isConfirmation) {
         new MaterialAlertDialogBuilder(this, R.style.AppDialogTheme)
                 .setTitle(isConfirmation ? R.string.confirmar : R.string.cancelar)
@@ -427,7 +407,6 @@ public class DriverHomeActivity extends AppCompatActivity {
     private void updateRoutesUI() {
         if (routeList == null || routeList.isEmpty()) {
             showEmptyRoutes();
-            if (layoutFeedbackConductor != null) layoutFeedbackConductor.setVisibility(View.GONE);
             return;
         }
 
@@ -460,6 +439,9 @@ public class DriverHomeActivity extends AppCompatActivity {
     private void showEmptyReservations() { tvEmptyReservas.setVisibility(View.VISIBLE); rvReservas.setVisibility(View.GONE); }
     private void showEmptyRoutes() { tvEmptyRutas.setVisibility(View.VISIBLE); rvProximasRutas.setVisibility(View.GONE); }
 
+    /**
+     * Actualiza el indicador visual de estatus profesional con efectos de pulso para conductores activos.
+     */
     private void actualizarBadgeEstado(String status) {
         if (tvDriverStatusBadge == null) return;
         
@@ -493,13 +475,10 @@ public class DriverHomeActivity extends AppCompatActivity {
         super.onResume(); 
         reservasViewModel.reanudarActualizacionesTiempoReal(); 
         if (isDataLoaded) {
-            // Resetear para forzar animación
             currentConfirmed = 0;
             currentAvailable = 0;
             currentIncome = 0;
             reloadAllData(); 
         }
     }
-    @Override
-    protected void onDestroy() { super.onDestroy(); perfilViewModel.limpiarDatos(); }
 }

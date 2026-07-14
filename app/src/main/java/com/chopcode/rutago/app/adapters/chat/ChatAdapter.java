@@ -13,6 +13,16 @@ import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Chat Adapter
+ *
+ * Especialista en el renderizado de la conversación bidireccional entre pasajero y conductor.
+ * Responsabilidades:
+ * - Gestionar la visualización diferenciada de mensajes enviados (Me) y recibidos (Other) mediante ViewTypes.
+ * - Sincronizar el historial de mensajes reactivamente desde el ViewModel.
+ * - Formatear las marcas de tiempo (Timestamps) en formato 12h legible.
+ * - Asegurar una burbuja de chat fluida y consistente con la identidad visual del app.
+ */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
 
     private static final int VIEW_TYPE_ME = 1;
@@ -25,6 +35,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         this.currentUserId = MyApp.getCurrentUserId();
     }
 
+    /**
+     * Determina si el mensaje fue enviado por el usuario actual para elegir el layout adecuado.
+     */
     @Override
     public int getItemViewType(int position) {
         if (messages.get(position).getSenderId().equals(currentUserId)) {
@@ -54,11 +67,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     @Override
     public int getItemCount() { return messages.size(); }
 
+    /**
+     * Refresca la lista completa de mensajes y notifica el cambio al RecyclerView.
+     */
     public void setMessages(List<ChatMessage> list) {
         this.messages = list;
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder especializado en la burbuja de texto y metadatos del mensaje.
+     */
     static class ChatViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage, tvTime;
 

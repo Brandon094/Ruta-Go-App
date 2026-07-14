@@ -21,28 +21,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 💺 Manage Seats Activity (Driver)
- * 
- * Interfaz interactiva para el control de asientos del vehículo.
+ * 💺 Manage Seats Activity
+ *
+ * Panel de control táctico para la gestión de inventario de asientos en tiempo real.
  * Responsabilidades:
- * - Visualizar en tiempo real qué asientos están ocupados por la App (Rojo) y cuáles por venta física (Naranja).
- * - Permitir al conductor bloquear asientos manualmente para pasajeros que pagan en efectivo sin usar la App.
- * - Liberar asientos bloqueados físicamente.
- * - Sincronizar automáticamente la capacidad visual con el modelo técnico del vehículo asignado.
+ * - Visualizar la ocupación híbrida: Diferencia entre reservas vía App (Rojo) y ventas físicas (Naranja).
+ * - Permitir al conductor bloquear/desbloquear asientos manualmente (Venta física).
+ * - Sincronizar automáticamente el Grid visual con la capacidad técnica del vehículo asignado.
+ * - Monitorear cambios concurrentes en la base de datos para evitar sobreventas.
+ * - Proveer feedback visual sobre el estado de disponibilidad total del despacho.
  */
 public class ManageSeatsActivity extends AppCompatActivity implements SeatManager.SeatSelectionListener {
 
     private static final String TAG = "ManageSeatsActivity";
     
-    // Intent Data
+    // Metadatos del Itinerario
     private String scheduleId, routeName, scheduleTime;
     private double routePrice;
     
-    // Views
+    // Componentes de Interfaz
     private TextView tvRouteName, tvScheduleInfo, tvAvailableSeatsInfo;
     private MaterialToolbar topAppBar;
     
-    // Managers and ViewModel
+    // Orquestadores
     private SeatManager seatManager;
     private ManageSeatsViewModel viewModel;
     private ReservationAnalyticsHelper analyticsHelper;
@@ -51,7 +52,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "🚀 onCreate - Starting ManageSeatsActivity");
+        Log.d(TAG, "🚀 Iniciando gestión de asientos operativa.");
         setContentView(R.layout.activity_gestionar_asientos);
         
         getIntentData();
@@ -81,7 +82,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         tvAvailableSeatsInfo = findViewById(R.id.tvAsientosDispoInfo);
         topAppBar = findViewById(R.id.topAppBar);
         
-        tvRouteName.setText(routeName != null ? routeName : "Route not available");
+        tvRouteName.setText(routeName != null ? routeName : "Ruta no disponible");
         tvScheduleInfo.setText("Horario: " + (scheduleTime != null ? scheduleTime : "--:--"));
         
         setSupportActionBar(topAppBar);
@@ -96,16 +97,23 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
     }
 
+    /**
+     * Suscribe la UI a los flujos de ocupación (App vs Física) y capacidad total.
+     */
     private void setupObservers() {
         viewModel.getAppOccupiedSeats().observe(this, appSeats -> actualizarMapaAsientos());
         viewModel.getPhysicalOccupiedSeats().observe(this, physicalSeats -> actualizarMapaAsientos());
         viewModel.getTotalCapacity().observe(this, capacity -> actualizarMapaAsientos());
         viewModel.getAvailableCount().observe(this, count -> tvAvailableSeatsInfo.setText(getString(R.string.asientos_disponibles_count, count)));
+        
         viewModel.getError().observe(this, msg -> {
             if (msg != null) Snackbar.make(findViewById(android.R.id.content), getString(R.string.error_prefijo, msg), Snackbar.LENGTH_LONG).show();
         });
     }
 
+    /**
+     * Fusiona los sets de datos para que el SeatManager renderice los colores correctos.
+     */
     private void actualizarMapaAsientos() {
         Set<Integer> app = viewModel.getAppOccupiedSeats().getValue();
         Set<Integer> physical = viewModel.getPhysicalOccupiedSeats().getValue();
@@ -118,11 +126,15 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         );
     }
 
+    /**
+     * Intercepta la selección de un asiento para decidir si bloquearlo físicamente o liberarlo.
+     */
     @Override
     public void onSeatSelected(int seatNumber) {
         Set<Integer> app = viewModel.getAppOccupiedSeats().getValue();
         Set<Integer> physical = viewModel.getPhysicalOccupiedSeats().getValue();
 
+        // Si está ocupado por App, el conductor no puede tocarlo (Prioridad de cliente digital).
         if (app != null && app.contains(seatNumber)) {
             Snackbar.make(findViewById(android.R.id.content), R.string.ocupado_por_app, Snackbar.LENGTH_SHORT).show();
         } else if (physical != null && physical.contains(seatNumber)) {
@@ -159,7 +171,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
-            viewModel.startListening(scheduleId); // Re-start listening to refresh
+            viewModel.startListening(scheduleId);
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -20,10 +20,10 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 - [x] **Motores (Engines)**: Documentar clases core de Seats y Reservations.
 - [x] **Servicios**: Documentar cada repositorio de datos Firebase.
 - [x] **Managers**: Documentar controladores de lógica (Core) y UI Helpers.
-- [ ] **Adapters**: Documentar gestión de listas y ViewHolders.
+- [x] **Adapters**: Documentar gestión de listas y ViewHolders.
 - [x] **Utils**: Documentar herramientas de formato, red y seguridad.
-- [ ] **Activities & Fragments**: Documentar controladores de vista y ciclo de vida.
-- [ ] **Config**: Documentar configuración global de Firebase y App.
+- [x] **Activities & Fragments**: Documentar controladores de vista y ciclo de vida.
+- [x] **Config**: Documentar configuración global de Firebase y App.
 
 ## ⚖️ 4. Legal y Compliance
 - [ ] **Manual de Gestión de Datos**: Procedimientos internos para solicitudes de borrado.

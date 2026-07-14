@@ -24,10 +24,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
- * 🧭 BottomNavFragment
- * 
- * Fragmento que gestiona la barra de navegación inferior en toda la aplicación.
- * Migrado a MVVM para la gestión de lógica de negocio (ej. logout).
+ * BottomNav Fragment
+ *
+ * Componente reutilizable que gestiona la barra de navegación inferior en toda la suite.
+ * Responsabilidades:
+ * - Proveer navegación fluida entre los módulos de Inicio, Historial y Perfil.
+ * - Implementar el "Efecto Duolingo": elimina transiciones de actividad para simular una barra estática.
+ * - Coordinar el flujo de cierre de sesión mediante el BottomNavViewModel.
+ * - Sincronizar automáticamente el elemento seleccionado basándose en el tipo de actividad anfitriona.
+ * - Diferenciar los destinos de navegación según el rol (isDriver).
  */
 public class BottomNavFragment extends Fragment {
 
@@ -36,6 +41,9 @@ public class BottomNavFragment extends Fragment {
     private BottomNavViewModel viewModel;
     private BottomNavigationView navView;
 
+    /**
+     * Factory method para instanciar el fragmento con el contexto de rol adecuado.
+     */
     public static BottomNavFragment newInstance(boolean isDriver) {
         BottomNavFragment fragment = new BottomNavFragment();
         Bundle args = new Bundle();
@@ -67,6 +75,7 @@ public class BottomNavFragment extends Fragment {
     private void observeViewModel() {
         viewModel.getLogoutSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success) && getActivity() != null) {
+                // Limpieza total del stack tras salida exitosa
                 getActivity().finishAffinity();
             }
         });
@@ -75,12 +84,15 @@ public class BottomNavFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        // ✅ Forzar la selección correcta cada vez que el fragmento se hace visible
+        // Asegurar que el estado visual coincida con la pantalla actual al re-enfocar.
         if (navView != null) {
             setSelectedMenu(navView);
         }
     }
 
+    /**
+     * Configura los listeners de clic para cada ítem del menú.
+     */
     private void setupNavigation(BottomNavigationView navView) {
         navView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -105,12 +117,14 @@ public class BottomNavFragment extends Fragment {
         });
     }
 
+    /**
+     * Realiza un mapeo dinámico entre la clase de la actividad actual y el ID del menú.
+     */
     private void setSelectedMenu(BottomNavigationView navView) {
         if (getActivity() == null) return;
         
-        navView.setOnItemSelectedListener(null); // Evitar disparar navegación al setear
+        navView.setOnItemSelectedListener(null); 
 
-        // ✅ USAR INSTANCEOF PARA SINCRONIZACIÓN 100% REAL
         if (getActivity() instanceof PassengerHomeActivity || getActivity() instanceof DriverHomeActivity) {
             navView.setSelectedItemId(R.id.nav_home);
         } else if (getActivity() instanceof ReservationHistoryActivity || getActivity() instanceof DriverHistoryActivity) {
@@ -119,7 +133,7 @@ public class BottomNavFragment extends Fragment {
             navView.setSelectedItemId(R.id.nav_profile);
         }
 
-        setupNavigation(navView); // Restaurar listener
+        setupNavigation(navView);
     }
 
     private void navigateToHome() {
@@ -148,7 +162,7 @@ public class BottomNavFragment extends Fragment {
     }
 
     /**
-     * ✅ EFECTO DUOLINGO: Quita la animación de la actividad para que la barra parezca fija.
+     * Optimiza la percepción de velocidad eliminando animaciones de entrada/salida entre módulos base.
      */
     private void applyInstantTransition() {
         if (getActivity() != null) {
@@ -156,6 +170,9 @@ public class BottomNavFragment extends Fragment {
         }
     }
 
+    /**
+     * Muestra un diálogo de seguridad antes de destruir la sesión del usuario.
+     */
     private void showLogoutConfirmation() {
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_logout, null);
 

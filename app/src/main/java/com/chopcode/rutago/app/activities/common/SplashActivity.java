@@ -18,7 +18,14 @@ import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
 import com.chopcode.rutago.app.viewmodels.common.SplashViewModel;
 
 /**
- * 🚀 Splash Activity
+ * Splash Activity
+ *
+ * Punto de entrada visual y lógico de la aplicación.
+ * Responsabilidades:
+ * - Implementar la experiencia Edge-to-Edge nativa de Android 15.
+ * - Ejecutar la coreografía de Branding (Animaciones premium de Splash).
+ * - Orquestar el enrutamiento inicial basado en el estado de la sesión y el rol del usuario.
+ * - Determinar si el usuario debe ver el Onboarding, el Login o ir directamente a su Dashboard.
  */
 public class SplashActivity extends AppCompatActivity {
 
@@ -31,7 +38,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "🚀 Starting Splash Screen");
+        Log.d(TAG, "🚀 Iniciando Splash Screen");
         setContentView(R.layout.activity_splash);
 
         viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
@@ -40,6 +47,9 @@ public class SplashActivity extends AppCompatActivity {
         startEntryFlow();
     }
 
+    /**
+     * Lanza la secuencia de animaciones escalonadas para el logo corporativo.
+     */
     private void setupBrandingAnimation() {
         View pinContainer = findViewById(R.id.card_logo_splash);
         ImageView logo = findViewById(R.id.logo_splash);
@@ -50,16 +60,26 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Observa el destino de navegación resuelto por el ViewModel tras validar Firebase Auth.
+     */
     private void setupObservers() {
         viewModel.getNavigationTarget().observe(this, target -> {
             if (target != null) redirectToTarget(target);
         });
     }
 
+    /**
+     * Inicia el temporizador de permanencia del Splash antes de disparar la validación de sesión.
+     */
     private void startEntryFlow() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> viewModel.checkSessionStatus(), SPLASH_DURATION);
     }
 
+    /**
+     * Ejecuta la navegación hacia la pantalla de destino con transiciones personalizadas.
+     * @param target Identificador del rol o estado (ej: "driver", "passenger", "none").
+     */
     private void redirectToTarget(String target) {
         Intent intent;
         com.chopcode.rutago.app.managers.core.settings.SessionManager sessionManager = new com.chopcode.rutago.app.managers.core.settings.SessionManager(this);
@@ -75,6 +95,7 @@ public class SplashActivity extends AppCompatActivity {
                 intent = new Intent(this, PassengerHomeActivity.class);
                 break;
             default:
+                // Si no hay sesión, decidimos entre Onboarding (primera vez) o Login.
                 if (sessionManager.isFirstTimeLaunch()) {
                     intent = new Intent(this, OnboardingActivity.class);
                 } else {

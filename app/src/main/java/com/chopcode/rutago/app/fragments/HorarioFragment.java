@@ -23,6 +23,17 @@ import com.chopcode.rutago.app.models.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Horario Fragment
+ *
+ * Especialista en la visualización y gestión de la planilla de despachos para una ruta específica.
+ * Responsabilidades:
+ * - Renderizar la lista reactiva de horarios mediante un RecyclerView optimizado.
+ * - Implementar la lógica de "Auto-Scroll": desplaza la vista automáticamente hacia el próximo viaje disponible.
+ * - Gestionar el estado de "Jornada Finalizada": oculta la lista y muestra feedback visual si no hay más turnos.
+ * - Validar requisitos de reserva (Sesión activa y Conductor asignado) antes de permitir la navegación.
+ * - Actuar como puente entre el catálogo de horarios y el flujo de creación de reservas.
+ */
 public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReservarClickListener {
 
     private static final String TAG = "HorarioFragment";
@@ -37,6 +48,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
     private String title;
     private AuthManager authManager;
 
+    /** Interfaz para recuperar datos del perfil del pasajero desde la actividad anfitriona. */
     public interface OnUserDataListener {
         User getUserActual();
     }
@@ -47,6 +59,9 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
         this.userDataListener = listener;
     }
 
+    /**
+     * Factory method para instanciar el fragmento con su respectivo catálogo de horarios.
+     */
     public static HorarioFragment newInstance(List<Schedule> schedules, String title) {
         HorarioFragment fragment = new HorarioFragment();
         Bundle args = new Bundle();
@@ -90,6 +105,9 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
         return view;
     }
 
+    /**
+     * Sincroniza la UI con una nueva lista de horarios (ej. tras una rotación o refresco).
+     */
     public void actualizarHorarios(List<Schedule> newSchedules) {
         if (adapter != null) {
             schedules.clear();
@@ -107,12 +125,12 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
                 adapter.actualizarHorarios(new ArrayList<>());
                 verificarYMostrarFeedback();
             }
-        } else {
-            schedules.clear();
-            if (newSchedules != null) schedules.addAll(newSchedules);
         }
     }
 
+    /**
+     * Determina si se debe mostrar el mensaje de "Fin de jornada" basándose en la hora actual.
+     */
     private void verificarYMostrarFeedback() {
         if (layoutFeedback == null || recyclerView == null) return;
 
@@ -139,8 +157,9 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
     }
 
     /**
-     * 🔥 Desplaza el scroll automáticamente hasta el horario marcado como "SIGUIENTE".
-     * Ejecuta primero el scroll y luego dispara las animaciones de salida de buses.
+     * 🔥 Algoritmo de Enfoque Operativo:
+     * Localiza el próximo viaje por salir y desplaza el scroll hacia su posición.
+     * Posteriormente activa las animaciones de partida del bus.
      */
     public void desplazarAlSiguienteViajeConDelay() {
         if (adapter == null || recyclerView == null) return;
@@ -149,23 +168,23 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
         if (targetIndex != -1) {
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                 if (recyclerView != null && targetIndex < adapter.getItemCount()) {
-                    // 1. Realizar el scroll inmediatamente (con un pequeño delay para estabilidad)
                     LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     if (layoutManager != null) {
                         layoutManager.scrollToPositionWithOffset(targetIndex, 120);
                     }
 
-                    // 2. Habilitar animaciones de partida después del scroll
+                    // Disparar animaciones una vez el scroll esté en posición.
                     new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-                        if (adapter != null) {
-                            adapter.enableDepartureAnimations();
-                        }
-                    }, 800); // Dar tiempo a que el scroll se asiente
+                        if (adapter != null) adapter.enableDepartureAnimations();
+                    }, 800); 
                 }
-            }, 400); // Delay inicial corto para cargar la UI
+            }, 400); 
         }
     }
 
+    /**
+     * Intercepta la acción de reservar. Valida sesión e identidad del conductor.
+     */
     @Override
     public void onReservarClick(Schedule schedule) {
         if (!authManager.isUserLoggedIn()) {
@@ -174,15 +193,17 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             return;
         }
 
-        // Blindaje extra: Verificar conductor antes de navegar
         if (schedule.getConductorId() == null || schedule.getConductorId().isEmpty()) {
-            Toast.makeText(getContext(), "Este horario no tiene un conductor asignado aún.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Horario sin conductor asignado.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         navigateToCreateReservation(schedule);
     }
 
+    /**
+     * Empaqueta el contexto del viaje y el perfil del usuario para el inicio de la reserva física.
+     */
     private void navigateToCreateReservation(Schedule schedule) {
         try {
             Intent intent = new Intent(getActivity(), CreateReservationActivity.class);
@@ -190,7 +211,6 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             intent.putExtra("horarioHora", schedule.getTime());
             intent.putExtra("rutaSeleccionada", title);
             
-            // 🔥 PASAR PRECIO YA CARGADO
             try {
                 double priceValue = Double.parseDouble(schedule.getPrice());
                 intent.putExtra("precioSeleccionado", priceValue);
@@ -209,7 +229,7 @@ public class HorarioFragment extends Fragment implements ScheduleAdapter.OnReser
             }
             startActivity(intent);
         } catch (Exception e) {
-            Log.e(TAG, "Error navigating to CreateReservation: " + e.getMessage());
+            Log.e(TAG, "❌ Error en navegación a reserva: " + e.getMessage());
         }
     }
 }

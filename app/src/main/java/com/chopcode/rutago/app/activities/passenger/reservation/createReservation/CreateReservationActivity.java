@@ -30,48 +30,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 💺 Create Reservation Activity (Passenger)
- * Esta actividad permite al pasajero seleccionar un asiento para un horario específico.
+ * Create Reservation Activity
+ *
+ * Pantalla interactiva para la selección táctil de asientos.
  * Responsabilidades:
- * - Mostrar el mapa interactivo de asientos (usando SeatManager).
- * - Cargar y mostrar la información del conductor y vehículo asignado al horario.
- * - Validar que se haya seleccionado un asiento antes de proceder.
- * - Manejar la persistencia del estado ante cambios de configuración (rotación).
+ * - Implementar el motor visual de asientos (Seat Engine) permitiendo bloqueos locales.
+ * - Sincronizar dinámicamente la capacidad del vehículo y la identidad del conductor asignado.
+ * - Gestionar secciones expandibles (Acordeones) para optimizar el espacio vertical de la UI.
+ * - Validar la integridad de los datos de reserva antes de avanzar a la confirmación final.
+ * - Orquestar la persistencia de estado mediante el ReservationStateManager ante rotaciones de pantalla.
+ * - Implementar guías interactivas para facilitar la primera reserva del usuario.
  */
 public class CreateReservationActivity extends AppCompatActivity implements SeatManager.SeatSelectionListener {
 
     private static final String TAG = "CreateReservationActivity";
 
-    // UI Elements
-    private Button btnConfirm;
-    private Button btnCancel;
+    // Componentes de Interfaz
+    private Button btnConfirm, btnCancel;
     private MaterialToolbar topAppBar;
-
-    // Data from intent
-    private String selectedRoute, scheduleId, scheduleTime;
-
-    // Travel info views
     private TextView tvSelectedRoute, tvRouteDescription, tvSelectedSchedule, tvTravelDate;
     private TextView tvVehicleInfo, tvCapacityInfo, tvAvailableCapacity, tvDriverName;
 
-    // Expandable section views
+    // Gestión de Contenedores Expandibles
     private ExpandableSectionManager expandableSectionManager;
     private RelativeLayout headerInfo;
-    private LinearLayout expandableContent;
-    private LinearLayout summaryInfo;
+    private LinearLayout expandableContent, summaryInfo;
     private ImageView iconExpandCollapse;
-    private TextView tvRouteSummary;
-    private TextView tvScheduleSummary;
+    private TextView tvRouteSummary, tvScheduleSummary;
 
-    // Driver and Vehicle info
-    private String driverId;
-    private String driverName;
-    private String driverPhone;
-    private String vehiclePlate;
-    private String vehicleModel;
+    // Metadatos de Negocio
+    private String selectedRoute, scheduleId, scheduleTime;
+    private String driverId, driverName, driverPhone;
+    private String vehiclePlate, vehicleModel;
     private Integer vehicleCapacity;
 
-    // Managers
+    // Orquestadores de Lógica
     private ReservationAnalyticsHelper analyticsHelper;
     private SeatManager seatManager;
     private ReservationDataProcessor reservationDataProcessor;
@@ -118,6 +111,9 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         tutorialManager.showPassengerSeatsGuide();
     }
 
+    /**
+     * Suscribe la pantalla a la carga técnica del bus y la ocupación de asientos en tiempo real.
+     */
     private void setupViewModelObservers() {
         viewModel.getOccupiedSeats().observe(this, occupied -> {
             seatManager.actualizarEstadoAsientos(occupied, seatManager.getCapacidadTotal());
@@ -158,7 +154,6 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             scheduleId = intent.getStringExtra("horarioId");
             scheduleTime = intent.getStringExtra("horarioHora");
             
-            // 🔥 CAPTURAR PRECIO DEL INTENT
             double initialPrice = intent.getDoubleExtra("precioSeleccionado", com.chopcode.rutago.app.services.prices.PriceService.DEFAULT_PRICE);
             if (viewModel != null) viewModel.setInitialPrice(initialPrice);
 
@@ -179,11 +174,9 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         btnCancel = findViewById(R.id.buttonCancelar);
         topAppBar = findViewById(R.id.topAppBar);
 
-        // 🔥 Micro-interacciones de Botones
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnConfirm);
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.setClickAnimation(btnCancel);
 
-        // 🔥 Animaciones de Entrada Premium para tarjetas
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.infoViajeCardView));
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.busCardView));
         com.chopcode.rutago.app.utils.ui.UIAnimationUtils.playCardEntryAnimation(findViewById(R.id.selectedSeatCardView));
@@ -216,7 +209,6 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
             expandableSectionManager.updateSummaryInfo(selectedRoute, null);
             tvRouteDescription.setText(getString(R.string.ruta_directa_tiempo, FormatUtils.calcularTiempoEstimado(selectedRoute)));
 
-            // 🔥 RESOLVER PRECIO DINÁMICO
             String separator = " → ";
             if (!selectedRoute.contains(separator)) separator = " -> ";
             String[] parts = selectedRoute.split(separator);
@@ -238,6 +230,9 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         if (state.usuarioNombre != null) reservationUserManager.updateFromIntent(state.usuarioId, state.usuarioNombre, state.usuarioTelefono);
     }
 
+    /**
+     * Valida el payload de reserva y prepara el salto hacia la confirmación.
+     */
     private void validateReservation() {
         String travelDate = FormatUtils.obtenerFechaViaje(scheduleTime);
         Double currentPrice = viewModel.getRoutePrice().getValue();

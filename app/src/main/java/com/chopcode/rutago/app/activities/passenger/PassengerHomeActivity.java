@@ -33,16 +33,16 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.tabs.TabLayout;
 
 /**
- * 🏠 Passenger Home Activity
- * 
- * Este es el Dashboard principal para los pasajeros. 
+ * Passenger Home Activity
+ *
+ * Tablero principal de la experiencia del pasajero.
  * Responsabilidades:
- * - Mostrar el catálogo de rutas disponibles (Natagá <-> La Plata) mediante un ViewPager2.
- * - Visualizar estadísticas rápidas del usuario (Viajes realizados, cancelados y total).
- * - Monitorear la conexión a internet en tiempo real para alertar al usuario.
- * - Navegar a través de las secciones principales usando el Bottom Navigation.
- * 
- * Implementa MVVM mediante PassengerProfileViewModel y ScheduleViewModel.
+ * - Orquestar la visualización del catálogo de rutas (Natagá ↔ La Plata) mediante ViewPager2 y TabLayout.
+ * - Gestionar la reactividad de estadísticas de fidelización (Viajes confirmados, cancelados y total).
+ * - Implementar estados de carga elegantes utilizando Shimmer Effects.
+ * - Monitorear proactivamente la conectividad mediante el NetworkMonitor para asegurar la transaccionalidad.
+ * - Coordinar con el TutorialManager la inducción guiada para nuevos usuarios.
+ * - Proveer una navegación fluida mediante el fragmento compartido de Bottom Navigation.
  */
 public class PassengerHomeActivity extends AppCompatActivity implements
         DashboardUIManager.UIActionsListener, HorarioFragment.OnUserDataListener {
@@ -73,7 +73,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "🚀 onCreate - Reactive Passenger Dashboard");
+        Log.d(TAG, "🚀 Iniciando Dashboard de Pasajero.");
 
         setContentView(R.layout.activity_inicio_usuarios);
 
@@ -97,6 +97,9 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         tutorialManager.showPassengerHomeGuide();
     }
 
+    /**
+     * Configura los observadores de LiveData para una actualización reactiva de la interfaz.
+     */
     private void setupObservers() {
         profileViewModel.getUserLiveData().observe(this, user -> {
             if (user != null) {
@@ -114,7 +117,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
                 shimmerStats.stopShimmer();
                 shimmerStats.setVisibility(View.GONE);
                 layoutRealStats.setVisibility(View.VISIBLE);
-                // 🔥 Delay para que la animación sea visible tras el shimmer
+                // Delay estratégico para permitir que el Shimmer desaparezca antes de la animación numérica.
                 new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this::updateCounters, 400);
             }
         });
@@ -131,6 +134,9 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         });
     }
 
+    /**
+     * Sincroniza los contadores animados del Dashboard.
+     */
     private void updateCounters() {
         Integer confirmed = profileViewModel.getConfirmedCount().getValue();
         Integer canceled = profileViewModel.getCanceledCount().getValue();
@@ -140,6 +146,9 @@ public class PassengerHomeActivity extends AppCompatActivity implements
                                  total != null ? total : 0);
     }
 
+    /**
+     * Refresca el contenido del ViewPager con los nuevos horarios cargados.
+     */
     private void updatePager() {
         if (pagerAdapter != null) {
             pagerAdapter.actualizarDatos(
@@ -177,32 +186,30 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         uiManager.setStatusBadgeReference(tvUserStatusBadge);
         uiManager.setupToolbar(topAppBar);
 
-        // 🔥 Animación viva para el logo del home
         View logoCard = findViewById(R.id.homeLogoCard);
-        if (logoCard != null) {
-            UIAnimationUtils.startLogoTiltAnimation(logoCard);
-        }
+        if (logoCard != null) UIAnimationUtils.startLogoTiltAnimation(logoCard);
 
         pagerAdapter = new SchedulePagerAdapter(this, new java.util.ArrayList<>(), new java.util.ArrayList<>());
         viewPagerSchedules.setAdapter(pagerAdapter);
         setupViewPagerAnimation();
         uiManager.setupTabLayout(tabLayout, viewPagerSchedules);
 
-        // 🔥 Auto-scroll al cambiar de pestaña (Trayecto)
+        // Algoritmo de Auto-scroll al cambiar de trayecto.
         viewPagerSchedules.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (pagerAdapter != null) {
                     HorarioFragment fragment = pagerAdapter.getFragment(position);
-                    if (fragment != null) {
-                        fragment.desplazarAlSiguienteViajeConDelay();
-                    }
+                    if (fragment != null) fragment.desplazarAlSiguienteViajeConDelay();
                 }
             }
         });
     }
 
+    /**
+     * Suscribe la pantalla a los cambios de conectividad global.
+     */
     private void setupNetworkMonitor() {
         networkMonitor = new NetworkMonitor(this);
         networkMonitor.observe(this, isConnected -> {
@@ -240,6 +247,9 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Aplica un transformador de páginas personalizado para suavizar la transición entre rutas.
+     */
     private void setupViewPagerAnimation() {
         viewPagerSchedules.setPageTransformer((page, position) -> {
             float absPos = Math.abs(position);
@@ -261,7 +271,6 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        // Resetear localmente en el UI Manager y disparar animación a los valores actuales del VM
         if (uiManager != null) {
             uiManager.updateCounters(0, 0, 0);
             updateCounters();

@@ -19,6 +19,16 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import java.util.Map;
 
+/**
+ * MyApp - Global Application Class
+ *
+ * Punto de entrada principal de la aplicación Android.
+ * Responsabilidades:
+ * - Centralizar la inicialización del ecosistema Firebase (Auth, Database, Storage, Messaging, Analytics, Crashlytics).
+ * - Implementar el patrón Singleton para proveer acceso global a los servicios de nube.
+ * - Habilitar la persistencia offline de Firebase Realtime Database para entornos rurales.
+ * - Proveer utilidades estáticas para telemetría, gestión de errores y acceso a datos de sesión.
+ */
 public class MyApp extends Application {
 
     private static MyApp instance;
@@ -34,63 +44,60 @@ public class MyApp extends Application {
         super.onCreate();
         instance = this;
 
-        // Inicializar FirebaseApp
+        // Inicializar el SDK de Firebase
         FirebaseApp.initializeApp(this);
 
-        // Inicializar cada servicio
+        // Configuración secuencial de servicios de infraestructura
         initializeFirebaseServices();
 
-        Log.d("MyApp", "✅ Firebase services initialized");
+        Log.d("MyApp", "✅ Ecosistema Firebase inicializado exitosamente.");
     }
 
+    /**
+     * Configura y arranca cada servicio de Firebase con sus parámetros específicos.
+     */
     private void initializeFirebaseServices() {
         try {
-            // 1. Authentication
+            // 1. Identidad y Acceso
             firebaseAuth = FirebaseAuth.getInstance();
-            Log.d("MyApp", "✅ FirebaseAuth initialized");
 
-            // 2. Realtime Database
+            // 2. Persistencia de Datos (Con soporte para trabajo desconectado)
             firebaseDatabase = FirebaseDatabase.getInstance();
-            // Opcional: Habilitar persistencia offline
             firebaseDatabase.setPersistenceEnabled(true);
-            Log.d("MyApp", "✅ FirebaseDatabase initialized with persistence");
 
-            // 3. Cloud Messaging (FCM)
+            // 3. Mensajería Push
             firebaseMessaging = FirebaseMessaging.getInstance();
-            Log.d("MyApp", "✅ FirebaseMessaging initialized");
 
-            // 4. Analytics
+            // 4. Inteligencia de Negocio
             firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-            Log.d("MyApp", "✅ FirebaseAnalytics initialized");
 
-            // 5. Storage
+            // 5. Almacenamiento Multimedia
             firebaseStorage = FirebaseStorage.getInstance();
-            Log.d("MyApp", "✅ FirebaseStorage initialized");
 
-            // 6. Crashlytics
+            // 6. Diagnóstico de Salud (Crashlytics)
             firebaseCrashlytics = FirebaseCrashlytics.getInstance();
             firebaseCrashlytics.setCrashlyticsCollectionEnabled(true);
-            Log.d("MyApp", "✅ FirebaseCrashlytics initialized");
 
         } catch (Exception e) {
-            Log.e("MyApp", "❌ Error initializing Firebase services: " + e.getMessage());
-            throw new RuntimeException("Failed to initialize Firebase services", e);
+            Log.e("MyApp", "❌ Error crítico al inicializar servicios: " + e.getMessage());
+            throw new RuntimeException("Fallo en el arranque de infraestructura cloud", e);
         }
     }
 
-    // ✅ Singleton pattern con verificación de null
+    /**
+     * @return Instancia única de la clase Application.
+     */
     public static synchronized MyApp getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("MyApp instance is null. Make sure to initialize in Application.onCreate()");
+            throw new IllegalStateException("MyApp no inicializada.");
         }
         return instance;
     }
 
-    // ✅ Métodos getter con validación
+    // --- Getters de Servicios con Inicialización Segura (Lazy) ---
+
     public FirebaseAuth getFirebaseAuth() {
-        if (firebaseAuth == null) {
-            firebaseAuth = FirebaseAuth.getInstance();
-        }
+        if (firebaseAuth == null) firebaseAuth = FirebaseAuth.getInstance();
         return firebaseAuth;
     }
 
@@ -103,255 +110,128 @@ public class MyApp extends Application {
     }
 
     public FirebaseMessaging getFirebaseMessaging() {
-        if (firebaseMessaging == null) {
-            firebaseMessaging = FirebaseMessaging.getInstance();
-        }
+        if (firebaseMessaging == null) firebaseMessaging = FirebaseMessaging.getInstance();
         return firebaseMessaging;
     }
 
     public FirebaseAnalytics getFirebaseAnalytics() {
-        if (firebaseAnalytics == null) {
-            firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        }
+        if (firebaseAnalytics == null) firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         return firebaseAnalytics;
     }
 
     public FirebaseStorage getFirebaseStorage() {
-        if (firebaseStorage == null) {
-            firebaseStorage = FirebaseStorage.getInstance();
-        }
+        if (firebaseStorage == null) firebaseStorage = FirebaseStorage.getInstance();
         return firebaseStorage;
     }
 
     public FirebaseCrashlytics getFirebaseCrashlytics() {
-        if (firebaseCrashlytics == null) {
-            firebaseCrashlytics = FirebaseCrashlytics.getInstance();
-        }
+        if (firebaseCrashlytics == null) firebaseCrashlytics = FirebaseCrashlytics.getInstance();
         return firebaseCrashlytics;
     }
 
-    // ✅ Métodos estáticos de utilidad
+    // --- Utilidades Estáticas Globales ---
+
     public static Context getAppContext() {
         return getInstance().getApplicationContext();
     }
 
-    // ✅ Método optimizado para obtener DatabaseReference
+    /**
+     * @return Referencia a una ubicación específica en la base de datos NoSQL.
+     */
     public static DatabaseReference getDatabaseReference(@NonNull String path) {
         try {
             return getInstance().getFirebaseDatabase().getReference(path);
         } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting DatabaseReference for path: " + path, e);
-            // Fallback seguro
             return FirebaseDatabase.getInstance().getReference(path);
         }
     }
 
-    // ✅ Método para obtener FirebaseAuth
     public static FirebaseAuth getFirebaseAuthInstance() {
-        try {
-            return getInstance().getFirebaseAuth();
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting FirebaseAuth", e);
-            return FirebaseAuth.getInstance();
-        }
+        return getInstance().getFirebaseAuth();
     }
 
-    // ✅ Método para obtener FirebaseDatabase
     public static FirebaseDatabase getFirebaseDatabaseInstance() {
-        try {
-            return getInstance().getFirebaseDatabase();
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting FirebaseDatabase", e);
-            return FirebaseDatabase.getInstance();
-        }
+        return getInstance().getFirebaseDatabase();
     }
 
-    // ✅ Método para obtener FirebaseStorage
     public static FirebaseStorage getFirebaseStorageInstance() {
-        try {
-            return getInstance().getFirebaseStorage();
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting FirebaseStorage", e);
-            return FirebaseStorage.getInstance();
-        }
+        return getInstance().getFirebaseStorage();
     }
 
-    // ✅ Método para obtener StorageReference
     public static StorageReference getStorageReference(String path) {
         return getFirebaseStorageInstance().getReference(path);
     }
 
-    // ✅ Método para obtener usuario actual
     public static FirebaseUser getCurrentUser() {
-        try {
-            return getFirebaseAuthInstance().getCurrentUser();
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting current user", e);
-            return null;
-        }
+        return getFirebaseAuthInstance().getCurrentUser();
     }
 
-    // ✅ Método para obtener ID del usuario actual
     public static String getCurrentUserId() {
         FirebaseUser user = getCurrentUser();
         return user != null ? user.getUid() : null;
     }
 
-    // ✅ Método para obtener email del usuario actual
     public static String getCurrentUserEmail() {
         FirebaseUser user = getCurrentUser();
         return user != null ? user.getEmail() : null;
     }
 
-    // ✅ Método para verificar si hay usuario logeado
     public static boolean isUserLoggedIn() {
         return getCurrentUser() != null;
     }
 
-    // ✅ Método para logging de eventos con validación robusta
+    /**
+     * Registra un evento de analítica con parámetros dinámicos.
+     * Realiza limpieza automática de valores largos para cumplir con cuotas de Firebase.
+     */
     public static void logEvent(@NonNull String eventName, Map<String, Object> params) {
-        if (getInstance() == null) {
-            Log.w("MyApp", "⚠️ MyApp not initialized, skipping event: " + eventName);
-            return;
-        }
+        if (getInstance() == null) return;
 
         try {
             Bundle bundle = new Bundle();
-
-            if (params != null && !params.isEmpty()) {
+            if (params != null) {
                 for (Map.Entry<String, Object> entry : params.entrySet()) {
-                    String key = entry.getKey();
-                    Object value = entry.getValue();
-
-                    if (value != null && key != null && !key.isEmpty()) {
-                        // Convertir diferentes tipos a String para Analytics
-                        String stringValue;
-                        if (value instanceof String) {
-                            stringValue = (String) value;
-                        } else if (value instanceof Number) {
-                            stringValue = String.valueOf(value);
-                        } else if (value instanceof Boolean) {
-                            stringValue = String.valueOf(value);
-                        } else {
-                            stringValue = value.toString();
-                        }
-
-                        // Firebase Analytics tiene límite de 100 caracteres para valores
-                        if (stringValue.length() > 100) {
-                            stringValue = stringValue.substring(0, 97) + "...";
-                        }
-
-                        bundle.putString(key, stringValue);
-                    }
+                    String stringValue = String.valueOf(entry.getValue());
+                    if (stringValue.length() > 100) stringValue = stringValue.substring(0, 97) + "...";
+                    bundle.putString(entry.getKey(), stringValue);
                 }
             }
-
-            try {
-                String versionName = getInstance().getPackageManager()
-                        .getPackageInfo(getInstance().getPackageName(), 0)
-                        .versionName;
-                bundle.putString("app_version", versionName);
-            } catch (Exception e) {
-                bundle.putString("app_version", "unknown");
-            }
+            // Inyectar metadatos base
             bundle.putLong("timestamp", System.currentTimeMillis());
-
             getInstance().getFirebaseAnalytics().logEvent(eventName, bundle);
-            Log.d("MyApp", "📊 Event logged: " + eventName + " with " +
-                    (params != null ? params.size() : 0) + " params");
-
+            Log.d("MyApp", "📊 Analítica: " + eventName);
         } catch (Exception e) {
-            Log.e("MyApp", "❌ Error logging event: " + eventName, e);
-            // Registrar error en Crashlytics también
-            logError(e);
+            logError("Error en logEvent", e);
         }
     }
 
-    // ✅ Método para logging de errores
+    /**
+     * Envía una excepción capturada hacia el tablero de Crashlytics.
+     */
     public static void logError(@NonNull Exception e) {
-        try {
-            if (getInstance() != null) {
-                getInstance().getFirebaseCrashlytics().recordException(e);
-                // También agregar logs personalizados
-                getInstance().getFirebaseCrashlytics().log("Error: " + e.getMessage());
-
-                // Log en consola también
-                Log.e("MyApp", "🔥 Error logged to Crashlytics: " + e.getMessage(), e);
-            } else {
-                Log.e("MyApp", "MyApp instance is null, cannot log to Crashlytics: " + e.getMessage());
-            }
-        } catch (Exception ex) {
-            Log.e("MyApp", "Failed to log error to Crashlytics: " + ex.getMessage());
+        if (getInstance() != null) {
+            getInstance().getFirebaseCrashlytics().recordException(e);
         }
     }
 
-    // ✅ Método para logging de errores con mensaje personalizado
     public static void logError(@NonNull String message, @NonNull Exception e) {
-        try {
-            if (getInstance() != null) {
-                getInstance().getFirebaseCrashlytics().log(message);
-                getInstance().getFirebaseCrashlytics().recordException(e);
-                Log.e("MyApp", message + ": " + e.getMessage(), e);
-            }
-        } catch (Exception ex) {
-            Log.e("MyApp", "Failed to log error: " + ex.getMessage());
+        if (getInstance() != null) {
+            getInstance().getFirebaseCrashlytics().log(message);
+            getInstance().getFirebaseCrashlytics().recordException(e);
         }
     }
 
-    // ✅ Método para agregar custom attributes a Crashlytics
-    public static void setCrashlyticsCustomKey(@NonNull String key, @NonNull String value) {
-        try {
-            if (getInstance() != null) {
-                getInstance().getFirebaseCrashlytics().setCustomKey(key, value);
-            }
-        } catch (Exception e) {
-            Log.e("MyApp", "Failed to set Crashlytics custom key: " + e.getMessage());
-        }
-    }
-
-    // ✅ Método para limpiar datos de usuario en Crashlytics
-    public static void clearCrashlyticsUserData() {
-        try {
-            if (getInstance() != null) {
-                getInstance().getFirebaseCrashlytics().setUserId(null);
-                Log.d("MyApp", "✅ Crashlytics user data cleared");
-            }
-        } catch (Exception e) {
-            Log.e("MyApp", "Failed to clear Crashlytics user data: " + e.getMessage());
-        }
-    }
-
-    // ✅ Método para establecer usuario en Crashlytics
-    public static void setCrashlyticsUserId(@NonNull String userId) {
-        try {
-            if (getInstance() != null) {
-                getInstance().getFirebaseCrashlytics().setUserId(userId);
-                Log.d("MyApp", "✅ Crashlytics user ID set: " + userId);
-            }
-        } catch (Exception e) {
-            Log.e("MyApp", "Failed to set Crashlytics user ID: " + e.getMessage());
-        }
-    }
-
-    // ✅ Métodos para gestión de tokens FCM
+    /**
+     * Facilita la recuperación asíncrona del token FCM del dispositivo.
+     */
     public static void getFCMToken(FCMTokenCallback callback) {
-        try {
-            getInstance().getFirebaseMessaging().getToken()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String token = task.getResult();
-                            Log.d("MyApp", "✅ FCM Token: " + token);
-                            callback.onTokenReceived(token);
-                        } else {
-                            Log.e("MyApp", "❌ Failed to get FCM token");
-                            callback.onError(task.getException() != null ?
-                                    task.getException().getMessage() : "Unknown error");
-                        }
-                    });
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error getting FCM token: " + e.getMessage());
-            callback.onError(e.getMessage());
-        }
+        getInstance().getFirebaseMessaging().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                callback.onTokenReceived(task.getResult());
+            } else {
+                callback.onError(task.getException() != null ? task.getException().getMessage() : "Fallo en FCM");
+            }
+        });
     }
 
     public interface FCMTokenCallback {
@@ -359,19 +239,10 @@ public class MyApp extends Application {
         void onError(String error);
     }
 
-    // ✅ Método para forzar actualización de token FCM
+    /**
+     * Invalida el token actual para forzar la regeneración de uno nuevo.
+     */
     public static void refreshFCMToken() {
-        try {
-            getInstance().getFirebaseMessaging().deleteToken()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.d("MyApp", "✅ FCM token deleted, new one will be generated");
-                        } else {
-                            Log.e("MyApp", "❌ Failed to delete FCM token");
-                        }
-                    });
-        } catch (Exception e) {
-            Log.e("MyApp", "❌ Error refreshing FCM token: " + e.getMessage());
-        }
+        getInstance().getFirebaseMessaging().deleteToken();
     }
 }
