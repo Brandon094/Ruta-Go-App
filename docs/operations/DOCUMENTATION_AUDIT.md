@@ -26,7 +26,7 @@ Este documento sirve como hoja de ruta para alcanzar el estándar "Full Document
 - [x] **Config**: Documentar configuración global de Firebase y App.
 
 ## ⚖️ 4. Legal y Compliance
-- [ ] **Manual de Gestión de Datos**: Procedimientos internos para solicitudes de borrado.
+- [x] **Manual de Gestión de Datos**: Procedimientos internos para solicitudes de borrado.
 
 ---
 **Estado Actual**: 🟢 Rama `feature/premium` iniciada.

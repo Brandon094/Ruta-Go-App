@@ -44,6 +44,13 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Capa de Interfaz (UI)**](./technical/UI_LAYER_DEEP_DIVE.md): Actividades, Fragments y Adaptadores.
 *   [**Capa de Utilidades**](./technical/UTILS_DEEP_DIVE.md): Formateo de datos, animaciones y monitores de red.
 *   [**Capa de Servicios**](./technical/SERVICES_DEEP_DIVE.md): Repositorios Firebase y lógica de persistencia.
+
+---
+
+## ⚖️ Legal y Cumplimiento
+*   [**Manual de Gestión de Datos**](./legal/DATA_MANAGEMENT_MANUAL.md): Protocolos de borrado y Habeas Data.
+*   [**Políticas de Privacidad**](../privacy.html): Documento legal para usuarios finales.
+*   [**Términos y Condiciones**](../terms.html): Reglas de uso de la plataforma.
 *   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y roles.
 *   [**Notificaciones Push**](./technical/FCM_INTEGRATION_GUIDE.md): Guía de integración FCM v1 y Deep Linking.
 *   [**Cloud Functions**](./technical/CLOUD_FUNCTIONS_DEEP_DIVE.md): Automatización de rotación y mantenimiento legal.
