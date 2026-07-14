@@ -8,12 +8,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Añadido
 - **Soporte Android 15 (SDK 35)**: Cumplimiento total con las nuevas políticas de Google Play.
 - **Experiencia Edge-to-Edge**: Implementación de pantalla de borde a borde para una interfaz moderna y fluida.
-- **Alineación de 16 KB**: Soporte técnico para dispositivos de última generación (procesadores de alto rendimiento).
-- **Cumplimiento AD_ID**: Bloqueo explícito del ID de publicidad para máxima privacidad del usuario.
+- **Alineación de 16 KB**: Soporte técnico para dispositivos de última generación.
+- **Cumplimiento AD_ID**: Bloqueo explícito del ID de publicidad para máxima privacidad.
+- **Sprint de Documentación Premium**:
+    - JavaDoc completo en todas las capas (Models, ViewModels, Services, Engines, Managers, Utils, UI).
+    - Creación de 10 manuales técnicos "Deep-Dive" de inmersión profunda.
+    - Documentación de Reglas de Seguridad NoSQL y Gobernanza de Datos.
+    - Guía de Integración FCM v1 y motor de Deep Linking.
+    - Mapeo detallado de Flujos Lógicos (Bootstrap, Reservas, Rotación).
+    - Manual de Gestión de Datos y Cumplimiento Legal (Habeas Data).
 
 ### Corregido
 - Error de autenticación Google Login (Error 10 [28444]) mediante forzado de WebClientID.
-- Avisos de APIs obsoletas para la gestión de ventanas y barras de sistema.
+- Inconsistencias en el reset de asientos durante la rotación nocturna.
+- Memory leaks potenciales mediante la limpieza de listeners en Managers y Adapters.
 
 ---
 

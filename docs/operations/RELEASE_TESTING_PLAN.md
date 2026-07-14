@@ -1,79 +1,64 @@
-# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.2.3 Stable
+# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.3.0 Optimized
 
-Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad, reactividad y seguridad de la aplicación antes de su publicación en la Play Store.
+Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad, reactividad y seguridad de la aplicación, con enfoque en las nuevas capacidades de Android 15 y el estándar de documentación premium.
 
 ---
 
 ## 🏗️ 0. Preparación del Entorno (Clean Start)
-Para garantizar resultados reales, siga estos pasos en su consola de Firebase:
-1.  **Limpiar Auth**: Borrar todos los usuarios de prueba.
-2.  **Limpiar Database**: Eliminar los nodos `reservas`, `chats`, `notificaciones`, `estadisticas`.
-3.  **Importar Master JSON**: Subir el archivo JSON v1.2.3 sincronizado (Horarios, Precios y Administradores).
-4.  **Limpiar App**: Desinstalar la versión anterior del celular para limpiar `SharedPreferences`.
+1.  **Limpiar Auth**: Borrar todos los usuarios de prueba en Firebase Console.
+2.  **Limpiar Database**: Eliminar los nodos `reservas`, `chats`, `notificaciones`.
+3.  **Importar Master JSON**: Subir el esquema v1.3.0 sincronizado.
+4.  **Emulador/Dispositivo**: Usar un dispositivo con Android 15 (API 35) para validación visual.
 
 ---
 
-## 🟢 Fase 1: Onboarding y Bienvenida
-*Objetivo: Validar que el primer contacto del usuario sea guiado y profesional.*
+## 🟢 Fase 1: Android 15 y UX Premium
+*Objetivo: Validar el cumplimiento con los estándares modernos de Google.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 1.1 | Onboarding Inicial | Abrir el app recién instalada. | Se deben mostrar los slides animados para pasajeros. |
-| 1.2 | Persistencia Onboarding | Cerrar y volver a abrir el app. | El onboarding NO debe aparecer nuevamente. |
-| 1.3 | Onboarding Conductor | Registrarse como conductor y entrar al Home. | Se debe disparar el tutorial especializado de 3 pasos para conductores. |
+| 1.1 | Edge-to-Edge | Abrir cualquier pantalla (ej. Home). | El contenido debe extenderse detrás de la barra de navegación y estado. |
+| 1.2 | Animaciones de Escala | Presionar cualquier botón Material. | Se debe percibir la micro-interacción de escalado (0.95x). |
+| 1.3 | Shimmer Effect | Cargar el Dashboard con latencia de red simulada. | Se deben mostrar esqueletos de carga en lugar de spinners vacíos. |
+| 1.4 | AD_ID Compliance | Revisar logs de inicialización. | No se debe invocar el API de Publicidad (Privacidad Total). |
 
 ---
 
-## 🔵 Fase 2: Registro Autónomo de Conductores
-*Objetivo: Validar la creación multi-nodo y asignación de agenda.*
+## 🔵 Fase 2: Lógica Transaccional (Motores)
+*Objetivo: Validar la robustez del Seat y Reservation Engine.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 2.1 | Carga de Horarios | Entrar al formulario de registro de conductor. | Los dropdowns deben cargar las 18 horas oficiales marcadas como "(Libre)". |
-| 2.2 | Validación de Campos | Intentar registrarse sin elegir horarios o capacidad. | El app debe bloquear la acción y mostrar un aviso de campos obligatorios. |
-| 2.3 | Creación Multi-Nodo | Completar el registro con éxito. | Verificar en Firebase que se crearon: Perfil en `/conductores/`, Vehículo en `/vehiculos/` y asignación en `/horarios/`. |
-| 2.4 | Sincronización Asientos | Tras el registro, ver el nodo `disponibilidadAsientos`. | Se deben haber creado automáticamente los nodos de los horarios elegidos con la capacidad correcta. |
+| 2.1 | Reserva Atómica | Intentar reservar el mismo asiento desde dos dispositivos a la vez. | Firebase debe abortar una transacción y el app mostrar el error controlado. |
+| 2.2 | Sincronización de Capacidad | Cambiar la capacidad de un vehículo en el nodo `/vehiculos`. | Los horarios vinculados deben actualizar su disponibilidad automáticamente. |
+| 2.3 | Deep Linking FCM | Enviar un mensaje de chat y tocar la notificación. | El app debe abrir directamente la `ChatActivity` con el ID de reserva correcto. |
 
 ---
 
-## 🟡 Fase 3: Experiencia del Pasajero (Reactividad)
-*Objetivo: Validar el flujo de reserva y la interfaz inteligente.*
+## 🟡 Fase 3: Rotación y Mantenimiento Cloud
+*Objetivo: Validar la orquestación serverless.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 3.1 | Detección de Bus | Ver la lista de horarios como pasajero. | Los horarios tomados en la Fase 2 deben mostrar el nombre del conductor real. |
-| 3.2 | Bloqueo "Pendiente" | Buscar un horario sin conductor. | El botón debe ser un candado y el badge debe decir "Pendiente". |
-| 3.3 | Reserva Pro | Realizar una reserva en el bus del conductor registrado. | El mapa de asientos debe reflejar la capacidad exacta (ej: 15 puestos) definida en el registro. |
-| 3.4 | Feedback Finalizado | Cambiar la hora del sistema a las 11:30 PM. | Debe aparecer la tarjeta premium: "¡Jornada Completada!". |
+| 3.1 | Automated Rotation | Ejecutar manualmente la función en Firebase Console. | Se deben redistribuir los turnos, resetear asientos y enviar Pushes masivos. |
+| 3.2 | Cleanup Grace Period | Marcar cuenta para borrado y esperar (o forzar timestamp). | Tras 30 días, la cuenta debe desaparecer de Auth y DB permanentemente. |
 
 ---
 
-## 🟠 Fase 4: Dashboard y Gestión de Conductor
-*Objetivo: Validar el control operativo y financiero.*
+## 🛡️ Fase 4: Auditoría de Documentación
+*Objetivo: Verificar que el código es legible y mantenible.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 4.1 | Reactividad Perfil | Editar nombre/teléfono en el perfil y guardar. | Al volver al Home, el encabezado debe mostrar el nuevo nombre sin necesidad de recargar manualmente. |
-| 4.2 | Venta Física | Usar el FAB (+) para bloquear un asiento manualmente. | Las estadísticas de "Ingresos" y "Libres" en el Dashboard deben actualizarse con animación numérica. |
-| 4.3 | Misión Cumplida | El conductor completa su última ruta (pasa la hora). | Se oculta el itinerario y aparece el feedback: "¡Misión Cumplida!". |
+| 4.1 | JavaDoc Coverage | Revisar clases en `models` y `viewmodels`. | Cada método público debe tener su descripción, parámetros y retornos. |
+| 4.2 | Deep-Dive Sync | Comparar `LOGICAL_FLOWS.md` con el código. | La descripción técnica debe coincidir con la implementación real (ej: runTransaction). |
 
 ---
 
-## 🔴 Fase 5: Seguridad y Segregación
-*Objetivo: Validar que los datos no se crucen entre roles.*
-
-| ID | Caso de Prueba | Acción | Resultado Esperado |
-|:---|:---|:---|:---|
-| 5.1 | Segregación en Firebase | Iniciar sesión como Pasajero. | Verificar que NO existe entrada para este UID en el nodo `/conductores/`. |
-| 5.2 | Login Social Inteligente | Entrar con Google usando el correo del conductor registrado. | El sistema debe llevarlo al Home de Conductor directamente. |
-| 5.3 | Sanity Check | Borrar un conductor de Firebase manualmente y ver horarios. | Los turnos de ese conductor deben volver a marcarse como "(Libre)" automáticamente en el app. |
+## 📝 Notas de Versión (v1.3.0 Stable)
+- **Target SDK**: 35 (Android 15).
+- **Min SDK**: 24 (Android 7.0).
+- **Architecture**: MVVM con Repositorios Desacoplados.
 
 ---
-
-## 📝 Notas de Versión (v1.2.3 Stable)
-- **Centralización**: Todos los textos residen en `strings.xml`.
-- **Precios**: Gestionados dinámicamente desde el nodo `/precios/`.
-- **Formato**: Abreviación financiera (K, M) y sufijo COP activados.
-
----
-**Elaborado por: Chop Code Solutions - 2026**
+**Elaborado por: Chop Code Solutions - Ingeniería de Calidad 2026**
