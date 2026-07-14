@@ -18,20 +18,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 🚛 Driver Reservation Service
- * 
- * Este servicio orquesta todas las operaciones de reservas desde la perspectiva del conductor.
- * Incluye lógica de filtrado avanzado, escucha de estadísticas en tiempo real y
- * gestión de estados (confirmar/cancelar).
- * 
- * IMPORTANTE: Todas las consultas usan filtrado por UID (driverId) para cumplir con 
- * las reglas de seguridad de Firebase.
+ * Driver Reservation Service
+ *
+ * Centro de mando para las operaciones logísticas desde la perspectiva del transportador.
+ * Responsabilidades:
+ * - Proveer motores de búsqueda y filtrado avanzado sobre la colección de reservas.
+ * - Implementar agregaciones estadísticas en tiempo real para el Dashboard financiero.
+ * - Gestionar el registro atómico de ingresos y transacciones diarias.
+ * - Coordinar la actualización de estados operativos y la comunicación vía Push con el pasajero.
+ * - Implementar lógica de fidelización mediante la identificación de clientes frecuentes.
  */
 public class DriverReservationService {
 
     private static final String TAG = "DriverReservationService";
 
-    // --- Interfaces de Callback ---
     public interface ReservationsCallback {
         void onReservationsLoaded(List<Reservation> reservations);
         void onError(String error);
@@ -58,7 +58,7 @@ public class DriverReservationService {
     }
 
     /**
-     * Clase POJO para encapsular todas las estadísticas calculadas de un conductor.
+     * DTO (Data Transfer Object) para el transporte de métricas consolidadas.
      */
     public static class CompleteDriverStats {
         public int totalReservations = 0;
@@ -78,8 +78,8 @@ public class DriverReservationService {
     public DriverReservationService() {}
 
     /**
-     * 🔥 Carga una lista de reservas filtradas por conductor, estado y horarios.
-     * Soporta búsqueda tanto por UID (nuevo estándar) como por Nombre (legacy).
+     * Recupera una colección de reservas aplicando criterios de pertenencia y estado.
+     * Implementa lógica híbrida para soportar identificadores de conductores legacy y modernos.
      */
     public void cargarReservasConductorFiltradas(
             String driverIdentifier,
@@ -89,7 +89,7 @@ public class DriverReservationService {
             ReservationsCallback callback) {
 
         if (driverIdentifier == null || driverIdentifier.isEmpty()) {
-            callback.onError("Invalid driver identifier");
+            callback.onError("Identificador de conductor inválido.");
             return;
         }
 
@@ -105,24 +105,21 @@ public class DriverReservationService {
                         String driverIdRes = getDriverId(ds, r, isUID);
                         String scheduleIdRes = getScheduleId(ds, r);
                         
-                        // Lógica de pertenencia: ¿Es esta reserva de este conductor?
                         boolean isFromDriver = false;
                         if (isUID) {
                             if (driverIdRes != null) isFromDriver = driverIdentifier.equals(driverIdRes);
-                            // Fallback: Si no tiene driverId, verificar si el horario le pertenece
+                            // Mecanismo de resolución por horario si el driverId no está presente
                             else if (assignedSchedules != null && scheduleIdRes != null) isFromDriver = assignedSchedules.contains(scheduleIdRes);
                         } else {
                             isFromDriver = driverIdentifier.equalsIgnoreCase(driverIdRes);
                         }
 
-                        // Filtros adicionales
                         boolean statusMatches = applyStatusFilter(r.getReservationStatus(), statusFilter);
                         boolean scheduleMatches = applyScheduleFilter(scheduleIdRes, assignedSchedules);
 
                         if (isFromDriver && statusMatches && scheduleMatches) list.add(r);
                     }
                 }
-                // Ordenar por fecha (más reciente primero)
                 Collections.sort(list, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
                 callback.onReservationsLoaded(list);
             }
@@ -131,9 +128,8 @@ public class DriverReservationService {
     }
 
     /**
-     * ⚡ Escucha cambios en tiempo real de todas las reservas del conductor.
-     * Se usa para mantener el Dashboard actualizado.
-     * LÍMITE: Solo carga las últimas 50 para optimizar rendimiento.
+     * Establece una suscripción reactiva optimizada para el Dashboard operativo.
+     * @return El listener para su posterior remoción.
      */
     public ValueEventListener escucharEstadisticasCompletas(String driverUID, @Nullable List<String> schedules, RealTimeStatsListener listener) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
@@ -173,10 +169,9 @@ public class DriverReservationService {
                     }
                 }
                 
-                // Ordenar por fecha (más reciente arriba)
                 Collections.sort(all, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
                 
-                // Truncar lista para la UI si es muy larga
+                // Limitación de Payload para evitar sobrecarga en la UI
                 if (all.size() > 50) {
                     stats.allReservations = new ArrayList<>(all.subList(0, 50));
                 } else {
@@ -188,51 +183,13 @@ public class DriverReservationService {
             @Override public void onCancelled(@NonNull DatabaseError error) { listener.onError(error.getMessage()); }
         };
         
-        // Registrar el listener con el índice optimizado y límite de descarga
+        // Uso de índice por driverId para minimizar el consumo de cuota de lectura
         ref.orderByChild("driverId").equalTo(driverUID).limitToLast(100).addValueEventListener(valueListener);
         return valueListener;
     }
 
     /**
-     * Obtiene las estadísticas completas de forma única (One-time read).
-     */
-    public void obtenerEstadisticasCompletas(String driverUID, @Nullable List<String> schedules, CompleteStatsCallback callback) {
-        cargarReservasConductorFiltradas(driverUID, schedules, "TODAS", true, new ReservationsCallback() {
-            @Override
-            public void onReservationsLoaded(List<Reservation> all) {
-                CompleteDriverStats stats = new CompleteDriverStats();
-                stats.allReservations = all;
-                stats.totalReservations = all.size();
-                for (Reservation r : all) {
-                    String status = r.getReservationStatus();
-                    double price = r.getPrice();
-                    if (status != null) {
-                        if ("Confirmada".equalsIgnoreCase(status)) {
-                            stats.confirmedReservations++;
-                            stats.totalEarnings += price;
-                            stats.confirmedReservationsList.add(r);
-                        } else if ("Cancelada".equalsIgnoreCase(status)) {
-                            stats.canceledReservations++;
-                            stats.canceledReservationsList.add(r);
-                        } else if ("Por confirmar".equalsIgnoreCase(status)) {
-                            stats.pendingReservations++;
-                            stats.pendingReservationsList.add(r);
-                        }
-                    }
-                }
-                callback.onCompleteStatsLoaded(stats);
-            }
-            @Override public void onError(String error) { callback.onError(error); }
-        });
-    }
-
-    public void cargarReservasPendientes(String driverName, List<String> assignedSchedules, ReservationsCallback callback) {
-        cargarReservasConductorFiltradas(driverName, assignedSchedules, "Por confirmar", false, callback);
-    }
-
-    /**
-     * 🔥 Registra una venta en las estadísticas diarias del conductor de forma atómica.
-     * Incrementa los ingresos y el contador de reservas confirmadas.
+     * Registra de forma incremental un ingreso en las estadísticas contables del día.
      */
     public void registrarVentaEnEstadisticas(String driverUID, double price) {
         if (driverUID == null || driverUID.isEmpty()) return;
@@ -247,12 +204,11 @@ public class DriverReservationService {
         updates.put("reservasConfirmadas", com.google.firebase.database.ServerValue.increment(1));
         updates.put("ultimaActualizacion", com.google.firebase.database.ServerValue.TIMESTAMP);
         
-        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "Error actualizando estadísticas: " + e.getMessage()));
+        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "❌ Error al incrementar estadísticas: " + e.getMessage()));
     }
 
     /**
-     * 🔥 Revierte una venta en las estadísticas diarias del conductor.
-     * Resta los ingresos y decrementa el contador de reservas confirmadas.
+     * Revierte un registro contable previo. Útil en cancelaciones de ventas físicas.
      */
     public void removerVentaDeEstadisticas(String driverUID, double price) {
         if (driverUID == null || driverUID.isEmpty()) return;
@@ -267,27 +223,11 @@ public class DriverReservationService {
         updates.put("reservasConfirmadas", com.google.firebase.database.ServerValue.increment(-1));
         updates.put("ultimaActualizacion", com.google.firebase.database.ServerValue.TIMESTAMP);
         
-        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "Error revirtiendo estadísticas: " + e.getMessage()));
+        ref.updateChildren(updates).addOnFailureListener(e -> Log.e(TAG, "❌ Error al decrementar estadísticas: " + e.getMessage()));
     }
 
     /**
-     * Guarda un resumen diario de las finanzas del conductor (Legacy / Sobrescritura).
-     */
-    public void guardarEstadisticasDiarias(String driverUID, int confirmed, double earnings, ReservationUpdateCallback callback) {
-        if (driverUID == null || driverUID.isEmpty()) return;
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
-        String today = sdf.format(new java.util.Date());
-        DatabaseReference ref = MyApp.getDatabaseReference("estadisticas/" + driverUID + "/" + today);
-        Map<String, Object> map = new HashMap<>();
-        map.put("ingresosDiarios", earnings);
-        map.put("reservasConfirmadas", confirmed);
-        map.put("ultimaActualizacion", System.currentTimeMillis());
-        ref.setValue(map).addOnSuccessListener(aVoid -> { if (callback != null) callback.onSuccess(); })
-                .addOnFailureListener(e -> { if (callback != null) callback.onError(e.getMessage()); });
-    }
-
-    /**
-     * Cambia el estado de una reserva y dispara notificaciones Push al pasajero.
+     * Cambia el estado de una reserva y orquesta el envío de la notificación Push al pasajero.
      */
     public void actualizarEstadoReserva(Context context, String reservationId, String newStatus, ReservationUpdateCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + reservationId + "/reservationStatus");
@@ -299,7 +239,7 @@ public class DriverReservationService {
     }
 
     /**
-     * Cancela la reserva y automáticamente libera el asiento en el nodo de disponibilidad.
+     * Cancela la reserva y automáticamente libera el asiento en el motor de disponibilidad técnica.
      */
     public void cancelarReservaConLiberacion(Context context, String reservationId, String scheduleId, int seatNumber, ReservationUpdateCallback callback) {
         actualizarEstadoReserva(context, reservationId, "Cancelada", new ReservationUpdateCallback() {
@@ -309,7 +249,7 @@ public class DriverReservationService {
     }
 
     /**
-     * Lógica interna para notificar cambios de estado vía FCM.
+     * Envía avisos Push informando al pasajero sobre el destino final de su solicitud.
      */
     private void notifyPassengerStatusChange(Context context, String reservationId, String type) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + reservationId);
@@ -320,13 +260,9 @@ public class DriverReservationService {
                     Reservation r = snapshot.getValue(Reservation.class);
                     if (r != null && r.getUserId() != null) {
                         NotificationManager nm = NotificationManager.getInstance(context);
-                        NotificationManager.NotificationCallback cb = new NotificationManager.NotificationCallback() {
-                            @Override public void onSuccess() {}
-                            @Override public void onError(String error) {}
-                        };
                         String route = r.getOrigin() + " -> " + r.getDestination();
-                        if ("confirmed".equals(type)) nm.notificarReservaConfirmadaAlPasajero(r.getUserId(), r.getDriver(), route, r.getEstimatedTime(), r.getReservedSeat(), r.getVehicleId(), "", cb);
-                        else nm.notificarReservaCanceladaAlPasajero(r.getUserId(), r.getDriver(), route, "Canceled by driver", cb);
+                        if ("confirmed".equals(type)) nm.notificarReservaConfirmadaAlPasajero(r.getUserId(), r.getDriver(), route, r.getEstimatedTime(), r.getReservedSeat(), r.getVehicleId(), "", null);
+                        else nm.notificarReservaCanceladaAlPasajero(r.getUserId(), r.getDriver(), route, "Cancelada por el conductor.", null);
                     }
                 }
             }
@@ -335,7 +271,7 @@ public class DriverReservationService {
     }
 
     /**
-     * Marca un asiento como libre y actualiza el contador de disponibles.
+     * Marca un asiento como disponible en el nodo técnico.
      */
     public void freeReservedSeat(String scheduleId, int seatNumber, ReservationUpdateCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("disponibilidadAsientos/" + scheduleId + "/asientosOcupados/" + seatNumber);
@@ -344,7 +280,7 @@ public class DriverReservationService {
     }
 
     /**
-     * Incrementa de forma segura el contador de asientos disponibles de un horario.
+     * Incrementa el conteo visual de asientos libres.
      */
     private void updateSimpleCounter(String scheduleId, ReservationUpdateCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("disponibilidadAsientos/" + scheduleId);
@@ -356,17 +292,13 @@ public class DriverReservationService {
                 if (total == null) total = 13;
                 if (current != null && current < total) {
                     snapshot.child("asientosDisponibles").getRef().setValue(current + 1)
-                            .addOnSuccessListener(aVoid -> callback.onSuccess())
-                            .addOnFailureListener(e -> callback.onSuccess());
-                } else callback.onSuccess();
+                            .addOnSuccessListener(aVoid -> { if (callback != null) callback.onSuccess(); });
+                } else if (callback != null) callback.onSuccess();
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onSuccess(); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { if (callback != null) callback.onSuccess(); }
         });
     }
 
-    /**
-     * Fallback inteligente para obtener el ID del conductor desde el snapshot si el modelo falla.
-     */
     private String getDriverId(DataSnapshot ds, Reservation r, boolean isUID) {
         if (isUID) {
             String uid = r.getDriverId();
@@ -402,67 +334,5 @@ public class DriverReservationService {
     private boolean applyScheduleFilter(@Nullable String sId, @Nullable List<String> assigned) {
         if (assigned == null || assigned.isEmpty()) return true;
         return sId != null && assigned.contains(sId);
-    }
-
-    /**
-     * Genera estadísticas avanzadas en un rango de fechas.
-     */
-    public void getAdvancedStats(String driverUID, long startDate, long endDate, CompleteStatsCallback callback) {
-        cargarReservasConductorFiltradas(driverUID, null, "TODAS", true, new ReservationsCallback() {
-            @Override
-            public void onReservationsLoaded(List<Reservation> all) {
-                CompleteDriverStats stats = new CompleteDriverStats();
-                for (Reservation r : all) {
-                    if (r.getReservationDate() >= startDate && r.getReservationDate() <= endDate) {
-                        stats.allReservations.add(r);
-                        stats.totalReservations++;
-                        String status = r.getReservationStatus();
-                        if ("Confirmada".equalsIgnoreCase(status)) {
-                            stats.confirmedReservations++;
-                            stats.totalEarnings += r.getPrice();
-                            stats.confirmedReservationsList.add(r);
-                        } else if ("Cancelada".equalsIgnoreCase(status)) {
-                            stats.canceledReservations++;
-                            stats.canceledReservationsList.add(r);
-                        }
-                    }
-                }
-                callback.onCompleteStatsLoaded(stats);
-            }
-            @Override public void onError(String error) { callback.onError(error); }
-        });
-    }
-
-    /**
-     * Identifica a los pasajeros más frecuentes para programas de fidelidad.
-     */
-    public void getFrequentCustomers(String driverUID, int limit, FrequentCustomersCallback callback) {
-        cargarReservasConductorFiltradas(driverUID, null, "Confirmada", true, new ReservationsCallback() {
-            @Override
-            public void onReservationsLoaded(List<Reservation> confirmed) {
-                Map<String, Integer> counts = new HashMap<>();
-                Map<String, String> names = new HashMap<>();
-                for (Reservation r : confirmed) {
-                    String uid = r.getUserId();
-                    if (uid != null) {
-                        counts.put(uid, counts.getOrDefault(uid, 0) + 1);
-                        names.put(uid, r.getName());
-                    }
-                }
-                List<Map.Entry<String, Integer>> list = new ArrayList<>(counts.entrySet());
-                Collections.sort(list, (e1, e2) -> e2.getValue().compareTo(e1.getValue()));
-                List<Map<String, Object>> result = new ArrayList<>();
-                for (int i = 0; i < Math.min(limit, list.size()); i++) {
-                    Map.Entry<String, Integer> entry = list.get(i);
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("userId", entry.getKey());
-                    data.put("name", names.get(entry.getKey()));
-                    data.put("trips", entry.getValue());
-                    result.add(data);
-                }
-                callback.onCustomersLoaded(result);
-            }
-            @Override public void onError(String error) { callback.onError(error); }
-        });
     }
 }

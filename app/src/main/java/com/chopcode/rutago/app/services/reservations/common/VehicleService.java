@@ -12,6 +12,16 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Vehicle Service
+ *
+ * Repositorio especializado para la gestión de la flota vehicular.
+ * Responsabilidades:
+ * - Recuperar información técnica de buses mediante placa o UID del conductor.
+ * - Gestionar la escucha reactiva (listeners) para cambios en el estado del vehículo.
+ * - Implementar un motor de "Parsing" robusto para transformar DataSnapshots en modelos Vehicle.
+ * - Sincronizar el ID del conductor propietario con la ficha técnica del activo.
+ */
 public class VehicleService {
 
     private static final String TAG = "VehicleService";
@@ -26,6 +36,9 @@ public class VehicleService {
         void onError(String error);
     }
 
+    /**
+     * Establece una suscripción reactiva a un vehículo específico basándose en su placa.
+     */
     public ValueEventListener listenToVehicleByPlate(String plate, VehicleCallback callback) {
         if (plate == null || plate.isEmpty()) {
             callback.onVehicleLoaded(null);
@@ -49,6 +62,9 @@ public class VehicleService {
         return listener;
     }
 
+    /**
+     * Consulta única para obtener la información de un vehículo por placa.
+     */
     public void getVehicleByPlate(String plate, VehicleCallback callback) {
         if (plate == null || plate.isEmpty()) {
             callback.onVehicleLoaded(null);
@@ -74,6 +90,9 @@ public class VehicleService {
         });
     }
 
+    /**
+     * Busca el vehículo vinculado a un conductor mediante una consulta indexada por conductorId.
+     */
     public void getVehicleByDriver(String driverId, VehicleCallback callback) {
         if (driverId == null || driverId.isEmpty()) {
             callback.onVehicleLoaded(null);
@@ -106,6 +125,9 @@ public class VehicleService {
                 });
     }
 
+    /**
+     * Transforma la estructura cruda NoSQL al modelo tipado de la aplicación.
+     */
     private Vehicle parseVehicle(DataSnapshot snapshot) {
         if (!snapshot.exists()) return null;
         try {
@@ -123,7 +145,7 @@ public class VehicleService {
             if (cap instanceof Number) vehicle.setCapacity(((Number) cap).intValue());
             return vehicle;
         } catch (Exception e) {
-            Log.e(TAG, "Error parsing vehicle: " + e.getMessage());
+            Log.e(TAG, "❌ Error al procesar datos de vehículo: " + e.getMessage());
             return null;
         }
     }

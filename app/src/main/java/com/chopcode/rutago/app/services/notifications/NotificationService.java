@@ -20,11 +20,16 @@ import com.chopcode.rutago.app.R;
 import java.util.Map;
 
 /**
- * 🔔 Notification Service
- * 
- * Centraliza la recepción de mensajes de Firebase (FCM).
- * Implementa el estándar de estilo Premium para todas las notificaciones
- * y gestiona el Deep Linking para dirigir al usuario a la pantalla correcta.
+ * Notification Service (FCM)
+ *
+ * Motor de recepción y despacho de notificaciones Push de Firebase.
+ * Responsabilidades:
+ * - Centralizar la escucha de mensajes remotos (Payloads de datos y notificaciones estándar).
+ * - Implementar el motor de "Deep Linking": redirigir al usuario a la actividad exacta 
+ *   (Chat, Historial, Home) según los metadatos del mensaje.
+ * - Gestionar el ciclo de vida de los tokens de registro (FCM Tokens) y su persistencia en la DB.
+ * - Garantizar una identidad visual Premium mediante el uso de estilos Material, iconos corporativos 
+ *   y canales de alta prioridad (Android Oreo+).
  */
 public class NotificationService extends FirebaseMessagingService {
 
@@ -45,20 +50,21 @@ public class NotificationService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Se dispara cuando Firebase entrega un mensaje a la aplicación.
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "📨 MENSAJE RECIBIDO DE: " + remoteMessage.getFrom());
 
-        // Prioridad 1: Si el mensaje contiene DATA, manejamos la lógica personalizada
+        // Prioridad 1: Payloads de Datos (Lógica personalizada)
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "📊 Datos del mensaje: " + remoteMessage.getData());
             handleDataMessage(remoteMessage.getData());
             return; 
         }
 
-        // Prioridad 2: Si es una notificación estándar (Notification Payload)
+        // Prioridad 2: Notificación estándar del sistema
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "🔔 Notificación estándar detectada");
             sendNotification(
                     remoteMessage.getNotification().getTitle(),
                     remoteMessage.getNotification().getBody(),
@@ -67,21 +73,24 @@ public class NotificationService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Se dispara cuando el token del dispositivo es renovado por Google.
+     */
     @Override
     public void onNewToken(String token) {
-        Log.d(TAG, "🔑 NUEVO TOKEN FCM: " + token);
+        Log.d(TAG, "🔑 NUEVO TOKEN FCM GENERADO: " + token);
         sendRegistrationToServer(token);
     }
 
+    /**
+     * Analiza el mapa de datos para determinar el contenido dinámico y el destino del clic.
+     */
     private void handleDataMessage(Map<String, String> data) {
         try {
             String type = data.get("type");
             String title = data.get("title");
             String message = data.get("message");
 
-            Log.d(TAG, "📝 Procesando mensaje de tipo: " + type);
-
-            // Estandarización de contenidos según tipo (Clean Architecture)
             if (type != null) {
                 switch (type) {
                     case "reserva_confirmada":
@@ -102,30 +111,24 @@ public class NotificationService extends FirebaseMessagingService {
                         title = getString(R.string.notif_cancelada_title);
                         message = getString(R.string.notif_cancelada_body, data.get("ruta_nombre"));
                         break;
-                    case "chat_message":
-                        // El título ya viene formateado desde NotificationManager
-                        break;
                 }
             }
 
-            // Si tenemos el contenido listo, disparamos la UI
             if (title != null && message != null) {
                 sendNotification(title, message, data);
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "❌ Error handling data message: " + e.getMessage());
+            Log.e(TAG, "❌ Error al procesar Data Message: " + e.getMessage());
         }
     }
 
     /**
-     * Construye y muestra la notificación con el estilo PREMIUM unificado.
+     * Construye y muestra la notificación física en la bandeja de Android.
      */
     private void sendNotification(String title, String messageBody, Map<String, String> data) {
         try {
-            Log.d(TAG, "🎯 Generando notificación Premium: " + title);
-
-            // 1. Determinar el destino (Deep Linking)
+            // Resolución dinámica de la actividad destino (Deep Linking)
             Class<?> targetClass = LoginActivity.class; 
             
             if (data != null && data.containsKey("target_activity")) {
@@ -143,7 +146,6 @@ public class NotificationService extends FirebaseMessagingService {
                             break;
                         case "chat":
                             targetClass = com.chopcode.rutago.app.activities.common.ChatActivity.class;
-                            android.util.Log.d(TAG, "🚀 Destino de notificación: ChatActivity");
                             break;
                     }
                 }
@@ -164,20 +166,16 @@ public class NotificationService extends FirebaseMessagingService {
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            // ✅ IDENTIDAD VISUAL PREMIUM RUTA-GO
-            int smallIcon = R.drawable.ic_notification; // Campanita blanca minimalista
-            android.graphics.Bitmap largeIcon = android.graphics.BitmapFactory.decodeResource(
-                    getResources(), R.drawable.logo_main); // Logo oficial circular
-
+            // Configuración visual con estándares Premium
             NotificationCompat.Builder notificationBuilder =
                     new NotificationCompat.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(smallIcon)
-                            .setLargeIcon(largeIcon)
-                            .setColor(getResources().getColor(R.color.primary_500)) // Naranja corporativo
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setLargeIcon(android.graphics.BitmapFactory.decodeResource(getResources(), R.drawable.logo_main))
+                            .setColor(getResources().getColor(R.color.primary_500))
                             .setContentTitle(title)
                             .setContentText(messageBody)
-                            .setSubText(getString(R.string.app_name)) // Etiqueta superior
-                            .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody)) // Texto expandible
+                            .setSubText(getString(R.string.app_name))
+                            .setStyle(new NotificationCompat.BigTextStyle().bigText(messageBody))
                             .setAutoCancel(true)
                             .setSound(defaultSoundUri)
                             .setContentIntent(pendingIntent)
@@ -195,10 +193,13 @@ public class NotificationService extends FirebaseMessagingService {
             notificationManager.notify(notificationId, notificationBuilder.build());
 
         } catch (Exception e) {
-            Log.e(TAG, "❌ Error creando notificación: " + e.getMessage());
+            Log.e(TAG, "❌ Error al despachar notificación: " + e.getMessage());
         }
     }
 
+    /**
+     * Crea el canal de comunicación obligatorio para versiones modernas de Android.
+     */
     private void createNotificationChannel(android.app.NotificationManager notificationManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -206,13 +207,15 @@ public class NotificationService extends FirebaseMessagingService {
                     CHANNEL_NAME,
                     android.app.NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription("Canal premium para notificaciones de Ruta-Go");
+            channel.setDescription("Canal unificado de alta prioridad para Ruta-Go");
             channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{0, 500, 200, 500});
             notificationManager.createNotificationChannel(channel);
         }
     }
 
+    /**
+     * Sincroniza el token del dispositivo con el perfil del usuario en la base de datos.
+     */
     private void sendRegistrationToServer(String token) {
         String userId = null;
         com.google.firebase.auth.FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
@@ -225,7 +228,6 @@ public class NotificationService extends FirebaseMessagingService {
         }
 
         if (userId != null && !userId.isEmpty()) {
-            Log.d(TAG, "💾 Guardando Token FCM para: " + userId);
             com.google.firebase.database.DatabaseReference db = com.chopcode.rutago.app.config.MyApp.getDatabaseReference("");
             db.child("usuarios").child(userId).child("tokenFCM").setValue(token);
             db.child("conductores").child(userId).child("tokenFCM").setValue(token);

@@ -18,15 +18,20 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 /**
- * 🌐 Google Login Service
- * 
- * Gestiona la autenticación mediante Google One Tap.
- * Se encarga de iniciar el flujo de selección de cuenta, procesar la credencial
- * y asegurar que el usuario esté registrado en la base de datos.
+ * Google Login Service
+ *
+ * Implementación de autenticación moderna mediante Google One Tap.
+ * Responsabilidades:
+ * - Orquestar el flujo de "Un Toque" para la selección de cuenta de Google.
+ * - Validar el ID Token contra los servidores de Firebase Auth.
+ * - Realizar la detección de rol post-login.
+ * - Asegurar el registro automático ("Auto-Join") para nuevos usuarios sociales.
  */
 public class GoogleLoginService {
 
+    /** Código de solicitud para identificar el resultado de la actividad de One Tap. */
     public static final int REQ_ONE_TAP = 123;
+    
     private final FirebaseAuth auth;
     private final Activity activity;
     private final SignInClient oneTapClient;
@@ -45,6 +50,8 @@ public class GoogleLoginService {
         this.oneTapClient = Identity.getSignInClient(activity);
         this.userRoleService = new UserRoleService();
         this.registrationService = new RegistrationService();
+        
+        // Configuración estricta del cliente de Google para la suite "Go"
         this.signInRequest = BeginSignInRequest.builder()
                 .setGoogleIdTokenRequestOptions(
                         BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
@@ -55,6 +62,9 @@ public class GoogleLoginService {
                 .build();
     }
 
+    /**
+     * Lanza la interfaz nativa de selección de cuenta de Google.
+     */
     public void startSignInFlow(@NonNull LoginCallback callback) {
         oneTapClient.beginSignIn(signInRequest)
                 .addOnSuccessListener(activity, result -> {
@@ -65,6 +75,10 @@ public class GoogleLoginService {
                 .addOnFailureListener(activity, e -> callback.onLoginFailure(e.getMessage()));
     }
 
+    /**
+     * Procesa la credencial devuelta por el sistema y autentica en Firebase.
+     * @param data Intent devuelto por onActivityResult.
+     */
     public void handleSignInResult(Intent data, @NonNull LoginCallback callback) {
         try {
             SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
@@ -78,7 +92,7 @@ public class GoogleLoginService {
                             userRoleService.detectUserType(user, new UserRoleService.UserTypeCallback() {
                                 @Override public void onTypeDetected(String type) { callback.onLoginSuccess(type); }
                                 @Override public void onError(String error) {
-                                    // Nuevo usuario de Google -> Pasajero por defecto
+                                    // Nuevo usuario social: Se aprovisiona como Pasajero automáticamente
                                     registrationService.guardarUserSiNoExiste(user, new RegistrationService.RegistrationCallback() {
                                         @Override public void onSuccess() { callback.onLoginSuccess("passenger"); }
                                         @Override public void onFailure(String err) { callback.onLoginFailure(err); }
@@ -87,7 +101,9 @@ public class GoogleLoginService {
                             });
                         }
                     } else {
-                        String errorMsg = task.getException() != null ? task.getException().getMessage() : MyApp.getAppContext().getString(R.string.error_carga_datos);
+                        String errorMsg = task.getException() != null ? 
+                                task.getException().getMessage() : 
+                                MyApp.getAppContext().getString(R.string.error_carga_datos);
                         callback.onLoginFailure(errorMsg);
                     }
                 });
@@ -96,7 +112,7 @@ public class GoogleLoginService {
             if (e.getStatusCode() == CommonStatusCodes.CANCELED) {
                 callback.onLoginFailure("CANCELED_BY_USER");
             } else {
-                callback.onLoginFailure(e.getMessage());
+                callback.onLoginFailure("Google Auth Error: " + e.getMessage());
             }
         } catch (Exception e) {
             callback.onLoginFailure(e.getMessage());

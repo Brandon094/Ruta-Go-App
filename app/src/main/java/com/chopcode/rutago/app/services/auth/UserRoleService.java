@@ -9,22 +9,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 /**
- * 🧠 User Role Service
- * 
- * Responsable de detectar si un usuario es Conductor o Pasajero
- * analizando la estructura de la base de datos de Firebase.
+ * User Role Service
+ *
+ * Motor de resolución de identidades y roles del ecosistema.
+ * Responsabilidades:
+ * - Realizar la detección de rol (Pasajero/Conductor) mediante búsquedas secuenciales en Firebase.
+ * - Implementar lógica de validación de integridad para asegurar que el perfil tenga los datos mínimos requeridos.
+ * - Centralizar la lógica de "Match" entre el UID de Auth y el nodo correspondiente en Realtime Database.
  */
 public class UserRoleService {
 
+    /** Interfaz para retornar el resultado de la detección de rol. */
     public interface UserTypeCallback {
+        /** @param type El rol resuelto: "driver" o "passenger". */
         void onTypeDetected(String type);
         void onError(String error);
     }
 
+    /**
+     * Inicia la búsqueda del perfil en los nodos paralelos de la base de datos.
+     * Implementa una estrategia de "Prioridad Conductor": si un UID existe en ambos nodos, 
+     * se asume el rol de conductor para permitir el acceso a las funciones operativas.
+     */
     public void detectUserType(FirebaseUser user, @NonNull UserTypeCallback callback) {
         String uid = user.getUid();
         DatabaseReference dbRef = MyApp.getDatabaseReference("");
 
+        // Búsqueda en cascada reactiva
         dbRef.child("conductores").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshotDriver) {
@@ -40,23 +51,29 @@ public class UserRoleService {
         });
     }
 
+    /**
+     * Analiza las capturas de datos para determinar el rol legítimo del usuario.
+     */
     private void analyzeResults(DataSnapshot snapshotDriver, DataSnapshot snapshotUser, UserTypeCallback callback) {
-        // Prioridad 1: Es conductor si existe en el nodo conductores
+        // Validación técnica de perfil de conductor
         if (snapshotDriver.exists() && isDriverComplete(snapshotDriver)) {
             callback.onTypeDetected("driver");
             return;
         }
         
-        // Prioridad 2: Es pasajero si existe en el nodo usuarios
+        // Validación de perfil de pasajero
         if (snapshotUser.exists()) {
             callback.onTypeDetected("passenger");
             return;
         }
         
-        // Error: No está en ningún lado
-        callback.onError("User data not found in system.");
+        // El usuario está autenticado pero no tiene perfil en DB
+        callback.onError("Perfil de usuario no encontrado en el sistema central.");
     }
 
+    /**
+     * Verifica que un conductor tenga la información técnica mínima para operar.
+     */
     private boolean isDriverComplete(DataSnapshot snapshot) {
         return snapshot.hasChild("nombre") && (snapshot.hasChild("placaVehiculo") || snapshot.hasChild("vehiculoId"));
     }

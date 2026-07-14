@@ -15,12 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 🎫 Passenger Reservation Service
- * 
- * Centraliza las consultas de reservas desde el punto de vista del pasajero.
- * Incluye lógica para:
- * - Recuperar el historial básico de viajes filtrado por el UID del usuario.
- * - Calcular estadísticas Premium (Inversión total, puntos de lealtad y ruta más frecuente).
+ * Passenger Reservation Service
+ *
+ * Repositorio de consultas logísticas centradas en la experiencia del cliente.
+ * Responsabilidades:
+ * - Recuperar el historial de tiquetes digitales filtrado por el UID del pasajero.
+ * - Implementar motores de cálculo para métricas de fidelización (Gasto total y puntos acumulados).
+ * - Realizar análisis de comportamiento mediante la detección de la ruta más frecuentada.
+ * - Sincronizar el estado del historial con la visualización de perfiles premium.
  */
 public class PassengerReservationService {
 
@@ -32,12 +34,16 @@ public class PassengerReservationService {
     }
 
     public interface PremiumStatsCallback {
+        /** @param stats Mapa con claves: totalGastado, viajesConfirmados, rutaMasFrecuente, puntosLealtad. */
         void onStatsCalculated(Map<String, Object> stats);
         void onError(String error);
     }
 
     public PassengerReservationService() {}
 
+    /**
+     * Consulta el histórico de reservas personales.
+     */
     public void getBasicHistory(String userId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
         ref.orderByChild("userId").equalTo(userId)
@@ -52,13 +58,20 @@ public class PassengerReservationService {
                                 reservations.add(r);
                             }
                         }
+                        // Ordenamiento cronológico reverso
                         Collections.sort(reservations, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
                         callback.onHistoryLoaded(reservations);
                     }
-                    @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+                    @Override public void onCancelled(@NonNull DatabaseError error) { 
+                        Log.e(TAG, "❌ Error al cargar historial básico: " + error.getMessage());
+                        callback.onError(error.getMessage()); 
+                    }
                 });
     }
 
+    /**
+     * Procesa el historial del usuario para generar indicadores de valor agregado (Fase Premium).
+     */
     public void getPremiumStats(String userId, PremiumStatsCallback callback) {
         getBasicHistory(userId, new HistoryCallback() {
             @Override
@@ -68,6 +81,7 @@ public class PassengerReservationService {
                 Map<String, Integer> routeFrequency = new HashMap<>();
 
                 for (Reservation r : reservations) {
+                    // Solo computamos métricas sobre viajes efectivamente realizados/confirmados
                     if ("Confirmada".equalsIgnoreCase(r.getReservationStatus())) {
                         totalSpent += r.getPrice();
                         confirmedCount++;
@@ -87,6 +101,9 @@ public class PassengerReservationService {
         });
     }
 
+    /**
+     * Algoritmo de detección de frecuencia de uso por trayecto.
+     */
     private String getMostFrequentRoute(Map<String, Integer> routes) {
         String principal = "N/A";
         int max = 0;

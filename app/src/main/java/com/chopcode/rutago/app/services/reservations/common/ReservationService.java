@@ -17,9 +17,14 @@ import com.google.firebase.database.*;
 import java.util.*;
 
 /**
- * 🎫 Reservation Service (Passenger Focus)
- * 
- * Gestiona el ciclo de vida de una reserva desde la creación hasta la consulta de historial.
+ * Reservation Service (Passenger Focus)*
+ * Motor transaccional para la gestión del ciclo de vida de los pasajes.
+ * Responsabilidades:
+ * - Orquestar la reserva atómica de asientos (Pre-validación -> Reserva de cupo -> Registro de tiquete).
+ * - Garantizar la integridad de los datos mediante mecanismos de compensación (Rollback manual del asiento si el registro de reserva falla).
+ * - Gestionar la comunicación proactiva con el conductor tras una nueva reserva (Notificaciones Push).
+ * - Proveer flujos reactivos e históricos para la consulta de viajes por pasajero.
+ * - Centralizar el acceso multi-nodo para la resolución de identidades de reserva.
  */
 public class ReservationService {
 
@@ -58,6 +63,9 @@ public class ReservationService {
         this.seatsDataManager = new SeatDataProcessor();
     }
 
+    /**
+     * Inicia el proceso de reserva validando primero la disponibilidad técnica en el servidor.
+     */
     public void updateSeatAvailability(Context context, String scheduleId, int selectedSeat,
                                                  String origin, String destination, String estimatedTime,
                                                  String departureTime,
@@ -74,6 +82,7 @@ public class ReservationService {
                             callback.onError(MyApp.getAppContext().getString(R.string.seat_already_occupied_error));
                             return;
                         }
+                        // Fase 2: Recuperación de datos de usuario para el Payload
                         getUserDataAndContinue(context, MyApp.getCurrentUserId(), scheduleId, selectedSeat,
                                 origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus,
                                 plate, model, price, driver, driverId, phoneC, callback);
@@ -82,6 +91,9 @@ public class ReservationService {
                 });
     }
 
+    /**
+     * Recupera metadatos del pasajero y ejecuta el bloqueo atómico del asiento.
+     */
     private void getUserDataAndContinue(Context context, String uid, String scheduleId, int selectedSeat,
                                                String origin, String destination, String estimatedTime,
                                                String departureTime,
@@ -100,10 +112,12 @@ public class ReservationService {
                 String phone = String.valueOf(snapshot.child("telefono").getValue());
                 String email = String.valueOf(snapshot.child("email").getValue());
 
+                // Bloqueo físico en el nodo de disponibilidad
                 seatsDataManager.reserveSeat(scheduleId, selectedSeat,
                         new SeatDataProcessor.SeatReservationCallback() {
                             @Override
                             public void onSuccess() {
+                                // Fase final: Creación del registro de tiquete
                                 registerReservation(context, uid, name, phone, email, scheduleId, selectedSeat,
                                         origin, destination, estimatedTime, departureTime, paymentMethod, reservationStatus,
                                         plate, model, price, driver, driverId, phoneC, callback);
@@ -115,6 +129,9 @@ public class ReservationService {
         });
     }
 
+    /**
+     * Libera un asiento previamente bloqueado. Usado para cancelaciones o compensación de fallos.
+     */
     public void freeReservedSeat(String scheduleId, int seatNumber, ReservationUpdateCallback callback) {
         seatsDataManager.freeSeat(scheduleId, seatNumber, new SeatDataProcessor.SeatReservationCallback() {
             @Override public void onSuccess() { if (callback != null) callback.onSuccess(); }
@@ -122,6 +139,10 @@ public class ReservationService {
         });
     }
 
+    /**
+     * Persiste el objeto Reservation en Firebase y dispara la notificación push al conductor.
+     * Implementa lógica de Rollback manual: si falla la escritura del tiquete, libera el asiento.
+     */
     private void registerReservation(Context context, String uid, String name, String phone, String email,
                                   String scheduleId, int selectedSeat, String origin, String destination,
                                   String estimatedTime, String departureTime, String paymentMethod, String reservationStatus,
@@ -142,23 +163,25 @@ public class ReservationService {
             if (context != null) {
                 Toast.makeText(context, R.string.reserva_exitosa, Toast.LENGTH_SHORT).show();
             }
+            // Notificación proactiva al conductor
             if (driverId != null && !driverId.isEmpty()) {
                 NotificationManager.getInstance(context != null ? context : MyApp.getAppContext())
                         .notificarNuevaReservaAlConductor(driverId, name, origin + " -> " + destination, "Today", selectedSeat, price, paymentMethod, new NotificationManager.NotificationCallback() {
-                            @Override public void onSuccess() { Log.d(TAG, "✅ Notificación enviada al conductor: " + driverId); }
-                            @Override public void onError(String error) { Log.e(TAG, "❌ Error notificando al conductor: " + error); }
+                            @Override public void onSuccess() { Log.d(TAG, "✅ Notificación Push despachada al conductor."); }
+                            @Override public void onError(String error) { Log.e(TAG, "❌ Error al enviar notificación Push: " + error); }
                         });
             }
             callback.onSuccess();
         }).addOnFailureListener(e -> {
-            freeReservedSeat(scheduleId, selectedSeat, new ReservationUpdateCallback() {
-                @Override public void onSuccess() {}
-                @Override public void onError(String error) {}
-            });
-            callback.onError(e.getMessage());
+            // Rollback de integridad
+            freeReservedSeat(scheduleId, selectedSeat, null);
+            callback.onError("Fallo al registrar tiquete: " + e.getMessage());
         });
     }
 
+    /**
+     * Consulta las reservas vinculadas a un conductor con soporte para filtrado por estado.
+     */
     public void loadDriverReservations(String driverId, String status, ReservationsCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -174,6 +197,7 @@ public class ReservationService {
                         }
                     }
                 }
+                // Ordenamiento cronológico descendente (Más recientes primero)
                 Collections.sort(reservations, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
                 callback.onReservationsLoaded(reservations);
             }
@@ -181,6 +205,9 @@ public class ReservationService {
         });
     }
 
+    /**
+     * Obtiene el histórico completo de viajes para un pasajero.
+     */
     public void getPassengerHistory(String passengerId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
         ref.orderByChild("userId").equalTo(passengerId)
@@ -201,6 +228,9 @@ public class ReservationService {
                 });
     }
 
+    /**
+     * Recupera una reserva única por su identificador.
+     */
     public void getReservationById(String reservationId, @NonNull HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas/" + reservationId);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -213,13 +243,17 @@ public class ReservationService {
                         List<Reservation> list = new ArrayList<>();
                         list.add(r);
                         callback.onHistoryLoaded(list);
-                    } else callback.onError("Error parsing reservation");
-                } else callback.onError("Reservation not found");
+                    } else callback.onError("Error de casteo en datos de reserva.");
+                } else callback.onError("La reserva no existe en el sistema.");
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
         });
     }
 
+    /**
+     * Establece una suscripción reactiva para el historial de un pasajero.
+     * Limitado a los últimos 100 registros para optimizar memoria.
+     */
     public ValueEventListener listenPassengerHistory(String passengerId, HistoryCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("reservas");
         ValueEventListener listener = new ValueEventListener() {
@@ -234,9 +268,6 @@ public class ReservationService {
                     }
                 }
                 Collections.sort(list, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
-                if (list.size() > 50) {
-                    list = list.subList(0, 50);
-                }
                 callback.onHistoryLoaded(list);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }

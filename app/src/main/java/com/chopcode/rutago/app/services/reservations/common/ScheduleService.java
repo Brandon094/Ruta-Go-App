@@ -14,9 +14,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 🕒 Schedule Service
- * 
- * Gestiona el catálogo maestro de horarios y la disponibilidad global de asientos.
+ * Schedule Service
+ *
+ * Gestor del catálogo maestro de itinerarios y disponibilidad global.
+ * Responsabilidades:
+ * - Cargar y segmentar la planilla de horarios diarios por trayecto.
+ * - Implementar un "Sanity Check" para filtrar conductores huérfanos o eliminados.
+ * - Sincronizar dinámicamente las tarifas vigentes con cada turno de la planilla.
+ * - Proveer un stream global de ocupación (asientos libres y totales) para todos los despachos.
+ * - Optimizar la carga inicial mediante la resolución paralela de precios y perfiles.
  */
 public class ScheduleService {
 
@@ -24,12 +30,15 @@ public class ScheduleService {
     private final DatabaseReference databaseReference;
     private final PriceService priceService;
 
+    /** Interfaz para la carga segmentada de horarios. */
     public interface ScheduleCallback {
         void onSchedulesLoaded(List<Schedule> natagaList, List<Schedule> laPlataList);
         void onError(String error);
     }
 
+    /** Interfaz para actualizaciones reactivas de ocupación global. */
     public interface GlobalSeatsCallback {
+        /** @param availabilities Mapa con [horarioId] = asientosDisponibles. */
         void onSeatsUpdated(Map<String, Integer> availabilities, Map<String, Integer> totals);
     }
 
@@ -38,6 +47,10 @@ public class ScheduleService {
         this.priceService = new PriceService();
     }
 
+    /**
+     * Establece una suscripción permanente al nodo de disponibilidad técnica.
+     * @return El listener para su posterior remoción en el onCleared() del ViewModel.
+     */
     public ValueEventListener listenGlobalAvailability(GlobalSeatsCallback callback) {
         DatabaseReference dispRef = MyApp.getDatabaseReference("disponibilidadAsientos");
         ValueEventListener listener = new ValueEventListener() {
@@ -56,23 +69,29 @@ public class ScheduleService {
                 }
                 callback.onSeatsUpdated(availMap, totalMap);
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "Error: " + error.getMessage()); }
+            @Override public void onCancelled(@NonNull DatabaseError error) { Log.e(TAG, "❌ Suscripción global de asientos cancelada: " + error.getMessage()); }
         };
         dispRef.addValueEventListener(listener);
         return listener;
     }
 
+    /**
+     * Carga la planilla de horarios integrando la validación de conductores y precios.
+     * Este método garantiza que no se muestren conductores que ya no existen en el sistema.
+     */
     public void loadSchedules(ScheduleCallback callback) {
         priceService.getAllPrices(new PriceService.AllPricesCallback() {
             @Override
             public void onPricesLoaded(Map<String, Map<String, Double>> allPrices) {
-                // 🛡️ Sanity Check: Obtener conductores reales para filtrar IDs huérfanos
+                
+                // Fase 1: Recuperar lista de conductores activos para el Sanity Check
                 MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
                         Set<String> validDrivers = new HashSet<>();
                         for (DataSnapshot d : driversSnapshot.getChildren()) validDrivers.add(d.getKey());
 
+                        // Fase 2: Cargar y filtrar la planilla maestra
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -90,7 +109,7 @@ public class ScheduleService {
                                     s.setTime(time != null ? time : "--:--");
                                     s.setRoute(routeStr != null ? routeStr : "Ruta no disponible");
                                     
-                                    // Solo asignar conductor si existe en el nodo /conductores/
+                                    // 🛡️ Filtro de Integridad: El conductor asignado debe ser real
                                     if (condId != null && validDrivers.contains(condId)) {
                                         s.setConductorId(condId);
                                     } else {
@@ -111,6 +130,9 @@ public class ScheduleService {
         });
     }
 
+    /**
+     * Resuelve la tarifa y segmenta el horario en la lista de salida o retorno.
+     */
     private void processPriceAndAddToList(Schedule s, String routeStr, Map<String, Map<String, Double>> allPrices, List<Schedule> nL, List<Schedule> pL) {
         if (routeStr != null) {
             String origin = "Natagá", destination = "La Plata";
