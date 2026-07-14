@@ -6,6 +6,16 @@ import com.chopcode.rutago.app.models.User;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Dashboard Analytics Helper
+ *
+ * Especialista en la captura de telemetría para el tablero principal del pasajero.
+ * Responsabilidades:
+ * - Registrar eventos de ciclo de vida de la pantalla para medir retención.
+ * - Rastrear la carga exitosa de perfiles y estadísticas de fidelización.
+ * - Monitorear el rendimiento de la carga de horarios y clics en componentes clave.
+ * - Centralizar el reporte de errores visuales hacia Firebase Analytics.
+ */
 public class DashboardAnalyticsHelper {
 
     private static final String SCREEN_NAME = "InicioUsers";
@@ -24,6 +34,9 @@ public class DashboardAnalyticsHelper {
         MyApp.logEvent("pantalla_inicio_usuario_resume", params);
     }
 
+    /**
+     * Registra cuando el perfil del pasajero ha sido resuelto y visualizado.
+     */
     public void logUserLoaded(User usuario) {
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", MyApp.getCurrentUserId());
@@ -33,6 +46,9 @@ public class DashboardAnalyticsHelper {
         MyApp.logEvent("usuario_cargado_inicio", params);
     }
 
+    /**
+     * Captura el estado de los contadores de actividad del usuario.
+     */
     public void logCountersLoaded(int reservasCount, int canceladasCount, int viajesCount) {
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", MyApp.getCurrentUserId());
@@ -76,6 +92,9 @@ public class DashboardAnalyticsHelper {
         MyApp.logEvent("actualizacion_manual", params);
     }
 
+    /**
+     * Reporta fallos en la experiencia del Dashboard para análisis proactivo.
+     */
     public void logError(String errorType, String message) {
         Map<String, Object> params = new HashMap<>();
         params.put("tipo_error", errorType);

@@ -40,6 +40,8 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos de datos.
 *   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
 *   [**Gestión de Estado**](./technical/VIEWMODELS_DEEP_DIVE.md): Lógica de ViewModels y flujo reactivo LiveData.
+*   [**Capa de Managers**](./technical/MANAGERS_DEEP_DIVE.md): Controladores auxiliares de lógica (Core) y UI Helpers.
+*   [**Capa de Utilidades**](./technical/UTILS_DEEP_DIVE.md): Formateo de datos, animaciones y monitores de red.
 *   [**Capa de Servicios**](./technical/SERVICES_DEEP_DIVE.md): Repositorios Firebase y lógica de persistencia.
 *   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y roles.
 *   [**Notificaciones Push**](./technical/FCM_INTEGRATION_GUIDE.md): Guía de integración FCM v1 y Deep Linking.

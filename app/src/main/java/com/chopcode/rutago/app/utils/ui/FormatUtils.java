@@ -8,19 +8,26 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 🛠️ Format Utils (Single Source of Truth)
- * 
- * Esta clase centraliza toda la lógica de transformación de datos para la UI.
- * Siguiendo Clean Architecture, ningún Adapter o Activity debe formatear precios
- * o fechas manualmente; deben llamar a estos métodos.
+ * Format Utils (Single Source of Truth)
+ *
+ * Clase de utilidad que centraliza la lógica de transformación y formateo de datos para la UI.
+ * Sigue principios de Clean Architecture: los Adapters y Actividades delegan aquí el procesamiento 
+ * de cadenas, fechas y monedas para garantizar consistencia visual en todo el ecosistema.
+ *
+ * Responsabilidades:
+ * - Formatear precios a moneda colombiana con soporte para abreviaciones financieras (K, M).
+ * - Procesar y comparar horarios (AM/PM) integrando reglas de negocio regionales.
+ * - Normalizar textos para comparaciones seguras de rutas e identidades.
+ * - Gestionar la lógica de "Fecha de Viaje" basada en la hora actual y el reset de jornada.
  */
 public class FormatUtils {
     private static final String TAG = "FormatUtils";
 
     /**
-     * Formatea un precio a moneda colombiana (ej: 13000 -> "$13.000").
-     * Si el número tiene 6 o más cifras, lo abrevia (ej: 1.200.000 -> "1.2M COP").
-     * Soporta tanto String como Double.
+     * Transforma un valor numérico o cadena en formato de moneda COP legible.
+     * Implementa lógica de abreviación para visualizaciones en dashboards:
+     * - >= 1M: "1.2M COP"
+     * - >= 100K: "100K COP"
      */
     public static String formatearPrecio(Object precio) {
         if (precio == null) return "$0";
@@ -36,10 +43,9 @@ public class FormatUtils {
                 return String.valueOf(precio);
             }
 
-            // Lógica de abreviación para números grandes (Estilo Premium)
             if (valor >= 1000000) {
                 return String.format(Locale.US, "%.1fM COP", valor / 1000000.0).replace(".0", "");
-            } else if (valor >= 100000) { // 6 cifras o más pero menos de un millón
+            } else if (valor >= 100000) {
                 return String.format(Locale.US, "%.0fK COP", valor / 1000.0);
             }
 
@@ -47,14 +53,14 @@ public class FormatUtils {
             nf.setMaximumFractionDigits(0);
             return nf.format(valor).replace(",00", "") + " COP";
         } catch (Exception e) {
-            Log.e(TAG, "Error formateando precio: " + e.getMessage());
+            Log.e(TAG, "❌ Error al formatear precio: " + e.getMessage());
             return "$" + precio + " COP";
         }
     }
 
     /**
-     * Separa una hora tipo "06:00 AM" en un array ["06:00", "AM"].
-     * Útil para layouts donde la hora y el periodo tienen tamaños distintos.
+     * Descompone una cadena de hora para layouts con diseño tipográfico diferenciado.
+     * @return Array ["HH:mm", "AM/PM"].
      */
     public static String[] separarHoraYAmPm(String horaCompleta) {
         String[] resultado = {"--:--", ""};
@@ -70,13 +76,13 @@ public class FormatUtils {
                 resultado[0] = limpia;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error separando hora: " + e.getMessage());
+            Log.e(TAG, "❌ Error al segmentar hora: " + e.getMessage());
         }
         return resultado;
     }
 
     /**
-     * Formatea una fecha en formato descriptivo (ej: "Lunes, 16 de Junio del 2026").
+     * Convierte un objeto Date en una cadena descriptiva en español.
      */
     public static String formatearFechaLarga(Date fecha) {
         if (fecha == null) return "Fecha no disponible";
@@ -85,13 +91,9 @@ public class FormatUtils {
         return fechaStr.substring(0, 1).toUpperCase() + fechaStr.substring(1);
     }
 
-    /**
-     * Convierte "yyyy-MM-dd" a formato legible en español.
-     */
     public static String formatearFechaCortaALegible(String fecha) {
         if (fecha == null || fecha.isEmpty()) return "Fecha no disponible";
         
-        // Evitar doble formateo si ya contiene texto
         if (fecha.matches(".*[a-zA-ZáéíóúÁÉÍÓÚ].*")) {
             return fecha;
         }
@@ -104,13 +106,14 @@ public class FormatUtils {
                 return outputFormat.format(date);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error formateando fecha: " + e.getMessage());
+            Log.e(TAG, "❌ Error al transformar fecha corta: " + e.getMessage());
         }
         return fecha;
     }
 
     /**
-     * Lógica de negocio visual: Si el horario ya pasó, asume que el viaje es para mañana.
+     * Regla de Negocio: Determina si el viaje corresponde a hoy o mañana.
+     * Si la hora seleccionada ya pasó en el reloj del sistema, se asume que es una reserva para el día siguiente.
      */
     public static String obtenerFechaViaje(String horarioHora) {
         Calendar calendar = Calendar.getInstance();
@@ -121,21 +124,20 @@ public class FormatUtils {
     }
 
     /**
-     * Compara una cadena de hora contra la hora actual del sistema.
-     * Considera la regla de negocio de Ruta-Go: Tras el reset de las 7:00 PM (19:00),
-     * todos los horarios se consideran para el día siguiente y por lo tanto no están 'pasados'.
+     * Compara una hora de despacho contra el tiempo real.
+     * Incorpora la excepción de las 7:00 PM (Reset Global): tras esta hora, todos los turnos se marcan 
+     * como vigentes (para el día siguiente).
      */
     public static boolean esHorarioPasado(String horario) {
         try {
             Calendar ahora = Calendar.getInstance();
             int hAct = ahora.get(Calendar.HOUR_OF_DAY);
             
-            // Regla de Oro: Después de las 7 PM, nada es pasado (todo es para mañana)
+            // Regla de Oro: Tras la rotación de las 7 PM, la planilla es para mañana.
             if (hAct >= 19) {
                 return false;
             }
 
-            // Normalizar formato para parseo (ej: "06:00 AM" -> "6:00 AM")
             String limpia = horario.trim().toUpperCase().replace(" 0", " ");
             if (limpia.startsWith("0")) limpia = limpia.substring(1);
             
@@ -156,23 +158,17 @@ public class FormatUtils {
         }
     }
 
-    /**
-     * Determina el tiempo de viaje estimado (Hardcoded por ahora según la ruta).
-     */
     public static String calcularTiempoEstimado(String ruta) {
         if (ruta == null) return "55 min";
         return ruta.contains("Natagá -> La Plata") ? "60 min" : "55 min";
     }
 
-    /**
-     * Formatea el número de asiento para visualización (ej: 1 -> "A1").
-     */
     public static String formatearAsiento(int asiento) {
         return "A" + asiento;
     }
 
     /**
-     * Combina placa y modelo para encabezados de perfil.
+     * Construye un identificador visual combinando modelo y placa.
      */
     public static String formatearInfoVehiculo(String placa, String modelo) {
         if (modelo != null && !modelo.isEmpty() && !modelo.equalsIgnoreCase("null")) {
@@ -182,15 +178,13 @@ public class FormatUtils {
     }
 
     /**
-     * Convierte hora militar (13:00) a 12h (1:00 PM).
-     * Si la hora ya está en formato 12h, la devuelve normalizada.
+     * Normaliza formatos de 24h a 12h (AM/PM).
      */
     public static String formatearHora12h(String hora) {
         if (hora == null || hora.isEmpty()) return "Hora no disponible";
         
         String limpia = hora.trim().toUpperCase();
         
-        // 🔥 FIX: Si ya contiene AM o PM, no procesar como hora militar
         if (limpia.contains("AM") || limpia.contains("PM")) {
             return limpia;
         }
@@ -199,7 +193,6 @@ public class FormatUtils {
             String[] partes = limpia.split(":");
             if (partes.length >= 2) {
                 int horaNum = Integer.parseInt(partes[0].trim());
-                // Extraer solo los números de los minutos por si viene algo como "00 PM"
                 String minutosStr = partes[1].replaceAll("[^\\d]", "");
                 int minutoNum = Integer.parseInt(minutosStr);
 
@@ -210,14 +203,15 @@ public class FormatUtils {
                 return String.format(Locale.getDefault(), "%d:%02d %s", horaNum, minutoNum, periodo);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error formateando hora 12h: " + e.getMessage());
+            Log.e(TAG, "❌ Error al convertir a 12h: " + e.getMessage());
         }
         return hora;
     }
 
     /**
-     * 🔥 Normaliza un texto para comparaciones lógicas.
-     * Quita tildes, convierte a minúsculas y elimina espacios innecesarios.
+     * 🔥 Motor de Normalización de Cadenas:
+     * Elimina diacríticos, convierte a minúsculas y limpia espacios para asegurar 
+     * que las comparaciones de lógica de negocio no fallen por tildes o mayúsculas.
      */
     public static String normalizarTexto(String texto) {
         if (texto == null) return "";
@@ -229,9 +223,6 @@ public class FormatUtils {
                 .trim();
     }
 
-    /**
-     * Formatea un timestamp largo a hora 12h legible.
-     */
     public static String formatearHora12hDeTimestamp(long timestamp) {
         if (timestamp <= 0) return "--:--";
         try {

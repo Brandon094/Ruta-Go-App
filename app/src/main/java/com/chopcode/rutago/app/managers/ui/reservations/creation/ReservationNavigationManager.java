@@ -10,7 +10,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 🗺️ Reservation Navigation Manager (Creation Flow)
+ * Reservation Navigation Manager (Creation Flow)
+ *
+ * Encargado de la lógica de navegación y control de salida durante la selección de asientos.
+ * Responsabilidades:
+ * - Interceptar el evento de "Atrás" para evitar pérdidas accidentales de selección.
+ * - Gestionar diálogos de confirmación ante el abandono de una reserva en proceso.
+ * - Centralizar la telemetría sobre los puntos de fricción y abandono en el embudo de reserva.
+ * - Coordinar con el SeatManager la validación de estados antes de permitir la navegación.
  */
 public class ReservationNavigationManager {
 
@@ -33,6 +40,9 @@ public class ReservationNavigationManager {
         this.seatManager = seatManager;
     }
 
+    /**
+     * Procesa la intención de retroceder, validando si existe un asiento bloqueado localmente.
+     */
     public void handleBackAction(NavigationCallback callback) {
         if (seatManager.hasAsientoSeleccionado()) {
             showCancelSeatDialog(callback);
@@ -44,6 +54,9 @@ public class ReservationNavigationManager {
         }
     }
 
+    /**
+     * Muestra una advertencia al usuario que intenta salir con un asiento ya seleccionado.
+     */
     private void showCancelSeatDialog(NavigationCallback callback) {
         Map<String, Object> params = new HashMap<>();
         params.put("asiento", seatManager.getAsientoSeleccionado());

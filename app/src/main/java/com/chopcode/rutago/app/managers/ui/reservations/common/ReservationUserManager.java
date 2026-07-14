@@ -11,7 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 👤 Reservation User Manager (Common Utility)
+ * Reservation User Manager
+ *
+ * Responsable de la gestión y provisión de los datos del pasajero durante el flujo de reserva.
+ * Responsabilidades:
+ * - Recuperar el perfil del usuario autenticado desde Firebase.
+ * - Asegurar que los metadatos de contacto (Nombre y Teléfono) estén disponibles para el tiquete digital.
+ * - Implementar un estado por defecto ("Guest") ante fallos de carga para no bloquear la UI.
+ * - Sincronizar la información del usuario con el motor de analíticas de reserva.
  */
 public class ReservationUserManager {
 
@@ -34,6 +41,9 @@ public class ReservationUserManager {
         this.userService = new UserService();
     }
 
+    /**
+     * Carga el perfil del usuario actual desde la capa de servicios.
+     */
     public void loadAuthenticatedUser(UserDataCallback callback) {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) {
@@ -67,8 +77,11 @@ public class ReservationUserManager {
         });
     }
 
+    /**
+     * Configura valores genéricos si no se puede recuperar el perfil real.
+     */
     private void establecerUserPorDefecto() {
-        usuarioNombre = "User";
+        usuarioNombre = "Pasajero";
         usuarioTelefono = "No disponible";
         Map<String, Object> params = new HashMap<>();
         params.put("accion", "usuario_por_defecto");
@@ -77,6 +90,9 @@ public class ReservationUserManager {
 
     public boolean hasUserData() { return usuarioId != null && usuarioNombre != null; }
 
+    /**
+     * Actualiza el estado del manager con datos recibidos externamente (ej: Intents).
+     */
     public void updateFromIntent(String usuarioId, String usuarioNombre, String usuarioTelefono) {
         if (usuarioId != null) this.usuarioId = usuarioId;
         if (usuarioNombre != null) this.usuarioNombre = usuarioNombre;
@@ -89,6 +105,6 @@ public class ReservationUserManager {
     public String getUserTelefono() { return usuarioTelefono; }
 
     public String getUserSummary() {
-        return String.format("User: %s (ID: %s, Tel: %s)", usuarioNombre != null ? usuarioNombre : "N/A", usuarioId != null ? usuarioId : "N/A", usuarioTelefono != null ? usuarioTelefono : "N/A");
+        return String.format("Usuario: %s (ID: %s, Tel: %s)", usuarioNombre != null ? usuarioNombre : "N/A", usuarioId != null ? usuarioId : "N/A", usuarioTelefono != null ? usuarioTelefono : "N/A");
     }
 }

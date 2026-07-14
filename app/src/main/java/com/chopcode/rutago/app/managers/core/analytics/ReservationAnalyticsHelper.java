@@ -9,7 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper to handle reservation analytical events.
+ * Reservation Analytics Helper
+ *
+ * Especialista en la captura de telemetría para el embudo de conversión de reservas.
+ * Responsabilidades:
+ * - Rastrear el flujo del pasajero desde la apertura del mapa de asientos hasta la confirmación.
+ * - Monitorear la carga técnica de conductores y vehículos vinculados a despachos.
+ * - Registrar el estado del inventario (Ocupados/Libres) al momento de la interacción.
+ * - Capturar fallos de validación de negocio para optimizar la UX.
  */
 public class ReservationAnalyticsHelper {
     private static final String TAG = "ReservationAnalytics";
@@ -19,6 +26,9 @@ public class ReservationAnalyticsHelper {
         this.screen = screen;
     }
 
+    /**
+     * Despacha un evento genérico enriquecido con contexto de usuario y pantalla.
+     */
     public void logEvent(String event, Map<String, Object> params) {
         try {
             Map<String, Object> analyticsParams = new HashMap<>();
@@ -27,7 +37,7 @@ public class ReservationAnalyticsHelper {
             analyticsParams.put("timestamp", System.currentTimeMillis());
             if (params != null) analyticsParams.putAll(params);
             MyApp.logEvent(event, analyticsParams);
-        } catch (Exception e) { Log.e(TAG, "Error logging analytical event: " + e.getMessage()); }
+        } catch (Exception e) { Log.e(TAG, "❌ Error al registrar telemetría de reserva: " + e.getMessage()); }
     }
 
     public void logPantallaInicio() {
@@ -36,6 +46,9 @@ public class ReservationAnalyticsHelper {
         logEvent("create_reservation_screen_start", params);
     }
 
+    /**
+     * Registra si el flujo recibió los parámetros necesarios vía Intent.
+     */
     public void logDatosRecibidos(boolean hasRoute, boolean hasSchedule) {
         Map<String, Object> params = new HashMap<>();
         params.put("has_route", hasRoute ? 1 : 0);
@@ -49,6 +62,9 @@ public class ReservationAnalyticsHelper {
         logEvent("click_button_" + button, params);
     }
 
+    /**
+     * Captura el número de asiento que el usuario intenta reservar.
+     */
     public void logAsientoSeleccionado(int seat) {
         Map<String, Object> params = new HashMap<>();
         params.put("seat", seat);
@@ -70,6 +86,9 @@ public class ReservationAnalyticsHelper {
         logEvent("driver_loaded_create_reservation", params);
     }
 
+    /**
+     * Registra los detalles técnicos del bus cargado para el itinerario.
+     */
     public void logVehiculoCargado(Vehicle vehicle, String driverId) {
         Map<String, Object> params = new HashMap<>();
         params.put("driver_id", driverId);
@@ -79,6 +98,9 @@ public class ReservationAnalyticsHelper {
         logEvent("vehicle_loaded_create_reservation", params);
     }
 
+    /**
+     * Captura una instantánea del estado de ocupación del despacho.
+     */
     public void logAsientosCargados(int occupiedSeats, int totalCapacity, String schedule) {
         Map<String, Object> params = new HashMap<>();
         params.put("occupied_seats", occupiedSeats);
@@ -95,6 +117,9 @@ public class ReservationAnalyticsHelper {
         logEvent("validation_success_create_reservation", params);
     }
 
+    /**
+     * Registra abandonos o fallos por datos incompletos.
+     */
     public void logValidacionFallida(String reason) {
         Map<String, Object> params = new HashMap<>();
         params.put("reason", reason);

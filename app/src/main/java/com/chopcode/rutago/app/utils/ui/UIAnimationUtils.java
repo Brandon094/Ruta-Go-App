@@ -8,15 +8,20 @@ import android.widget.TextView;
 import com.chopcode.rutago.app.R;
 
 /**
- * 🎬 UI Animation Utils
- * 
- * Centraliza las animaciones de la interfaz de usuario para garantizar consistencia.
- * Provee métodos para conteo progresivo de números, precios y efectos visuales de error.
+ * UI Animation Utils
+ *
+ * Motor central de efectos visuales y micro-interacciones de la plataforma.
+ * Responsabilidades:
+ * - Implementar transiciones fluidas para la entrada de componentes (Cards, Badges).
+ * - Orquestar animaciones secuenciales complejas para el Branding (Splash Screen).
+ * - Proveer feedback táctico mediante efectos de escala (Clicks) y vibración (Errors).
+ * - Gestionar animaciones infinitas de estado (Pulse, Tilt) para mantener la interfaz "viva".
+ * - Realizar interpolaciones numéricas para contadores financieros y de ocupación.
  */
 public class UIAnimationUtils {
 
     /**
-     * Realiza un conteo progresivo en un TextView para valores enteros.
+     * Realiza un conteo progresivo animado para valores enteros.
      */
     public static void animateNumericText(TextView textView, int start, int end) {
         if (textView == null || start == end) {
@@ -31,7 +36,7 @@ public class UIAnimationUtils {
     }
 
     /**
-     * Realiza un conteo progresivo en un TextView formateando el valor como moneda colombiana.
+     * Realiza un conteo progresivo formateando el valor como moneda colombiana (COP).
      */
     public static void animateCurrencyText(TextView textView, double start, double end) {
         if (textView == null) return;
@@ -50,7 +55,7 @@ public class UIAnimationUtils {
     }
 
     /**
-     * Aplica un efecto de vibración (shake) a una vista, útil para indicar errores.
+     * Aplica un efecto de vibración lateral (Shake) para alertar sobre errores de validación.
      */
     public static void playErrorShake(Context context, View view) {
         if (context == null || view == null) return;
@@ -59,7 +64,7 @@ public class UIAnimationUtils {
     }
 
     /**
-     * Añade una micro-interacción de escala al presionar una vista.
+     * Añade una sutil micro-interacción de escala (0.95x) al presionar cualquier vista.
      */
     @android.annotation.SuppressLint("ClickableViewAccessibility")
     public static void setClickAnimation(View view) {
@@ -79,7 +84,7 @@ public class UIAnimationUtils {
     }
 
     /**
-     * Crea una animación de pulsación (latido) infinita para un badge activo.
+     * Inicia una animación de opacidad cíclica (Latido) para elementos que requieren atención.
      */
     public static void startPulseAnimation(View view) {
         if (view == null) return;
@@ -94,9 +99,6 @@ public class UIAnimationUtils {
         pulse.start();
     }
 
-    /**
-     * Detiene cualquier animación en curso de una vista.
-     */
     public static void stopAnimation(View view) {
         if (view == null) return;
         view.animate().cancel();
@@ -106,8 +108,8 @@ public class UIAnimationUtils {
     }
 
     /**
-     * 🔥 Animación Premium de Entrada para tarjetas o contenedores principales.
-     * Crea un efecto de emergencia desde el fondo con un ligero rebote.
+     * 🔥 Animación Premium: Entrada con escalado y rebote (Overshoot).
+     * Ideal para cargar tarjetas del Dashboard tras la respuesta del servidor.
      */
     public static void playCardEntryAnimation(View view) {
         if (view == null) return;
@@ -123,9 +125,6 @@ public class UIAnimationUtils {
                 .start();
     }
 
-    /**
-     * 💺 Animación sutil para la selección de un asiento.
-     */
     public static void playSeatSelectionAnimation(View view) {
         if (view == null) return;
         view.setScaleX(0.7f);
@@ -138,9 +137,6 @@ public class UIAnimationUtils {
                 .start();
     }
 
-    /**
-     * 💺 Animación de "Pop" para cuando un asiento se marca como ocupado.
-     */
     public static void playSeatPopAnimation(View view, int delay) {
         if (view == null) return;
         view.setScaleX(0f);
@@ -154,9 +150,6 @@ public class UIAnimationUtils {
                 .start();
     }
 
-    /**
-     * ⭐ Animación explosiva para la selección de estrellas en calificación.
-     */
     public static void playStarRatingAnimation(View view) {
         if (view == null) return;
         view.animate().cancel();
@@ -177,14 +170,13 @@ public class UIAnimationUtils {
     }
 
     /**
-     * 🚀 Animación Sofisticada para el Splash Screen.
-     * Efecto moderno de crecimiento secuencial: primero el pin de fondo y luego el logo.
-     * Ambos inician desde un punto diminuto para dar sensación de emergencia.
+     * 🚀 Core Branding Animation:
+     * Ejecuta una coreografía visual para el Splash Screen, orquestando tiempos 
+     * entre el contenedor principal, el isotipo y el pie de página de la marca.
      */
     public static void playSophisticatedSplashAnimation(View pinContainer, View logoIcon, View poweredBy) {
         if (pinContainer == null || logoIcon == null) return;
 
-        // 1. Preparar estados iniciales (Diminutos e invisibles)
         pinContainer.setAlpha(0f);
         pinContainer.setScaleX(0.05f);
         pinContainer.setScaleY(0.05f);
@@ -198,7 +190,6 @@ public class UIAnimationUtils {
             poweredBy.setTranslationY(50f);
         }
 
-        // 2. Animación del Pin (Fondo) - Crece con efecto rebote
         pinContainer.animate()
                 .alpha(1f)
                 .scaleX(1f)
@@ -206,22 +197,19 @@ public class UIAnimationUtils {
                 .setDuration(1300)
                 .setInterpolator(new android.view.animation.OvershootInterpolator(1.2f))
                 .withEndAction(() -> {
-                    // Iniciar latido sutil al finalizar la secuencia
                     startPulseAnimation(pinContainer);
                 })
                 .start();
 
-        // 3. Animación del Logo (Secuencial) - Emerge cuando el pin ya es visible
         logoIcon.animate()
                 .alpha(1f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setStartDelay(800) // Delay marcado para efecto secuencial puro
+                .setStartDelay(800) 
                 .setDuration(1100)
                 .setInterpolator(new android.view.animation.OvershootInterpolator(2.2f))
                 .start();
 
-        // 4. Animación del "Powered By" (Entrada elegante al final)
         if (poweredBy != null) {
             poweredBy.animate()
                     .alpha(1f)
@@ -234,8 +222,7 @@ public class UIAnimationUtils {
     }
 
     /**
-     * 🔄 Crea una animación de inclinación (tilt) periódica y sofisticada para el logo.
-     * Gira ligeramente y vuelve a su posición para dar sensación de vida.
+     * Inicia una rotación periódica (Guiño visual) para el logo corporativo.
      */
     public static void startLogoTiltAnimation(View view) {
         if (view == null) return;
@@ -249,15 +236,15 @@ public class UIAnimationUtils {
             @Override
             public void run() {
                 tilt.start();
-                handler.postDelayed(this, 5000); // Cada 5 segundos un "guiño" visual
+                handler.postDelayed(this, 5000); 
             }
         };
         handler.postDelayed(runnable, 2000);
     }
 
     /**
-     * 🚌 Animación de "Salida del Bus" (Bus Departure).
-     * El elemento hace un pequeño retroceso (arranque) y sale disparado hacia la derecha.
+     * 🚌 Bus Departure Animation:
+     * Simula el arranque de un vehículo mediante un retroceso inicial y una salida veloz lateral.
      */
     public static void playBusDepartureAnimation(View view) {
         if (view == null) return;
@@ -266,15 +253,13 @@ public class UIAnimationUtils {
         view.setTranslationX(0);
         view.setAlpha(1.0f);
 
-        // 1. Pequeño retroceso (preparando motores)
         view.animate()
                 .translationX(-30f)
                 .setDuration(400)
                 .setInterpolator(new android.view.animation.AccelerateInterpolator())
                 .withEndAction(() -> {
-                    // 2. Sale disparado a la derecha y desaparece
                     view.animate()
-                            .translationX(500f) // Fuera de la pantalla
+                            .translationX(500f)
                             .alpha(0f)
                             .setDuration(800)
                             .setInterpolator(new android.view.animation.AccelerateInterpolator())

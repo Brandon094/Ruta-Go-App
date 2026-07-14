@@ -22,18 +22,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 /**
- * 🖼️ Image Utils
- * 
- * Clase de utilidad centralizada para la carga de imágenes y captura de vistas.
- * Utiliza Glide con estrategias de caché agresivas para asegurar que las fotos
- * de perfil sean visibles instantáneamente al navegar entre pantallas.
+ * Image Utils
+ *
+ * Clase de utilidad centralizada para la manipulación y visualización de recursos gráficos.
+ * Responsabilidades:
+ * - Gestionar la carga asíncrona de avatares utilizando Glide con estrategias de caché (Disk & Memory).
+ * - Implementar el motor de "Screen Capture" para convertir vistas XML en imágenes compartibles (PNG).
+ * - Orquestar el flujo de compartición mediante FileProvider para cumplir con las políticas de seguridad de Android.
+ * - Aplicar transformaciones visuales (Circle Crop) de forma eficiente.
  */
 public class ImageUtils {
 
     private static final String TAG = "ImageUtils";
 
     /**
-     * Carga una foto de perfil de forma circular con optimizaciones de velocidad y caché.
+     * Carga una fotografía de perfil aplicando optimizaciones de red y visualización circular.
      */
     public static void loadProfilePhoto(Context context, String url, ImageView imageView) {
         if (context == null || imageView == null) return;
@@ -41,15 +44,14 @@ public class ImageUtils {
         int placeholderRes = R.drawable.bg_profile_placeholder;
         boolean isCircleImageView = imageView.getClass().getName().contains("CircleImageView");
 
-        // Configuración de Glide para carga ultra-rápida desde caché
         com.bumptech.glide.RequestBuilder<android.graphics.drawable.Drawable> requestBuilder = Glide.with(context)
                 .load(url)
                 .placeholder(placeholderRes)
                 .error(placeholderRes)
                 .fallback(placeholderRes)
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // Cachear tanto original como redimensionada
-                .priority(Priority.IMMEDIATE)            // Dar prioridad máxima
-                .transition(DrawableTransitionOptions.withCrossFade(150)); // Crossfade muy rápido
+                .diskCacheStrategy(DiskCacheStrategy.ALL) 
+                .priority(Priority.IMMEDIATE)            
+                .transition(DrawableTransitionOptions.withCrossFade(150)); 
 
         if (isCircleImageView) {
             requestBuilder.into(imageView);
@@ -59,18 +61,19 @@ public class ImageUtils {
     }
 
     /**
-     * 📸 Captura una vista (ej: un CardView) y la comparte como imagen.
+     * 📸 Captura una vista (ej: un CardView de tiquete) y abre el selector de compartir del sistema.
+     * Realiza un renderizado de la vista en un Canvas para generar el archivo binario.
      */
     public static void shareViewAsImage(Context context, View view, String fileName) {
         if (context == null || view == null) return;
 
         try {
-            // 1. Crear el Bitmap desde la vista
+            // 1. Renderizado de la vista a mapa de bits
             Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             view.draw(canvas);
 
-            // 2. Guardar en caché temporal
+            // 2. Persistencia temporal en el directorio de caché de la aplicación
             File cachePath = new File(context.getCacheDir(), "shared_images");
             cachePath.mkdirs();
             File imageFile = new File(cachePath, fileName + ".png");
@@ -78,7 +81,7 @@ public class ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             stream.close();
 
-            // 3. Obtener URI mediante FileProvider
+            // 3. Resolución de URI segura mediante el FileProvider declarado en el Manifest
             Uri contentUri = FileProvider.getUriForFile(context, "com.chopcode.rutago.app.fileprovider", imageFile);
 
             if (contentUri != null) {
@@ -92,7 +95,7 @@ public class ImageUtils {
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "Error al compartir imagen: " + e.getMessage());
+            Log.e(TAG, "❌ Error al generar imagen compartible: " + e.getMessage());
             Toast.makeText(context, "No se pudo generar la imagen del tiquete", Toast.LENGTH_SHORT).show();
         }
     }

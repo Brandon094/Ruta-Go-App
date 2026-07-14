@@ -9,13 +9,24 @@ import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-
+/**
+ * Dashboard UI Manager (Passenger)
+ *
+ * Encargado de la orquestación visual del tablero principal para pasajeros.
+ * Responsabilidades:
+ * - Sincronizar la información de perfil del usuario con los componentes de la interfaz.
+ * - Gestionar el estado visual del Badge de actividad (Activo/Inactivo/Bloqueado) con animaciones de pulso.
+ * - Coordinar la actualización animada de los contadores de reservas (viajes confirmados y cancelados).
+ * - Configurar la navegación por pestañas (TabLayout) para la planilla de horarios.
+ * - Centralizar las referencias a vistas para desacoplar la lógica de presentación de la actividad principal.
+ */
 public class DashboardUIManager {
 
     private final DashboardAnalyticsHelper analyticsHelper;
     private TextView tvUserName, tvWelcome, tvReservasCount, tvTotalCount, tvCanceladasCount, tvUserStatusBadge;
     private UIActionsListener listener;
 
+    /** Interfaz para la delegación de eventos de usuario en el Dashboard. */
     public interface UIActionsListener {}
 
     public DashboardUIManager(DashboardAnalyticsHelper analyticsHelper) {
@@ -26,6 +37,9 @@ public class DashboardUIManager {
         this.listener = listener;
     }
 
+    /**
+     * Inyecta las referencias de los componentes visuales para su gestión.
+     */
     public void setViewReferences(TextView tvUserName, TextView tvWelcome, TextView tvReservasCount, TextView tvCanceladasCount, TextView tvTotalCount) {
         this.tvUserName = tvUserName;
         this.tvWelcome = tvWelcome;
@@ -42,6 +56,9 @@ public class DashboardUIManager {
         toolbar.setOnMenuItemClickListener(item -> false);
     }
 
+    /**
+     * Refresca el encabezado del Dashboard con los datos del perfil actual.
+     */
     public void updateUserInfo(User user) {
         if (user != null && user.getNombre() != null) {
             tvUserName.setText(user.getNombre());
@@ -50,6 +67,9 @@ public class DashboardUIManager {
         }
     }
 
+    /**
+     * Actualiza el estilo y animación del indicador de estado del pasajero.
+     */
     private void updateStatusBadge(String status) {
         if (tvUserStatusBadge == null) return;
 
@@ -84,6 +104,9 @@ public class DashboardUIManager {
     private int currentCanceled = 0;
     private int currentTotal = 0;
 
+    /**
+     * Actualiza los contadores numéricos aplicando una animación de conteo incremental.
+     */
     public void updateCounters(int confirmed, int canceled, int total) {
         UIAnimationUtils.animateNumericText(tvReservasCount, currentConfirmed, confirmed);
         UIAnimationUtils.animateNumericText(tvCanceladasCount, currentCanceled, canceled);
@@ -94,6 +117,9 @@ public class DashboardUIManager {
         currentTotal = total;
     }
 
+    /**
+     * Vincula el TabLayout con el ViewPager de horarios para la navegación por trayectos.
+     */
     public void setupTabLayout(TabLayout tabLayout, androidx.viewpager2.widget.ViewPager2 viewPager) {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0) tab.setText("Natagá -> La Plata");

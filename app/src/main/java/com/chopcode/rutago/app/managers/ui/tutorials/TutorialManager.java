@@ -13,10 +13,14 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
- * 🎓 Tutorial Manager (Centralized Guide Hub)
- * 
- * Centraliza toda la lógica de los tutoriales interactivos para Pasajeros y Conductores.
- * Evita la duplicidad de código en las actividades.
+ * Tutorial Manager (Centralized Guide Hub)
+ *
+ * Motor de capacitación interactiva para mejorar la curva de aprendizaje de los usuarios.
+ * Responsabilidades:
+ * - Centralizar los flujos de guías visuales para pasajeros y conductores.
+ * - Coordinar la persistencia del estado de "visto" mediante el SessionManager para evitar redundancias.
+ * - Implementar disparadores temporizados (Delayed Guides) que permiten a la UI renderizarse antes del diálogo.
+ * - Gestionar la identidad visual de los tutoriales mediante diálogos personalizados y recursos Material3.
  */
 public class TutorialManager {
 
@@ -28,7 +32,9 @@ public class TutorialManager {
         this.sessionManager = new SessionManager(activity);
     }
 
-    // --- MÉTODOS PARA PASAJEROS ---
+    // =========================================================================
+    // 🚶 MÉTODOS PARA PASAJEROS
+    // =========================================================================
 
     public void showPassengerHomeGuide() {
         showDelayedGuide(SessionManager.TUT_HOME, R.drawable.ic_time, 
@@ -55,7 +61,9 @@ public class TutorialManager {
             activity.getString(R.string.tut_profile_title), activity.getString(R.string.tut_profile_msg));
     }
 
-    // --- MÉTODOS PARA CONDUCTORES ---
+    // =========================================================================
+    // 👨‍✈️ MÉTODOS PARA CONDUCTORES
+    // =========================================================================
 
     public void showDriverHomeGuide() {
         showDelayedGuide(SessionManager.TUT_DR_HOME, R.drawable.ic_checklist, 
@@ -77,12 +85,20 @@ public class TutorialManager {
             activity.getString(R.string.tut_dr_profile_title), activity.getString(R.string.tut_dr_profile_msg));
     }
 
-    // --- MOTOR INTERNO ---
+    // =========================================================================
+    // ⚙️ MOTOR INTERNO DE VISUALIZACIÓN
+    // =========================================================================
 
+    /**
+     * Lanza la guía con un retardo para asegurar que la actividad de fondo se haya estabilizado visualmente.
+     */
     private void showDelayedGuide(String key, int icon, String title, String msg) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> showGuide(key, icon, title, msg), 1200);
     }
 
+    /**
+     * Construye y muestra el paso del tutorial si el usuario no lo ha visto previamente.
+     */
     private void showGuide(String key, int iconRes, String title, String message) {
         if (!sessionManager.shouldShowTutorial(key)) return;
 

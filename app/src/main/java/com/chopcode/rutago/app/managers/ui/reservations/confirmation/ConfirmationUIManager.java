@@ -9,9 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 🛠️ Confirmation UI Manager
- * 
- * Gestiona la lógica visual simplificada de la selección de método de pago.
+ * Confirmation UI Manager
+ *
+ * Encargado de la lógica visual y el control de estados en la pantalla de confirmación de reserva.
+ * Responsabilidades:
+ * - Gestionar la selección del método de pago (Efectivo/Transferencia).
+ * - Sincronizar los indicadores visuales (Check Icons) con la elección del usuario.
+ * - Centralizar la telemetría sobre las preferencias de pago de los pasajeros.
+ * - Notificar cambios de estado a la actividad mediante una interfaz de callback.
  */
 public class ConfirmationUIManager {
 
@@ -21,6 +26,7 @@ public class ConfirmationUIManager {
     private String metodoPagoSeleccionado = "efectivo";
     private ConfirmationListener listener;
 
+    /** Interfaz para la delegación de eventos de pago. */
     public interface ConfirmationListener {
         void onPaymentMethodChanged(String metodoPago);
     }
@@ -30,7 +36,9 @@ public class ConfirmationUIManager {
     }
 
     /**
-     * Inicializa los componentes necesarios para la gestión del pago.
+     * Inicializa los componentes de la interfaz de pago.
+     * @param cardEfectivo Tarjeta Material para la opción de pago en efectivo.
+     * @param listener Callback para reaccionar a cambios en la selección.
      */
     public void init(MaterialCardView cardEfectivo, ConfirmationListener listener) {
         this.cardEfectivo = cardEfectivo;
@@ -41,15 +49,17 @@ public class ConfirmationUIManager {
             cardEfectivo.setOnClickListener(v -> selectPaymentMethod("efectivo"));
         }
         
-        // Estado inicial
+        // Estado inicial persistente
         selectPaymentMethod("efectivo");
     }
 
+    /**
+     * Actualiza el estado lógico y visual del método de pago.
+     */
     private void selectPaymentMethod(String metodo) {
         this.metodoPagoSeleccionado = metodo;
         
         if (cardEfectivo != null && metodo.equals("efectivo")) {
-            // Ya configurado en XML para respetar el tema
             if (checkIconEfectivo != null) checkIconEfectivo.setVisibility(View.VISIBLE);
         }
 

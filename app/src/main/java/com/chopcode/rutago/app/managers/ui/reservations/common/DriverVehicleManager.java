@@ -17,7 +17,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 /**
- * 🚛 Driver Vehicle Manager (Common Utility)
+ * Driver Vehicle Manager
+ *
+ * Especialista en la resolución de identidades y metadatos operativos para el flujo de reserva.
+ * Responsabilidades:
+ * - Localizar dinámicamente al conductor asignado a un horario mediante búsquedas directas o exhaustivas.
+ * - Recuperar y fusionar la información del perfil operativo con la ficha técnica del vehículo.
+ * - Sincronizar los componentes visuales (TextViews) con los datos del operador en tiempo real.
+ * - Implementar mecanismos de contingencia (Fallbacks) ante inconsistencias en el esquema de horarios.
+ * - Garantizar la limpieza de listeners NoSQL para evitar colisiones de datos entre itinerarios.
  */
 public class DriverVehicleManager {
 
@@ -28,6 +36,7 @@ public class DriverVehicleManager {
     private final UserService userService;
     private final VehicleService vehicleService;
 
+    /** Interfaz para notificar la carga completa del contexto del operador. */
     public interface DriverVehicleCallback {
         void onDriverVehicleLoaded(String driverId, String driverName, String driverPhone, String plate, String model, Integer capacity);
         void onError(String error);
@@ -54,11 +63,17 @@ public class DriverVehicleManager {
         this.tvCapacityInfo = tvCapacityInfo;
     }
 
+    /**
+     * Inicia el proceso de resolución de información para un despacho determinado.
+     */
     public void loadDriverVehicleInfo(String scheduleId, DriverVehicleCallback callback) {
-        if (scheduleId == null || scheduleId.isEmpty()) { callback.onError("Schedule ID is null or empty"); return; }
+        if (scheduleId == null || scheduleId.isEmpty()) { callback.onError("ID de horario inválido."); return; }
         buscarConductorPorHorario(scheduleId, callback);
     }
 
+    /**
+     * Intento 1: Busca la referencia directa de 'conductorId' dentro del nodo del horario.
+     */
     private void buscarConductorPorHorario(String scheduleId, DriverVehicleCallback callback) {
         cleanup();
         currentScheduleRef = MyApp.getDatabaseReference("horarios/" + scheduleId);
@@ -73,6 +88,7 @@ public class DriverVehicleManager {
                         return;
                     }
                 }
+                // Si la referencia falla, intentamos el motor de búsqueda por fuerza bruta.
                 buscarConductorExhaustivamente(scheduleId, callback);
             }
             @Override public void onCancelled(DatabaseError error) { buscarConductorExhaustivamente(scheduleId, callback); }
@@ -80,6 +96,9 @@ public class DriverVehicleManager {
         currentScheduleRef.addValueEventListener(driverListener);
     }
 
+    /**
+     * Libera recursos y remueve suscripciones activas.
+     */
     public void cleanup() {
         if (currentScheduleRef != null && driverListener != null) {
             currentScheduleRef.removeEventListener(driverListener);
@@ -88,6 +107,9 @@ public class DriverVehicleManager {
         }
     }
 
+    /**
+     * Intento 2 (Motor de Contingencia): Recorre todos los conductores para encontrar quién tiene asignado el horario.
+     */
     private void buscarConductorExhaustivamente(String scheduleId, DriverVehicleCallback callback) {
         DatabaseReference ref = MyApp.getDatabaseReference("conductores");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -109,12 +131,18 @@ public class DriverVehicleManager {
                     }
                     if (found) break;
                 }
-                if (!found) { setDefaults(); if (callback != null) callback.onDriverVehicleLoaded(null, "Unassigned", "N/A", "N/A", "N/A", seatManager.getCapacidadTotal()); }
+                if (!found) { 
+                    setDefaults(); 
+                    if (callback != null) callback.onDriverVehicleLoaded(null, "Sin asignar", "N/A", "N/A", "N/A", seatManager.getCapacidadTotal()); 
+                }
             }
             @Override public void onCancelled(DatabaseError error) { setDefaults(); if (callback != null) callback.onError(error.getMessage()); }
         });
     }
 
+    /**
+     * Recupera el perfil profesional del conductor resuelto.
+     */
     private void loadDriverInfo(String driverId, DriverVehicleCallback callback) {
         userService.loadDriverData(driverId, new UserService.DriverDataCallback() {
             @Override
@@ -126,12 +154,15 @@ public class DriverVehicleManager {
                     vehicleModel = driver.getVehicleModel() != null ? driver.getVehicleModel() : "N/A";
                     updateUI();
                     loadVehicleInfo(driverId, callback);
-                } else { setDefaults(); if (callback != null) callback.onError("Incomplete driver data"); }
+                } else { setDefaults(); if (callback != null) callback.onError("Datos de perfil incompletos."); }
             }
             @Override public void onError(String error) { setDefaults(); if (callback != null) callback.onError(error); }
         });
     }
 
+    /**
+     * Recupera la ficha técnica detallada del vehículo mediante su placa.
+     */
     private void loadVehicleInfo(String driverId, DriverVehicleCallback callback) {
         if (vehiclePlate != null && !vehiclePlate.isEmpty() && !vehiclePlate.equals("N/A")) {
             vehicleService.getVehicleByPlate(vehiclePlate, new VehicleService.VehicleCallback() {
@@ -155,6 +186,9 @@ public class DriverVehicleManager {
         });
     }
 
+    /**
+     * Finaliza la resolución inyectando la capacidad técnica real para el mapa de asientos.
+     */
     private void processLoadedVehicle(Vehicle vehicle, String driverId, DriverVehicleCallback callback) {
         if (vehicle != null) {
             vehicleModel = (vehicle.getModel() != null && !vehicle.getModel().isEmpty()) ? vehicle.getModel() : vehicleModel;
@@ -165,14 +199,17 @@ public class DriverVehicleManager {
         if (callback != null) callback.onDriverVehicleLoaded(driverId, driverName, driverPhone, vehiclePlate, vehicleModel, vehicleCapacity);
     }
 
+    /**
+     * Refresca los componentes visuales con los datos consolidados.
+     */
     private void updateUI() {
         if (tvDriverName != null) tvDriverName.setText(driverName != null ? driverName : "------");
-        if (tvVehicleInfo != null) tvVehicleInfo.setText("Vehicle: " + (vehiclePlate != null ? vehiclePlate : "---") + " - " + (vehicleModel != null ? vehicleModel : "---"));
-        if (tvCapacityInfo != null) tvCapacityInfo.setText("Capacity: " + (vehicleCapacity != null ? vehicleCapacity : seatManager.getCapacidadTotal()) + " seats");
+        if (tvVehicleInfo != null) tvVehicleInfo.setText("Vehículo: " + (vehiclePlate != null ? vehiclePlate : "---") + " - " + (vehicleModel != null ? vehicleModel : "---"));
+        if (tvCapacityInfo != null) tvCapacityInfo.setText("Capacidad: " + (vehicleCapacity != null ? vehicleCapacity : seatManager.getCapacidadTotal()) + " puestos");
     }
 
     private void setDefaults() {
-        driverName = "Unassigned"; driverPhone = "N/A"; vehiclePlate = "N/A"; vehicleModel = "N/A"; vehicleCapacity = seatManager.getCapacidadTotal();
+        driverName = "Sin asignar"; driverPhone = "N/A"; vehiclePlate = "N/A"; vehicleModel = "N/A"; vehicleCapacity = seatManager.getCapacidadTotal();
         updateUI();
     }
 

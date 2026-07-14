@@ -5,7 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper para registrar eventos analíticos en la pantalla de confirmación.
+ * Confirmation Analytics Helper
+ *
+ * Especialista en la telemetría granular para la etapa final de confirmación de reserva.
+ * Responsabilidades:
+ * - Registrar eventos de validación y clics en botones de acción.
+ * - Rastrear la interacción con diálogos de cancelación y decisiones del usuario.
+ * - Reportar errores técnicos surgidos durante la transacción final.
+ * - Medir el rendimiento del flujo mediante el seguimiento de navegación y eventos de pantalla.
  */
 public class ConfirmationAnalyticsHelper {
 
@@ -15,6 +22,9 @@ public class ConfirmationAnalyticsHelper {
         this.analyticsHelper = analyticsHelper;
     }
 
+    /**
+     * Registra clics en elementos interactivos de la pantalla de confirmación.
+     */
     public void logButtonClick(String accion) {
         Map<String, Object> params = new HashMap<>();
         params.put("accion", accion);
@@ -35,6 +45,9 @@ public class ConfirmationAnalyticsHelper {
         analyticsHelper.logEvent("dialogo_cancelacion_mostrado", new HashMap<>());
     }
 
+    /**
+     * Captura si el usuario finalmente canceló la reserva o decidió continuar.
+     */
     public void logCancellationAction(String accion) {
         Map<String, Object> params = new HashMap<>();
         params.put("accion", accion);

@@ -17,13 +17,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manager para manejar secciones expandibles/collapsibles en la UI.
- * Proporciona funcionalidad para mostrar/ocultar contenido con animaciones.
+ * Expandable Section Manager
+ *
+ * Controlador especializado en la gestión de interfaces colapsables (Acordeones).
+ * Responsabilidades:
+ * - Alternar la visibilidad de secciones de contenido mediante animaciones fluidas.
+ * - Gestionar la lógica de "Resumen": muestra información clave cuando la sección está cerrada.
+ * - Sincronizar el estado del icono de expansión (Expand More/Less).
+ * - Centralizar la telemetría analítica sobre la interacción con secciones dinámicas.
+ * - Proporcionar mecanismos de auto-colapsado basados en reglas de negocio (ej: al seleccionar un asiento).
  */
 public class ExpandableSectionManager {
     private static final String TAG = "ExpandableSectionManager";
 
-    // Views
+    // Componentes de la Interfaz
     private final RelativeLayout headerView;
     private final LinearLayout contentView;
     private final LinearLayout summaryView;
@@ -31,20 +38,14 @@ public class ExpandableSectionManager {
     private final TextView routeSummary;
     private final TextView scheduleSummary;
 
-    // Estado
     private boolean isExpanded = true;
     private final Context context;
-
-    // Callback para eventos
     private ExpandableCallback callback;
 
-    // Información para analytics
     private String screenName = "UnknownScreen";
     private String sectionName = "DefaultSection";
 
-    /**
-     * Interfaz para callback de eventos de la sección expandible
-     */
+    /** Interfaz para la comunicación de eventos de expansión. */
     public interface ExpandableCallback {
         void onSectionExpanded();
         void onSectionCollapsed();
@@ -52,14 +53,7 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Constructor para el manager
-     * @param context Contexto de la actividad/fragmento
-     * @param headerView Header clicable de la sección
-     * @param contentView Contenido que se expande/colapsa
-     * @param summaryView Vista de resumen (visible cuando colapsado)
-     * @param expandIcon Icono de expandir/colapsar
-     * @param routeSummary TextView para ruta en resumen
-     * @param scheduleSummary TextView para horario en resumen
+     * Constructor integral para secciones con vista de resumen.
      */
     public ExpandableSectionManager(Context context,
                                     RelativeLayout headerView,
@@ -81,7 +75,7 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Configuración básica con valores por defecto
+     * Constructor simplificado para secciones de ocultamiento básico.
      */
     public ExpandableSectionManager(Context context,
                                     RelativeLayout headerView,
@@ -97,7 +91,6 @@ public class ExpandableSectionManager {
     }
 
     private void initializeViews() {
-        // Inicialmente expandido
         if (contentView != null && summaryView != null) {
             contentView.setVisibility(View.VISIBLE);
             summaryView.setVisibility(View.GONE);
@@ -106,7 +99,7 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Alterna el estado de la sección (expandir/colapsar)
+     * Alterna el estado actual de la sección con persistencia analítica.
      */
     public void toggleSection() {
         isExpanded = !isExpanded;
@@ -117,34 +110,27 @@ public class ExpandableSectionManager {
             collapseSection();
         }
 
-        // Ejecutar callback si está configurado
         if (callback != null) {
             callback.onToggleClicked(isExpanded);
         }
 
-        // Registrar evento analítico
         logAnalyticsEvent();
     }
 
     /**
-     * Expande la sección con animación
+     * Expande el contenedor con animación de entrada.
      */
     public void expandSection() {
         if (contentView == null || expandIcon == null) return;
 
-        // Mostrar contenido
         contentView.setVisibility(View.VISIBLE);
         expandIcon.setImageResource(R.drawable.ic_expand_less);
 
-        // Ocultar resumen si existe
         if (summaryView != null) {
             summaryView.setVisibility(View.GONE);
         }
 
-        // Aplicar animación
         applyAnimation(contentView, R.anim.expand_animation);
-
-        Log.d(TAG, "Sección expandida: " + sectionName);
 
         if (callback != null) {
             callback.onSectionExpanded();
@@ -152,56 +138,41 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Colapsa la sección con animación
+     * Colapsa el contenedor y activa la vista de resumen si está disponible.
      */
     public void collapseSection() {
         if (contentView == null || expandIcon == null) return;
 
-        // Cambiar icono
         expandIcon.setImageResource(R.drawable.ic_expand_more);
 
-        // Mostrar resumen si existe
         if (summaryView != null) {
             summaryView.setVisibility(View.VISIBLE);
         }
 
-        // Aplicar animación y ocultar después
         applyAnimation(contentView, R.anim.collapse_animation, () -> {
             contentView.setVisibility(View.GONE);
         });
-
-        Log.d(TAG, "Sección colapsada: " + sectionName);
 
         if (callback != null) {
             callback.onSectionCollapsed();
         }
     }
 
-    /**
-     * Aplica animación a una vista
-     */
     private void applyAnimation(View view, int animationResId) {
         applyAnimation(view, animationResId, null);
     }
 
     /**
-     * Aplica animación a una vista con callback al finalizar
+     * Motor de animación interna con soporte para acciones post-ejecución.
      */
     private void applyAnimation(View view, int animationResId, Runnable onAnimationEnd) {
         Animation animation = AnimationUtils.loadAnimation(context, animationResId);
 
         if (onAnimationEnd != null) {
             animation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    onAnimationEnd.run();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {}
+                @Override public void onAnimationStart(Animation animation) {}
+                @Override public void onAnimationEnd(Animation animation) { onAnimationEnd.run(); }
+                @Override public void onAnimationRepeat(Animation animation) {}
             });
         }
 
@@ -209,39 +180,29 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Actualiza la información del resumen
-     * @param routeText Texto de la ruta
-     * @param scheduleText Texto del horario
+     * Actualiza dinámicamente el texto del resumen para trayectos y horarios.
+     * Implementa lógica de abreviación para optimizar el espacio en el Header.
      */
     public void updateSummaryInfo(String routeText, String scheduleText) {
         if (routeSummary != null && routeText != null) {
             String shortenedRoute = routeText;
 
-            // Si es una ruta con flecha, simplificarla
             if (routeText.contains(" -> ")) {
                 String[] parts = routeText.split(" -> ");
                 if (parts.length >= 2) {
                     String origen = parts[0].trim();
                     String destino = parts[1].trim();
 
-                    // Tomar solo iniciales o abreviaturas
-                    if (origen.contains("Natagá")) {
-                        origen = "Nat.";
-                    } else if (origen.contains("La Plata")) {
-                        origen = "L.P.";
-                    }
+                    if (origen.contains("Natagá")) origen = "Nat.";
+                    else if (origen.contains("La Plata")) origen = "L.P.";
 
-                    if (destino.contains("Natagá")) {
-                        destino = "Nat.";
-                    } else if (destino.contains("La Plata")) {
-                        destino = "L.P.";
-                    }
+                    if (destino.contains("Natagá")) destino = "Nat.";
+                    else if (destino.contains("La Plata")) destino = "L.P.";
 
                     shortenedRoute = origen + " → " + destino;
                 }
             }
 
-            // Limitar más agresivamente para el header
             if (shortenedRoute.length() > 15) {
                 shortenedRoute = shortenedRoute.substring(0, 12) + "...";
             }
@@ -251,81 +212,52 @@ public class ExpandableSectionManager {
 
         if (scheduleSummary != null && scheduleText != null) {
             String shortSchedule = scheduleText;
-
-            // Separar AM/PM y la hora
             if (shortSchedule.contains(" ")) {
                 String[] parts = shortSchedule.split(" ");
                 if (parts.length >= 2) {
-                    // Mostrar primero AM/PM, luego la hora
-                    String amPm = parts[1]; // "AM" o "PM"
-                    String hora = parts[0]; // "6:15"
-
-                    // Formato: "AM 6:15" o "PM 8:30"
-                    shortSchedule = hora + " " + amPm;
+                    shortSchedule = parts[0] + " " + parts[1];
                 }
             }
-
             scheduleSummary.setText(shortSchedule);
         }
     }
 
-    /**
-     * Actualiza solo la ruta del resumen
-     */
     public void updateRouteSummary(String routeText) {
         updateSummaryInfo(routeText, null);
     }
 
-    /**
-     * Actualiza solo el horario del resumen
-     */
     public void updateScheduleSummary(String scheduleText) {
         updateSummaryInfo(null, scheduleText);
     }
 
-    /**
-     * Configura el callback para eventos
-     */
     public void setExpandableCallback(ExpandableCallback callback) {
         this.callback = callback;
     }
 
     /**
-     * Establece nombres para analytics
+     * Configura el contexto de analítica para rastrear el uso de la sección.
      */
     public void setAnalyticsInfo(String screenName, String sectionName) {
         this.screenName = screenName != null ? screenName : "UnknownScreen";
         this.sectionName = sectionName != null ? sectionName : "DefaultSection";
     }
 
-    /**
-     * Obtiene el estado actual de la sección
-     */
     public boolean isExpanded() {
         return isExpanded;
     }
 
-    /**
-     * Establece el estado de la sección
-     */
     public void setExpanded(boolean expanded) {
         if (this.isExpanded != expanded) {
             this.isExpanded = expanded;
-
-            if (expanded) {
-                expandSection();
-            } else {
-                collapseSection();
-            }
+            if (expanded) expandSection(); else collapseSection();
         }
     }
 
     /**
-     * Restaura el estado desde un Bundle
+     * Restaura el estado visual basándose en datos persistidos.
      */
     public void restoreState(boolean wasExpanded) {
         this.isExpanded = wasExpanded;
-
         if (wasExpanded) {
             if (contentView != null) contentView.setVisibility(View.VISIBLE);
             if (summaryView != null) summaryView.setVisibility(View.GONE);
@@ -338,7 +270,7 @@ public class ExpandableSectionManager {
     }
 
     /**
-     * Método para colapsar automáticamente basado en ciertas condiciones
+     * Colapsa la sección de forma automática si se cumple una condición externa.
      */
     public void autoCollapseIfNeeded(boolean condition) {
         if (condition && isExpanded) {
@@ -346,9 +278,6 @@ public class ExpandableSectionManager {
         }
     }
 
-    /**
-     * Registra evento analítico
-     */
     private void logAnalyticsEvent() {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -359,14 +288,13 @@ public class ExpandableSectionManager {
             params.put("timestamp", System.currentTimeMillis());
 
             MyApp.logEvent("seccion_expandible_toggle", params);
-            Log.d(TAG, "📊 Evento analítico registrado para sección: " + sectionName);
         } catch (Exception e) {
-            Log.e(TAG, "❌ Error registrando evento analítico: " + e.getMessage());
+            Log.e(TAG, "❌ Error analítico en sección: " + e.getMessage());
         }
     }
 
     /**
-     * Limpia recursos y listeners
+     * Libera listeners para evitar fugas de memoria.
      */
     public void cleanup() {
         if (headerView != null) {
