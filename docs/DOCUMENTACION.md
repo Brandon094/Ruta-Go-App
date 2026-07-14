@@ -38,6 +38,7 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 
 ### 📗 Dominio Técnico (Engineering)
 *   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos de datos.
+*   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
 *   [**Estándares de Código**](./technical/DEVELOPER_GUIDELINES.md): Reglas de oro (Java/Flutter) y Clean Code.
 *   [**Diccionario de Datos**](./technical/DICCIONARIO_DATOS.md): Mapeo del esquema NoSQL unificado.
 *   [**Ficha Técnica**](./technical/FICHA_TECNICA.md): Especificaciones de infraestructura y stack tecnológico.
@@ -48,6 +49,16 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Portal Web Hub**](./product/GO_WEB_HUB.md): Especificaciones del centro web centralizado.
 *   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
 *   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión y monetización.
+
+### 📙 Dominio Operativo (QA & Ops)
+*   [**Plan de Pruebas**](./operations/RELEASE_TESTING_PLAN.md): Protocolo de certificación de calidad para lanzamientos.
+*   [**Manual de Administración**](./operations/MANUAL_ADMIN.md): Guía operativa para la gestión desde Firebase Console.
+*   [**Auditoría de Documentación**](./operations/DOCUMENTATION_AUDIT.md): Hoja de ruta para alcanzar el estándar "Full Documentation".
+*   [**Historial de Cambios**](./operations/CHANGELOG.md): Registro cronológico de la evolución del software.
+
+### 🤖 Agentes Especializados (AI Agents)
+*   [**Agente Orquestador**](./agents/ORCHESTRATOR.md): Coordinación y visión estratégica.
+*   [**Guías de Agentes**](./agents/): Manuales de Lógica, UI/UX, QA y Documentación.
 
 ---
 

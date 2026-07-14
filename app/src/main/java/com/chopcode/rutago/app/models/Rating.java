@@ -1,11 +1,14 @@
 package com.chopcode.rutago.app.models;
 
-/**
- * Modelo para las calificaciones de conductores
- */
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.PropertyName;
 
+/**
+ * ⭐ Rating Model
+ *
+ * Captura el feedback del pasajero tras completar un viaje.
+ * Almacena la puntuación numérica y los comentarios cualitativos.
+ */
 @IgnoreExtraProperties
 public class Rating {
     private String id;
@@ -18,6 +21,9 @@ public class Rating {
     private String comment;
     private long date;
 
+    /**
+     * Constructor vacío requerido por Firebase.
+     */
     public Rating() { }
 
     public Rating(String passengerId, String passengerName, String driverId, 
@@ -32,7 +38,6 @@ public class Rating {
         this.date = System.currentTimeMillis();
     }
 
-    // Getters y Setters con mapeo dual
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -64,9 +69,15 @@ public class Rating {
     @PropertyName("reservaId")
     public void setReservaId(String reservaId) { this.reservationId = reservaId; }
 
+    /**
+     * @return Nombre del trayecto calificado.
+     */
     public String getRoute() { return route; }
     public void setRoute(String route) { this.route = route; }
 
+    /**
+     * @return Puntuación (1.0 a 5.0).
+     */
     public float getRating() { return rating; }
     public void setRating(float rating) { this.rating = rating; }
 
@@ -77,6 +88,9 @@ public class Rating {
     @PropertyName("comentario")
     public void setComentario(String comentario) { this.comment = comentario; }
 
+    /**
+     * @return Fecha de creación de la calificación.
+     */
     @PropertyName("date")
     public long getDate() { return date; }
     @PropertyName("date")

@@ -1,5 +1,11 @@
 package com.chopcode.rutago.app.models.onboarding;
 
+/**
+ * OnboardingItem Model
+ *
+ * Estructura de datos para los slides de bienvenida.
+ * Almacena el recurso de imagen, el título y la descripción de cada paso.
+ */
 public class OnboardingItem {
     private final int image;
     private final String title;
@@ -11,7 +17,18 @@ public class OnboardingItem {
         this.description = description;
     }
 
+    /**
+     * @return Recurso drawable de la ilustración.
+     */
     public int getImage() { return image; }
+
+    /**
+     * @return Título corto del slide.
+     */
     public String getTitle() { return title; }
+
+    /**
+     * @return Descripción detallada de la funcionalidad.
+     */
     public String getDescription() { return description; }
 }

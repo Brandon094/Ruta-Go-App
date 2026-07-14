@@ -4,9 +4,10 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.PropertyName;
 
 /**
- * 🎫 Reservation Model
- * 
- * Este modelo implementa una estrategia de "Mapeo Dual" para garantizar 
+ * Reservation Model
+ *
+ * Representa un tiquete o compromiso de viaje entre un pasajero y un conductor.
+ * Este modelo implementa una estrategia de "Mapeo Dual" para garantizar
  * compatibilidad bilingüe entre la base de datos (Español) y el código (Inglés).
  */
 @IgnoreExtraProperties
@@ -36,6 +37,9 @@ public class Reservation {
     private boolean rated = false;
     private float rating = 0.0f;
 
+    /**
+     * Constructor vacío requerido por Firebase.
+     */
     public Reservation() { }
 
     public Reservation(String idReservation, String userId, String scheduleId, int reservedSeat,
@@ -69,7 +73,7 @@ public class Reservation {
     }
 
     // =========================================================================
-    // 🌍 MAPEOS DUALES (SETTERS)
+    // 🌍 MAPEOS DUALES (SETTERS) - Facilitan la lectura de Firebase (Español/Inglés)
     // =========================================================================
 
     @PropertyName("idReserva")
