@@ -16,21 +16,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * ✅ Confirm Reservation ViewModel (Passenger)
- * 
- * Orquesta el proceso de confirmación final de una reserva.
- * Sus responsabilidades incluyen:
- * - Procesar los datos de viaje recibidos por Intent.
- * - Gestionar la selección del método de pago.
- * - Ejecutar la transacción de reserva en Firebase, la cual marca el asiento como 
- *   ocupado y crea el registro de reserva simultáneamente.
+ * Confirm Reservation ViewModel (Passenger)
+ *
+ * Orquestador del cierre transaccional de una reserva de pasaje.
+ * Responsabilidades:
+ * - Descomponer y validar el Payload de datos de viaje recibidos desde la pantalla de selección.
+ * - Sincronizar de última milla el precio de la ruta para evitar discrepancias por cambios en la nube.
+ * - Cargar el perfil del pasajero para vincularlo a la transacción de reserva.
+ * - Ejecutar la confirmación atómica en Firebase: descuenta el cupo y crea el tiquete digital.
  */
 public class ConfirmReservationViewModel extends ViewModel {
+    
+    /** Mapa de datos de la reserva en proceso de confirmación. */
     private final MutableLiveData<Map<String, Object>> reservationData = new MutableLiveData<>(new HashMap<>());
+    
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
     private final MutableLiveData<String> paymentMethod = new MutableLiveData<>("efectivo");
     private final MutableLiveData<Boolean> isProcessing = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
+    
+    /** Notifica el éxito final para disparar la navegación al tiquete. */
     private final MutableLiveData<Boolean> confirmationSuccess = new MutableLiveData<>(false);
 
     private final ReservationService reservationService;
@@ -50,6 +55,9 @@ public class ConfirmReservationViewModel extends ViewModel {
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getConfirmationSuccess() { return confirmationSuccess; }
 
+    /**
+     * Procesa el Intent enriquecido por el ReservationDataProcessor.
+     */
     public void processIntent(Intent intent) {
         if (intent == null) return;
         Map<String, Object> data = new HashMap<>();
@@ -70,9 +78,14 @@ public class ConfirmReservationViewModel extends ViewModel {
         
         reservationData.setValue(data);
         loadUserData();
+        
+        // Verificación de integridad de precios en tiempo real
         fetchUpdatedPrice((String)data.get("origen"), (String)data.get("destino"));
     }
 
+    /**
+     * Consulta el PriceService para asegurar que el usuario pague la tarifa vigente.
+     */
     private void fetchUpdatedPrice(String origin, String destination) {
         priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
             @Override
@@ -83,10 +96,13 @@ public class ConfirmReservationViewModel extends ViewModel {
                     reservationData.postValue(data);
                 }
             }
-            @Override public void onError(String errorMsg) { /* Usar el del intent */ }
+            @Override public void onError(String errorMsg) { /* Fallback al precio del intent */ }
         });
     }
 
+    /**
+     * Obtiene la información del pasajero autenticado.
+     */
     public void loadUserData() {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) return;
@@ -98,6 +114,11 @@ public class ConfirmReservationViewModel extends ViewModel {
 
     public void setPaymentMethod(String method) { paymentMethod.setValue(method); }
 
+    /**
+     * Ejecuta el guardado final de la reserva.
+     * Este método invoca el motor de integridad de ReservationService que coordina 
+     * múltiples escrituras en la base de datos de forma segura.
+     */
     public void confirmReservation() {
         Map<String, Object> data = reservationData.getValue();
         User user = currentUser.getValue();
@@ -112,11 +133,11 @@ public class ConfirmReservationViewModel extends ViewModel {
                 (String) data.get("origen"),
                 (String) data.get("destino"),
                 (String) data.get("tiempoEstimado"),
-                (String) data.get("horarioHora"), // 🔥 Pasamos departureTime
+                (String) data.get("horarioHora"), 
                 method,
                 "Por confirmar",
                 (String) data.get("vehiculoPlaca"),
-                (String) data.get("vehiculoModelo"), // ✅ Pasar el modelo
+                (String) data.get("vehiculoModelo"),
                 (double) data.get("precio"),
                 (String) data.get("conductorNombre"),
                 (String) data.get("conductorId"),

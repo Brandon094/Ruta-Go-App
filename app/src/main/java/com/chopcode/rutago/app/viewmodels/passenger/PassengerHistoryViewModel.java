@@ -12,22 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 📊 Passenger History ViewModel
- * 
- * Gestiona la lógica de filtrado y visualización del historial de viajes.
+ * Passenger History ViewModel
+ *
+ * Motor de gestión para el registro histórico de viajes del cliente.
  * Responsabilidades:
- * - Recuperar todas las reservas del pasajero desde Firebase.
- * - Aplicar filtros de búsqueda por texto y por estado (Confirmados/Cancelados).
- * - Calcular estadísticas acumuladas para mostrar en el resumen del historial.
+ * - Mantener un stream reactivo con la colección de reservas personales.
+ * - Implementar lógica de filtrado dinámico por estado (Todos, Confirmados, Cancelados) y tiempo (Este mes).
+ * - Proveer motor de búsqueda textual por conductor, origen o destino.
+ * - Calcular agregaciones estadísticas para la visualización del resumen de actividad.
+ * - Gestionar el ciclo de vida del listener para prevenir consumo excesivo de datos.
  */
 public class PassengerHistoryViewModel extends ViewModel {
     private static final String TAG = "PassengerHistoryVM";
 
+    /** Lista de reservas procesada tras aplicar los filtros activos. */
     private final MutableLiveData<List<Reservation>> filteredReservations = new MutableLiveData<>(new ArrayList<>());
+    
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
     
-    // Statistics
+    /** Métricas de resumen para la cabecera del historial. */
     private final MutableLiveData<Integer> totalCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> confirmedCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> cancelledCount = new MutableLiveData<>(0);
@@ -36,7 +40,6 @@ public class PassengerHistoryViewModel extends ViewModel {
     private List<Reservation> allReservations = new ArrayList<>();
     private com.google.firebase.database.ValueEventListener historyListener;
     
-    // Filter state
     private String filterType = "TODOS";
     private String searchQuery = "";
     private String currentUserId;
@@ -52,12 +55,14 @@ public class PassengerHistoryViewModel extends ViewModel {
     public LiveData<Integer> getConfirmedCount() { return confirmedCount; }
     public LiveData<Integer> getCancelledCount() { return cancelledCount; }
 
+    /**
+     * Activa el monitoreo del historial para el usuario especificado.
+     * Implementa cache local para respuesta inmediata si el usuario no ha cambiado.
+     */
     public void loadHistory(String userId) {
         if (userId == null || userId.isEmpty()) return;
         
-        // 🔥 CACHE: Si ya tenemos los datos y es el mismo usuario
         if (userId.equals(currentUserId) && !allReservations.isEmpty()) {
-            // Forzamos un refresco de los filtros y estadísticas para los observadores
             applyFilters();
             calculateStats();
             isLoading.setValue(false);
@@ -78,7 +83,7 @@ public class PassengerHistoryViewModel extends ViewModel {
 
             @Override
             public void onError(String errorMsg) {
-                Log.e(TAG, "Error: " + errorMsg);
+                Log.e(TAG, "❌ Error al cargar historial: " + errorMsg);
                 error.postValue(errorMsg);
                 isLoading.postValue(false);
             }
@@ -92,6 +97,9 @@ public class PassengerHistoryViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Actualiza los parámetros de filtrado y dispara el recalculado de la lista expuesta.
+     */
     public void setFilters(String type, String query) {
         this.filterType = type;
         this.searchQuery = query;
@@ -140,6 +148,9 @@ public class PassengerHistoryViewModel extends ViewModel {
         filteredReservations.setValue(result);
     }
 
+    /**
+     * Calcula los totales históricos para alimentar la UI de resumen.
+     */
     private void calculateStats() {
         int confirmed = 0;
         int cancelled = 0;

@@ -14,14 +14,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 💬 Chat ViewModel
- * 
- * Gestiona el flujo de mensajes para la vista de chat.
- * Expone los mensajes en un LiveData para que la UI reaccione automáticamente.
+ * Chat ViewModel
+ *
+ * Motor de comunicación en tiempo real para el sistema de mensajería contextual.
+ * Responsabilidades:
+ * - Gestionar la suscripción reactiva al nodo NoSQL de mensajes para una reserva específica.
+ * - Realizar el "Auto-Fix" de identidad: detecta dinámicamente quién es el emisor y el receptor
+ *   basado en el UID actual y el rol (Pasajero/Conductor).
+ * - Orquestar el envío de nuevos mensajes con metadatos de sincronización.
+ * - Liberar listeners de Firebase al destruir el ViewModel para evitar fugas de memoria.
  */
 public class ChatViewModel extends ViewModel {
+    private static final String TAG = "ChatVM";
+    
+    /** Colección reactiva de mensajes de la conversación actual. */
     private final MutableLiveData<List<ChatMessage>> messages = new MutableLiveData<>(new ArrayList<>());
+    
+    /** Notifica fallos de conexión o errores en el envío. */
     private final MutableLiveData<String> error = new MutableLiveData<>();
+    
     private final ChatService chatService;
     private final ReservationService reservationService;
     private ValueEventListener chatListener;
@@ -37,9 +48,15 @@ public class ChatViewModel extends ViewModel {
     public LiveData<List<ChatMessage>> getMessages() { return messages; }
     public LiveData<String> getError() { return error; }
 
+    /**
+     * Inicializa el estado del chat para una reserva determinada.
+     * @param reservationId ID de la reserva vinculada al chat.
+     * @param rId ID sugerido del receptor.
+     * @param sName Nombre sugerido del emisor.
+     */
     public void initChat(String reservationId, String rId, String sName) {
         if (reservationId == null) {
-            android.util.Log.e("ChatVM", "❌ initChat ABORTADO: reservationId es NULL");
+            Log.e(TAG, "❌ initChat ABORTADO: reservationId es NULL");
             return;
         }
 
@@ -47,20 +64,19 @@ public class ChatViewModel extends ViewModel {
         this.receiverId = rId;
         this.senderName = sName;
         
-        android.util.Log.e("ChatVM", "💬 initChat - resId: " + reservationId + ", receiver: " + rId);
-        
-        String myUid = MyApp.getCurrentUserId();
-        android.util.Log.e("ChatVM", "👤 Mi UID: " + myUid);
-
-        // Siempre cargamos la data de la reserva para asegurar que senderName y receiverId 
-        // son correctos según el rol actual (conductor/pasajero)
+        // Sincronización proactiva de metadatos de identidad
         loadMissingData(reservationId);
         
         startListening();
     }
 
+    /**
+     * Mecanismo de Auto-Corrección:
+     * Consulta el estado actual de la reserva para validar los roles y asegurar que 
+     * el canal de comunicación sea bidireccional y correcto.
+     */
     private void loadMissingData(String reservationId) {
-        Log.d("ChatVM", "Loading missing data for resId: " + reservationId);
+        Log.d(TAG, "🔍 Sincronizando metadatos de identidad para reserva: " + reservationId);
         reservationService.getReservationById(reservationId, new ReservationService.HistoryCallback() {
             @Override
             public void onHistoryLoaded(List<Reservation> reservations) {
@@ -68,28 +84,28 @@ public class ChatViewModel extends ViewModel {
                     Reservation r = reservations.get(0);
                     String currentUid = MyApp.getCurrentUserId();
                     if (currentUid != null) {
-                        // Si soy el pasajero, el receptor es el conductor. Si soy el conductor, el receptor es el pasajero.
                         boolean isPassenger = currentUid.equals(r.getUserId());
                         receiverId = isPassenger ? r.getDriverId() : r.getUserId();
                         senderName = isPassenger ? r.getName() : r.getDriver();
                         
-                        Log.d("ChatVM", "✅ Auto-fix success! I am " + (isPassenger ? "Passenger" : "Driver"));
-                        Log.d("ChatVM", "✅ Resolved -> Receiver: " + receiverId + ", SenderName: " + senderName);
+                        Log.d(TAG, "✅ Identidad resuelta -> Rol: " + (isPassenger ? "Pasajero" : "Conductor"));
                     }
                 } else {
-                    Log.w("ChatVM", "Reservation not found in active node, checking archive...");
+                    Log.w(TAG, "⚠️ Reserva no encontrada en nodo activo, verificando histórico...");
                     checkArchivedForMissingData(reservationId);
                 }
             }
             @Override public void onError(String err) { 
-                Log.e("ChatVM", "Error loading from active node: " + err);
+                Log.e(TAG, "❌ Error al cargar reserva: " + err);
                 checkArchivedForMissingData(reservationId);
             }
         });
     }
 
+    /**
+     * Busca la reserva en el nodo de archivadas si no se encuentra en el activo.
+     */
     private void checkArchivedForMissingData(String reservationId) {
-        Log.d("ChatVM", "Checking archive for resId: " + reservationId);
         MyApp.getDatabaseReference("reservas_archivadas/" + reservationId)
                 .addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
                     @Override
@@ -102,61 +118,58 @@ public class ChatViewModel extends ViewModel {
                                     boolean isPassenger = currentUid.equals(r.getUserId());
                                     receiverId = isPassenger ? r.getDriverId() : r.getUserId();
                                     senderName = isPassenger ? r.getName() : r.getDriver();
-                                    Log.d("ChatVM", "✅ Auto-fix ARCHIVE success! Receiver: " + receiverId);
+                                    Log.d(TAG, "✅ Identidad recuperada desde archivo.");
                                 }
                             }
                         } else {
-                            Log.e("ChatVM", "❌ FATAL: Reservation not found anywhere!");
+                            Log.e(TAG, "❌ ERROR FATAL: La reserva no existe en ningún nodo del sistema.");
                         }
                     }
                     @Override public void onCancelled(@androidx.annotation.NonNull com.google.firebase.database.DatabaseError error) {
-                        Log.e("ChatVM", "Archive search cancelled: " + error.getMessage());
+                        Log.e(TAG, "❌ Búsqueda en archivo cancelada: " + error.getMessage());
                     }
                 });
     }
 
+    /**
+     * Activa el listener de Firebase para recibir actualizaciones en tiempo real.
+     */
     private void startListening() {
         if (currentReservationId == null) return;
-        android.util.Log.e("ChatVM", "📡 Iniciando escucha de Firebase para: " + currentReservationId);
+        Log.d(TAG, "📡 Activando suscripción reactiva para: " + currentReservationId);
         
         chatListener = chatService.listenMessages(currentReservationId, new ChatService.MessagesCallback() {
             @Override
             public void onMessagesUpdated(List<ChatMessage> list) {
-                android.util.Log.e("ChatVM", "📊 Mensajes recibidos: " + list.size());
                 messages.postValue(list);
             }
 
             @Override public void onError(String err) { 
-                android.util.Log.e("ChatVM", "❌ Error en listener de mensajes: " + err);
+                Log.e(TAG, "❌ Fallo en el stream de mensajes: " + err);
                 error.postValue(err); 
             }
         });
     }
 
+    /**
+     * Envía un mensaje de texto al receptor validado.
+     */
     public void sendMessage(String text) {
         String uid = MyApp.getCurrentUserId();
-        Log.d("ChatVM", "--- ATTEMPTING SEND ---");
-        Log.d("ChatVM", "UID: " + uid);
-        Log.d("ChatVM", "ResId: " + currentReservationId);
-        Log.d("ChatVM", "ReceiverId: " + receiverId);
-        Log.d("ChatVM", "SenderName (Me): " + senderName);
-        
         if (uid != null && currentReservationId != null && receiverId != null) {
-            // Si el receptor soy yo mismo, algo está mal en la carga inicial
+            
+            // Validación de eco (evitar enviarse mensajes a uno mismo)
             if (uid.equals(receiverId)) {
-                Log.w("ChatVM", "⚠️ Error de identidad: El receptor soy yo mismo. Reintentando sincronización...");
+                Log.w(TAG, "⚠️ Error de identidad: Receptor == Emisor. Reintentando sincronización...");
                 loadMissingData(currentReservationId);
-                error.postValue("Sincronizando chat... Por favor, intenta enviar de nuevo.");
+                error.postValue("Sincronizando chat... Por favor, intenta de nuevo.");
                 return;
             }
             
             String name = (senderName != null && !senderName.isEmpty()) ? senderName : "Usuario";
             chatService.sendMessage(currentReservationId, uid, name, receiverId, text);
         } else {
-            String errorMsg = "Faltan datos: Res=" + (currentReservationId != null) + ", Rec=" + (receiverId != null);
-            Log.e("ChatVM", "❌ " + errorMsg);
-            error.postValue(errorMsg);
-            // Intentar recuperar datos para el próximo intento
+            Log.e(TAG, "❌ No se puede enviar: Faltan metadatos críticos de sesión o destino.");
             if (currentReservationId != null) loadMissingData(currentReservationId);
         }
     }
@@ -166,6 +179,7 @@ public class ChatViewModel extends ViewModel {
         super.onCleared();
         if (currentReservationId != null && chatListener != null) {
             chatService.stopListening(currentReservationId, chatListener);
+            Log.d(TAG, "🧹 Listener de chat removido satisfactoriamente.");
         }
     }
 }

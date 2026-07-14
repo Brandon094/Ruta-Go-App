@@ -23,9 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 🚛 Driver Registration ViewModel
- * 
- * Versión v1.2.6 - Corregido para carga pública de horarios
+ * Driver Registration ViewModel
+ *
+ * Especialista en el flujo de alta autónoma para conductores y sus vehículos.
+ * Responsabilidades:
+ * - Cargar dinámicamente la planilla de horarios libres para que el conductor elija su agenda.
+ * - Orquestar una creación multi-nodo atómica: /usuarios/, /conductores/, /vehiculos/ y /horarios/.
+ * - Sincronizar la disponibilidad inicial de asientos basada en la capacidad técnica del bus registrado.
+ * - Asegurar el aprovisionamiento del token FCM tras el registro exitoso.
  */
 public class DriverRegistrationViewModel extends ViewModel {
     private static final String TAG = "DriverRegistrationVM";
@@ -33,7 +38,11 @@ public class DriverRegistrationViewModel extends ViewModel {
     private final MutableLiveData<Boolean> registrationSuccess = new MutableLiveData<>();
     private final MutableLiveData<String> registrationError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    
+    /** Horarios disponibles filtrados por la ruta principal (Ida). */
     private final MutableLiveData<List<Schedule>> schedulesRoute1 = new MutableLiveData<>();
+    
+    /** Horarios disponibles filtrados por la ruta de retorno (Vuelta). */
     private final MutableLiveData<List<Schedule>> schedulesRoute2 = new MutableLiveData<>();
 
     private final RegistrationService registrationService;
@@ -48,10 +57,12 @@ public class DriverRegistrationViewModel extends ViewModel {
     public LiveData<List<Schedule>> getSchedulesRoute1() { return schedulesRoute1; }
     public LiveData<List<Schedule>> getSchedulesRoute2() { return schedulesRoute2; }
 
+    /**
+     * Recupera todos los horarios del sistema e identifica cuáles están disponibles para asignación.
+     */
     public void loadSchedules() {
-        Log.d(TAG, "🚀 Cargando horarios (Modo Público)...");
+        Log.d(TAG, "🚀 Iniciando carga de planilla de horarios...");
         
-        // Cargamos horarios directamente porque el nodo 'horarios' es público en las reglas
         MyApp.getDatabaseReference("horarios").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -68,12 +79,11 @@ public class DriverRegistrationViewModel extends ViewModel {
                         s.setId(child.getKey());
                         s.setRoute(ruta);
                         
-                        // Si tiene cualquier ID, asumimos ocupado (para no chocar con reglas de auth)
                         boolean isOccupied = cId != null && !cId.isEmpty();
                         s.setTime(hora + (isOccupied ? " (Ocupado)" : " (Libre)"));
                         s.setConductorId(isOccupied ? cId : null);
                         
-                        // Clasificación flexible
+                        // Motor de clasificación por trayecto
                         String norm = FormatUtils.normalizarTexto(ruta).toLowerCase();
                         if (norm.contains("nataga") && norm.indexOf("nataga") < norm.indexOf("plata")) {
                             r1.add(s);
@@ -83,16 +93,19 @@ public class DriverRegistrationViewModel extends ViewModel {
                     }
                 }
                 
-                Log.d(TAG, "📦 Listas listas - R1: " + r1.size() + " | R2: " + r2.size());
+                Log.d(TAG, "📦 Planilla segmentada con éxito.");
                 schedulesRoute1.postValue(r1);
                 schedulesRoute2.postValue(r2);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "❌ Error Firebase: " + error.getMessage());
+                Log.e(TAG, "❌ Error al cargar horarios: " + error.getMessage());
             }
         });
     }
 
+    /**
+     * Inicia el flujo de registro integral.
+     */
     public void registerDriver(String name, String email, String phone, String password, 
                                String plate, String model, String year, int capacity,
                                String idS1, String idS2) {
@@ -109,15 +122,19 @@ public class DriverRegistrationViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Orquesta la persistencia de datos en los 4 nodos clave del sistema.
+     */
     private void saveDriverFullData(String name, String email, String phone, String plate, String model, String year, int capacity, String idS1, String idS2) {
         FirebaseUser user = MyApp.getCurrentUser();
         if (user == null) { 
             isLoading.postValue(false); 
-            registrationError.postValue("Session Error");
+            registrationError.postValue("Sesión perdida tras el registro.");
             return; 
         }
         String userId = user.getUid();
 
+        // Operaciones de persistencia multi-nodo
         saveToVehiculos(userId, plate, model, year, capacity);
         saveToConductores(userId, name, email, phone, plate, model, idS1, idS2);
         syncGlobalSchedules(userId, idS1, idS2, capacity);
@@ -149,6 +166,9 @@ public class DriverRegistrationViewModel extends ViewModel {
         ref.setValue(data);
     }
 
+    /**
+     * Vincula al conductor con los horarios elegidos y habilita el inventario de asientos.
+     */
     private void syncGlobalSchedules(String driverId, String idS1, String idS2, int capacity) {
         DatabaseReference hRef = MyApp.getDatabaseReference("horarios");
         DatabaseReference sRef = MyApp.getDatabaseReference("disponibilidadAsientos");

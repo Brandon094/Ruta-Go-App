@@ -18,15 +18,23 @@ import com.google.firebase.database.DatabaseReference;
 
 /**
  * 🔑 Login ViewModel
- * 
- * Gestiona la lógica de autenticación de usuarios.
- * Permite el acceso incluso si existe una solicitud de borrado pendiente.
+ *
+ * Orquestador de los flujos de autenticación (Email y Google One Tap).
+ * Responsabilidades:
+ * - Coordinar el inicio de sesión con servicios especializados.
+ * - Asegurar la persistencia y sincronización del token de notificaciones FCM.
+ * - Gestionar el estado de carga y comunicación de errores a la interfaz de usuario.
  */
 public class LoginViewModel extends ViewModel {
     private static final String TAG = "LoginViewModel";
 
+    /** Notifica el éxito del login y el tipo de rol detectado (driver/passenger). */
     private final MutableLiveData<String> loginSuccess = new MutableLiveData<>();
+    
+    /** Notifica mensajes de error descriptivos traducidos. */
     private final MutableLiveData<String> loginError = new MutableLiveData<>();
+    
+    /** Estado reactivo para el control del overlay de carga. */
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private EmailLoginService emailLoginService;
@@ -36,11 +44,18 @@ public class LoginViewModel extends ViewModel {
     public LiveData<String> getLoginError() { return loginError; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
+    /**
+     * Inicializa los servicios de autenticación con el contexto de la actividad.
+     * @param activity Contexto necesario para el flujo de Google One Tap.
+     */
     public void init(Activity activity) {
         if (emailLoginService == null) emailLoginService = new EmailLoginService(activity);
         if (googleLoginService == null) googleLoginService = new GoogleLoginService(activity);
     }
 
+    /**
+     * Ejecuta el flujo de login tradicional.
+     */
     public void loginWithEmail(String email, String password) {
         isLoading.setValue(true);
         emailLoginService.login(email, password, new EmailLoginService.LoginCallback() {
@@ -52,6 +67,9 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Dispara el selector de cuentas de Google One Tap.
+     */
     public void loginWithGoogle() {
         isLoading.setValue(true);
         googleLoginService.startSignInFlow(new GoogleLoginService.LoginCallback() {
@@ -63,6 +81,9 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Procesa el resultado devuelto por el flujo de Google.
+     */
     public void handleGoogleResult(Intent data) {
         isLoading.setValue(true);
         googleLoginService.handleSignInResult(data, new GoogleLoginService.LoginCallback() {
@@ -75,7 +96,9 @@ public class LoginViewModel extends ViewModel {
     }
 
     /**
-     * Sincroniza el token FCM únicamente en el nodo correspondiente al rol del usuario.
+     * 🛡️ Seguridad y Sincronización:
+     * Obtiene el token de Firebase Messaging y lo guarda exclusivamente en el nodo 
+     * correspondiente al rol detectado para evitar conflictos de validación en la base de datos.
      */
     private void syncFCMToken(String userType) {
         FirebaseUser user = MyApp.getCurrentUser();
@@ -91,7 +114,7 @@ public class LoginViewModel extends ViewModel {
         MyApp.getInstance().getFirebaseMessaging().getToken().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 String token = task.getResult();
-                // 🛡️ SEGURIDAD: Solo escribir en el nodo que corresponde según el rol
+                // Escritura atómica del token en el perfil del usuario
                 MyApp.getDatabaseReference(node + "/" + userId + "/tokenFCM").setValue(token);
             }
             loginSuccess.postValue(userType);

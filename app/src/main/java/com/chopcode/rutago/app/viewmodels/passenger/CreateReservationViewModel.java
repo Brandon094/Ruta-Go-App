@@ -23,19 +23,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 💺 Create Reservation ViewModel (Passenger)
- * 
- * Gestiona el estado de la selección de asientos para un viaje.
+ * Create Reservation ViewModel (Passenger)
+ *
+ * Motor de orquestación para la selección interactiva de asientos.
  * Responsabilidades:
- * - Escuchar en tiempo real qué asientos están siendo ocupados en un horario.
- * - Cargar la información del conductor y su vehículo vinculado al horario.
- * - Sincronizar los datos del usuario actual para el proceso de reserva.
- * - Resolver la tarifa dinámica de la ruta.
+ * - Mantener una suscripción en tiempo real al inventario de asientos ocupados por despacho.
+ * - Realizar la resolución de identidades: vincula dinámicamente el horario con el conductor y su vehículo.
+ * - Implementar un algoritmo de búsqueda exhaustiva para recuperar conductores en caso de inconsistencias en el nodo de horarios.
+ * - Sincronizar tarifas dinámicas y perfiles de usuario para preparar el Payload de reserva.
+ * - Garantizar la limpieza de listeners para optimizar el rendimiento del dispositivo.
  */
 public class CreateReservationViewModel extends ViewModel {
     private static final String TAG = "CreateReservationVM";
 
+    /** Conjunto reactivo de números de asiento no disponibles. */
     private final MutableLiveData<Set<Integer>> occupiedSeats = new MutableLiveData<>(new HashSet<>());
+    
     private final MutableLiveData<User> currentUser = new MutableLiveData<>();
     private final MutableLiveData<Driver> currentDriver = new MutableLiveData<>();
     private final MutableLiveData<Vehicle> currentVehicle = new MutableLiveData<>();
@@ -71,6 +74,9 @@ public class CreateReservationViewModel extends ViewModel {
         routePrice.setValue(price);
     }
 
+    /**
+     * Consulta la tarifa vigente para el trayecto seleccionado.
+     */
     public void loadPrice(String origin, String destination) {
         priceService.getRoutePrice(origin, destination, new PriceService.PriceCallback() {
             @Override public void onPriceLoaded(double price) { routePrice.postValue(price); }
@@ -78,6 +84,9 @@ public class CreateReservationViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Recupera el perfil del pasajero logueado.
+     */
     public void loadUserData() {
         String userId = MyApp.getCurrentUserId();
         if (userId == null) return;
@@ -87,6 +96,9 @@ public class CreateReservationViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Inicia el stream de datos de ocupación para el mapa de asientos.
+     */
     public void startListeningSeats(String scheduleId) {
         if (scheduleId == null) return;
         stopListeningSeats();
@@ -100,7 +112,7 @@ public class CreateReservationViewModel extends ViewModel {
                         if (Boolean.TRUE.equals(seatSnap.getValue(Boolean.class))) {
                             occupied.add(Integer.parseInt(seatSnap.getKey()));
                         }
-                    } catch (Exception e) { Log.e(TAG, "Error parsing seat: " + e.getMessage()); }
+                    } catch (Exception e) { Log.e(TAG, "❌ Error al procesar asiento: " + e.getMessage()); }
                 }
                 occupiedSeats.postValue(occupied);
             }
@@ -115,6 +127,10 @@ public class CreateReservationViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Orquesta la carga de información del operador (Conductor y Bus).
+     * Implementa un mecanismo de redundancia que busca al conductor incluso si la referencia en el horario falla.
+     */
     public void loadDriverAndVehicleInfo(String scheduleId) {
         if (scheduleId == null) return;
         isLoading.setValue(true);
@@ -134,6 +150,10 @@ public class CreateReservationViewModel extends ViewModel {
         scheduleDriverRef.addValueEventListener(scheduleDriverListener);
     }
 
+    /**
+     * Búsqueda por fuerza bruta: Recorre todos los conductores para encontrar quién tiene asignado el horario.
+     * Útil en escenarios de desincronización de base de datos.
+     */
     private void findDriverExhaustively(String scheduleId) {
         MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

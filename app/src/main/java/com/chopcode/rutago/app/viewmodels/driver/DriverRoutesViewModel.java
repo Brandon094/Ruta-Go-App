@@ -11,18 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 🛣️ Driver Routes ViewModel
- * 
- * Gestiona el itinerario de rutas asignadas al conductor.
+ * Driver Routes ViewModel
+ *
+ * Gestor del itinerario operativo diario para el conductor.
  * Responsabilidades:
- * - Cargar el catálogo de horarios en los que el conductor debe operar hoy.
- * - Identificar y exponer la información de la "Próxima Ruta" para acceso rápido.
- * - Sincronizar la lista de horarios con los servicios de obtención de datos.
+ * - Cargar y mapear los horarios asignados desde la planilla maestra.
+ * - Determinar dinámicamente cuál es el siguiente despacho cronológico.
+ * - Proporcionar una colección reactiva de rutas para alimentar la lista de selección.
+ * - Gestionar los estados de carga y error durante la sincronización de la agenda.
  */
 public class DriverRoutesViewModel extends BaseViewModel {
     private final RouteManager routeManager;
+    
+    /** Colección de trayectos (Origen-Destino-Hora) que el conductor opera hoy. */
     private final MutableLiveData<List<Route>> routesLiveData = new MutableLiveData<>();
+    
+    /** Contador para indicadores visuales de "Turnos para hoy". */
     private final MutableLiveData<Integer> routesCountLiveData = new MutableLiveData<>();
+    
+    /** Información formateada de la salida más próxima. */
     private final MutableLiveData<String> nextRouteLiveData = new MutableLiveData<>();
 
     public DriverRoutesViewModel() {
@@ -35,12 +42,19 @@ public class DriverRoutesViewModel extends BaseViewModel {
     public LiveData<Integer> getContadorRutasLiveData() { return routesCountLiveData; }
     public LiveData<String> getProximaRutaLiveData() { return nextRouteLiveData; }
 
+    /**
+     * Limpia la agenda cargada en memoria.
+     */
     public void clearRoutes() {
         routesLiveData.postValue(new ArrayList<>());
         routesCountLiveData.postValue(0);
         nextRouteLiveData.postValue(null);
     }
 
+    /**
+     * Consulta al RouteManager para transformar los IDs de horarios en objetos Route completos.
+     * @param assignedSchedules Lista de identificadores de horarios (ej: ["h005", "h015"]).
+     */
     public void loadRoutes(List<String> assignedSchedules) {
         if (assignedSchedules == null) return;
         setLoading(true);
@@ -52,6 +66,7 @@ public class DriverRoutesViewModel extends BaseViewModel {
                 routesLiveData.postValue(routes);
                 routesCountLiveData.postValue(routes.size());
 
+                // Identificación lógica del despacho inmediato
                 if (!routes.isEmpty()) {
                     Route nextRoute = routes.get(0);
                     String info = nextRoute.getOrigin() + " → " + nextRoute.getDestination();
@@ -65,7 +80,7 @@ public class DriverRoutesViewModel extends BaseViewModel {
 
             @Override
             public void onError(String error) {
-                setError(error);
+                setError("No se pudo cargar el itinerario: " + error);
                 setLoading(false);
                 clearRoutes();
             }

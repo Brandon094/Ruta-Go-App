@@ -15,17 +15,20 @@ import com.chopcode.rutago.app.services.audit.ArchiveService;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
- * ViewModel para la pantalla de Splash.
- * 
+ * Splash ViewModel
+ *
+ * Orquestador del flujo de entrada a la aplicación.
  * Responsabilidades:
- * - Verificar el estado de la sesión del usuario.
- * - Determinar el destino de navegación (Login o Dashboard correspondiente).
- * - Ejecutar tareas de mantenimiento (archivado de datos).
+ * - Validación de consistencia entre sesión local (SharedPreferences) y remota (Firebase Auth).
+ * - Determinación inteligente del destino de navegación (DriverHome, PassengerHome o Login).
+ * - Disparo de tareas de mantenimiento asíncronas (Archivado de reservas obsoletas).
  */
 public class SplashViewModel extends AndroidViewModel {
     private static final String TAG = "SplashVM";
 
+    /** Notifica a la Vista el destino final de navegación. */
     private final MutableLiveData<String> navigationTarget = new MutableLiveData<>();
+    
     private final ArchiveService archiveService;
     
     private static final String PREFS_NAME = "UserPrefs";
@@ -42,11 +45,11 @@ public class SplashViewModel extends AndroidViewModel {
     }
 
     /**
-     * Verifica si existe una sesión válida y decide a dónde navegar.
-     * También dispara tareas de mantenimiento ligeras.
+     * Realiza el chequeo de salud de la sesión y decide el siguiente paso.
+     * Si los datos locales coinciden con los remotos, permite el autologin.
      */
     public void checkSessionStatus() {
-        // Disparar limpieza de reservas antiguas (Hito 2 del Roadmap)
+        // Ejecución de barrido de datos para optimización de Realtime Database
         runArchiveSweep();
 
         SharedPreferences prefs = getApplication().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -56,18 +59,21 @@ public class SplashViewModel extends AndroidViewModel {
         FirebaseUser currentUser = MyApp.getCurrentUser();
 
         if (currentUser != null && savedUserId != null && currentUser.getUid().equals(savedUserId) && savedUserType != null) {
-            Log.d(TAG, "✅ Sesión válida encontrada para: " + savedUserType);
+            Log.d(TAG, "✅ Consistencia de sesión validada para: " + savedUserType);
             navigationTarget.setValue(savedUserType);
         } else {
-            Log.d(TAG, "ℹ️ No se encontró sesión activa o es inconsistente. Redirigiendo a Login.");
+            Log.d(TAG, "ℹ️ Sesión nula o inconsistente. Requiere autenticación manual.");
             navigationTarget.setValue("login");
         }
     }
 
+    /**
+     * Delega al ArchiveService la limpieza de registros antiguos para mantener la base de datos ligera.
+     */
     private void runArchiveSweep() {
         archiveService.runReservationSweep(new ArchiveService.ArchiveCallback() {
-            @Override public void onArchiveComplete(int movedCount) { Log.d(TAG, "🧹 Limpieza terminada: " + movedCount + " reservadas archivadas."); }
-            @Override public void onError(String error) { Log.e(TAG, "🧹 Error en limpieza: " + error); }
+            @Override public void onArchiveComplete(int movedCount) { Log.d(TAG, "🧹 Mantenimiento exitoso: " + movedCount + " registros procesados."); }
+            @Override public void onError(String error) { Log.e(TAG, "🧹 Fallo en mantenimiento preventivo: " + error); }
         });
     }
 }

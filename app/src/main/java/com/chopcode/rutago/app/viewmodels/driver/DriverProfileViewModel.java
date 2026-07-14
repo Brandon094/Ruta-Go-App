@@ -16,9 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 👤 Driver Profile ViewModel
- * 
- * Gestiona el perfil del conductor y su vehículo de forma reactiva.
+ * Driver Profile ViewModel
+ *
+ * Centro de gestión para la identidad digital y los activos del conductor.
+ * Responsabilidades:
+ * - Mantener una suscripción reactiva a los datos del perfil en /conductores/.
+ * - Gestionar la sincronización de la capacidad del vehículo con los horarios asignados.
+ * - Coordinar la carga asíncrona de fotografías a Firebase Storage.
+ * - Implementar el flujo legal de "Derecho al Olvido" (Solicitud/Cancelación de borrado).
+ * - Garantizar la liberación de recursos (listeners) al finalizar el ciclo de vida.
  */
 public class DriverProfileViewModel extends BaseViewModel {
 
@@ -29,6 +35,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     private final VehicleService vehicleService;
     private final SeatDataProcessor seatsDataProcessor;
 
+    /** Datos reactivos del perfil. */
     private final MutableLiveData<String> driverNameLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> vehiclePlateLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> vehicleCapacityLiveData = new MutableLiveData<>();
@@ -57,6 +64,9 @@ public class DriverProfileViewModel extends BaseViewModel {
     public MutableLiveData<Vehicle> getVehiculoLiveData() { return vehicleLiveData; }
     public MutableLiveData<String> getPhotoUploadStatus() { return photoUploadStatus; }
 
+    /**
+     * Sube una nueva foto de perfil y actualiza la URL en la base de datos.
+     */
     public void subirFotoPerfil(android.net.Uri uri) {
         if (currentDriverUID == null) return;
         photoUploadStatus.setValue("Uploading...");
@@ -76,6 +86,10 @@ public class DriverProfileViewModel extends BaseViewModel {
         });
     }
 
+    /**
+     * Inicializa la escucha reactiva de todos los datos vinculados al conductor.
+     * Si la capacidad del vehículo cambia, dispara automáticamente una sincronización con los horarios.
+     */
     public void cargarDatosCompletos(String driverUID) {
         if (driverUID == null || driverUID.isEmpty()) return;
 
@@ -95,7 +109,7 @@ public class DriverProfileViewModel extends BaseViewModel {
             public void onDriverDataLoaded(Driver driver) {
                 if (driver == null) { 
                     setLoading(false); 
-                    setError("Error al cargar perfil");
+                    setError("Error al cargar perfil.");
                     return; 
                 }
                 
@@ -107,6 +121,7 @@ public class DriverProfileViewModel extends BaseViewModel {
                 assignedSchedulesLiveData.postValue(driver.getAssignedSchedules() != null ? driver.getAssignedSchedules() : new ArrayList<>());
                 driverLiveData.postValue(driver);
 
+                // ⚙️ Motor de integridad: Mantiene los horarios alineados con la capacidad del bus
                 if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty() && driver.getVehicleCapacity() > 0) {
                     seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), driver.getVehicleCapacity());
                 }
@@ -120,6 +135,9 @@ public class DriverProfileViewModel extends BaseViewModel {
         });
     }
 
+    /**
+     * Carga la ficha técnica del vehículo asignado.
+     */
     private void cargarVehiculo(String plate) {
         if (plate == null || plate.isEmpty()) return;
         if (plate.equals(currentVehiclePlate) && vehicleListener != null) return;
@@ -135,7 +153,7 @@ public class DriverProfileViewModel extends BaseViewModel {
                     if (vehicle.getCapacity() > 0) vehicleCapacityLiveData.postValue(vehicle.getCapacity());
                 }
             }
-            @Override public void onError(String error) { Log.e(TAG, "Error loading vehicle: " + error); }
+            @Override public void onError(String error) { Log.e(TAG, "❌ Error al cargar vehículo: " + error); }
         });
     }
 
@@ -165,7 +183,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     }
 
     /**
-     * Solicita el borrado de la cuenta del conductor.
+     * Marca el perfil para eliminación permanente (Periodo de gracia 30 días).
      */
     public void solicitarBorradoCuenta(UserService.UserUpdateCallback callback) {
         if (currentDriverUID == null) return;
@@ -173,7 +191,7 @@ public class DriverProfileViewModel extends BaseViewModel {
     }
 
     /**
-     * Cancela una solicitud de borrado pendiente.
+     * Revierte una solicitud de borrado previa.
      */
     public void cancelarBorradoCuenta(UserService.UserUpdateCallback callback) {
         if (currentDriverUID == null) return;

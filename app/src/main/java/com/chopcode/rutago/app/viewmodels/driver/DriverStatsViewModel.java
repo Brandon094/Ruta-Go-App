@@ -18,11 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 📊 Driver Stats ViewModel
- * 
- * Este ViewModel se encarga de la lógica reactiva del Dashboard del conductor.
- * Su propósito principal es calcular ingresos, asientos libres y reservas 
- * de forma dinámica basándose en los cambios de Firebase en tiempo real.
+ * Driver Stats ViewModel
+ *
+ * Motor analítico reactivo para el Dashboard del conductor.
+ * Responsabilidades:
+ * - Realizar agregaciones en tiempo real de ingresos diarios y ocupación de flota.
+ * - Cruzar datos de reservas activas con el nodo de disponibilidad para detectar ventas físicas.
+ * - Calcular métricas de rendimiento específicas para cada turno en la agenda.
+ * - Gestionar suscripciones concurrentes a múltiples nodos NoSQL (Reservas + Disponibilidad).
  */
 public class DriverStatsViewModel extends BaseViewModel {
 
@@ -31,12 +34,12 @@ public class DriverStatsViewModel extends BaseViewModel {
     private int capacityPerRoute = 13;
     private final DriverReservationService driverReservationService;
 
-    // --- Estadísticas Generales (Dashboard Superior) ---
+    // --- Métricas Globales del Dashboard ---
     private final MutableLiveData<Integer> confirmedReservationsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> availableSeatsLiveData = new MutableLiveData<>(0);
     private final MutableLiveData<Double> earningsLiveData = new MutableLiveData<>(0.0);
 
-    // --- Desglose Dinámico por Ruta ---
+    /** Lista procesada de estadísticas detalladas por cada despacho. */
     private final MutableLiveData<List<com.chopcode.rutago.app.models.RouteStat>> routeStatsLiveData = new MutableLiveData<>(new ArrayList<>());
 
     private String currentDriverId;
@@ -44,6 +47,8 @@ public class DriverStatsViewModel extends BaseViewModel {
     private List<com.chopcode.rutago.app.models.Route> activeRoutes = new ArrayList<>();
     private ValueEventListener statsListener;
     private ValueEventListener availabilityListener;
+    
+    /** Cache local de disponibilidad para cálculos transversales. */
     private final Map<String, Integer> scheduleAvailabilityMap = new HashMap<>();
     private final Map<String, Integer> scheduleTotalMap = new HashMap<>();
 
@@ -52,7 +57,7 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Establece las rutas activas para resolver datos faltantes en las reservas.
+     * Vincula las rutas resueltas para asociar nombres y horarios a las métricas frías.
      */
     public void setRutasActivas(List<com.chopcode.rutago.app.models.Route> routes) {
         if (routes != null) {
@@ -62,7 +67,7 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Establece el ID del conductor y arranca la escucha en tiempo real.
+     * Identifica al conductor y activa los túneles de escucha en tiempo real.
      */
     public void setConductorActual(String driverId) {
         if (driverId != null && !driverId.equals(this.currentDriverId)) {
@@ -72,7 +77,7 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Vincula los horarios asignados para filtrar estadísticas específicas.
+     * Establece los horarios que deben ser monitoreados para este ciclo.
      */
     public void setHorariosAsignados(List<String> schedules) {
         this.assignedSchedules = schedules;
@@ -80,7 +85,7 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Actualiza la capacidad del cálculo dinámico según el vehículo cargado.
+     * Ajusta la base de cálculo si la capacidad del bus cambia (ej: cambio de vehículo).
      */
     public void setCapacidadVehiculo(int capacity) {
         if (capacity > 0) {
@@ -89,21 +94,20 @@ public class DriverStatsViewModel extends BaseViewModel {
         }
     }
 
-    // Getters para LiveData
     public LiveData<Integer> getReservasConfirmadasLiveData() { return confirmedReservationsLiveData; }
     public LiveData<Integer> getAsientosDisponiblesLiveData() { return availableSeatsLiveData; }
     public LiveData<Double> getIngresosLiveData() { return earningsLiveData; }
     public LiveData<List<com.chopcode.rutago.app.models.RouteStat>> getRouteStatsLiveData() { return routeStatsLiveData; }
 
     /**
-     * Inicia el listener de Firebase para que las estadísticas salten al instante.
+     * Configura los listeners de Firebase. Implementa limpieza previa para evitar duplicidad.
      */
     private void startRealTimeStats() {
         if (currentDriverId == null || currentDriverId.isEmpty()) return;
         
         stopRealTimeStats();
         
-        Log.d(TAG, "Starting real-time stats for: " + currentDriverId);
+        Log.d(TAG, "📡 Iniciando monitoreo analítico para: " + currentDriverId);
         statsListener = driverReservationService.escucharEstadisticasCompletas(currentDriverId, assignedSchedules,
                 new DriverReservationService.RealTimeStatsListener() {
                     @Override
@@ -117,10 +121,13 @@ public class DriverStatsViewModel extends BaseViewModel {
                     }
                 });
 
-        // 🔥 NUEVO: Escuchar disponibilidad real de asientos (incluye ventas físicas)
+        // Suscripción al nodo de disponibilidad para detectar bloqueos manuales
         startAvailabilityListener();
     }
 
+    /**
+     * Escucha cambios en el inventario de asientos (Ventas Físicas + App).
+     */
     private void startAvailabilityListener() {
         if (assignedSchedules == null || assignedSchedules.isEmpty()) return;
         
@@ -137,7 +144,6 @@ public class DriverStatsViewModel extends BaseViewModel {
                         if (total != null) scheduleTotalMap.put(sid, total);
                     }
                 }
-                // Forzar refresco del desglose con los nuevos datos de disponibilidad
                 calculateRouteStatistics();
             }
 
@@ -146,9 +152,6 @@ public class DriverStatsViewModel extends BaseViewModel {
         dispRef.addValueEventListener(availabilityListener);
     }
 
-    /**
-     * Remueve el listener de Firebase para liberar recursos.
-     */
     private void stopRealTimeStats() {
         if (statsListener != null) {
             com.chopcode.rutago.app.config.MyApp.getDatabaseReference("reservas").removeEventListener(statsListener);
@@ -161,25 +164,22 @@ public class DriverStatsViewModel extends BaseViewModel {
     }
 
     /**
-     * Procesa los datos crudos de Firebase y los convierte en LiveData para la UI.
+     * Transforma los datos crudos en métricas visuales.
      */
     private void processStatsUpdate(DriverReservationService.CompleteDriverStats stats) {
-        // En esta etapa del proyecto, las estadísticas son históricas (según solicitud)
         confirmedReservationsLiveData.postValue(stats.confirmedReservations);
         earningsLiveData.postValue(stats.totalEarnings);
 
-        // Cálculo dinámico de asientos disponibles globales
+        // Algoritmo de cálculo de puestos libres totales en la agenda del día
         int numRoutes = (assignedSchedules != null && !assignedSchedules.isEmpty()) ? assignedSchedules.size() : 2;
         int totalOccupied = stats.confirmedReservations + stats.pendingReservations;
         availableSeatsLiveData.postValue(Math.max(0, numRoutes * capacityPerRoute - totalOccupied));
 
-        // 🔥 Disparar actualización del desglose detallado
         calculateRouteStatistics();
     }
 
     /**
-     * 🔥 Genera dinámicamente la lista de estadísticas por ruta.
-     * Mantiene el orden de activeRoutes y cruza datos de reservas con disponibilidad real.
+     * Genera la lista de RouteStat cruzando la disponibilidad real de cada despacho.
      */
     public void calculateRouteStatistics() {
         if (activeRoutes == null || activeRoutes.isEmpty()) return;
@@ -192,7 +192,7 @@ public class DriverStatsViewModel extends BaseViewModel {
             String sid = route.getScheduleId();
             if (sid == null) continue;
 
-            // 🔥 Ocupación Real: Obtenida directamente de la disponibilidad (incluye App y Ventas Físicas)
+            // Ocupación Real: total - disponibles (Captura tanto ventas digitales como físicas)
             Integer totalObj = scheduleTotalMap.get(sid);
             int total = (totalObj != null) ? totalObj : capacityPerRoute;
             
@@ -201,20 +201,12 @@ public class DriverStatsViewModel extends BaseViewModel {
             
             int realOccupied = Math.max(0, total - available);
             
-            // Nombre descriptivo con horario para diferenciar turnos iguales
             String time = (route.getTime() != null) ? route.getTime().getTime() : "--:--";
             String displayName = route.getOrigin() + " → " + route.getDestination() + " (" + time + ")";
             
             int color = brandColors[colorIndex % brandColors.length];
-            // 'realOccupied' ahora se muestra en el campo de 'reservations' de la tarjeta (representa pasajeros totales)
             newStats.add(new com.chopcode.rutago.app.models.RouteStat(displayName, realOccupied, available, color));
             colorIndex++;
-        }
-        
-        // Fallback básico si la lista sigue vacía
-        if (newStats.isEmpty()) {
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("Natagá → La Plata", 0, capacityPerRoute, R.color.primary_500));
-            newStats.add(new com.chopcode.rutago.app.models.RouteStat("La Plata → Natagá", 0, capacityPerRoute, R.color.secondary_400));
         }
         
         routeStatsLiveData.postValue(newStats);

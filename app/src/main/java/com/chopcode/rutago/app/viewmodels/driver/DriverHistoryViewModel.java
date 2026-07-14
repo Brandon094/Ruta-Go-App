@@ -13,20 +13,22 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * 📊 Driver History ViewModel
- * 
- * Orquesta la lógica del historial de viajes para el conductor.
+ * Driver History ViewModel
+ *
+ * Motor de gestión para el historial operativo del conductor.
  * Responsabilidades:
- * - Cargar reservas históricas filtradas por el UID del conductor.
- * - Implementar lógica de filtrado por estado, búsqueda textual y rangos de fecha.
- * - Calcular contadores acumulados para la vista de resumen.
- * - Gestionar la liberación de asientos en caso de cancelaciones desde el historial.
+ * - Cargar y cachear la colección histórica de reservas del conductor.
+ * - Implementar lógica multi-filtro (Estado, Fecha y Búsqueda textual por pasajero).
+ * - Realizar agregaciones estadísticas (Totales, Confirmadas, Canceladas).
+ * - Orquestar la cancelación de reservas con liberación atómica de inventario (asientos).
+ * - Soportar filtrado avanzado por rangos de fecha para usuarios Premium.
  */
 public class DriverHistoryViewModel extends ViewModel {
     private final MutableLiveData<List<Reservation>> filteredReservations = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>();
     
+    /** Estadísticas rápidas para el encabezado del historial. */
     private final MutableLiveData<Integer> totalCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> confirmedCount = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> cancelledCount = new MutableLiveData<>(0);
@@ -54,10 +56,13 @@ public class DriverHistoryViewModel extends ViewModel {
 
     private String currentDriverId = null;
 
+    /**
+     * Carga el historial de reservas desde Firebase.
+     * Implementa una estrategia de cache local por conductor para evitar lecturas redundantes.
+     */
     public void loadReservations(String driverId, boolean isPremium) {
         if (driverId == null || driverId.isEmpty()) return;
 
-        // 🔥 CACHE: Evitar recargas innecesarias si ya tenemos la data
         if (driverId.equals(currentDriverId) && !allReservations.isEmpty()) {
             applyCurrentFilters();
             calculateStats();
@@ -69,6 +74,7 @@ public class DriverHistoryViewModel extends ViewModel {
         isLoading.setValue(true);
 
         if (isPremium && premiumStartDate != null && premiumEndDate != null) {
+            // Carga especializada para suscriptores (Rangos de fecha personalizados)
             reservationService.getAdvancedStats(driverId, premiumStartDate, premiumEndDate, new DriverReservationService.CompleteStatsCallback() {
                 @Override
                 public void onCompleteStatsLoaded(DriverReservationService.CompleteDriverStats stats) {
@@ -80,6 +86,7 @@ public class DriverHistoryViewModel extends ViewModel {
                 @Override public void onError(String errorMsg) { error.postValue(errorMsg); isLoading.postValue(false); }
             });
         } else {
+            // Carga estándar (Últimas reservas)
             reservationService.cargarReservasConductorFiltradas(driverId, null, "TODAS", true, new DriverReservationService.ReservationsCallback() {
                 @Override
                 public void onReservationsLoaded(List<Reservation> reservations) {
@@ -93,6 +100,9 @@ public class DriverHistoryViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Aplica los parámetros de filtrado a la lista en memoria.
+     */
     public void setFilters(String status, String dateFilter, String query) {
         this.filterStatus = status;
         this.filterDate = dateFilter;
@@ -117,6 +127,9 @@ public class DriverHistoryViewModel extends ViewModel {
         filteredReservations.setValue(result);
     }
 
+    /**
+     * Recalcula los contadores basados en la data actual cargada.
+     */
     private void calculateStats() {
         int confirmed = 0, cancelled = 0;
         for (Reservation r : allReservations) {
@@ -141,6 +154,9 @@ public class DriverHistoryViewModel extends ViewModel {
         return (r.getName() != null && r.getName().toLowerCase().contains(q)) || (r.getPhone() != null && r.getPhone().toLowerCase().contains(q));
     }
 
+    /**
+     * Actualiza el estado de una reserva (Confirmar/Cancelar).
+     */
     public void updateReservationStatus(Context context, String reservationId, String status, Runnable onSuccess) {
         reservationService.actualizarEstadoReserva(context, reservationId, status, new DriverReservationService.ReservationUpdateCallback() {
             @Override public void onSuccess() { onSuccess.run(); }
@@ -148,6 +164,9 @@ public class DriverHistoryViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Proceso crítico: Cancela la reserva y libera el asiento en el motor de disponibilidad.
+     */
     public void cancelReservationWithRelease(Context context, Reservation r, Runnable onSuccess) {
         reservationService.cancelarReservaConLiberacion(context, r.getIdReservation(), r.getScheduleId(), r.getReservedSeat(), new DriverReservationService.ReservationUpdateCallback() {
             @Override public void onSuccess() { onSuccess.run(); }

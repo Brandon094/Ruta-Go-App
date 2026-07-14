@@ -14,20 +14,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 📝 Edit Profile ViewModel (Passenger)
- * 
- * Gestiona la lógica de negocio para la edición del perfil de usuario.
+ * Edit Profile ViewModel (Passenger)
+ *
+ * Gestor del flujo de actualización de información básica del pasajero.
  * Responsabilidades:
- * - Recuperar la información actual del pasajero.
- * - Validar que los campos obligatorios no estén vacíos.
- * - Coordinar con el servicio de usuario para persistir los cambios en Firebase.
+ * - Recuperar el estado actual del perfil para pre-cargar el formulario.
+ * - Validar reglas de negocio sobre campos obligatorios (Nombre y Teléfono).
+ * - Delegar al UserService la persistencia de cambios en el nodo /usuarios/.
+ * - Proporcionar feedback reactivo sobre el éxito o fallo de la operación de edición.
  */
 public class EditProfileViewModel extends ViewModel {
     private static final String TAG = "EditProfileVM";
 
+    /** Datos actuales del usuario para inicializar la vista. */
     private final MutableLiveData<User> userData = new MutableLiveData<>();
+    
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    
+    /** Notifica el éxito de la transacción para cerrar la pantalla de edición. */
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
+    
     private final MutableLiveData<String> error = new MutableLiveData<>();
 
     private final UserService userService;
@@ -42,7 +48,7 @@ public class EditProfileViewModel extends ViewModel {
     public LiveData<String> getError() { return error; }
 
     /**
-     * Carga los datos del perfil del usuario actual.
+     * Recupera la información de perfil del pasajero logueado.
      */
     public void loadUserProfile() {
         String userId = MyApp.getCurrentUserId();
@@ -61,7 +67,7 @@ public class EditProfileViewModel extends ViewModel {
 
             @Override
             public void onError(String errorMsg) {
-                Log.e(TAG, "Error cargando datos: " + errorMsg);
+                Log.e(TAG, "❌ Error al cargar perfil: " + errorMsg);
                 error.postValue(MyApp.getAppContext().getString(R.string.error_prefijo, errorMsg));
                 isLoading.postValue(false);
             }
@@ -69,7 +75,9 @@ public class EditProfileViewModel extends ViewModel {
     }
 
     /**
-     * Actualiza el perfil del usuario con los nuevos datos.
+     * Ejecuta la validación y persistencia del nuevo perfil.
+     * @param nuevoNombre Nombre actualizado del pasajero.
+     * @param nuevoTelefono Número de contacto actualizado.
      */
     public void updateProfile(String nuevoNombre, String nuevoTelefono) {
         String userId = MyApp.getCurrentUserId();
@@ -78,30 +86,30 @@ public class EditProfileViewModel extends ViewModel {
             return;
         }
 
-        if (nuevoNombre == null || nuevoNombre.isEmpty()) {
+        // Validaciones de integridad de datos
+        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) {
             error.setValue(MyApp.getAppContext().getString(R.string.nombre_obligatorio));
             return;
         }
 
-        if (nuevoTelefono == null || nuevoTelefono.isEmpty()) {
+        if (nuevoTelefono == null || nuevoTelefono.trim().isEmpty()) {
             error.setValue(MyApp.getAppContext().getString(R.string.telefono_obligatorio));
             return;
         }
 
         isLoading.setValue(true);
-        Log.d(TAG, "🔄 Actualizando perfil para: " + userId);
+        Log.d(TAG, "🔄 Persistiendo cambios de perfil para: " + userId);
 
         userService.updateUserProfile(userId, nuevoNombre, nuevoTelefono, new UserService.UserUpdateCallback() {
             @Override
             public void onSuccess() {
-                Log.d(TAG, "✅ Perfil actualizado correctamente");
                 updateSuccess.postValue(true);
                 isLoading.postValue(false);
             }
 
             @Override
             public void onError(String errorMsg) {
-                Log.e(TAG, "❌ Error al actualizar: " + errorMsg);
+                Log.e(TAG, "❌ Fallo en la actualización: " + errorMsg);
                 error.postValue(MyApp.getAppContext().getString(R.string.error_actualizar, errorMsg));
                 isLoading.postValue(false);
             }

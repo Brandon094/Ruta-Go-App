@@ -21,9 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 📝 Edit Driver Profile ViewModel
- * 
- * Gestiona el proceso masivo de actualización de perfil y vehículo.
+ * Edit Driver Profile ViewModel
+ *
+ * Orquestador de la actualización masiva de perfiles operativos.
+ * Responsabilidades:
+ * - Cargar simultáneamente la información personal y la ficha técnica del vehículo.
+ * - Sincronizar cambios técnicos (como la placa o capacidad) en todos los nodos vinculados.
+ * - Disparar el motor de integridad para actualizar la capacidad de asientos en los horarios activos.
+ * - Gestionar errores granulares por cada nodo de base de datos (conductores vs vehículos).
  */
 public class EditDriverProfileViewModel extends ViewModel {
     private static final String TAG = "EditDriverProfileVM";
@@ -31,7 +36,10 @@ public class EditDriverProfileViewModel extends ViewModel {
     private final MutableLiveData<Driver> driverData = new MutableLiveData<>();
     private final MutableLiveData<Vehicle> vehicleData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    
+    /** Notifica si la actualización multi-nodo fue exitosa. */
     private final MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>(false);
+    
     private final MutableLiveData<String> error = new MutableLiveData<>();
     private final SeatDataProcessor seatsDataProcessor;
 
@@ -45,6 +53,9 @@ public class EditDriverProfileViewModel extends ViewModel {
     public LiveData<Boolean> getUpdateSuccess() { return updateSuccess; }
     public LiveData<String> getError() { return error; }
 
+    /**
+     * Recupera el perfil del conductor desde Firebase.
+     */
     public void loadData(String userId) {
         isLoading.setValue(true);
         
@@ -81,6 +92,9 @@ public class EditDriverProfileViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Recupera los detalles técnicos del vehículo.
+     */
     private void loadVehiculo(String vehicleId) {
         DatabaseReference vehicleRef = MyApp.getDatabaseReference("vehiculos/" + vehicleId);
         vehicleRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -114,25 +128,32 @@ public class EditDriverProfileViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Ejecuta una transacción coordinada para actualizar los datos en múltiples nodos.
+     * Si la capacidad cambia, se propaga a los horarios del día.
+     */
     public void updateProfile(String userId, Driver driver, Vehicle vehicle) {
         isLoading.setValue(true);
-        Log.d(TAG, "🔄 Starting massive update for driver: " + userId);
+        Log.d(TAG, "🔄 Iniciando actualización masiva para conductor: " + userId);
 
         vehicle.setDriverId(userId);
         if (vehicle.getId() == null || vehicle.getId().isEmpty()) {
             vehicle.setId(vehicle.getPlate());
         }
 
+        // 1. Actualizar nodo /vehiculos/
         DatabaseReference vehicleRef = MyApp.getDatabaseReference("vehiculos/" + vehicle.getId());
         vehicleRef.setValue(vehicle).addOnSuccessListener(aVoid -> {
             
             driver.setVehicleId(vehicle.getId());
             driver.setVehiclePlate(vehicle.getPlate());
             
+            // Sincronización de capacidad en los despachos activos
             if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty()) {
                 seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), vehicle.getCapacity());
             }
 
+            // 2. Actualizar nodo /conductores/
             DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
             conductorRef.setValue(driver).addOnSuccessListener(aVoid2 -> {
                 isLoading.postValue(false);
