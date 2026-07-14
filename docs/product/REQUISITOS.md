@@ -1,39 +1,40 @@
-# 📋 Especificación de Requisitos - Ecosistema "Go"
+# 📋 Especificación de Requisitos - Ecosistema Go v1.3.0
 
-Este documento detalla los requisitos funcionales, no funcionales y la integración sistémica de la suite tecnológica de ChopCode Solutions.
+Este documento detalla los requisitos funcionales, no funcionales y la integración sistémica de la suite tecnológica de ChopCode Solutions, optimizada para Android 15.
 
 ---
 
 ## 🛠️ 1. Requisitos de Integración (Suite)
-*   **RF-S01 (SSO):** El sistema permitirá el acceso a todas las plataformas (RutaGo, AgroGo, CargoGo) con una única cuenta de usuario.
-*   **RF-S02 (Deep Linking):** Las aplicaciones deben permitir la navegación cruzada mediante enlaces profundos (ej: desde AgroGo abrir la reserva de RutaGo).
-*   **RF-S03 (Hosting Central):** La información legal y el portal de subastas de CargoGo deben estar centralizados en un Web Hub bajo Firebase Hosting.
+*   **RF-S01 (SSO):** El sistema permitirá el acceso a todas las plataformas (RutaGo, AgroGo, CargoGo) con una única cuenta de usuario (Firebase Auth).
+*   **RF-S02 (Deep Linking):** Las aplicaciones deben permitir la navegación cruzada mediante enlaces profundos y notificaciones reactivas.
+*   **RF-S03 (Hosting Central):** La información legal, el manual de gestión de datos y el portal de subastas deben estar centralizados en un Web Hub.
 
 ---
 
-## 🚌 2. Requisitos RutaGo (Movilidad)
-*   **RF-R01 (Reserva):** El pasajero debe poder reservar asientos con sincronización menor a 1 segundo (Latencia RTDB).
-*   **RF-R02 (SaaS):** Los conductores premium accederán a analítica avanzada de rentabilidad y prioridad algorítmica.
-*   **RF-R03 (Loyalty):** El sistema debe otorgar Puntos Go por cada viaje finalizado según el nivel (Plata, Oro, Diamante).
+## 🚌 2. Requisitos Ruta-Go (Movilidad)
+*   **RF-R01 (Reserva Atómica):** El pasajero debe poder reservar asientos con integridad transaccional (runTransaction) y latencia ultra-baja.
+*   **RF-R02 (SaaS para Conductores):** Los operadores premium accederán a analítica avanzada de rentabilidad y prioridad en la toma de turnos.
+*   **RF-R03 (Loyalty):** El sistema debe otorgar Puntos Go por cada viaje finalizado para incentivar la recurrencia.
+*   **RF-R04 (Habeas Data):** El app debe proveer un flujo autónomo para la solicitud de borrado de cuenta cumpliendo con las políticas de Google Play.
 
 ---
 
-## 🌿 3. Requisitos AgroGo (Gestión Rural)
-*   **RF-A01 (Offline):** El app debe permitir el registro de datos de finca (nómina, lotes) sin conexión a internet.
-*   **RF-A02 (Sync):** Los datos deben sincronizarse automáticamente con Cloud Firestore al detectar red estable.
+## 🌿 3. Requisitos Agro-Go (Gestión Rural)
+*   **RF-A01 (Offline-First):** El app debe permitir el registro de datos de finca sin conexión a internet mediante el motor Isar.
+*   **RF-A02 (Sincronización):** Los datos deben empujarse automáticamente a Cloud Firestore al detectar una red estable.
 
 ---
 
-## 🚛 4. Requisitos CargoGo (Logística)
-*   **RF-C01 (Subasta):** Los transportadores podrán ofertar por fletes sin conocer los precios de los competidores.
-*   **RF-C02 (Dashboard):** El productor podrá seleccionar la mejor oferta basada en precio y reputación del transportador.
+## 🚛 4. Requisitos Cargo-Go (Logística)
+*   **RF-C01 (Subastas Ciegas):** Los transportadores podrán ofertar por fletes sin conocer los precios de la competencia para proteger márgenes.
+*   **RF-C02 (Selección Inteligente):** El productor podrá elegir la mejor oferta basada en precio, capacidad y reputación del operador.
 
 ---
 
 ## ⚡ 5. Requisitos No Funcionales (RNF)
-*   **RNF-01 (Escalabilidad):** El ecosistema debe soportar hasta 10,000 usuarios activos mensuales sin degradación de rendimiento.
-*   **RNF-02 (Seguridad):** Segregación total de datos entre aplicaciones mediante reglas de seguridad CloudFirestore y RTDB.
-*   **RNF-03 (Marca):** Consistencia visual 100% en la paleta de colores Naranja/Navy definida en el manual de Branding.
+*   **RNF-01 (Modernización Android):** Cumplimiento total con SDK 35 (Android 15), incluyendo Edge-to-Edge nativo y alineación de 16 KB.
+*   **RNF-02 (Resiliencia):** El sistema debe manejar micro-desconexiones rurales mediante periodos de gracia en el monitoreo de red.
+*   **RNF-03 (Seguridad NoSQL):** Aislamiento de datos mediante reglas de seguridad basadas en UID y roles administrativos.
 
 ---
-**Chop Code Solutions - Documentación del Ecosistema v1.2.3**
+**Chop Code Solutions - Ingeniería de Producto v1.3.0**

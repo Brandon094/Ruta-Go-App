@@ -4,11 +4,12 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## ✅ Fase 1: Estabilización y Onboarding (Completado)
-*   [x] Arquitectura MVVM Reactiva.
-*   [x] Registro Autónomo de Conductores.
-*   [x] Tutorial Hub Interactivo (Pasajeros/Conductores).
-*   [x] Sistema de Sanity Check de Turnos.
+## ✅ Fase 1: Estabilización y Optimización (Completado)
+*   [x] Arquitectura MVVM Reactiva y Motores Core.
+*   [x] Registro Autónomo de Conductores y Gestión de Activos.
+*   [x] Tutorial Hub Interactivo y Guías de Usuario.
+*   [x] **Optimización Android 15 (SDK 35)**: Edge-to-Edge y 16 KB support.
+*   [x] **Full Documentation Sprint**: Documentación técnica y legal v1.3.0.
 
 ---
 

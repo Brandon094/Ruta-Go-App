@@ -67,6 +67,8 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 *   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
 *   [**Guía de Componentes**](./product/COMPONENT_GUIDE.md): Catálogo de elementos UI/UX (Material 3).
 *   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión y monetización.
+*   [**Plan de Marketing**](./product/MARKETING_PLAN.md): Estrategia de crecimiento y retención.
+*   [**Manual de Usuario**](./product/USER_MANUAL.md): Guía práctica para pasajeros y conductores.
 
 ### 📙 Dominio Operativo (QA & Ops)
 *   [**Plan de Pruebas**](./operations/RELEASE_TESTING_PLAN.md): Protocolo de certificación de calidad para lanzamientos.
