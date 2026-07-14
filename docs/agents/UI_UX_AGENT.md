@@ -18,4 +18,11 @@
 *   Optimización de Dashboards financieros para conductores con gráficos interactivos.
 
 ---
+
+## 🔗 Fuentes de Consulta de Diseño
+1.  **Manual de Identidad**: [BRANDING.md](../product/BRANDING.md).
+2.  **Portal Web de Soporte**: [GO_WEB_HUB.md](../product/GO_WEB_HUB.md).
+3.  **Lógica Visual**: [REQUISITOS.md](../product/REQUISITOS.md).
+
+---
 **ChopCode Solutions - Design & Experience**

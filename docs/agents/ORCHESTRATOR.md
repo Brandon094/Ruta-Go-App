@@ -19,4 +19,15 @@
 *   Si una funcionalidad afecta a más de una App del ecosistema, el Orquestador debe disparar la actualización de la Arquitectura Híbrida (RTDB/Firestore).
 
 ---
+
+## 📚 Mapa de Conocimiento (Fuentes de Verdad)
+Para operar con eficacia, todos los agentes deben consultar y sincronizar con la biblioteca base:
+
+1.  **Visión de Negocio**: [Master Plan](../product/ECOSYSTEM_MASTER_PLAN.md) y [Roadmap](../product/ROADMAP.md).
+2.  **Leyes del Sistema**: [Especificación de Requisitos](../product/REQUISITOS.md) y [Manual de Marca](../product/BRANDING.md).
+3.  **Arquitectura**: [Motores y Módulos](../technical/ARCHITECTURE_MODULES.md).
+4.  **Código**: [Guías de Desarrollo](../technical/DEVELOPER_GUIDELINES.md) y [Diccionario de Datos](../technical/DICCIONARIO_DATOS.md).
+5.  **Estado Actual**: [Historial de Cambios](../operations/CHANGELOG.md).
+
+---
 **ChopCode Solutions - Inteligencia de Gestión 2026**

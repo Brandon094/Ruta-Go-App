@@ -18,4 +18,11 @@
 *   Integrar APIs de pago (Nequi/Daviplata/PSE) con validación asíncrona mediante Cloud Functions.
 
 ---
+
+## 🔗 Fuentes de Consulta Técnica
+1.  **Arquitectura de Motores**: [ARCHITECTURE_MODULES.md](../technical/ARCHITECTURE_MODULES.md).
+2.  **Esquema de Base de Datos**: [DICCIONARIO_DATOS.md](../technical/DICCIONARIO_DATOS.md).
+3.  **Estándares Clean Code**: [DEVELOPER_GUIDELINES.md](../technical/DEVELOPER_GUIDELINES.md).
+
+---
 **ChopCode Solutions - Core Engineering**
