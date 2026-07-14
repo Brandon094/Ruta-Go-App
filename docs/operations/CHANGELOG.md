@@ -4,6 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.3.0] - 2026-07-13 (Android 15 Optimized Edition)
+### Añadido
+- **Soporte Android 15 (SDK 35)**: Cumplimiento total con las nuevas políticas de Google Play.
+- **Experiencia Edge-to-Edge**: Implementación de pantalla de borde a borde para una interfaz moderna y fluida.
+- **Alineación de 16 KB**: Soporte técnico para dispositivos de última generación (procesadores de alto rendimiento).
+- **Cumplimiento AD_ID**: Bloqueo explícito del ID de publicidad para máxima privacidad del usuario.
+
+### Corregido
+- Error de autenticación Google Login (Error 10 [28444]) mediante forzado de WebClientID.
+- Avisos de APIs obsoletas para la gestión de ventanas y barras de sistema.
+
+---
+
 ## [1.2.3] - 2026-05-24 (Stable Gold Master)
 ### Añadido
 - **Tutorial Interactivo Hub**: Sistema de guías paso a paso centralizado para pasajeros y conductores.

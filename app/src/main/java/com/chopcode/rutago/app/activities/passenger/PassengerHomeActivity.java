@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.activities.passenger;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
@@ -70,6 +71,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Reactive Passenger Dashboard");
 

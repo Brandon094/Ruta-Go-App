@@ -26,9 +26,9 @@
         <item name="colorError">@color/error_500</item>
         <item name="colorOnError">@color/text_on_error</item>
 
-        <!-- Status and navigation bars (Dark) -->
-        <item name="android:statusBarColor">@color/secondary_900</item>
-        <item name="android:navigationBarColor">@color/secondary_900</item>
+        <!-- Status and navigation bars (Edge-to-Edge) -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
 
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>

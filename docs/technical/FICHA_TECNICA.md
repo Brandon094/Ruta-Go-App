@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.2.3 Stable
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.3.0 Stable
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura.
 
@@ -9,6 +9,7 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 *   **Plataformas Incluidas:** RutaGo (Android), AgroGo (Multiplataforma), CargoGo (Web).
 *   **Fabricante:** ChopCode Solutions.
 *   **Titular:** Brandon Daza Cerquera.
+*   **Versión RutaGo:** v1.3.0 (Android 15 Ready).
 
 ---
 

@@ -1,4 +1,4 @@
-# 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.2.3 Stable 🚀
+# 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.3.0 Stable 🚀
 
 **Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Mediante una arquitectura **100% reactiva** y una infraestructura cloud escalable, conectamos a pasajeros y conductores garantizando fiabilidad, transparencia y agilidad operativa. ✨
 

@@ -26,9 +26,9 @@
         <item name="colorError">@color/error_500</item>
         <item name="colorOnError">@color/white</item>
 
-        <!-- Status and navigation bars (Light) -->
-        <item name="android:statusBarColor">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <!-- Status and navigation bars (Edge-to-Edge) -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
 
