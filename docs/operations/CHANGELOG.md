@@ -19,7 +19,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
     - Manual de Gestión de Datos y Cumplimiento Legal (Habeas Data).
 
 ### Corregido
-- **Pérdida de `conductorId`**: Corregida la colisión lógica en la Cloud Function `automatedRotation` que borraba las asignaciones de conductores durante la rotación nocturna.
+- **Pérdida de `conductorId`**: Corregida la colisión lógica en la Cloud Function `automatedRotation` mediante la implementación de un `Set` de asignaciones, evitando el borrado accidental de turnos válidos.
+- **Fallo de Notificaciones en Release**: Implementadas reglas de ProGuard para proteger las librerías de Google Auth y OkHttp3, asegurando la funcionalidad C2C en AAB/APK firmados.
+- **Error de Compilación Premium**: Implementado el método `getAdvancedStats` en `DriverReservationService` para corregir la colisión de símbolos en el historial del conductor.
 - Error de autenticación Google Login (Error 10 [28444]) mediante forzado de WebClientID.
 - Inconsistencias en el reset de asientos durante la rotación nocturna.
 - Memory leaks potenciales mediante la limpieza de listeners en Managers y Adapters.

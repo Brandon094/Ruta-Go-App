@@ -55,4 +55,20 @@ Para mantener la identidad visual de Ruta-Go, las notificaciones se configuran c
 *   **Prioridad**: Canal de "Alta Prioridad" con vibración y sonido activados por defecto para asegurar la atención del conductor.
 
 ---
+
+## 🛠️ 6. Blindaje en Producción (Release)
+Para asegurar que el flujo C2C (Client-to-Client) funcione correctamente tras la ofuscación de código, es obligatorio mantener las reglas de ProGuard para las librerías de autenticación:
+
+```proguard
+# Google Auth & FCM v1 Client
+-keep class com.google.auth.** { *; }
+-keep class com.google.api.client.** { *; }
+-dontwarn com.google.auth.**
+
+# OkHttp3 (Transporte)
+-keepattributes Signature, *Annotation*
+-keep class okhttp3.** { *; }
+```
+
+---
 **Chop Code Solutions - Ingeniería de Comunicaciones v1.3.0**

@@ -17,7 +17,8 @@ Las funciones están implementadas en **Node.js 18+** utilizando el SDK de **Fir
 Es el proceso más crítico del sistema. Se encarga de preparar la logística para el día siguiente.
 
 *   **Ejecución**: Todos los días a las **7:00 PM** (Hora Bogotá).
-*   **Lógica de Escalafón**: Implementa un ciclo de 9 días donde los conductores rotan sus horarios. Esto asegura una distribución equitativa de los turnos de mayor demanda.
+*   **Lógica de Escalafón**: Implementa un ciclo de 9 días donde los conductores rotan sus horarios.
+*   **Integridad de Asignación**: Utiliza un `Set` de JavaScript (`horariosAsignadosSet`) para registrar cada horario procesado. Esto evita colisiones con el proceso de limpieza de horarios huérfanos, garantizando que solo se borren los turnos que realmente no recibieron un conductor.
 *   **Reset de Inventario**:
     *   Consulta la capacidad técnica de cada vehículo en el nodo `/vehiculos/`.
     *   Limpia el nodo `/disponibilidadAsientos/` reseteando los ocupados a `null` y los disponibles a la capacidad real del bus.

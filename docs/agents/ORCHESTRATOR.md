@@ -9,7 +9,7 @@
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única (Firebase Auth) se mantenga inviolable.
 3.  **Gestión de Ramas (Branching)**: 
     *   `master`: Código estable Freemium (v1.3.0).
-    *   `feature/premium`: Desarrollo de monetización, SaaS y fidelización.
+    *   `feature/premium`: Desarrollo de monetización, SaaS, fidelización y optimización v1.3.0 Optimized.
 4.  **Consistencia del Holding**: Verificar que cada nueva funcionalidad aporte valor a **ChopCode Solutions**.
 
 ---
@@ -28,6 +28,21 @@ Para operar con eficacia, todos los agentes deben consultar y sincronizar con la
 3.  **Arquitectura**: [Motores y Módulos](../technical/ARCHITECTURE_MODULES.md).
 4.  **Código**: [Guías de Desarrollo](../technical/DEVELOPER_GUIDELINES.md) y [Diccionario de Datos](../technical/DICCIONARIO_DATOS.md).
 5.  **Estado Actual**: [Historial de Cambios](../operations/CHANGELOG.md).
+
+---
+
+## 🚨 Bitácora de Crisis y Hotfixes (Julio 2026)
+Registro de eventos críticos que amenazaron la estabilidad de la Fase Premium v1.3.0:
+
+1.  **Bug de Rotación (Pérdida de ID)**:
+    *   *Problema*: Colisión lógica borraba asignaciones de conductores a las 7:00 PM.
+    *   *Solución*: Implementación de `Set` de asignación atómica en Cloud Functions. ✅
+2.  **Silencio de Notificaciones en Release**:
+    *   *Problema*: ProGuard eliminaba librerías de Google Auth en AAB/APK.
+    *   *Solución*: Inyección de reglas de preservación (`-keep`) para OAuth2 y OkHttp3. ✅
+3.  **Fallo de Compilación Premium**:
+    *   *Problema*: `DriverHistoryViewModel` invocaba métodos inexistentes en el servicio.
+    *   *Solución*: Implementación de `getAdvancedStats` con filtrado por rango de fechas. ✅
 
 ---
 **ChopCode Solutions - Inteligencia de Gestión 2026**
