@@ -4,7 +4,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.3.0] - 2026-07-13 (Android 15 Optimized Edition)
+## [1.3.0] - 2026-07-13 (Android 15 Optimized Edition - Play Store Release)
 ### Añadido
 - **Soporte Android 15 (SDK 35)**: Cumplimiento total con las nuevas políticas de Google Play.
 - **Experiencia Edge-to-Edge**: Implementación de pantalla de borde a borde para una interfaz moderna y fluida.
