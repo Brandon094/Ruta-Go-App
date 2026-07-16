@@ -47,7 +47,8 @@ Proceso serverless programado para la orquestación de la logística regional.
     *   Se vincula el `conductorId` al horario físico.
     *   Se recupera la `capacidad` del vehículo desde el nodo `/vehiculos/` para resetear el inventario técnico.
 4.  **Reset de Inventario**: Se limpia el nodo de ocupación y se establece `totalAsientos = capacidad_real_del_bus`.
-5.  **Notificación Multicast**: Se despacha un mensaje FCM v1 a todos los pasajeros informando la apertura de ventas.
+5.  **Limpieza de Huérfanos**: El sistema identifica qué horarios no recibieron asignación en el escalafón actual y limpia su `conductorId` e inventario para evitar datos residuales.
+6.  **Notificación Multicast**: Se despacha un mensaje FCM v1 a todos los pasajeros informando la apertura de ventas.
 
 ---
 

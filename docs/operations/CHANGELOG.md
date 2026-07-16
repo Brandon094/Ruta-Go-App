@@ -19,6 +19,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
     - Manual de Gestión de Datos y Cumplimiento Legal (Habeas Data).
 
 ### Corregido
+- **Pérdida de `conductorId`**: Corregida la colisión lógica en la Cloud Function `automatedRotation` que borraba las asignaciones de conductores durante la rotación nocturna.
 - Error de autenticación Google Login (Error 10 [28444]) mediante forzado de WebClientID.
 - Inconsistencias en el reset de asientos durante la rotación nocturna.
 - Memory leaks potenciales mediante la limpieza de listeners en Managers y Adapters.

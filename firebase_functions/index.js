@@ -84,6 +84,7 @@ exports.automatedRotation = onSchedule({
         conductoresParaRotar.sort((a, b) => a.id.localeCompare(b.id));
 
         const updates = {};
+        const horariosAsignadosSet = new Set();
         const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
         const notificationPromises = [];
         const dispUpdates = {};
@@ -93,7 +94,10 @@ exports.automatedRotation = onSchedule({
             const horariosFijos = ["h005", "h015"];
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
             updates[`conductores/${brayanId}/status`] = "active";
-            horariosFijos.forEach(hId => { updates[`horarios/${hId}/conductorId`] = brayanId; });
+            horariosFijos.forEach(hId => {
+                updates[`horarios/${hId}/conductorId`] = brayanId;
+                horariosAsignadosSet.add(hId);
+            });
         }
 
         // 3. ALGORITMO DE ESCALAFÓN Y RESET DE CAPACIDAD DINÁMICO
@@ -114,6 +118,7 @@ exports.automatedRotation = onSchedule({
 
             misHorarios.forEach(hId => {
                 updates[`horarios/${hId}/conductorId`] = c.id;
+                horariosAsignadosSet.add(hId);
                 // Reset atómico de la disponibilidad de asientos
                 dispUpdates[`${hId}/asientosOcupados`] = null;
                 dispUpdates[`${hId}/asientosDisponibles`] = capacidadReal;
@@ -138,7 +143,7 @@ exports.automatedRotation = onSchedule({
         // 4. LIMPIEZA DE HORARIOS SIN CONDUCTOR (Turnos sobrantes)
         horariosSnap.forEach(hSnap => {
             const hId = hSnap.key;
-            if (!dispUpdates[hId]) {
+            if (!horariosAsignadosSet.has(hId)) {
                 updates[`horarios/${hId}/conductorId`] = "";
                 dispUpdates[`${hId}/asientosOcupados`] = null;
                 dispUpdates[`${hId}/asientosDisponibles`] = 0;
