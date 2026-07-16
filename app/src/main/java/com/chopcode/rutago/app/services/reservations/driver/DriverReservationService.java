@@ -128,6 +128,50 @@ public class DriverReservationService {
     }
 
     /**
+     * Motor de búsqueda avanzada con filtrado temporal para usuarios Premium.
+     */
+    public void getAdvancedStats(String driverUID, long start, long end, CompleteStatsCallback callback) {
+        DatabaseReference ref = MyApp.getDatabaseReference("reservas");
+        ref.orderByChild("driverId").equalTo(driverUID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                CompleteDriverStats stats = new CompleteDriverStats();
+                List<Reservation> all = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Reservation r = ds.getValue(Reservation.class);
+                    if (r != null) {
+                        r.setIdReservation(ds.getKey());
+                        long resDate = r.getReservationDate();
+                        
+                        if (resDate >= start && resDate <= end) {
+                            all.add(r);
+                            String status = r.getReservationStatus();
+                            double price = r.getPrice();
+                            stats.totalReservations++;
+                            
+                            if ("Confirmada".equalsIgnoreCase(status)) {
+                                stats.confirmedReservations++;
+                                stats.totalEarnings += price;
+                                stats.confirmedReservationsList.add(r);
+                            } else if ("Cancelada".equalsIgnoreCase(status)) {
+                                stats.canceledReservations++;
+                                stats.canceledReservationsList.add(r);
+                            } else if ("Por confirmar".equalsIgnoreCase(status)) {
+                                stats.pendingReservations++;
+                                stats.pendingReservationsList.add(r);
+                            }
+                        }
+                    }
+                }
+                Collections.sort(all, (r1, r2) -> Long.compare(r2.getReservationDate(), r1.getReservationDate()));
+                stats.allReservations = all;
+                callback.onCompleteStatsLoaded(stats);
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) { callback.onError(error.getMessage()); }
+        });
+    }
+
+    /**
      * Establece una suscripción reactiva optimizada para el Dashboard operativo.
      * @return El listener para su posterior remoción.
      */

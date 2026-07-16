@@ -33,3 +33,16 @@
 
 # --- Multidex ---
 -keep class androidx.multidex.** { *; }
+
+# --- Google Auth Library (Para FCM V1 C2C) ---
+-keep class com.google.auth.** { *; }
+-keep class com.google.api.client.** { *; }
+-keep class com.google.api.services.** { *; }
+-dontwarn com.google.auth.**
+-dontwarn com.google.api.client.**
+
+# --- OkHttp3 (Usado para el envío) ---
+-keepattributes Signature, *Annotation*
+-keep class okhttp3.** { *; }
+-keep interface okhttp3.** { *; }
+-dontwarn okhttp3.**

@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 /**
- * 🔑 Login ViewModel
+ * Login ViewModel
  *
  * Orquestador de los flujos de autenticación (Email y Google One Tap).
  * Responsabilidades:
