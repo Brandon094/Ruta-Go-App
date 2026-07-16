@@ -8,6 +8,7 @@
 1.  **Vigilancia del Roadmap**: Priorizar el desarrollo de la Fase Premium y la integración de pasarelas de pago.
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única (Firebase Auth) se mantenga inviolable.
 3.  **Gestión de Ramas (Branching)**: 
+    *   `v1.3.0` (Tag): Lanzamiento oficial en Play Store (Estable).
     *   `master`: Código estable Freemium (v1.3.0).
     *   `feature/premium`: Desarrollo de monetización, SaaS, fidelización y optimización v1.3.0 Optimized.
 4.  **Consistencia del Holding**: Verificar que cada nueva funcionalidad aporte valor a **ChopCode Solutions**.
