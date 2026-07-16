@@ -5,8 +5,8 @@
 ---
 
 ## 🧭 Responsabilidades Estratégicas
-1.  **Vigilancia del Roadmap**: Priorizar el desarrollo de la Fase Premium y la integración de pasarelas de pago.
-2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única (Firebase Auth) se mantenga inviolable.
+1.  **Vigilancia del Roadmap**: Priorizar el desacoplamiento Vehículo-Conductor y el Dashboard de Dueños (Fase 2).
+2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única soporte el nuevo rol de `OWNER`.
 3.  **Gestión de Ramas (Branching)**: 
     *   `v1.3.0` (Tag): Lanzamiento oficial en Play Store (Estable).
     *   `master`: Código estable Freemium (v1.3.0).
@@ -44,6 +44,9 @@ Registro de eventos críticos que amenazaron la estabilidad de la Fase Premium v
 3.  **Fallo de Compilación Premium**:
     *   *Problema*: `DriverHistoryViewModel` invocaba métodos inexistentes en el servicio.
     *   *Solución*: Implementación de `getAdvancedStats` con filtrado por rango de fechas. ✅
+4.  **Inconsistencia de Login de Google**:
+    *   *Problema*: El login fallaba en producción por falta de SHA-1 de la Play Store.
+    *   *Solución*: Sincronización de llaves de integridad en la consola de Firebase. ✅
 
 ---
 **ChopCode Solutions - Inteligencia de Gestión 2026**

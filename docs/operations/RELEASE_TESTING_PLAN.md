@@ -32,6 +32,7 @@ Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad,
 | 2.1 | Reserva Atómica | Intentar reservar el mismo asiento desde dos dispositivos a la vez. | Firebase debe abortar una transacción y el app mostrar el error controlado. |
 | 2.2 | Sincronización de Capacidad | Cambiar la capacidad de un vehículo en el nodo `/vehiculos`. | Los horarios vinculados deben actualizar su disponibilidad automáticamente. |
 | 2.3 | Deep Linking FCM | Enviar un mensaje de chat y tocar la notificación. | El app debe abrir directamente la `ChatActivity` con el ID de reserva correcto. |
+| 2.4 | Blindaje C2C (ProGuard) | Probar envío de notificaciones en un AAB/APK firmado (Release). | Las notificaciones deben llegar correctamente (Valida las reglas de ProGuard para Google Auth). |
 
 ---
 
@@ -40,7 +41,7 @@ Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad,
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 3.1 | Automated Rotation | Ejecutar manualmente la función en Firebase Console. | Se deben redistribuir los turnos, resetear asientos y enviar Pushes masivos. |
+| 3.1 | Automated Rotation | Ejecutar manualmente la función en Firebase Console. | Se deben redistribuir los turnos y resetear asientos. **Verificar que el conductorId persista en los horarios asignados** (Valida el Set de integridad). |
 | 3.2 | Cleanup Grace Period | Marcar cuenta para borrado y esperar (o forzar timestamp). | Tras 30 días, la cuenta debe desaparecer de Auth y DB permanentemente. |
 
 ---

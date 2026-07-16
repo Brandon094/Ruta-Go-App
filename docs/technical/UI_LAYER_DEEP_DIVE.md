@@ -48,4 +48,13 @@ La capa de UI integra estándares de diseño modernos:
 Se utiliza el **`ReservationStateManager`** para asegurar que si un usuario rota su teléfono mientras elige un asiento o llena sus datos, la información no se pierda. La UI se reconstruye a partir de un Bundle serializado, manteniendo la integridad del flujo.
 
 ---
+
+## 👑 6. Dashboard de Dueños (Fase 2 - Prioridad)
+Módulo administrativo diseñado para la gestión de flotas a gran escala.
+
+*   **OwnerHomeActivity**: Centralizador de métricas financieras y estados de vehículos.
+*   **VehicleDetailActivity**: Ficha técnica detallada (SOAT, Kilometraje, Próximo Mantenimiento).
+*   **DriverAssignmentDialog**: Interfaz para vincular conductores a vehículos de forma dinámica.
+
+---
 **Chop Code Solutions - Documentación de Ingeniería v1.3.0**

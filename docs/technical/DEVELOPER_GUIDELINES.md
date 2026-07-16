@@ -43,7 +43,11 @@ Ruta-Go se rige por el desacoplamiento total entre lógica y representación.
 ### 4.1 Resiliencia de Red
 *   Es obligatorio el uso de `NetworkMonitor` antes de iniciar transacciones críticas para informar al usuario sobre micro-desconexiones rurales.
 
-### 4.2 Logging y Telemetría
+### 4.2 Integridad de Lanzamiento (Release Integrity)
+*   **ProGuard**: Al añadir librerías externas (ej: Google Auth), es mandatorio actualizar `proguard-rules.pro` para evitar la eliminación de código en compilaciones de producción.
+*   **Firmas SHA**: Asegurar que las llaves SHA-1 de Debug y Release (Play Store) estén siempre registradas en Firebase para no interrumpir el flujo de notificaciones y login social.
+
+### 4.3 Logging y Telemetría
 *   **Crashlytics**: Todo bloque `catch` de una excepción crítica debe ser reportado vía `MyApp.logError()`.
 *   **Analytics**: Cada paso del embudo de conversión (Reserva) debe registrarse mediante los `AnalyticsHelpers` correspondientes.
 

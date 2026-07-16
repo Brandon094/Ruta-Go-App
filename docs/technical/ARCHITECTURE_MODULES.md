@@ -40,8 +40,9 @@ Implementamos una variante avanzada del patrón **MVVM (Model-View-ViewModel)**,
 ## 🎫 3. Motores de Negocio Desacoplados
 Ruta-Go separa las "reglas de oro" de la infraestructura técnica:
 
-*   **Integridad Atómica**: El uso de `runTransaction()` en la capa de servicios asegura que el decremento de asientos y la marca de ocupación ocurran como una única unidad lógica en el servidor, eliminando condiciones de carrera.
+*   **Integridad Atómica**: El uso de `runTransaction()` en la capa de servicios asegura la consistencia de inventario. En el servidor (Cloud Functions), implementamos lógica basada en `Sets` de asignación para garantizar que los procesos masivos de rotación no generen colisiones ni pérdida de identificadores.
 *   **Validación de Salto**: El `ReservationDataProcessor` actúa como un guardián de calidad, verificando la consistencia de los datos antes de permitir la navegación hacia la pasarela de confirmación.
+*   **Comunicación C2C (Client-to-Client)**: El sistema implementa un flujo de notificaciones proactivas basado en FCM v1 y OAuth2, permitiendo que las aplicaciones se comuniquen entre sí (ej: Pasajero -> Conductor) sin depender de un trigger en el servidor, optimizando la respuesta.
 
 ---
 
@@ -58,6 +59,7 @@ La arquitectura está alineada con los estándares modernos de Google:
 *   **16 KB Page Alignment**: Soporte para binarios en procesadores de próxima generación.
 *   **Predictive Back**: Gestión de navegación compatible con gestos predictivos de Android.
 *   **Privacy First**: AD_ID desactivado y permisos de notificación (API 33+) gestionados proactivamente.
+*   **Release Integrity**: Blindaje mediante reglas de ProGuard específicas para OAuth2 y sincronización de firmas SHA (Debug/Play Store) para garantizar la continuidad de servicios en producción.
 
 ---
 

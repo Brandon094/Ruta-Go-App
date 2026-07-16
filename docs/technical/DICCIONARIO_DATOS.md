@@ -12,23 +12,36 @@ Almacena el perfil profesional y el estado operativo de los conductores.
 | `nombre` | `name` | String | Nombre legal del operador. |
 | `email` | `email` | String | Correo electrónico vinculado. |
 | `telefono` | `phone` | String | Línea de contacto directo. |
-| `placaVehiculo` | `vehiclePlate` | String | Referencia al activo asignado. |
+| `placaVehiculo` | `vehiclePlate` | String | **(Legacy)** Referencia al activo. Se moverá a `/asignaciones/`. |
 | `horariosAsignados` | `assignedSchedules` | List<String> | IDs de turnos activos para la jornada. |
-| `status` | `status` | String | `active`, `inactive` (descanso), `blocked`. |
+| `status` | `status` | String | `active`, `inactive`, `blocked`. |
 | `tokenFCM` | `tokenFCM` | String | Identificador para notificaciones Push. |
 | `rating` | `rating` | Float | Calificación promedio histórica. |
 
 ---
 
-## 🚌 2. Nodo: `/vehiculos/`
-Especificaciones técnicas del parque automotor.
+## 👑 2. Nodo: `/dueños/` (Fase 2)
+Centraliza la propiedad de los activos y el acceso al Dashboard Business.
 
 | Campo (Firebase) | Atributo (Java) | Tipo | Descripción |
 |:---|:---|:---|:---|
-| `placa` | `plate` | String | Identificador primario (Clave del nodo). |
-| `modelo` | `model` | String | Marca y línea del vehículo. |
-| `capacidad` | `capacity` | Integer | Número máximo de plazas técnicas. |
-| `driverId` | `driverId` | String | UID del conductor propietario/asignado. |
+| `nombre` | `name` | String | Identidad del propietario. |
+| `email` | `email` | String | Cuenta de acceso administrativo. |
+| `vehiculos` | `vehicles` | List<String> | Lista de placas de su propiedad. |
+| `plan` | `plan` | String | `freemium`, `premium`. |
+
+---
+
+## 🚌 3. Nodo: `/vehiculos/`
+Especificaciones técnicas y vinculación de propiedad.
+
+| Campo (Firebase) | Atributo (Java) | Tipo | Descripción |
+|:---|:---|:---|:---|
+| `placa` | `plate` | String | Identificador primario. |
+| `modelo` | `model` | String | Marca y línea. |
+| `capacidad` | `capacity` | Integer | Número máximo de plazas. |
+| `dueñoId` | `ownerId` | String | UID del dueño (Referencia a `/dueños/`). |
+| `conductorActual` | `currentDriver` | String | UID del conductor asignado dinámicamente. |
 
 ---
 

@@ -13,7 +13,7 @@ Este documento detalla los requisitos funcionales, no funcionales y la integraci
 
 ## 🚌 2. Requisitos Ruta-Go (Movilidad)
 *   **RF-R01 (Reserva Atómica):** El pasajero debe poder reservar asientos con integridad transaccional (runTransaction) y latencia ultra-baja.
-*   **RF-R02 (SaaS para Conductores):** Los operadores premium accederán a analítica avanzada de rentabilidad y prioridad en la toma de turnos.
+*   **RF-R02 (SaaS Go Business):** El sistema proveerá un modelo Freemium para dueños de vehículos. El nivel gratuito permitirá el monitoreo básico de flota, mientras que la suscripción Premium habilitará contabilidad automatizada, alertas legales y prioridad de turnos.
 *   **RF-R03 (Loyalty):** El sistema debe otorgar Puntos Go por cada viaje finalizado para incentivar la recurrencia.
 *   **RF-R04 (Habeas Data):** El app debe proveer un flujo autónomo para la solicitud de borrado de cuenta cumpliendo con las políticas de Google Play.
 
