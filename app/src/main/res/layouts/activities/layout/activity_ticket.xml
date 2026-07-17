@@ -19,9 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/text_on_primary"
+            app:navigationIconTint="@color/text_on_secondary"
             app:title="@string/ticket_title"
-            app:titleTextColor="@color/text_on_primary" />
+            app:titleTextColor="@color/text_on_secondary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView

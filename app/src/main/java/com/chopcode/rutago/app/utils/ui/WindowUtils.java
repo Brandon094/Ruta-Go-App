@@ -78,6 +78,26 @@ public class WindowUtils {
     }
 
     /**
+     * Versión para Chat: Aplica insets que incluyen el teclado (IME).
+     * Asegura que la barra de entrada suba cuando el teclado aparece.
+     */
+    public static void applyChatInputInsets(View view) {
+        if (view == null) return;
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) return;
+
+        final int initialMarginBottom = ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).bottomMargin;
+
+        ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+            // Combinamos barras de sistema y el teclado (IME) para el soporte Android 15 Edge-to-Edge
+            Insets typeInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            params.bottomMargin = initialMarginBottom + typeInsets.bottom;
+            v.setLayoutParams(params);
+            return insets;
+        });
+    }
+
+    /**
      * Aplica los insets de las barras inferiores del sistema como margen a la vista especificada,
      * permitiendo definir un margen extra en DP que se sumará al inset.
      */

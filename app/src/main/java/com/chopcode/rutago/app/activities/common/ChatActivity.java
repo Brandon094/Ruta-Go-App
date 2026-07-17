@@ -162,6 +162,15 @@ public class ChatActivity extends AppCompatActivity {
      */
     private void setupInsets() {
         WindowUtils.applyTopInsetPadding(findViewById(R.id.appBar));
-        WindowUtils.applyBottomInsetMargin(findViewById(R.id.layoutInput));
+        // Usamos la nueva utilidad específica para Chat que incluye el teclado
+        View inputLayout = findViewById(R.id.layoutInput);
+        WindowUtils.applyChatInputInsets(inputLayout);
+
+        // Opcional: Desplazar el chat al final cuando el teclado cambie de estado
+        inputLayout.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom && adapter != null && adapter.getItemCount() > 0) {
+                rvChat.postDelayed(() -> rvChat.smoothScrollToPosition(adapter.getItemCount() - 1), 100);
+            }
+        });
     }
 }
