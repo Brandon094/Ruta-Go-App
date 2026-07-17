@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -13,6 +14,9 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +35,7 @@ import com.chopcode.rutago.app.utils.network.NetworkMonitor;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverStatsViewModel;
 import com.chopcode.rutago.app.viewmodels.driver.DriverProfileViewModel;
 import com.chopcode.rutago.app.viewmodels.driver.DriverRoutesViewModel;
@@ -115,6 +120,7 @@ public class DriverHomeActivity extends AppCompatActivity {
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
+        setupInsets();
         setupRecyclerView();
         setupButtons();
         setupObservers();
@@ -466,6 +472,14 @@ public class DriverHomeActivity extends AppCompatActivity {
                 UIAnimationUtils.startPulseAnimation(tvDriverStatusBadge);
                 break;
         }
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     @Override

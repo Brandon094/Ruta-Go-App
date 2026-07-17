@@ -2,12 +2,16 @@ package com.chopcode.rutago.app.activities.driver;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
+
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.adapters.onboarding.OnboardingAdapter;
 import com.chopcode.rutago.app.managers.core.settings.SessionManager;
 import com.chopcode.rutago.app.models.onboarding.OnboardingItem;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
@@ -22,6 +26,7 @@ public class DriverOnboardingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
@@ -31,6 +36,7 @@ public class DriverOnboardingActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         btnSkip = findViewById(R.id.btnSkip);
 
+        setupInsets();
         setupOnboardingItems();
         viewPager.setAdapter(onboardingAdapter);
         
@@ -81,6 +87,13 @@ public class DriverOnboardingActivity extends AppCompatActivity {
         ));
 
         onboardingAdapter = new OnboardingAdapter(onboardingItems);
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.layoutBottom));
     }
 
     private void finishOnboarding() {

@@ -18,6 +18,7 @@ import com.chopcode.rutago.app.activities.driver.editProfile.EditDriverProfileAc
 import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverProfileViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
@@ -70,6 +71,7 @@ public class DriverProfileActivity extends AppCompatActivity {
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         inicializarVistas();
+        setupInsets();
         setupObservers();
         setupBottomNavigation();
 
@@ -217,6 +219,14 @@ public class DriverProfileActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(true)).commit();
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.headerContent));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     @Override protected void onResume() { super.onResume(); cargarDatos(); }

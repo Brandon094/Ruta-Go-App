@@ -22,6 +22,7 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerHistoryViewModel;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.chip.ChipGroup;
@@ -75,6 +76,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(PassengerHistoryViewModel.class);
 
         initViews();
+        setupInsets();
         setupToolbar();
         setupRecyclerView();
         setupListeners();
@@ -106,6 +108,14 @@ public class ReservationHistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setTitle(R.string.historial_reservas);
         }
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     private void setupRecyclerView() {

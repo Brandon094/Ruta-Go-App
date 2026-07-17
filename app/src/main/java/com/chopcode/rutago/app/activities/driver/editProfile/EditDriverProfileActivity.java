@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -15,6 +16,7 @@ import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Driver;
 import com.chopcode.rutago.app.models.Vehicle;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.driver.EditDriverProfileViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
@@ -52,6 +54,7 @@ public class EditDriverProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Starting EditDriverProfileActivity");
         setContentView(R.layout.activity_editar_perfil);
@@ -65,6 +68,7 @@ public class EditDriverProfileActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(EditDriverProfileViewModel.class);
 
         inicializarVistas();
+        setupInsets();
         setupObservers();
         setupListeners();
 
@@ -162,6 +166,13 @@ public class EditDriverProfileActivity extends AppCompatActivity {
         btnCancelar.setOnClickListener(v -> finish());
 
         btnGuardarCambios.setOnClickListener(v -> procesarGuardado());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
     }
 
     private void procesarGuardado() {

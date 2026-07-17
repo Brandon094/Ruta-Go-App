@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.activities.passenger.editProfile;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.managers.core.auth.AuthManager;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.passenger.EditProfileViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -42,6 +44,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Starting EditProfileActivity");
         setContentView(R.layout.activity_editar_perfil_pasajero);
@@ -55,6 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(EditProfileViewModel.class);
 
         inicializarVistas();
+        setupInsets();
         setupObservers();
         setupListeners();
 
@@ -113,6 +117,13 @@ public class EditProfileActivity extends AppCompatActivity {
             viewModel.updateProfile(name, phone);
         });
         btnCancelar.setOnClickListener(v -> finish());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
     }
 
     @Override

@@ -4,9 +4,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
@@ -51,6 +57,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 Iniciando gestión de asientos operativa.");
         setContentView(R.layout.activity_gestionar_asientos);
@@ -62,6 +69,7 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         viewModel.fetchRoutePrice(routeName);
         
         initViews();
+        setupInsets();
         setupManagers();
         setupObservers();
         
@@ -87,6 +95,17 @@ public class ManageSeatsActivity extends AppCompatActivity implements SeatManage
         
         setSupportActionBar(topAppBar);
         topAppBar.setNavigationOnClickListener(v -> finish());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appBarLayout), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, systemBars.top, 0, 0);
+            return insets;
+        });
     }
 
     private void setupManagers() {

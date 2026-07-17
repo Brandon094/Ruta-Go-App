@@ -22,6 +22,7 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.core.auth.AuthManager;
 import com.chopcode.rutago.app.viewmodels.driver.DriverHistoryViewModel;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -73,6 +74,7 @@ public class DriverHistoryActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(DriverHistoryViewModel.class);
 
         initViews();
+        setupInsets();
         setupToolbar();
         setupRecyclerView();
         setupChips();
@@ -103,6 +105,14 @@ public class DriverHistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setTitle(R.string.historial_reservas);
         }
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     private void setupRecyclerView() {

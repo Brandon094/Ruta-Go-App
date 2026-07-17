@@ -21,6 +21,7 @@ import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.passenger.UserProfileViewModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.card.MaterialCardView;
@@ -77,6 +78,7 @@ public class UserProfileActivity extends AppCompatActivity {
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         inicializarVistas();
+        setupInsets();
         setupObservers();
         setupBottomNavigation();
 
@@ -229,6 +231,14 @@ public class UserProfileActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bottom_nav_container, BottomNavFragment.newInstance(false)).commit();
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.headerContent));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     @Override

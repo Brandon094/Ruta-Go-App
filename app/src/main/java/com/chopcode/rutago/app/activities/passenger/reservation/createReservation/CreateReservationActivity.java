@@ -1,10 +1,16 @@
 package com.chopcode.rutago.app.activities.passenger.reservation.createReservation;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,6 +30,7 @@ import com.chopcode.rutago.app.managers.ui.reservations.common.ReservationUserMa
 import com.chopcode.rutago.app.managers.ui.reservations.creation.ReservationNavigationManager;
 import com.chopcode.rutago.app.managers.ui.reservations.creation.ReservationStateManager;
 import com.chopcode.rutago.app.managers.ui.common.ExpandableSectionManager;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.HashMap;
@@ -75,6 +82,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         analyticsHelper = new ReservationAnalyticsHelper("CreateReservation");
         viewModel = new ViewModelProvider(this).get(CreateReservationViewModel.class);
@@ -90,6 +98,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
 
         getIntentData();
         initViews();
+        setupInsets();
         setupToolbar();
         setupBasicInfo();
         setupViewModelObservers();
@@ -196,6 +205,14 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         topAppBar.setNavigationOnClickListener(v -> goBack());
     }
 
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.selectedSeatCardView), 16);
+    }
+
     private void goBack() {
         reservationNavigationManager.handleBackAction(new ReservationNavigationManager.NavigationCallback() {
             @Override public void onConfirmNavigation() { finish(); }
@@ -257,5 +274,7 @@ public class CreateReservationActivity extends AppCompatActivity implements Seat
         if (expandableSectionManager != null) expandableSectionManager.cleanup();
     }
 
-    @Override public void onBackPressed() { reservationNavigationManager.logPhysicalBackButton(); goBack(); }
+    @Override public void onBackPressed() {
+        super.onBackPressed();
+        reservationNavigationManager.logPhysicalBackButton(); goBack(); }
 }

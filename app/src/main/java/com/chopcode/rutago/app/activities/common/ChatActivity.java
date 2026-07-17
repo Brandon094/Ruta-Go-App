@@ -2,14 +2,22 @@ package com.chopcode.rutago.app.activities.common;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.adapters.chat.ChatAdapter;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.common.ChatViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,6 +40,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         try {
             android.util.Log.e("ChatActivity", "🚩 onCreate INICIADO");
@@ -76,6 +85,7 @@ public class ChatActivity extends AppCompatActivity {
                 android.util.Log.d("ChatActivity", "📦 Inicializando ViewModel y Views");
                 viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
                 initViews();
+                setupInsets();
                 setupRecyclerView();
                 setupObservers();
             }
@@ -145,5 +155,13 @@ public class ChatActivity extends AppCompatActivity {
         viewModel.getError().observe(this, err -> {
             if (err != null) Toast.makeText(this, getString(R.string.error_prefijo, err), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBar));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.layoutInput));
     }
 }

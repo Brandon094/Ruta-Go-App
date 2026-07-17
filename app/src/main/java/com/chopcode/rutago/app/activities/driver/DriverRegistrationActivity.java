@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Schedule;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.driver.DriverRegistrationViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -44,6 +45,7 @@ public class DriverRegistrationActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(DriverRegistrationViewModel.class);
 
         initViews();
+        setupInsets();
         setupObservers();
         setupListeners();
         
@@ -159,6 +161,13 @@ public class DriverRegistrationActivity extends AppCompatActivity {
                 viewModel.registerDriver(name, email, phone, pass, plate, model, year, capacity, selectedIdIda, selectedIdVuelta);
             }
         });
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
     }
 
     private boolean validateFields(String name, String email, String plate, String model, String year, String cap, String pass) {

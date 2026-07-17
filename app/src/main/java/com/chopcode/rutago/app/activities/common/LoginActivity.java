@@ -12,6 +12,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -21,6 +22,9 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
@@ -31,6 +35,7 @@ import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.core.permissions.PermissionManager;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.common.LoginViewModel;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -77,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.init(this);
 
         initViews();
+        setupInsets();
         setupObservers();
         setupListeners();
 
@@ -286,6 +292,13 @@ public class LoginActivity extends AppCompatActivity {
             view.setLayoutParams(p);
         }
         snackbar.show();
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyContentInsets(findViewById(android.R.id.content));
     }
 
     @Override

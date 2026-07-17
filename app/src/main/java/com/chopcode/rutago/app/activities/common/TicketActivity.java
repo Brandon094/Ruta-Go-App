@@ -4,13 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.models.Reservation;
 import com.chopcode.rutago.app.utils.ui.FormatUtils;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.card.MaterialCardView;
 
@@ -30,14 +38,17 @@ public class TicketActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket);
 
-        setupToolbar();
-        
-        // Obtenemos los datos pasados (pueden ser campos individuales o el objeto serializado)
-        // Por ahora usaremos campos individuales para mayor compatibilidad
+        initializeViews();
         displayTicketData(getIntent());
+    }
+
+    private void initializeViews() {
+        setupToolbar();
+        setupInsets();
     }
 
     private void setupToolbar() {
@@ -45,6 +56,14 @@ public class TicketActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(v -> finish());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.layoutTicketActions), 24);
     }
 
     private void displayTicketData(Intent intent) {

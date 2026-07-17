@@ -1,10 +1,15 @@
 package com.chopcode.rutago.app.activities.passenger.reservation.confirmReservation;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +22,7 @@ import com.chopcode.rutago.app.managers.core.analytics.ReservationAnalyticsHelpe
 import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationUIManager;
 import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationAnalyticsHelper;
 import com.chopcode.rutago.app.managers.ui.reservations.confirmation.ConfirmationDialogManager;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
@@ -54,6 +60,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 Iniciando etapa final de confirmación.");
 
@@ -67,6 +74,7 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
+        setupInsets();
         setupObservers();
         viewModel.processIntent(getIntent());
 
@@ -97,6 +105,14 @@ public class ConfirmReservationActivity extends AppCompatActivity implements
 
         btnConfirmReservation.setOnClickListener(v -> viewModel.confirmReservation());
         btnCancel.setOnClickListener(v -> dialogManager.showCancellationDialog(this));
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.layoutBtnConfirmacion), 24);
     }
 
     /**

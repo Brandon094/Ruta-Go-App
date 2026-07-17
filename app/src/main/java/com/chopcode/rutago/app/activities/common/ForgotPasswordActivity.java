@@ -4,12 +4,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
@@ -37,6 +42,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Starting recovery flow");
         setContentView(R.layout.activity_recuperar_contrasena);
@@ -44,6 +50,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ForgotPasswordViewModel.class);
 
         initViews();
+        setupInsets();
         setupToolbar();
         setupObservers();
         setupListeners();
@@ -91,6 +98,17 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             if (validateEmail(email)) viewModel.sendResetEmail(email);
         });
         btnUnderstood.setOnClickListener(v -> finish());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appBarLayout), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, systemBars.top, 0, 0);
+            return insets;
+        });
     }
 
     private boolean validateEmail(String email) {

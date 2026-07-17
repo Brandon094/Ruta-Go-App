@@ -17,12 +17,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.common.RegistrationViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -61,6 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 onCreate - Starting registration flow");
         setContentView(R.layout.activity_registro_usuarios);
@@ -68,6 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(RegistrationViewModel.class);
 
         initViews();
+        setupInsets();
         setupObservers();
         setupListeners();
     }
@@ -133,6 +137,13 @@ public class RegistrationActivity extends AppCompatActivity {
         });
 
         topAppBar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
     }
 
     private void setupTermsAndConditionsLink() {

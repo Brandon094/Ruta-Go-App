@@ -2,12 +2,16 @@ package com.chopcode.rutago.app.activities.passenger;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,6 +29,7 @@ import com.chopcode.rutago.app.models.User;
 import com.chopcode.rutago.app.utils.network.NetworkMonitor;
 import com.chopcode.rutago.app.utils.ui.ImageUtils;
 import com.chopcode.rutago.app.utils.ui.UIAnimationUtils;
+import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.passenger.PassengerProfileViewModel;
 import com.chopcode.rutago.app.viewmodels.passenger.ScheduleViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -86,6 +91,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
         tutorialManager = new com.chopcode.rutago.app.managers.ui.tutorials.TutorialManager(this);
 
         initializeViews();
+        setupInsets();
         setupObservers();
 
         profileViewModel.init();
@@ -261,6 +267,14 @@ public class PassengerHomeActivity extends AppCompatActivity implements
             if (absPos > 0.5f) page.setVisibility(View.GONE);
             else page.setVisibility(View.VISIBLE);
         });
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
+        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
     }
 
     @Override

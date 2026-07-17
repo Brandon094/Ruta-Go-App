@@ -2,12 +2,16 @@ package com.chopcode.rutago.app.activities.common;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.adapters.onboarding.OnboardingAdapter;
@@ -37,6 +41,7 @@ public class OnboardingActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         btnSkip = findViewById(R.id.btnSkip);
 
+        setupInsets();
         setupOnboardingItems();
         viewPager.setAdapter(onboardingAdapter);
         
@@ -87,6 +92,21 @@ public class OnboardingActivity extends AppCompatActivity {
         ));
 
         onboardingAdapter = new OnboardingAdapter(onboardingItems);
+    }
+
+    /**
+     * Gestiona los insets del sistema para evitar superposiciones con las barras de estado y navegación.
+     */
+    private void setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layoutBottom), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                params.bottomMargin = systemBars.bottom;
+                v.setLayoutParams(params);
+            }
+            return insets;
+        });
     }
 
     private void finishOnboarding() {
