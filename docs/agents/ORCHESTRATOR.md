@@ -8,9 +8,10 @@
 1.  **Vigilancia del Roadmap**: Priorizar el desacoplamiento Vehículo-Conductor y el Dashboard de Dueños (Fase 2).
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única soporte el nuevo rol de `OWNER`.
 3.  **Gestión de Ramas (Branching)**: 
-    *   `v1.3.0` (Tag): Lanzamiento oficial en Play Store (Estable).
-    *   `master`: Código estable Freemium (v1.3.0).
-    *   `feature/premium`: Desarrollo de monetización, SaaS, fidelización y optimización v1.3.0 Optimized.
+    *   `v1.4.0` (Tag): UI & Stability Master Edition (Estable actual).
+    *   `v1.3.0` (Tag): Lanzamiento oficial previo.
+    *   `master`: Código estable Freemium (v1.4.0).
+    *   `feature/premium`: Desarrollo de monetización, SaaS y Dashboard de Dueños.
 4.  **Consistencia del Holding**: Verificar que cada nueva funcionalidad aporte valor a **ChopCode Solutions**.
 
 ---

@@ -4,6 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.4.0] - 2026-07-16 (UI & Stability Master Edition)
+### Añadido
+- **Motor WindowUtils**: Nueva utilidad centralizada para la gestión de insets del sistema (Android 15 Ready).
+- **Inmersión Total Edge-to-Edge**: Implementación de interfaz fluida en todas las pantallas de la suite.
+- **Navegación Flotante Blindada**: Rediseño de la barra inferior con arquitectura de alturas fijas para evitar deformaciones en dispositivos con botones físicos.
+- **Gestión Avanzada de Teclado (IME)**: El chat ahora desplaza automáticamente la interfaz y realiza scroll al abrir el teclado.
+
+### Corregido
+- **Contraste de Tiquetes**: Ajuste de paleta de colores en la TopBar del tiquete digital para mejor legibilidad.
+- **Simetría de Interfaz**: Corregida la superposición de elementos con las barras de sistema en formularios de registro y edición de perfil.
+
+---
+
 ## [1.3.0] - 2026-07-13 (Android 15 Optimized Edition - Play Store Release)
 ### Añadido
 - **Soporte Android 15 (SDK 35)**: Cumplimiento total con las nuevas políticas de Google Play.

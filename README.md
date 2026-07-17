@@ -1,12 +1,14 @@
-# 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.3.0 Optimized 🚀
+# 🚍 Ruta-Go (Transporte Natagá - La Plata) | v1.4.0 Optimized 🚀
 
-**Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **Android 15 Ready** consolida una arquitectura reactiva, blindada y escalable, preparada para el despliegue comercial masivo bajo el ecosistema de **Chop Code Solutions**. ✨
+**Ruta-Go** es una plataforma tecnológica de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **UI & Stability Master Edition** consolida una arquitectura reactiva, blindada y escalable, preparada para el despliegue comercial masivo bajo el ecosistema de **Chop Code Solutions**. ✨
 
 ---
 
-## 🏆 Hitos de la Versión v1.3.0 (Android 15 Optimized)
-*   📱 **Compatibilidad Total**: Optimización nativa para Android 15 (SDK 35) y alineación de 16 KB para hardware de última generación.
-*   ✨ **Experiencia Premium**: Interfaz fluida de borde a borde (Edge-to-Edge) y sistema de micro-interacciones táctiles.
+## 🏆 Hitos de la Versión v1.4.0 (UI & Stability Master)
+*   🎨 **Experiencia Inmersiva Total**: Soporte integral Edge-to-Edge nativo en toda la suite mediante el nuevo motor `WindowUtils`.
+*   🛡️ **Arquitectura de Interfaz Blindada**: Rediseño de componentes críticos para garantizar la integridad visual en dispositivos con navegación por botones o gestos.
+*   ⌨️ **Gestión de Teclado Inteligente**: El flujo de chat ahora es totalmente fluido, adaptando la interfaz dinámicamente a la apertura del teclado (IME).
+*   📱 **Compatibilidad Android 15**: Optimización nativa (SDK 35) y alineación de 16 KB para hardware de última generación.
 *   🔔 **Comunicación C2C**: Motor de notificaciones en tiempo real basado en **FCM v1 y OAuth2**, permitiendo interacción directa entre pasajero y conductor.
 *   🛡️ **Blindaje de Datos**: Implementación del flujo de "Derecho al Olvido" (Habeas Data) y reglas NoSQL de alta granularidad.
 *   📖 **Full Documentation**: 100% del código fuente documentado con manuales técnicos de inmersión profunda.
@@ -40,7 +42,7 @@
 | 🎨 **UI/UX** | [**Guía de Componentes**](./docs/product/COMPONENT_GUIDE.md) | Catálogo visual Material 3 y estándares estéticos. |
 | 🛡️ **Legal** | [**Gestión de Datos**](./docs/legal/DATA_MANAGEMENT_MANUAL.md) | Protocolos de privacidad, borrado y Habeas Data. |
 | 🏁 **Calidad** | [**Plan de Pruebas**](./docs/operations/RELEASE_TESTING_PLAN.md) | Protocolo de certificación QA para Android 15. |
-| 📜 **Historial** | [**Changelog Oficial**](./docs/operations/CHANGELOG.md) | Registro histórico de la evolución v1.0 a v1.3. |
+| 📜 **Historial** | [**Changelog Oficial**](./docs/operations/CHANGELOG.md) | Registro histórico de la evolución v1.0 a v1.4. |
 
 ---
 
