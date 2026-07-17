@@ -31,7 +31,8 @@ public class WindowUtils {
 
     /**
      * Aplica los insets de las barras inferiores del sistema como padding a la vista especificada.
-     * Es más estable que el margen para evitar que los componentes internos se aplasten.
+     * Esta versión es ideal para contenedores de navegación (Bottom Navigation), ya que crea
+     * un espacio en la base sin deformar el contenido interno.
      */
     public static void applyBottomInsetPadding(View view) {
         if (view == null) return;
@@ -39,6 +40,20 @@ public class WindowUtils {
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), initialPaddingBottom + systemBars.bottom);
+            return insets;
+        });
+    }
+
+    /**
+     * Versión avanzada para navegación flotante que asegura que la vista siempre mantenga
+     * un margen mínimo respecto a la barra de Android.
+     */
+    public static void applyFloatingNavigationInsets(View container) {
+        if (container == null) return;
+        ViewCompat.setOnApplyWindowInsetsListener(container, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Aplicamos padding al contenedor para "subir" el fragmento completo
+            v.setPadding(0, 0, 0, systemBars.bottom);
             return insets;
         });
     }

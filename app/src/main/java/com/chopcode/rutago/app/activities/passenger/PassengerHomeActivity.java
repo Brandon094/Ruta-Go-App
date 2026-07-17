@@ -274,7 +274,7 @@ public class PassengerHomeActivity extends AppCompatActivity implements
      */
     private void setupInsets() {
         WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
-        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
+        WindowUtils.applyBottomInsetPadding(findViewById(R.id.bottom_nav_container));
     }
 
     @Override

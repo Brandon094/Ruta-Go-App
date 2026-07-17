@@ -115,7 +115,7 @@ public class ReservationHistoryActivity extends AppCompatActivity {
      */
     private void setupInsets() {
         WindowUtils.applyTopInsetPadding(findViewById(R.id.appBarLayout));
-        WindowUtils.applyBottomInsetMargin(findViewById(R.id.bottom_nav_container));
+        WindowUtils.applyBottomInsetPadding(findViewById(R.id.bottom_nav_container));
     }
 
     private void setupRecyclerView() {
