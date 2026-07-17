@@ -17,6 +17,7 @@ Ubicadas en `com.chopcode.rutago.app.utils.ui`:
 
 *   **`FormatUtils`**: El motor de transformación de datos. Maneja precios (COP), fechas, horas 12h/24h y normalización de texto para comparaciones lógicas.
 *   **`UIAnimationUtils`**: Centraliza todas las micro-interacciones. Incluye animaciones de tarjetas, conteos progresivos de dinero y el "baile" de los asientos.
+*   **`WindowUtils`**: El guardián de la experiencia inmersiva. Gestiona la aplicación de insets del sistema para el soporte Edge-to-Edge, asegurando que los componentes respiren correctamente bajo las barras de estado y navegación sin deformarse.
 *   **`ImageUtils`**: Fachada para Glide. Gestiona el caché de fotos de perfil y el motor de captura de pantalla para compartir tiquetes.
 
 ---

@@ -37,7 +37,8 @@ Los adaptadores en Ruta-Go no solo pintan datos, implementan lógica visual avan
 
 ## ✨ 4. Experiencia de Usuario (UX) Premium
 La capa de UI integra estándares de diseño modernos:
-*   **Edge-to-Edge**: Uso total de la pantalla en Android 15 (SDK 35).
+*   **Edge-to-Edge Nativo**: Implementación integral del soporte para Android 15. Las vistas ocupan el 100% de la superficie de pantalla, con gestión inteligente de insets vía `WindowUtils` para evitar solapamientos.
+*   **Navegación Flotante Blindada**: Uso de arquitecturas de altura fija en fragmentos de navegación inferior para garantizar simetría e integridad visual incluso con barras de navegación de sistema activas.
 *   **Feedback Táctil**: Animaciones de escala en cada clic.
 *   **Interpolación Numérica**: Los precios y contadores crecen progresivamente en lugar de cambiar bruscamente.
 *   **Shimmer Effects**: Sustitución de las barras de carga tradicionales por esqueletos de contenido animados.
