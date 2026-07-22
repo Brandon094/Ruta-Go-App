@@ -12,6 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase';
 
 // Components
+import LandingPage from './LandingPage';
 import Login from './Login';
 import Register from './Register';
 import { Sidebar } from './components/common/Sidebar';
@@ -32,7 +33,7 @@ import { useRealtimeStats } from './hooks/useRealtimeStats';
  */
 function App() {
   const [user, setUser] = useState(null);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'register'
   const [activeTab, setActiveTab] = useState('overview');
   const [loadingAuth, setLoadingAuth] = useState(true);
 
@@ -65,9 +66,9 @@ function App() {
   }
 
   if (!user) {
-    return isRegistering
-      ? <Register onBack={() => setIsRegistering(false)} />
-      : <Login onShowRegister={() => setIsRegistering(true)} />;
+    if (view === 'login') return <Login onBack={() => setView('landing')} onShowRegister={() => setView('register')} />;
+    if (view === 'register') return <Register onBack={() => setView('landing')} />;
+    return <LandingPage onLogin={() => setView('login')} onRegisterOwner={() => setView('register')} />;
   }
 
   // Si no es admin ni dueño, bloquear acceso (Seguridad)
@@ -341,10 +342,9 @@ function UserDirectory({ users = [] }) {
 }
 
 /**
- * 👨‍✈️ Sub-vista: Directorio de Conductores (Compacta y Paralela)
+ * 👨‍✈️ Sub-vista: Directorio de Conductores
  */
 function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
-  // Clasificamos conductores usando la lógica de negocio sincronizada
   const activeDrivers = drivers.filter(d =>
     d.status === 'active' && d.horariosAsignados && d.horariosAsignados.length > 0
   );
@@ -355,7 +355,6 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
 
   return (
     <div className="space-y-10">
-      {/* Cabecera de Acción */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40">
         <div>
           <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Gestión de Operadores</h3>
@@ -370,7 +369,6 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* COLUMNA 1: OPERANDO HOY */}
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-3">
@@ -381,7 +379,6 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
               {activeDrivers.length} ACTIVOS
             </span>
           </div>
-
           <div className="grid grid-cols-1 gap-4">
             {activeDrivers.length > 0 ? (
               activeDrivers.map(driver => (
@@ -396,7 +393,6 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
           </div>
         </div>
 
-        {/* COLUMNA 2: FUERA DE SERVICIO */}
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-3">
@@ -407,7 +403,6 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
               {inactiveDrivers.length} TOTAL
             </span>
           </div>
-
           <div className="grid grid-cols-1 gap-4 opacity-90 grayscale-[0.3]">
             {inactiveDrivers.length > 0 ? (
               inactiveDrivers.map(driver => (

@@ -70,8 +70,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-4 border-t border-white/5 space-y-1">
-          <NavItem icon={<Settings size={20} />} label="Ajustes" active={false} onClick={() => {}} />
+        <div className="p-4 border-t border-white/5 space-y-1 text-left">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-400 hover:bg-red-500/10 transition-all font-bold text-xs uppercase tracking-widest"
