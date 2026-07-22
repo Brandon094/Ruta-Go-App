@@ -11,50 +11,51 @@ import { auth } from '../../firebase';
  * @param {string} activeTab - Tab actual
  * @param {function} setActiveTab - Navegador entre tabs
  */
-export function Sidebar({ isOpen, onClose, activeTab, setActiveTab }) {
+export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
   const handleLogout = () => signOut(auth);
 
   const menuItems = [
-    { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} /> },
-    { id: 'drivers', label: 'Conductores', icon: <Bus size={20} /> },
-    { id: 'users', label: 'Usuarios', icon: <Users size={20} /> },
-    { id: 'schedules', label: 'Horarios', icon: <Calendar size={20} /> },
+    { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} />, roles: ['ADMIN', 'OWNER'] },
+    { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
+    { id: 'users', label: 'Usuarios', icon: <Users size={20} />, roles: ['ADMIN'] },
+    { id: 'schedules', label: 'Horarios', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
   ];
+
+  const filteredItems = menuItems.filter(item => item.roles.includes(role?.type));
 
   return (
     <>
-      {/* Overlay para móviles: Oscurece el fondo cuando el menú está abierto */}
+      {/* Overlay para móviles */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-secondary-900/60 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-secondary-900/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
-      {/* Aside: El contenedor del menú */}
+      {/* Aside */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-secondary-900 text-white flex flex-col shadow-2xl transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-72 bg-secondary-900 text-white flex flex-col shadow-2xl transition-transform duration-300
         lg:relative lg:translate-x-0 lg:z-20
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        {/* Header del Sidebar */}
         <div className="p-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center font-black text-xl transform -rotate-3 shadow-lg shadow-primary-500/20">R</div>
-            <div className="flex flex-col leading-tight">
+            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center font-black text-xl transform -rotate-3 shadow-lg">R</div>
+            <div className="flex flex-col leading-tight text-left">
               <span className="text-lg font-bold tracking-tight">Ruta-Go</span>
-              <span className="text-[10px] text-primary-500 font-bold tracking-widest uppercase opacity-80">Admin</span>
+              <span className="text-[10px] text-primary-500 font-bold tracking-widest uppercase opacity-80">
+                {role?.type === 'ADMIN' ? 'Admin Maestro' : 'Panel Dueños'}
+              </span>
             </div>
           </div>
-          {/* Botón cerrar para móviles */}
-          <button onClick={onClose} className="lg:hidden p-2 text-white/50 hover:text-white transition-colors">
+          <button onClick={onClose} className="lg:hidden p-2 text-white/50 hover:text-white">
             <X size={20} />
           </button>
         </div>
 
-        {/* Navegación */}
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-          {menuItems.map((item) => (
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto text-left">
+          {filteredItems.map((item) => (
             <NavItem
               key={item.id}
               icon={item.icon}
@@ -62,7 +63,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab }) {
               active={activeTab === item.id}
               onClick={() => {
                 setActiveTab(item.id);
-                if (window.innerWidth < 1024) onClose(); // Cierra al hacer clic en móvil
+                if (window.innerWidth < 1024) onClose();
               }}
             />
           ))}

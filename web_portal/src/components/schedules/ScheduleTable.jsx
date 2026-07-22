@@ -1,12 +1,24 @@
 import React from 'react';
 import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export function ScheduleTable({ schedules, drivers }) {
-  // Función para obtener el nombre del conductor por ID
-  const getDriverName = (id) => {
-    if (!id) return "Sin asignar";
-    const driver = drivers.find(d => d.id === id);
-    return driver ? driver.nombre : "Cargando...";
+export function ScheduleTable({ schedules, drivers, role }) {
+  // Función para obtener la información del conductor y si le pertenece al dueño actual
+  const getDriverDisplay = (conductorId) => {
+    if (!conductorId) return { name: "Sin asignar", isExternal: false };
+
+    const driver = drivers.find(d => d.id === conductorId);
+
+    if (role?.type === 'ADMIN') {
+      return { name: driver ? driver.nombre : "Cargando...", isExternal: false };
+    }
+
+    // Si es OWNER, verificamos si el conductor le pertenece (está en su lista filtrada)
+    const isMyDriver = drivers.some(d => d.id === conductorId);
+
+    return {
+      name: driver ? driver.nombre : "Conductor Externo",
+      isExternal: !isMyDriver
+    };
   };
 
   return (
@@ -23,6 +35,7 @@ export function ScheduleTable({ schedules, drivers }) {
           </thead>
           <tbody className="divide-y divide-slate-50">
             {schedules.map((schedule) => {
+              const driverInfo = getDriverDisplay(schedule.conductorId);
               const total = schedule.totalAsientos || 0;
               const available = schedule.asientosDisponibles || 0;
               const occupied = total - available;
@@ -52,30 +65,38 @@ export function ScheduleTable({ schedules, drivers }) {
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl ${noDriver ? 'bg-red-50 text-red-400' : 'bg-slate-100 text-slate-500'}`}>
+                      <div className={`p-2 rounded-xl ${noDriver ? 'bg-red-50 text-red-400' : driverInfo.isExternal ? 'bg-slate-50 text-slate-300' : 'bg-slate-100 text-slate-500'}`}>
                         <User size={16} />
                       </div>
-                      <span className={`text-sm font-bold ${noDriver ? 'text-red-500 italic' : 'text-slate-700'}`}>
-                        {getDriverName(schedule.conductorId)}
+                      <span className={`text-sm font-bold ${noDriver ? 'text-red-500 italic' : driverInfo.isExternal ? 'text-slate-400 italic font-medium' : 'text-slate-700'}`}>
+                        {driverInfo.name}
                       </span>
                     </div>
                   </td>
 
                   <td className="px-6 py-5">
-                    <div className="space-y-2 max-w-[140px]">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tighter">
-                        <span className={isFull ? 'text-red-500' : 'text-slate-400'}>
-                          {isFull ? 'Agotado' : `${available} Libres`}
-                        </span>
-                        <span className="text-slate-800">{occupancyRate}%</span>
+                    {/* Solo el Admin o el Dueño del bus ven la ocupación exacta */}
+                    {role?.type !== 'ADMIN' && driverInfo.isExternal ? (
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-slate-300 uppercase tracking-widest italic">
+                         <div className="w-8 h-1.5 bg-slate-100 rounded-full"></div>
+                         Privado
                       </div>
-                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-1000 ${isFull ? 'bg-red-500' : 'bg-primary-500 shadow-[0_0_8px_rgba(255,109,0,0.3)]'}`}
-                          style={{ width: `${occupancyRate}%` }}
-                        ></div>
+                    ) : (
+                      <div className="space-y-2 max-w-[140px]">
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tighter">
+                          <span className={isFull ? 'text-red-500' : 'text-slate-400'}>
+                            {isFull ? 'Agotado' : `${available} Libres`}
+                          </span>
+                          <span className="text-slate-800">{occupancyRate}%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all duration-1000 ${isFull ? 'bg-red-500' : 'bg-primary-500 shadow-[0_0_8px_rgba(255,109,0,0.3)]'}`}
+                            style={{ width: `${occupancyRate}%` }}
+                          ></div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </td>
 
                   <td className="px-6 py-5 text-center">

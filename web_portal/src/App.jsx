@@ -5,7 +5,8 @@ import {
   Calendar,
   Activity,
   MapPin,
-  Loader2
+  Loader2,
+  UserPlus
 } from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase';
@@ -19,6 +20,7 @@ import { StatCard } from './components/dashboard/StatCard';
 import { RouteProgress } from './components/dashboard/RouteProgress';
 import { DriverCard } from './components/drivers/DriverCard';
 import { EditDriverModal } from './components/drivers/EditDriverModal';
+import { AddDriverModal } from './components/drivers/AddDriverModal';
 import { UserCard } from './components/users/UserCard';
 import { ScheduleTable } from './components/schedules/ScheduleTable';
 
@@ -26,7 +28,7 @@ import { ScheduleTable } from './components/schedules/ScheduleTable';
 import { useRealtimeStats } from './hooks/useRealtimeStats';
 
 /**
- * 🖥️ Ruta-Go Admin Portal - Componente Principal (Modularizado)
+ * 🖥️ Ruta-Go Admin Portal - Componente Principal
  */
 function App() {
   const [user, setUser] = useState(null);
@@ -39,6 +41,7 @@ function App() {
 
   // Estado para gestión de conductores
   const [editingDriver, setEditingDriver] = useState(null);
+  const [isAddingDriver, setIsAddingDriver] = useState(false);
 
   // Sincronización de Sesión
   useEffect(() => {
@@ -49,8 +52,8 @@ function App() {
     return () => unsub();
   }, []);
 
-  // Hook de Datos en Tiempo Real
-  const { stats, drivers, users, schedules, routeStats } = useRealtimeStats(user);
+  // Hook de Datos en Tiempo Real (Con soporte de Roles)
+  const { role, stats, drivers, users, schedules, routeStats } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -67,6 +70,24 @@ function App() {
       : <Login onShowRegister={() => setIsRegistering(true)} />;
   }
 
+  // Si no es admin ni dueño, bloquear acceso (Seguridad)
+  if (!stats.loading && !role?.type) {
+    return (
+      <div className="h-screen bg-secondary-900 flex flex-col items-center justify-center p-10 text-center gap-6">
+        <div className="w-20 h-20 bg-red-500/20 rounded-3xl flex items-center justify-center text-red-500">
+          <Activity size={40} />
+        </div>
+        <div>
+          <h2 className="text-white text-2xl font-black tracking-tight">Acceso Denegado</h2>
+          <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">Tu cuenta no tiene permisos administrativos para este portal.</p>
+        </div>
+        <button onClick={() => auth.signOut()} className="px-8 py-3 bg-white text-secondary-900 font-bold rounded-xl shadow-xl active:scale-95 transition-all">
+          Cerrar Sesión
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 antialiased font-sans overflow-hidden">
       <Sidebar
@@ -74,33 +95,37 @@ function App() {
         onClose={() => setIsSidebarOpen(false)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        role={role}
       />
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <Header
           title={
-            activeTab === 'overview' ? 'Panel Maestro' :
-            activeTab === 'drivers' ? 'Conductores' :
-            activeTab === 'users' ? 'Clientes' :
-            activeTab === 'schedules' ? 'Planilla' :
+            activeTab === 'overview' ?
+              (!role?.type ? 'Cargando...' : role.type === 'ADMIN' ? 'Panel Maestro' : 'Dashboard Dueño') :
+            activeTab === 'drivers' ? 'Gestión de Conductores' :
+            activeTab === 'users' ? 'Base de Clientes (Pasajeros)' :
+            activeTab === 'schedules' ? 'Planilla de Despachos' :
             'Dashboard'
           }
           userEmail={user.email}
           onMenuClick={() => setIsSidebarOpen(true)}
+          role={role}
         />
 
         <div className="flex-1 overflow-y-auto p-4 lg:p-10 bg-slate-50/50">
           {activeTab === 'overview' ? (
-            <Overview stats={stats} routeStats={routeStats} />
+            <Overview stats={stats} routeStats={routeStats} role={role} />
           ) : activeTab === 'drivers' ? (
             <DriverDirectory
               drivers={drivers}
               onEditDriver={(driver) => setEditingDriver(driver)}
+              onAddDriver={() => setIsAddingDriver(true)}
             />
           ) : activeTab === 'users' ? (
             <UserDirectory users={users} />
           ) : activeTab === 'schedules' ? (
-            <ScheduleDirectory schedules={schedules} drivers={drivers} />
+            <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} />
           ) : (
             <div className="flex items-center justify-center h-full text-slate-400 font-medium italic">
               Módulo en desarrollo (Fase 2)...
@@ -117,6 +142,16 @@ function App() {
           onRefresh={() => {}} // Hook onValue refresca automáticamente
         />
       )}
+
+      {/* Modal de Registro de Nuevo Conductor */}
+      {isAddingDriver && (
+        <AddDriverModal
+          onClose={() => setIsAddingDriver(false)}
+          users={users}
+          currentUser={user}
+          role={role}
+        />
+      )}
     </div>
   );
 }
@@ -124,7 +159,7 @@ function App() {
 /**
  * 📊 Sub-vista: Resumen General
  */
-function Overview({ stats, routeStats }) {
+function Overview({ stats, routeStats, role }) {
   // Formateador de moneda para los ingresos
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', {
@@ -134,13 +169,20 @@ function Overview({ stats, routeStats }) {
     }).format(value);
   };
 
+  const isAdmin = role?.type === 'ADMIN';
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-        <StatCard label="Usuarios Activos" value={stats.totalUsers} icon={<Users className="text-blue-500" />} trend="Habeas Data OK" />
+      <div className={`grid grid-cols-1 md:grid-cols-2 ${isAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-3'} gap-8 mb-10`}>
+        {isAdmin && (
+          <>
+            <StatCard label="Usuarios Activos" value={stats.totalUsers} icon={<Users className="text-blue-500" />} trend="Habeas Data OK" />
+            <StatCard label="Dueños de Flota" value={stats.totalOwners} icon={<Users className="text-amber-500" />} trend="Socios Activos" />
+          </>
+        )}
         <StatCard label="Conductores en Turno" value={stats.activeDrivers} icon={<Bus className="text-green-500" />} trend="Estado: Active" />
         <StatCard label="Reservas Hoy" value={stats.todayReservations} icon={<Calendar className="text-purple-500" />} trend="Fecha Actual" />
-        <StatCard label="Ingresos Generados" value={formatCurrency(stats.totalRevenue)} icon={<Activity className="text-primary-500" />} trend="Para Operadores" />
+        <StatCard label="Ingresos Generados" value={formatCurrency(stats.totalRevenue)} icon={<Activity className="text-primary-500" />} trend={isAdmin ? "Holding Total" : "Tus Vehículos"} />
       </div>
 
       <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50">
@@ -164,7 +206,7 @@ function Overview({ stats, routeStats }) {
 /**
  * 🕒 Sub-vista: Planilla de Despachos (Horarios con Pestañas)
  */
-function ScheduleDirectory({ schedules, drivers }) {
+function ScheduleDirectory({ schedules, drivers, role }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
 
   // Filtrado de horarios por ruta
@@ -221,7 +263,7 @@ function ScheduleDirectory({ schedules, drivers }) {
         </span>
       </div>
 
-      <ScheduleTable schedules={currentSchedules} drivers={drivers} />
+      <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} />
 
       <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-4 mt-8">
         <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 shrink-0">
@@ -301,7 +343,7 @@ function UserDirectory({ users = [] }) {
 /**
  * 👨‍✈️ Sub-vista: Directorio de Conductores (Compacta y Paralela)
  */
-function DriverDirectory({ drivers, onEditDriver }) {
+function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
   // Clasificamos conductores usando la lógica de negocio sincronizada
   const activeDrivers = drivers.filter(d =>
     d.status === 'active' && d.horariosAsignados && d.horariosAsignados.length > 0
@@ -312,55 +354,71 @@ function DriverDirectory({ drivers, onEditDriver }) {
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-      {/* COLUMNA 1: OPERANDO HOY */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-6 bg-green-500 rounded-full"></div>
-            <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Operando Hoy</h3>
-          </div>
-          <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[10px] font-black">
-            {activeDrivers.length} ACTIVOS
-          </span>
+    <div className="space-y-10">
+      {/* Cabecera de Acción */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+        <div>
+          <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Gestión de Operadores</h3>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Control de flota y personal</p>
         </div>
-
-        <div className="grid grid-cols-1 gap-4">
-          {activeDrivers.length > 0 ? (
-            activeDrivers.map(driver => (
-              <DriverCard key={driver.id} driver={driver} onEdit={onEditDriver} />
-            ))
-          ) : (
-            <div className="p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
-              <Bus size={32} className="mb-2 opacity-20" />
-              <p className="text-xs font-bold uppercase italic">Sin actividad en ruta</p>
-            </div>
-          )}
-        </div>
+        <button
+          onClick={onAddDriver}
+          className="flex items-center justify-center gap-3 px-8 py-4 bg-primary-500 hover:bg-orange-600 text-white rounded-2xl shadow-lg shadow-primary-500/30 transition-all transform active:scale-95 font-black text-[10px] uppercase"
+        >
+          <UserPlus size={18} /> Registrar Nuevo Conductor
+        </button>
       </div>
 
-      {/* COLUMNA 2: FUERA DE SERVICIO */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-6 bg-slate-300 rounded-full"></div>
-            <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Fuera de Servicio</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* COLUMNA 1: OPERANDO HOY */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-6 bg-green-500 rounded-full"></div>
+              <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Operando Hoy</h3>
+            </div>
+            <span className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[10px] font-black">
+              {activeDrivers.length} ACTIVOS
+            </span>
           </div>
-          <span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black">
-            {inactiveDrivers.length} TOTAL
-          </span>
+
+          <div className="grid grid-cols-1 gap-4">
+            {activeDrivers.length > 0 ? (
+              activeDrivers.map(driver => (
+                <DriverCard key={driver.id} driver={driver} onEdit={onEditDriver} />
+              ))
+            ) : (
+              <div className="p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
+                <Bus size={32} className="mb-2 opacity-20" />
+                <p className="text-xs font-bold uppercase italic">Sin actividad en ruta</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 opacity-90 grayscale-[0.3]">
-          {inactiveDrivers.length > 0 ? (
-            inactiveDrivers.map(driver => (
-              <DriverCard key={driver.id} driver={driver} onEdit={onEditDriver} />
-            ))
-          ) : (
-            <div className="p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
-              <p className="text-xs font-bold uppercase italic">Personal completo en ruta</p>
+        {/* COLUMNA 2: FUERA DE SERVICIO */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-6 bg-slate-300 rounded-full"></div>
+              <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Fuera de Servicio</h3>
             </div>
-          )}
+            <span className="px-3 py-1 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black">
+              {inactiveDrivers.length} TOTAL
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 opacity-90 grayscale-[0.3]">
+            {inactiveDrivers.length > 0 ? (
+              inactiveDrivers.map(driver => (
+                <DriverCard key={driver.id} driver={driver} onEdit={onEditDriver} />
+              ))
+            ) : (
+              <div className="p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400">
+                <p className="text-xs font-bold uppercase italic">Personal completo en ruta</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

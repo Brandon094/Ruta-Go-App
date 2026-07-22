@@ -46,5 +46,35 @@ export const driverService = {
       return Object.entries(snapshot.val()).map(([id, val]) => ({ id, ...val }));
     }
     return [];
+  },
+
+  /**
+   * Registra un nuevo conductor y su vehículo de forma atómica.
+   */
+  registerDriverAndVehicle: async (driverData, vehicleData) => {
+    const updates = {};
+
+    // 1. Preparar entrada en /conductores/
+    // Nota: El id debe ser el UID del usuario (previamente registrado en Auth)
+    updates[`conductores/${driverData.id}`] = {
+      ...driverData,
+      status: 'active',
+      fechaRegistro: Date.now()
+    };
+
+    // 2. Preparar entrada en /vehiculos/
+    updates[`vehiculos/${vehicleData.placa}`] = {
+      ...vehicleData,
+      conductorId: driverData.id,
+      estado: 'activo'
+    };
+
+    try {
+      await update(ref(db), updates);
+      return { success: true };
+    } catch (error) {
+      console.error("Error en registro dual:", error);
+      throw error;
+    }
   }
 };
