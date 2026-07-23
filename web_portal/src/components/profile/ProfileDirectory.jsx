@@ -85,7 +85,7 @@ export function ProfileDirectory({ user: currentUser, role }) {
 
   if (isEditing) {
     return (
-      <div className="animate-in fade-in duration-500 bg-[#061426] fixed inset-0 z-[50] overflow-y-auto">
+      <div className="animate-in fade-in duration-500 bg-secondary-50 dark:bg-[#061426] fixed inset-0 z-[50] overflow-y-auto transition-colors duration-300">
         {/* Header Naranja */}
         <div className="bg-primary-500 p-6 flex items-center gap-4 text-white sticky top-0 z-10 shadow-lg">
           <button onClick={() => setIsEditing(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -119,18 +119,18 @@ export function ProfileDirectory({ user: currentUser, role }) {
             <>
               {/* Información Actual */}
               <div className="space-y-4">
-                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2">Información actual</h3>
-                <div className="card-base bg-[#0A1F30] border-none rounded-[2rem] p-6 space-y-5 shadow-xl">
-                  <div className="flex items-center gap-4 text-white/80">
-                    <div className="p-2 bg-white/5 rounded-lg"><User size={18} className="text-orange-500" /></div>
+                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2 italic">Información actual</h3>
+                <div className="card-base rounded-[2rem] p-6 space-y-5 shadow-xl bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none transition-colors duration-300">
+                  <div className="flex items-center gap-4 text-slate-700 dark:text-white/80">
+                    <div className="p-2 bg-primary-500/5 dark:bg-white/5 rounded-lg transition-colors"><User size={18} className="text-orange-500" /></div>
                     <span className="text-sm font-bold">{name}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-white/80">
-                    <div className="p-2 bg-white/5 rounded-lg"><Phone size={18} className="text-orange-500" /></div>
+                  <div className="flex items-center gap-4 text-slate-700 dark:text-white/80">
+                    <div className="p-2 bg-primary-500/5 dark:bg-white/5 rounded-lg transition-colors"><Phone size={18} className="text-orange-500" /></div>
                     <span className="text-sm font-bold">{phone}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-white/80">
-                    <div className="p-2 bg-white/5 rounded-lg"><Mail size={18} className="text-orange-500" /></div>
+                  <div className="flex items-center gap-4 text-slate-700 dark:text-white/80">
+                    <div className="p-2 bg-primary-500/5 dark:bg-white/5 rounded-lg transition-colors"><Mail size={18} className="text-orange-500" /></div>
                     <span className="text-sm font-bold">{currentUser?.email}</span>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export function ProfileDirectory({ user: currentUser, role }) {
 
               {/* Nuevos Datos */}
               <div className="space-y-6">
-                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2">Nuevos datos</h3>
+                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2 italic">Nuevos datos</h3>
                 <div className="space-y-4">
                   <Input
                     placeholder="Nuevo nombre completo"
@@ -153,9 +153,9 @@ export function ProfileDirectory({ user: currentUser, role }) {
                     onChange={setNewPhone}
                   />
 
-                  <div className="p-6 bg-[#0A1F30]/50 rounded-2xl border border-white/5 space-y-3 shadow-lg">
-                     <p className="text-[10px] text-white/40 font-bold uppercase tracking-tight">El correo electrónico no se puede modificar por seguridad.</p>
-                     <div className="flex items-center gap-4 text-white/20">
+                  <div className="p-6 bg-white dark:bg-[#0A1F30]/50 rounded-2xl border border-slate-100 dark:border-white/5 space-y-3 shadow-lg transition-colors">
+                     <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-tight">El correo electrónico no se puede modificar por seguridad.</p>
+                     <div className="flex items-center gap-4 text-slate-300 dark:text-white/20 transition-colors">
                         <Lock size={18} />
                         <span className="text-sm font-bold">{currentUser?.email}</span>
                      </div>
@@ -167,48 +167,48 @@ export function ProfileDirectory({ user: currentUser, role }) {
             <>
               {/* Información Vehículo Actual */}
               <div className="space-y-4">
-                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2">Datos del Vehículo Actuales</h3>
-                <div className="card-base bg-[#0A1F30] border-none rounded-[2rem] p-8 grid grid-cols-2 gap-8 shadow-xl">
+                <h3 className="text-orange-500 font-black uppercase text-xs tracking-widest ml-2 italic">Datos del Vehículo Actuales</h3>
+                <div className="card-base rounded-[2rem] p-8 grid grid-cols-2 gap-8 shadow-xl bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none transition-colors">
                    <div className="flex items-center gap-3">
                       <Hash size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Placa</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.id || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Placa</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.id || '---'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
                       <Star size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Marca</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.marca || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Marca</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.marca || '---'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
                       <Car size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Modelo</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.modelo || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Modelo</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.modelo || '---'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
                       <Palette size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Color</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.color || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Color</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.color || '---'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
                       <Users size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Capacidad</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.capacidad || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Capacidad</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.capacidad || '---'}</p>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
                       <Calendar size={16} className="text-orange-500" />
                       <div>
-                        <p className="text-[8px] text-white/30 uppercase font-bold">Año</p>
-                        <p className="text-xs text-white font-black uppercase truncate">{role.vehicle?.año || '---'}</p>
+                        <p className="text-[8px] text-slate-400 dark:text-white/30 uppercase font-bold">Año</p>
+                        <p className="text-xs text-slate-800 dark:text-white font-black uppercase truncate">{role.vehicle?.año || '---'}</p>
                       </div>
                    </div>
                 </div>
@@ -237,7 +237,7 @@ export function ProfileDirectory({ user: currentUser, role }) {
             </button>
             <button
               onClick={() => setIsEditing(false)}
-              className="w-full py-5 border-2 border-white/10 text-white/60 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-white/5"
+              className="w-full py-5 border-2 border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/60 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-slate-100 dark:hover:bg-white/5"
             >
               <X size={20}/> Cancelar
             </button>
@@ -251,21 +251,22 @@ export function ProfileDirectory({ user: currentUser, role }) {
     <div className="animate-in fade-in duration-700 -m-4 lg:-m-8">
 
       {/* 🟠 HEADER NARANJA (Estilo Mobile) */}
-      <div className="bg-primary-500 pt-12 pb-20 relative overflow-hidden flex flex-col items-center text-center">
+      <div className="bg-primary-500 pt-12 pb-20 relative overflow-hidden flex flex-col items-center text-center transition-colors duration-300">
         <div className="relative group">
-          <div className="w-40 h-40 bg-amber-400 rounded-full border-4 border-[#061426] flex items-center justify-center text-[#061426] shadow-2xl relative">
+          <div className="w-40 h-40 bg-amber-400 rounded-full border-4 border-slate-900/10 dark:border-[#061426] flex items-center justify-center text-[#061426] shadow-2xl relative transition-all duration-300">
             <User size={80} strokeWidth={1.5} />
 
             {/* Botón Cámara */}
-            <button className="absolute bottom-1 right-1 bg-[#061426] p-2.5 rounded-full border-2 border-white text-white hover:bg-black transition-all shadow-xl">
+            <button className="absolute bottom-1 right-1 bg-slate-900 dark:bg-[#061426] p-2.5 rounded-full border-2 border-white text-white hover:bg-black transition-all shadow-xl">
                <Camera size={18} />
             </button>
           </div>
         </div>
 
+        {/* Chip de Estado en Header */}
         <div className="mt-6 space-y-3">
           <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">{name}</h2>
-          <Badge variant="success" className="!bg-[#061426]/40 !border-green-500/50 backdrop-blur-md !px-6">
+          <Badge variant="success" className="!bg-white/10 dark:!bg-[#061426]/40 !border-white/20 dark:!border-green-500/50 backdrop-blur-md !px-6 shadow-xl text-white">
              {roleLabel}
           </Badge>
         </div>
@@ -274,7 +275,7 @@ export function ProfileDirectory({ user: currentUser, role }) {
       <div className="max-w-xl mx-auto -mt-10 relative z-10 px-4 pb-20 space-y-8">
 
         {/* Card de Información Personal */}
-        <div className="card-base bg-[#0A1F30] dark:bg-[#0A1F30] border-none rounded-[2.5rem] p-8 lg:p-10 space-y-10 shadow-2xl">
+        <div className="card-base rounded-[2.5rem] p-8 lg:p-10 shadow-2xl bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none transition-colors">
           <h3 className="text-orange-500 font-black uppercase text-sm tracking-widest italic">Información Personal</h3>
 
           <div className="space-y-8">
@@ -285,36 +286,36 @@ export function ProfileDirectory({ user: currentUser, role }) {
 
         {/* Card de Información Vehículo (Solo Conductores) */}
         {role.type === 'DRIVER' && role.vehicle && (
-          <div className="card-base bg-[#0A1F30] dark:bg-[#0A1F30] border-none rounded-[2.5rem] p-8 lg:p-10 space-y-10 shadow-2xl">
+          <div className="card-base rounded-[2.5rem] p-8 lg:p-10 shadow-2xl bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none transition-colors">
             <h3 className="text-orange-500 font-black uppercase text-sm tracking-widest italic">Detalles del Vehículo</h3>
 
             <div className="grid grid-cols-2 gap-8">
                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500"><Car size={20}/></div>
+                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 transition-colors"><Car size={20}/></div>
                   <div className="min-w-0">
-                     <p className="text-[9px] font-bold text-white/40 uppercase">Modelo</p>
-                     <p className="text-xs font-black text-white truncate">{role.vehicle.modelo}</p>
+                     <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase">Modelo</p>
+                     <p className="text-xs font-black text-slate-800 dark:text-white truncate">{role.vehicle.modelo}</p>
                   </div>
                </div>
                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500"><Hash size={20}/></div>
+                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 transition-colors"><Hash size={20}/></div>
                   <div className="min-w-0">
-                     <p className="text-[9px] font-bold text-white/40 uppercase">Placa</p>
-                     <p className="text-xs font-black text-white truncate">{role.vehicle.id}</p>
+                     <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase">Placa</p>
+                     <p className="text-xs font-black text-slate-800 dark:text-white truncate">{role.vehicle.id}</p>
                   </div>
                </div>
                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500"><Users size={20}/></div>
+                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 transition-colors"><Users size={20}/></div>
                   <div className="min-w-0">
-                     <p className="text-[9px] font-bold text-white/40 uppercase">Capacidad</p>
-                     <p className="text-xs font-black text-white truncate">{role.vehicle.capacidad}</p>
+                     <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase">Capacidad</p>
+                     <p className="text-xs font-black text-slate-800 dark:text-white truncate">{role.vehicle.capacidad}</p>
                   </div>
                </div>
                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500"><Calendar size={20}/></div>
+                  <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 transition-colors"><Calendar size={20}/></div>
                   <div className="min-w-0">
-                     <p className="text-[9px] font-bold text-white/40 uppercase">Año</p>
-                     <p className="text-xs font-black text-white truncate">{role.vehicle.año}</p>
+                     <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase">Año</p>
+                     <p className="text-xs font-black text-slate-800 dark:text-white truncate">{role.vehicle.año}</p>
                   </div>
                </div>
             </div>

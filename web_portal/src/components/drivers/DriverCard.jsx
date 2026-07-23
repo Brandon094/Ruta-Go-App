@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bus, Clock, CheckCircle2, Mail, TrendingUp, Calendar, Edit3 } from 'lucide-react';
+import { Badge } from '../ui/Badge';
 
 export function DriverCard({ driver, onEdit }) {
   const isActive = driver.status === 'active';
@@ -17,13 +18,15 @@ export function DriverCard({ driver, onEdit }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1 gap-2 pr-10">
           <h4 className="font-bold text-slate-800 dark:text-white text-sm truncate leading-tight uppercase italic">{driver.nombre}</h4>
-          <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase shrink-0 ${
-            isBlocked ? 'badge-error' :
-            isResting ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-500 border border-amber-200 dark:border-amber-500/20' :
-            'badge-success'
-          }`}>
-            {isBlocked ? 'Bloqueado' : isResting ? 'Descanso' : 'En Ruta'}
-          </span>
+          <div className="flex items-center gap-2">
+            {isBlocked ? (
+              <Badge variant="error">Bloqueado</Badge>
+            ) : isResting ? (
+              <Badge variant="warning">Descanso</Badge>
+            ) : (
+              <Badge variant="success">En Ruta</Badge>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-col gap-1 mt-2">

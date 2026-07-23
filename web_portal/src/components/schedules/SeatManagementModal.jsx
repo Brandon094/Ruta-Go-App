@@ -84,20 +84,49 @@ export function SeatManagementModal({ schedule, onClose, role }) {
       if (result.committed) {
         // Crear el registro oficial en /reservas
         const resRef = push(ref(db, 'reservas'));
-        await set(resRef, {
-          id: resRef.key,
+        const now = Date.now();
+        const routeParts = schedule.ruta.split(/ -> | ➔ /);
+
+        const reservationData = {
+          // IDs
+          idReservation: resRef.key,
+          idReserva: resRef.key,
+          userId: role.uid,
           usuarioId: role.uid,
+          scheduleId: schedule.id,
+          horarioId: schedule.id,
+          driverId: schedule.conductorId || "",
           conductorId: schedule.conductorId || "",
+          vehicleId: schedule.vehiculoId || "",
           vehiculoId: schedule.vehiculoId || "",
-          asientoReservado: selectedSeat,
+
+          // Información de Viaje
+          reservedSeat: parseInt(selectedSeat),
+          puestoReservado: parseInt(selectedSeat),
+          reservationStatus: 'Confirmada',
           estadoReserva: 'Confirmada',
+          origin: routeParts[0] || "Nátaga",
+          origen: routeParts[0] || "Nátaga",
+          destination: routeParts[1] || "La Plata",
+          destino: routeParts[1] || "La Plata",
+          departureTime: schedule.hora,
+          horaSalida: schedule.hora,
+          routeName: schedule.ruta,
+
+          // Auditoría y Precios
+          price: 12000,
           precio: 12000,
-          reservationDate: Date.now(),
-          travelDate: Date.now(), // Para simplificar demo
-          origen: schedule.ruta.split(' -> ')[0],
-          destino: schedule.ruta.split(' -> ')[1],
-          nombreUsuario: role?.name || "Pasajero Web"
-        });
+          reservationDate: now,
+          fechaReserva: now,
+          travelDate: now, // En v1.5 se usa como fecha de ejecución
+
+          // Usuario
+          name: role?.name || "Pasajero Web",
+          nombre: role?.name || "Pasajero Web",
+          email: role?.email || ""
+        };
+
+        await set(resRef, reservationData);
         setSuccessReservation(true);
       }
     } catch (err) {

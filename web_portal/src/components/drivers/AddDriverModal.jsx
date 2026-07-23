@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Bus, Save, Loader2, AlertCircle, CheckCircle2, Search } from 'lucide-react';
+import { X, UserPlus, Bus, Save, Loader2, AlertCircle, CheckCircle2, Search, User, Mail, Hash, Calendar, Settings } from 'lucide-react';
 import { driverService } from '../../services/driverService';
+import { Input } from '../ui/Input';
 
 /**
  * 🚛 Component: AddDriverModal (Versión Humana por Email)
@@ -71,20 +72,20 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-secondary-800 w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-transparent dark:border-white/5 transition-colors duration-300">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5 transition-colors duration-300">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-primary-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
               <UserPlus size={24} />
             </div>
             <div>
-              <h3 className="text-2xl font-black text-slate-800 tracking-tight">Vincular Operador</h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Gestión de Flota por Email</p>
+              <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Vincular Operador</h3>
+              <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest mt-1">Gestión de Flota por Email</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-all">
+          <button onClick={onClose} className="p-2 text-slate-400 dark:text-white/20 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-all">
             <X size={24} />
           </button>
         </div>
@@ -98,23 +99,24 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
                 <div className="w-1.5 h-4 bg-primary-500 rounded-full"></div> 1. Buscar Conductor
               </h4>
 
-              <div className="space-y-2">
-                <InputField
+              <div className="space-y-4">
+                <Input
                   label="Correo Electrónico"
                   placeholder="conductor@gmail.com"
                   type="email"
+                  icon={Mail}
                   value={formData.email}
-                  onChange={(v) => setFormData({...formData, email: v})}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
                   required
                 />
 
                 {/* Feedback de Búsqueda */}
                 <div className={`p-4 rounded-2xl border transition-all flex items-center gap-3 ${
                   foundUser
-                    ? 'bg-green-50 border-green-100 text-green-700'
+                    ? 'bg-green-50 dark:bg-green-500/10 border-green-100 dark:border-green-500/20 text-green-700 dark:text-green-400'
                     : formData.email.includes('@')
-                      ? 'bg-red-50 border-red-100 text-red-600'
-                      : 'bg-slate-50 border-slate-100 text-slate-400'
+                      ? 'bg-red-50 dark:bg-red-500/10 border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                      : 'bg-slate-50 dark:bg-white/5 border-slate-100 dark:border-white/5 text-slate-400 dark:text-white/20'
                 }`}>
                   {foundUser ? <CheckCircle2 size={18} /> : formData.email.includes('@') ? <AlertCircle size={18} /> : <Search size={18} />}
                   <div className="flex-1">
@@ -130,9 +132,9 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
 
               {foundUser && (
                 <div className="space-y-4 animate-in slide-in-from-top-2">
-                   <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                     <p className="text-[10px] text-slate-400 font-black uppercase mb-1">Teléfono Registrado</p>
-                     <p className="text-sm font-bold text-slate-700">{foundUser.telefono || 'No proporcionado'}</p>
+                   <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5 transition-colors duration-300">
+                     <p className="text-[10px] text-slate-400 dark:text-white/40 font-black uppercase mb-1">Teléfono Registrado</p>
+                     <p className="text-sm font-bold text-slate-700 dark:text-white">{foundUser.telefono || 'No proporcionado'}</p>
                    </div>
                 </div>
               )}
@@ -140,55 +142,39 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
 
             {/* Sección 2: Datos del Vehículo */}
             <div className="space-y-6">
-              <h4 className="text-[11px] font-black text-secondary-900 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1.5 h-4 bg-secondary-900 rounded-full"></div> 2. Datos del Bus
+              <h4 className="text-[11px] font-black text-secondary-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                <div className="w-1.5 h-4 bg-secondary-900 dark:bg-primary-500 rounded-full"></div> 2. Datos del Bus
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
-                <InputField label="Placa" placeholder="ABC-123" value={formData.placa} onChange={(v) => setFormData({...formData, placa: v.toUpperCase()})} required />
-                <InputField label="Año" type="number" value={formData.ano} onChange={(v) => setFormData({...formData, ano: v})} required />
+                <Input label="Placa" icon={Hash} placeholder="ABC-123" value={formData.placa} onChange={(e) => setFormData({...formData, placa: e.target.value.toUpperCase()})} required />
+                <Input label="Año" icon={Calendar} type="number" value={formData.ano} onChange={(e) => setFormData({...formData, ano: e.target.value})} required />
               </div>
 
-              <InputField label="Modelo" placeholder="Ej: Nissan Frontier" value={formData.modelo} onChange={(v) => setFormData({...formData, modelo: v})} required />
-              <InputField label="Capacidad" type="number" value={formData.capacidad} onChange={(v) => setFormData({...formData, capacidad: v})} required />
+              <Input label="Modelo" icon={Bus} placeholder="Ej: Nissan Frontier" value={formData.modelo} onChange={(e) => setFormData({...formData, modelo: e.target.value})} required />
+              <Input label="Capacidad" icon={Settings} type="number" value={formData.capacidad} onChange={(e) => setFormData({...formData, capacidad: e.target.value})} required />
 
               {role?.type === 'ADMIN' && (
-                 <InputField label="ID del Dueño (Opcional)" placeholder="UID del dueño" value={formData.ownerId} onChange={(v) => setFormData({...formData, ownerId: v})} />
+                 <Input label="ID del Dueño (Opcional)" icon={User} placeholder="UID del dueño" value={formData.ownerId} onChange={(e) => setFormData({...formData, ownerId: e.target.value})} />
               )}
             </div>
           </div>
         </form>
 
         {/* Footer */}
-        <div className="p-8 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-4">
-          <button type="button" onClick={onClose} className="px-8 py-4 font-black text-[10px] text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-all">
+        <div className="p-8 bg-slate-50 dark:bg-black/20 border-t border-slate-100 dark:border-white/5 flex items-center justify-end gap-4 transition-colors duration-300">
+          <button type="button" onClick={onClose} className="px-8 py-4 font-black text-[10px] text-slate-400 dark:text-white/20 uppercase tracking-widest hover:text-slate-600 dark:hover:text-white transition-all">
             Cancelar
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !foundUser}
-            className="flex items-center gap-3 px-12 py-4 bg-secondary-900 hover:bg-black text-white rounded-2xl shadow-xl transition-all transform active:scale-95 font-black text-[10px] uppercase disabled:opacity-30 disabled:cursor-not-allowed"
+            className="flex items-center gap-3 px-12 py-4 bg-secondary-900 dark:bg-primary-500 hover:bg-black dark:hover:bg-primary-600 text-white rounded-2xl shadow-xl transition-all transform active:scale-95 font-black text-[10px] uppercase disabled:opacity-30 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> Vincular Conductor</>}
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function InputField({ label, value, onChange, type = "text", placeholder, required = false }) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-[10px] font-black text-slate-400 uppercase tracking-tight ml-1">{label}</label>
-      <input
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        className="w-full px-4 py-3.5 bg-white border border-slate-200 rounded-2xl font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all placeholder:opacity-40 text-sm"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
     </div>
   );
 }

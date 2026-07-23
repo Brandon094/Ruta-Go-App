@@ -43,7 +43,7 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage })
 
         {/* 🌑 STATS CARD (Android Style) */}
         <div className="max-w-4xl mx-auto mt-8">
-          <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8">
+          <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8 bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
             <div className="grid grid-cols-3 gap-4">
               <SummaryMetric label="Confirmadas" value={stats.confirmedReservations} icon={<CheckCircle2 size={16} className="text-orange-500 mb-1"/>} />
               <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />

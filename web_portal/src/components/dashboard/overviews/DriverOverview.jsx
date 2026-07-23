@@ -36,7 +36,7 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
         </div>
 
         <div className="max-w-4xl mx-auto mt-8">
-          <div className="card-base rounded-[2.5rem] p-6 lg:p-8">
+          <div className="card-base rounded-[2.5rem] p-6 lg:p-8 bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
             <div className="flex items-center justify-between mb-6">
                <h4 className="text-[10px] lg:text-xs font-black text-primary-500 uppercase tracking-[0.2em]">Resumen del día</h4>
                <Activity size={16} className="text-primary-500" />

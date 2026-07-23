@@ -44,7 +44,7 @@ export const useRealtimeStats = (user) => {
         const adminSnap = await get(ref(db, `admins/${user.uid}`));
         if (adminSnap.exists() && adminSnap.val() === true) {
           if (isMounted) {
-            setRole({ type: 'ADMIN', uid: user.uid, ownedPlates: [] });
+            setRole({ type: 'ADMIN', uid: user.uid, ownedPlates: [], name: 'Administrador Root' });
             setupSync('ADMIN', []);
           }
           return;
@@ -53,6 +53,7 @@ export const useRealtimeStats = (user) => {
         // 2. Resolver Dueño
         const ownerSnap = await get(ref(db, `dueños/${user.uid}`));
         if (ownerSnap.exists()) {
+          const ownerData = ownerSnap.val();
           const vSnap = await get(ref(db, 'vehiculos'));
           let ownedPlates = [];
           if (vSnap.exists()) {
@@ -62,7 +63,13 @@ export const useRealtimeStats = (user) => {
           }
 
           if (isMounted) {
-            setRole({ type: 'OWNER', uid: user.uid, ownedPlates });
+            setRole({
+              type: 'OWNER',
+              uid: user.uid,
+              ownedPlates,
+              name: ownerData.nombre || ownerData.name || 'Socio Ruta-Go',
+              phone: ownerData.telefono || ownerData.phone || '---'
+            });
             setupSync('OWNER', ownedPlates);
           }
           return;
@@ -71,10 +78,24 @@ export const useRealtimeStats = (user) => {
         // 3. Resolver Conductor
         const driverSnap = await get(ref(db, `conductores/${user.uid}`));
         if (driverSnap.exists()) {
+          const driverData = driverSnap.val();
+          const plate = driverData.placaVehiculo || driverData.vehiculoId;
+
+          let vehicleDetails = null;
+          if (plate) {
+            const vSnap = await get(ref(db, `vehiculos/${plate}`));
+            if (vSnap.exists()) vehicleDetails = { id: plate, ...vSnap.val() };
+          }
+
           if (isMounted) {
-            const dData = driverSnap.val();
-            const plate = dData.placaVehiculo || dData.vehiculoId;
-            setRole({ type: 'DRIVER', uid: user.uid, ownedPlates: plate ? [plate] : [] });
+            setRole({
+              type: 'DRIVER',
+              uid: user.uid,
+              ownedPlates: plate ? [plate] : [],
+              name: driverData.nombre || driverData.name || 'Conductor Ruta-Go',
+              phone: driverData.telefono || driverData.phone || '---',
+              vehicle: vehicleDetails
+            });
             setupSync('DRIVER', plate ? [plate] : []);
           }
           return;
@@ -83,8 +104,15 @@ export const useRealtimeStats = (user) => {
         // 4. Resolver Pasajero
         const userSnap = await get(ref(db, `usuarios/${user.uid}`));
         if (userSnap.exists()) {
+          const userData = userSnap.val();
           if (isMounted) {
-            setRole({ type: 'PASSENGER', uid: user.uid, ownedPlates: [] });
+            setRole({
+              type: 'PASSENGER',
+              uid: user.uid,
+              ownedPlates: [],
+              name: userData.nombre || userData.name || 'Pasajero Ruta-Go',
+              phone: userData.telefono || userData.phone || '---'
+            });
             setupSync('PASSENGER', []);
           }
         } else if (isMounted) {

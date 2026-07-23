@@ -21,11 +21,11 @@ export function ReservationHistoryCard({ res }) {
   };
 
   return (
-    <div className="card-base bg-[#0A1F30] dark:bg-[#0A1F30] border-none rounded-[2.5rem] p-6 lg:p-8 space-y-6 shadow-xl relative overflow-hidden group">
+    <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-6 shadow-xl relative overflow-hidden group bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none transition-colors duration-300">
 
       {/* Time & Status Row */}
       <div className="flex items-center justify-between">
-         <div className="flex items-center gap-3 text-orange-400">
+         <div className="flex items-center gap-3 text-orange-500">
             <Clock size={18} />
             <span className="text-xs font-black uppercase tracking-widest">{formatDate(date)}</span>
          </div>
@@ -39,31 +39,31 @@ export function ReservationHistoryCard({ res }) {
          {/* Passenger */}
          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-               <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500">
+               <div className="p-2.5 bg-primary-500/5 dark:bg-orange-500/10 rounded-xl text-orange-500 transition-colors">
                   <User size={20} />
                </div>
-               <span className="text-sm font-black text-white uppercase italic">{passengerName}</span>
+               <span className="text-sm font-black text-slate-800 dark:text-white uppercase italic transition-colors">{passengerName}</span>
             </div>
-            <span className="text-[10px] font-bold text-white/40">{passengerPhone}</span>
+            <span className="text-[10px] font-bold text-slate-400 dark:text-white/40 transition-colors">{passengerPhone}</span>
          </div>
 
          {/* Route */}
          <div className="flex items-center gap-4">
-            <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500">
+            <div className="p-2.5 bg-primary-500/5 dark:bg-orange-500/10 rounded-xl text-orange-500 transition-colors">
                <Milestone size={20} />
             </div>
-            <span className="text-sm font-black text-white uppercase italic">{origin} ➔ {destination}</span>
+            <span className="text-sm font-black text-slate-800 dark:text-white uppercase italic transition-colors">{origin} ➔ {destination}</span>
          </div>
 
          {/* Seat & Price */}
          <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-4">
-               <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500">
+               <div className="p-2.5 bg-primary-500/5 dark:bg-orange-500/10 rounded-xl text-orange-500 transition-colors">
                   <Armchair size={20} />
                </div>
-               <span className="text-lg font-black text-white">{seat !== -1 && seat !== undefined ? `A${seat}` : '---'}</span>
+               <span className="text-lg font-black text-slate-800 dark:text-white transition-colors">{seat !== -1 && seat !== undefined ? `A${seat}` : '---'}</span>
             </div>
-            <div className="flex items-center gap-2 text-orange-500">
+            <div className="flex items-center gap-2 text-orange-500 transition-colors">
                <Tag size={16} />
                <span className="text-lg font-black">$ {new Intl.NumberFormat('es-CO').format(price)} COP</span>
             </div>
@@ -76,7 +76,7 @@ export function ReservationHistoryCard({ res }) {
             <Ticket size={18} />
             Tiquete
          </button>
-         <button className="flex items-center justify-center gap-3 py-4 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">
+         <button className="flex items-center justify-center gap-3 py-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
             <MessageSquare size={18} />
             Chat
          </button>

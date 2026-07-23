@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Mail, Phone, Trash2, Award } from 'lucide-react';
+import { Badge } from '../ui/Badge';
 
 export function UserCard({ user }) {
   if (!user) return null;
@@ -20,13 +21,9 @@ export function UserCard({ user }) {
             {user.nombre || user.name || 'Usuario sin nombre'}
           </h4>
           {hasRequestedDeletion ? (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full badge-error text-[9px] font-black uppercase shrink-0">
-              <Trash2 size={10} /> Borrado
-            </span>
+            <Badge variant="error" icon={Trash2}>Borrado</Badge>
           ) : (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 text-[9px] font-black uppercase shrink-0">
-              Activo
-            </span>
+            <Badge variant="info">Activo</Badge>
           )}
         </div>
 

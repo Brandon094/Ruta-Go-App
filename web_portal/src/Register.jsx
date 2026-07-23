@@ -3,6 +3,7 @@ import { auth, db } from './firebase';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { Lock, Mail, User, Loader2, ArrowLeft, Phone, CheckCircle2, TrendingUp, Users } from 'lucide-react';
+import { Input } from './components/ui/Input';
 
 /**
  * 📝 Register Component - Registro Universal (Pasajeros & Socios)
@@ -172,41 +173,41 @@ export default function Register({ onBack, initialMode = 'owner' }) {
           </div>
 
           <form onSubmit={handleRegister} className="space-y-6">
-            <InputField
+            <Input
               label="Nombre Completo"
               placeholder="Ej: Juan Pérez"
-              icon={<User size={18} />}
+              icon={User}
               value={name}
-              onChange={setName}
+              onChange={(e) => setName(e.target.value)}
               required
             />
 
-            <InputField
+            <Input
               label="Correo Electrónico"
               type="email"
               placeholder="tu@email.com"
-              icon={<Mail size={18} />}
+              icon={Mail}
               value={email}
-              onChange={setEmail}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
-            <InputField
+            <Input
               label="Teléfono / WhatsApp"
               placeholder="321 000 0000"
-              icon={<Phone size={18} />}
+              icon={Phone}
               value={phone}
-              onChange={setPhone}
+              onChange={(e) => setPhone(e.target.value)}
               required
             />
 
-            <InputField
+            <Input
               label="Contraseña"
               type="password"
               placeholder="••••••••"
-              icon={<Lock size={18} />}
+              icon={Lock}
               value={password}
-              onChange={setPassword}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
 
@@ -236,27 +237,6 @@ export default function Register({ onBack, initialMode = 'owner' }) {
              Ruta-Go Portal © 2026
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function InputField({ label, value, onChange, type = "text", placeholder, icon, required = false }) {
-  return (
-    <div className="space-y-1.5 group">
-      <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">{label}</label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
-          {icon}
-        </div>
-        <input
-          type={type}
-          required={required}
-          placeholder={placeholder}
-          className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 transition-all placeholder:opacity-30 text-sm"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
       </div>
     </div>
   );

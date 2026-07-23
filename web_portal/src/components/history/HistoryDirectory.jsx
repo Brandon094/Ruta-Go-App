@@ -73,23 +73,23 @@ export function HistoryDirectory({ reservations, role }) {
       <div className="max-w-2xl mx-auto -mt-12 relative z-20 px-4 space-y-8 pb-20">
 
         {/* 📊 SUMMARY CARD */}
-        <div className="card-base bg-[#061426] dark:bg-[#061426] rounded-[2rem] p-6 grid grid-cols-3 gap-4 border-none shadow-2xl">
+        <div className="card-base rounded-[2rem] p-6 grid grid-cols-3 gap-4 border-none shadow-2xl bg-white dark:bg-[#061426] transition-colors duration-300">
            <div className="text-center space-y-1">
-              <span className="text-2xl font-black text-green-500">{stats.confirmed}</span>
-              <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Confirmados</p>
+              <span className="text-2xl font-black text-green-500 dark:text-green-400">{stats.confirmed}</span>
+              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Confirmados</p>
            </div>
-           <div className="text-center space-y-1 border-x border-white/5">
-              <span className="text-2xl font-black text-red-500">{stats.canceled}</span>
-              <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Cancelados</p>
+           <div className="text-center space-y-1 border-x border-slate-100 dark:border-white/5">
+              <span className="text-2xl font-black text-red-500 dark:text-red-400">{stats.canceled}</span>
+              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Cancelados</p>
            </div>
            <div className="text-center space-y-1">
-              <span className="text-2xl font-black text-orange-500">{stats.total}</span>
-              <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Total</p>
+              <span className="text-2xl font-black text-orange-500 dark:text-orange-400">{stats.total}</span>
+              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Total</p>
            </div>
         </div>
 
         <div className="space-y-6">
-          <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase italic tracking-tight px-2">
+          <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase italic tracking-tight px-2 transition-colors">
             Historial de Viajes ({filteredList.length})
           </h4>
 
