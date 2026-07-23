@@ -44,8 +44,9 @@ El portal implementa un sistema de **Control de Acceso Basado en Roles** mediant
 ## 🛰️ 4. Sincronización y Módulos
 La inteligencia del portal reside en la escucha selectiva de nodos de Firebase RTDB:
 
-*   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado y gestiona el fallback de capacidad de vehículos.
-*   **`driverService.js`**: Capa de servicios para operaciones atómicas (vincular conductor a vehículo mediante búsqueda por Email).
+*   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado, gestiona el fallback de capacidad de vehículos y sincroniza los datos del perfil actual desde `/usuarios`.
+*   **`driverService.js`**: Capa de servicios para operaciones atómicas.
+*   **Gestión de Perfil Unificada**: Lógica de escritura centralizada en el nodo `/usuarios` para garantizar el cumplimiento de las reglas de seguridad de Firebase en todos los roles (Admin/Owner/Driver/Passenger).
 *   **Gestión de Operadores**: Interfaz dividida en "Operando Hoy" y "Fuera de Servicio" para una rápida toma de decisiones.
 *   **UI Mirror (Planilla)**: Motor de renderizado dinámico con soporte para **Auto-Scroll** al próximo despacho y visualización de cupos reales.
 

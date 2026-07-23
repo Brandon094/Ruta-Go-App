@@ -18,10 +18,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **UI Mirror v1.5.1**: Actualización estética de la planilla web para ser un espejo fiel de Android, incluyendo el botón circular "+" y el sistema de badges de estado ("Finalizado", "Completado", "Disponible").
 - **Optimización de Temas**: Eliminación de residuos visuales en el modo claro dentro de las secciones de Perfil e Historial, logrando una adaptabilidad del 100% a las preferencias del usuario.
 - **Congelamiento de Acciones en Historial**: Botones de búsqueda y actualización deshabilitados visualmente para priorizar la visualización de datos en esta fase.
+- **Centralización de Perfil**: La gestión de información personal (Nombre/Teléfono) ahora se realiza exclusivamente en el nodo `/usuarios/` para todos los roles, garantizando el cumplimiento de permisos de Firebase.
 
 ### Corregido
 - **Blindaje de Componente Input**: Corrección de error crítico de renderizado de iconos (React objects as children) mediante un motor de renderizado seguro de átomos.
 - **Lógica de Asientos (Fallback)**: Corregido error que mostraba 0 cupos cuando el campo de disponibilidad no existía en el horario; ahora usa la capacidad real del vehículo como base.
+- **Error de Permisos (Profile)**: Corregido error `PERMISSION_DENIED` al intentar editar perfil como Socio o Admin mediante el redireccionamiento de escritura al nodo maestro de usuarios.
+- **Sincronización de Nombres**: Corregido problema donde los perfiles administrativos mostraban nombres genéricos; ahora el sistema consulta los datos reales en tiempo real desde Firebase.
 - **Inconsistencia de Fondos**: Corregidos contenedores con fondos oscuros "hardcoded" que afectaban la legibilidad en el Tema Claro.
 - **Mapeo de Datos Dual**: Unificación de nomenclatura entre `puestoReservado` y `reservedSeat` en la lógica de visualización para asegurar consistencia total con la base de datos de la App móvil.
 

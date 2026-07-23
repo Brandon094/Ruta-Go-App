@@ -48,7 +48,7 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
 
         <div className="text-right hidden sm:block">
           <p className="text-[11px] font-black text-slate-700 dark:text-white leading-none truncate max-w-[150px]">
-            {userEmail}
+            {role?.name || userEmail}
           </p>
           <p className={`text-[9px] font-bold uppercase tracking-tighter mt-1 ${
             isLoading ? 'text-slate-300' :
@@ -71,7 +71,7 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
           role?.type === 'DRIVER' ? 'bg-amber-500 shadow-amber-500/20' :
           role?.type === 'PASSENGER' ? 'bg-green-600 shadow-green-500/20' : 'bg-blue-600 shadow-blue-500/20'
         }`}>
-          {userEmail?.substring(0, 2).toUpperCase()}
+          {(role?.name || userEmail)?.substring(0, 2).toUpperCase()}
         </div>
       </div>
     </header>

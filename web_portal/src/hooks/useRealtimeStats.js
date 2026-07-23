@@ -41,11 +41,23 @@ export const useRealtimeStats = (user) => {
 
     const initializePortal = async () => {
       try {
+        // 0. Obtener datos base del usuario (Nombre/Teléfono) desde /usuarios
+        const userSnap = await get(ref(db, `usuarios/${user.uid}`));
+        const userData = userSnap.exists() ? userSnap.val() : {};
+        const profileName = userData.nombre || user.displayName || '';
+        const profilePhone = userData.telefono || '---';
+
         // 1. Resolver Admin
         const adminSnap = await get(ref(db, `admins/${user.uid}`));
         if (adminSnap.exists() && adminSnap.val() === true) {
           if (isMounted) {
-            setRole({ type: 'ADMIN', uid: user.uid, ownedPlates: [], name: 'Administrador Root' });
+            setRole({
+              type: 'ADMIN',
+              uid: user.uid,
+              ownedPlates: [],
+              name: profileName || 'Administrador Maestro',
+              phone: profilePhone
+            });
             setupSync('ADMIN', []);
           }
           return;
@@ -54,7 +66,6 @@ export const useRealtimeStats = (user) => {
         // 2. Resolver Dueño
         const ownerSnap = await get(ref(db, `dueños/${user.uid}`));
         if (ownerSnap.exists()) {
-          const ownerData = ownerSnap.val();
           const vSnap = await get(ref(db, 'vehiculos'));
           let ownedPlates = [];
           if (vSnap.exists()) {
@@ -68,8 +79,8 @@ export const useRealtimeStats = (user) => {
               type: 'OWNER',
               uid: user.uid,
               ownedPlates,
-              name: ownerData.nombre || ownerData.name || 'Socio Ruta-Go',
-              phone: ownerData.telefono || ownerData.phone || '---'
+              name: profileName || 'Socio Ruta-Go',
+              phone: profilePhone
             });
             setupSync('OWNER', ownedPlates);
           }
@@ -93,8 +104,8 @@ export const useRealtimeStats = (user) => {
               type: 'DRIVER',
               uid: user.uid,
               ownedPlates: plate ? [plate] : [],
-              name: driverData.nombre || driverData.name || 'Conductor Ruta-Go',
-              phone: driverData.telefono || driverData.phone || '---',
+              name: driverData.nombre || profileName || 'Conductor Ruta-Go',
+              phone: driverData.telefono || profilePhone,
               vehicle: vehicleDetails
             });
             setupSync('DRIVER', plate ? [plate] : []);
@@ -103,22 +114,27 @@ export const useRealtimeStats = (user) => {
         }
 
         // 4. Resolver Pasajero
-        const userSnap = await get(ref(db, `usuarios/${user.uid}`));
-        if (userSnap.exists()) {
-          const userData = userSnap.val();
+        if (userData.rol === 'usuario' || userData.rol === 'pasajero' || userData.nombre) {
           if (isMounted) {
             setRole({
               type: 'PASSENGER',
               uid: user.uid,
               ownedPlates: [],
-              name: userData.nombre || userData.name || 'Pasajero Ruta-Go',
-              phone: userData.telefono || userData.phone || '---'
+              name: profileName || 'Pasajero Ruta-Go',
+              phone: profilePhone
             });
             setupSync('PASSENGER', []);
           }
         } else if (isMounted) {
-          setRole({ type: null, uid: null, ownedPlates: [] });
-          setStats(prev => ({ ...prev, loading: false }));
+          // Si no es admin, dueño ni conductor, pero está en usuarios, tratar como pasajero por defecto
+          setRole({
+            type: 'PASSENGER',
+            uid: user.uid,
+            ownedPlates: [],
+            name: profileName || 'Usuario Ruta-Go',
+            phone: profilePhone
+          });
+          setupSync('PASSENGER', []);
         }
       } catch (err) {
         console.error("Error resolviendo rol:", err);
@@ -130,6 +146,19 @@ export const useRealtimeStats = (user) => {
       const now = new Date();
       const offset = now.getTimezoneOffset() * 60000;
       const todayISO = new Date(now.getTime() - offset).toISOString().split('T')[0];
+
+      // --- 👤 MI PERFIL (Sincronización de Nombre/Teléfono en tiempo real) ---
+      const myProfileSub = onValue(ref(db, `usuarios/${user.uid}`), (snap) => {
+        if (snap.exists()) {
+          const data = snap.val();
+          setRole(prev => ({
+            ...prev,
+            name: data.nombre || prev.name,
+            phone: data.telefono || prev.phone
+          }));
+        }
+      });
+      unsubs.push(myProfileSub);
 
       // --- 👥 USUARIOS (Solo para el Jefe) ---
       if (userType === 'ADMIN') {

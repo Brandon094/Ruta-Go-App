@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft, User, Phone, Mail, Lock, Hash, Star, Car, Palette, Users, Calendar,
-  Loader2, CheckCircle2, X, Camera, Pencil
+  Loader2, CheckCircle2, X, Camera, Pencil, AlertCircle
 } from 'lucide-react';
 import { ref, update } from "firebase/database";
 import { db } from '../../firebase';
@@ -10,9 +10,18 @@ import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
 
 export function ProfileDirectory({ user: currentUser, role }) {
+  // 1. Mover definiciones de constantes al tope para evitar ReferenceError
+  const name = role?.name || currentUser?.displayName || 'Usuario Ruta-Go';
+  const phone = role?.phone || '---';
+  const roleLabel = role?.type === 'ADMIN' ? 'Administrador Maestro' :
+                    role?.type === 'OWNER' ? 'Socio de Flota' :
+                    role?.type === 'DRIVER' ? 'Conductor Activo' :
+                    'Pasajero Activo';
+
   const [isEditing, setIsEditing] = useState(false);
   const [editTab, setEditTab] = useState('PERSONAL'); // 'PERSONAL' | 'VEHICULO'
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
 
   // Form States
   const [newName, setNewName] = useState('');
@@ -26,29 +35,57 @@ export function ProfileDirectory({ user: currentUser, role }) {
   const [vAnio, setVAno] = useState('');
   const [vCapacidad, setVCapacidad] = useState('');
 
-  const name = role?.name || currentUser?.displayName || 'Usuario Ruta-Go';
-  const phone = role?.phone || '---';
-  const roleLabel = role?.type === 'ADMIN' ? 'Administrador Maestro' :
-                    role?.type === 'OWNER' ? 'Socio de Flota' :
-                    role?.type === 'DRIVER' ? 'Conductor Activo' :
-                    'Pasajero Activo';
+  // Sincronizar estados con datos actuales al entrar en modo edición
+  useEffect(() => {
+    if (isEditing) {
+      setNewName(role?.name && role.name !== 'Socio Ruta-Go' ? role.name : '');
+      setNewPhone(role?.phone && role.phone !== '---' ? role.phone : '');
+
+      if (role?.vehicle) {
+        setVPlaca(role.vehicle.placa || role.vehicle.id || '');
+        setVMarca(role.vehicle.marca || '');
+        setVModelo(role.vehicle.modelo || '');
+        setVColor(role.vehicle.color || '');
+        setVAno(role.vehicle.año || role.vehicle.ano || '');
+        setVCapacidad(role.vehicle.capacidad?.toString() || '');
+      }
+    }
+  }, [isEditing, role]);
 
   const handleSavePersonal = async () => {
-    if (!newName && !newPhone) return;
+    if (!role?.uid) {
+      setMessage({ type: 'error', text: 'Error de sesión: UID no encontrado' });
+      return;
+    }
+
     setLoading(true);
+    setMessage(null);
     try {
-      const updates = {};
-      const node = role.type === 'ADMIN' ? 'admins' :
-                   role.type === 'OWNER' ? 'dueños' :
-                   role.type === 'DRIVER' ? 'conductores' : 'usuarios';
+      // 1. Actualizar en el nodo maestro de usuarios (Permitido para todos los roles)
+      const userProfileRef = ref(db, `usuarios/${role.uid}`);
+      await update(userProfileRef, {
+        nombre: newName || name,
+        telefono: newPhone || phone
+      });
 
-      if (newName) updates[`${node}/${role.uid}/nombre`] = newName;
-      if (newPhone) updates[`${node}/${role.uid}/telefono`] = newPhone;
+      // 2. Si es conductor, sincronizar también en su nodo operativo
+      if (role.type === 'DRIVER') {
+        const driverProfileRef = ref(db, `conductores/${role.uid}`);
+        await update(driverProfileRef, {
+          nombre: newName || name,
+          telefono: newPhone || phone
+        });
+      }
 
-      await update(ref(db), updates);
-      setIsEditing(false);
+      setMessage({ type: 'success', text: 'Perfil actualizado con éxito' });
+      setTimeout(() => {
+        setIsEditing(false);
+        setMessage(null);
+      }, 1500);
     } catch (err) {
-      console.error(err);
+      console.error("Error al actualizar perfil:", err);
+      // Mostrar el error real de Firebase para depuración
+      setMessage({ type: 'error', text: 'Error: ' + err.code || 'Sin permisos' });
     } finally {
       setLoading(false);
     }
@@ -58,26 +95,36 @@ export function ProfileDirectory({ user: currentUser, role }) {
     const vehicleId = role.vehicle?.id || vPlaca;
     if (!vehicleId) return;
     setLoading(true);
+    setMessage(null);
     try {
       const vehicleUpdates = {};
       if (vMarca) vehicleUpdates.marca = vMarca;
       if (vModelo) vehicleUpdates.modelo = vModelo;
       if (vColor) vehicleUpdates.color = vColor;
-      if (vAnio) vehicleUpdates.año = vAnio;
-      if (vCapacidad) vehicleUpdates.capacidad = parseInt(vCapacidad);
+      if (vAnio) {
+        vehicleUpdates.año = vAnio;
+        vehicleUpdates.ano = vAnio; // Mapeo Dual
+      }
+      if (vCapacidad) {
+        const cap = parseInt(vCapacidad);
+        if (!isNaN(cap)) vehicleUpdates.capacidad = cap;
+      }
 
       await update(ref(db, `vehiculos/${vehicleId}`), vehicleUpdates);
 
-      if (vPlaca && vPlaca !== role.vehicle?.id) {
+      // Si cambió la placa, actualizar en el perfil del conductor
+      if (vPlaca && vPlaca !== role.vehicle?.id && role.type === 'DRIVER') {
         await update(ref(db, `conductores/${role.uid}`), {
           placaVehiculo: vPlaca,
           vehiculoId: vPlaca
         });
       }
 
-      setIsEditing(false);
+      setMessage({ type: 'success', text: 'Vehículo actualizado correctamente' });
+      setTimeout(() => setIsEditing(false), 1500);
     } catch (err) {
       console.error(err);
+      setMessage({ type: 'error', text: 'Error al actualizar vehículo' });
     } finally {
       setLoading(false);
     }
@@ -115,6 +162,15 @@ export function ProfileDirectory({ user: currentUser, role }) {
         )}
 
         <div className="max-w-xl mx-auto p-6 space-y-10 pb-32 mt-4">
+          {message && (
+            <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in fade-in zoom-in-95 duration-300 ${
+              message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'
+            }`}>
+              {message.type === 'success' ? <CheckCircle2 size={18}/> : <AlertCircle size={18}/>}
+              <p className="text-xs font-black uppercase tracking-tight">{message.text}</p>
+            </div>
+          )}
+
           {editTab === 'PERSONAL' ? (
             <>
               {/* Información Actual */}
