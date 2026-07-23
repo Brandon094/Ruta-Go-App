@@ -96,15 +96,15 @@ export function EditDriverModal({ driver, onClose, onRefresh }) {
               </h4>
               <Input
                 label="Nombre Legal"
-                icon={User}
+                icon={<User size={18} />}
                 value={formData.nombre}
-                onChange={(e) => setFormData({...formData, nombre: e.target.value})}
+                onChange={(val) => setFormData({...formData, nombre: val})}
               />
               <Input
                 label="Placa Asignada"
-                icon={Hash}
+                icon={<Hash size={18} />}
                 value={formData.placaVehiculo}
-                onChange={(e) => setFormData({...formData, placaVehiculo: e.target.value.toUpperCase()})}
+                onChange={(val) => setFormData({...formData, placaVehiculo: val.toUpperCase()})}
               />
 
               <div className="space-y-1.5 group">

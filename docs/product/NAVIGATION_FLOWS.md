@@ -12,14 +12,17 @@ La vitrina comercial del Holding.
 
 ---
 
-## 💼 2. Flujo Administrativo (Portal Web)
-Diseñado para la toma de decisiones basada en datos.
-1.  **Gateway de Acceso**: Login centralizado para Admins y Owners.
-2.  **Dashboard de Mando**: Resumen de KPIs financieros y operativos.
-3.  **Gestión de Flota**:
+## 💼 2. Flujo Administrativo y de Operaciones (Portal Web)
+Diseñado para la gestión y toma de decisiones.
+1.  **Gateway de Acceso**: Login centralizado para Admins, Owners, Conductores y Pasajeros (v1.5.1).
+2.  **Dashboard de Mando**: Resumen de KPIs financieros y operativos adaptado al rol.
+3.  **Gestión de Flota (Owners/Admins)**:
     *   Directorio de conductores con vinculación por Email.
-    *   Visualización de planilla de despachos en tiempo real.
-4.  **Legal Hub**: Navegación interna hacia Términos y Privacidad.
+    *   Visualización de planilla de despachos con auto-scroll inteligente.
+4.  **Dashboard de Pasajero Web (Especial iPhone)**:
+    *   Consulta de horarios en tiempo real.
+    *   Historial de reservas con navegación rápida al centro de despachos.
+5.  **Legal Hub**: Navegación interna hacia Términos y Privacidad.
 
 ---
 

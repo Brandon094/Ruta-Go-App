@@ -9,13 +9,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Auto-Scroll Inteligente**: La planilla web ahora se desplaza automáticamente hacia el próximo viaje disponible al cargar o cambiar de ruta, igualando la comodidad de la App móvil.
 - **Sincronización de Capacidad Real**: Integración directa con el nodo `/vehiculos/` para mostrar la capacidad y asientos disponibles exactos de cada bus asignado.
 - **Distribución Adaptativa Desktop**: Rediseño de la tarjeta de horarios para aprovechar el ancho de pantallas grandes, distribuyendo la información de forma horizontal sin perder la esencia móvil.
+- **Flujo de Navegación Mejorado**: Botón de redirección al Dashboard desde el historial vacío para incentivar la primera reserva del pasajero.
+- **Caja de Beneficios en Registro**: Nueva sección dinámica que explica las ventajas del perfil (Pasajero o Socio) seleccionado para guiar al usuario.
+- **Centro de Ayuda Enriquecido**: Guía del pasajero expandida con descripciones detalladas sobre itinerarios, puntos de fidelidad y Web App en iPhone.
 
 ### Cambiado
 - **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`) para eliminar redundancia y facilitar el mantenimiento.
 - **UI Mirror v1.5.1**: Actualización estética de la planilla web para ser un espejo fiel de Android, incluyendo el botón circular "+" y el sistema de badges de estado ("Finalizado", "Completado", "Disponible").
 - **Optimización de Temas**: Eliminación de residuos visuales en el modo claro dentro de las secciones de Perfil e Historial, logrando una adaptabilidad del 100% a las preferencias del usuario.
+- **Congelamiento de Acciones en Historial**: Botones de búsqueda y actualización deshabilitados visualmente para priorizar la visualización de datos en esta fase.
 
 ### Corregido
+- **Blindaje de Componente Input**: Corrección de error crítico de renderizado de iconos (React objects as children) mediante un motor de renderizado seguro de átomos.
+- **Lógica de Asientos (Fallback)**: Corregido error que mostraba 0 cupos cuando el campo de disponibilidad no existía en el horario; ahora usa la capacidad real del vehículo como base.
 - **Inconsistencia de Fondos**: Corregidos contenedores con fondos oscuros "hardcoded" que afectaban la legibilidad en el Tema Claro.
 - **Mapeo de Datos Dual**: Unificación de nomenclatura entre `puestoReservado` y `reservedSeat` en la lógica de visualización para asegurar consistencia total con la base de datos de la App móvil.
 

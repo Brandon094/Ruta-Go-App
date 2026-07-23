@@ -16,14 +16,16 @@ export default function UserManual({ role, onBack, isTab = false }) {
 
   const sections = {
     PASSENGER: {
-      title: "Guía del Pasajero",
+      title: "Centro de Ayuda al Pasajero",
       icon: <Users className="text-blue-500" />,
       color: "blue",
       steps: [
-        { title: "Búsqueda de Horarios", desc: "Usa las pestañas en el Dashboard para alternar entre rutas. El sistema marcará automáticamente el próximo viaje disponible con un borde naranja brillante.", icon: <Calendar /> },
-        { title: "Reserva de Asiento", desc: "Haz clic en 'Reservar' en el horario deseado. Se abrirá el mapa del bus; toca un asiento libre (blanco) para seleccionarlo.", icon: <MousePointer2 /> },
-        { title: "Confirmación", desc: "Verifica el precio y confirma tu reserva. Tu asiento quedará bloqueado instantáneamente para los demás.", icon: <Ticket /> },
-        { title: "Instalación en iPhone", desc: "En Safari, toca 'Compartir' > 'Añadir a pantalla de inicio'. Así tendrás acceso rápido como si fuera una App nativa.", icon: <Zap /> }
+        { title: "Consulta de Itinerarios", desc: "Navega entre las rutas principales (Nátaga ↔ La Plata) usando las pestañas superiores. El sistema resalta con un borde naranja y la etiqueta 'SIGUIENTE' el viaje más próximo a tu hora actual para que no pierdas tiempo buscando.", icon: <Calendar /> },
+        { title: "Disponibilidad en Vivo", desc: "Observa el icono del bus en cada horario; el número que lo acompaña indica los cupos libres en tiempo real. Si ves la etiqueta 'COMPLETADO' en rojo, significa que el vehículo ya no tiene asientos disponibles.", icon: <Users /> },
+        { title: "Reserva de Asientos", desc: "Próximamente podrás tocar el botón naranja (+) para abrir el mapa interactivo del vehículo. Podrás elegir tu ubicación preferida (ventana o pasillo) y bloquearla instantáneamente desde tu iPhone o PC.", icon: <MousePointer2 /> },
+        { title: "Tu Historial Digital", desc: "En la sección 'Historial' encontrarás todas tus reservas pasadas y futuras. Desde allí podrás verificar el estado de tus pagos, ver el número de asiento asignado y descargar tu comprobante de viaje.", icon: <Ticket /> },
+        { title: "Puntos Go & Estatus", desc: "Cada vez que viajas con Ruta-Go acumulas puntos automáticamente. Revisa tu nivel de fidelidad en tu perfil; ¡los pasajeros frecuentes obtienen beneficios exclusivos y prioridad en despachos!", icon: <Zap /> },
+        { title: "Ruta-Go en tu iPhone", desc: "Para una experiencia premium, abre el portal en Safari, toca el botón 'Compartir' (cuadrado con flecha) y selecciona 'Añadir a pantalla de inicio'. La web se comportará como una App nativa sin ocupar espacio en tu memoria.", icon: <Smartphone /> }
       ]
     },
     DRIVER: {

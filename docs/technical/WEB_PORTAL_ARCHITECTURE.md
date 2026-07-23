@@ -44,9 +44,10 @@ El portal implementa un sistema de **Control de Acceso Basado en Roles** mediant
 ## 🛰️ 4. Sincronización y Módulos
 La inteligencia del portal reside en la escucha selectiva de nodos de Firebase RTDB:
 
-*   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado.
+*   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado y gestiona el fallback de capacidad de vehículos.
 *   **`driverService.js`**: Capa de servicios para operaciones atómicas (vincular conductor a vehículo mediante búsqueda por Email).
 *   **Gestión de Operadores**: Interfaz dividida en "Operando Hoy" y "Fuera de Servicio" para una rápida toma de decisiones.
+*   **UI Mirror (Planilla)**: Motor de renderizado dinámico con soporte para **Auto-Scroll** al próximo despacho y visualización de cupos reales.
 
 ---
 
@@ -64,7 +65,7 @@ web_portal/
 ├── public/assets/      # Logos oficiales (Naranja/Navy)
 ├── src/
 │   ├── components/     # UI Atómica
-│   │   ├── ui/         # Átomos: Input.jsx, Badge.jsx (DRY)
+│   │   ├── ui/         # Átomos: Input.jsx (Renderizado Seguro), Badge.jsx (DRY)
 │   │   ├── dashboard/  # Overviews por Rol (Admin, Owner, etc.)
 │   │   ├── history/    # Historial de Reservas
 │   │   ├── profile/    # Perfil y Gestión de Vehículos
@@ -74,7 +75,7 @@ web_portal/
 │   ├── App.jsx         # Orquestador (Refactorizado v1.5.1)
 │   ├── LandingPage.jsx # Ficha Pública
 │   ├── Login.jsx       # Gateway de Acceso
-│   └── Register.jsx    # Registro Universal
+│   └── Register.jsx    # Registro con Guía de Beneficios
 └── index.html          # Punto de entrada
 ```
 

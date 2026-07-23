@@ -170,15 +170,40 @@ export default function Register({ onBack, initialMode = 'owner' }) {
                 <TrendingUp size={14} /> Soy Socio
               </button>
             </div>
+
+            {/* Info Box de Rol */}
+            <div className="p-5 bg-primary-500/5 dark:bg-primary-500/10 rounded-[1.5rem] border border-primary-500/10 space-y-3 animate-in fade-in slide-in-from-top-2 duration-500">
+               <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-primary-500 rounded-lg text-white">
+                    {mode === 'owner' ? <TrendingUp size={14} /> : <Users size={14} />}
+                  </div>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-primary-600 dark:text-primary-400">Beneficios del Perfil</h4>
+               </div>
+               <ul className="space-y-2">
+                  {mode === 'owner' ? (
+                    <>
+                      <RoleBenefit text="Control room total de tus vehículos e ingresos." />
+                      <RoleBenefit text="Gestión de conductores por correo corporativo." />
+                      <RoleBenefit text="Métricas de ocupación y rendimiento en tiempo real." />
+                    </>
+                  ) : (
+                    <>
+                      <RoleBenefit text="Reserva tu asiento favorito desde Safari o Chrome." />
+                      <RoleBenefit text="Acumula Puntos Go y sube de nivel para beneficios PRO." />
+                      <RoleBenefit text="Historial unificado de viajes y tiquetes digitales." />
+                    </>
+                  )}
+               </ul>
+            </div>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-6">
             <Input
               label="Nombre Completo"
               placeholder="Ej: Juan Pérez"
-              icon={User}
+              icon={<User size={18} />}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={setName}
               required
             />
 
@@ -186,18 +211,18 @@ export default function Register({ onBack, initialMode = 'owner' }) {
               label="Correo Electrónico"
               type="email"
               placeholder="tu@email.com"
-              icon={Mail}
+              icon={<Mail size={18} />}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={setEmail}
               required
             />
 
             <Input
               label="Teléfono / WhatsApp"
               placeholder="321 000 0000"
-              icon={Phone}
+              icon={<Phone size={18} />}
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={setPhone}
               required
             />
 
@@ -205,9 +230,9 @@ export default function Register({ onBack, initialMode = 'owner' }) {
               label="Contraseña"
               type="password"
               placeholder="••••••••"
-              icon={Lock}
+              icon={<Lock size={18} />}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={setPassword}
               required
             />
 
@@ -239,5 +264,14 @@ export default function Register({ onBack, initialMode = 'owner' }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function RoleBenefit({ text }) {
+  return (
+    <li className="flex gap-3 text-[10px] font-bold text-slate-500 dark:text-white/40 leading-relaxed uppercase">
+       <CheckCircle2 size={12} className="text-primary-500 shrink-0 mt-0.5" />
+       {text}
+    </li>
   );
 }

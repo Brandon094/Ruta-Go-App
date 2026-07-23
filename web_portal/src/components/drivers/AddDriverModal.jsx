@@ -104,9 +104,9 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
                   label="Correo Electrónico"
                   placeholder="conductor@gmail.com"
                   type="email"
-                  icon={Mail}
+                  icon={<Mail size={18} />}
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(val) => setFormData({...formData, email: val})}
                   required
                 />
 
@@ -147,15 +147,15 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
-                <Input label="Placa" icon={Hash} placeholder="ABC-123" value={formData.placa} onChange={(e) => setFormData({...formData, placa: e.target.value.toUpperCase()})} required />
-                <Input label="Año" icon={Calendar} type="number" value={formData.ano} onChange={(e) => setFormData({...formData, ano: e.target.value})} required />
+                <Input label="Placa" icon={<Hash size={18} />} placeholder="ABC-123" value={formData.placa} onChange={(val) => setFormData({...formData, placa: val.toUpperCase()})} required />
+                <Input label="Año" icon={<Calendar size={18} />} type="number" value={formData.ano} onChange={(val) => setFormData({...formData, ano: val})} required />
               </div>
 
-              <Input label="Modelo" icon={Bus} placeholder="Ej: Nissan Frontier" value={formData.modelo} onChange={(e) => setFormData({...formData, modelo: e.target.value})} required />
-              <Input label="Capacidad" icon={Settings} type="number" value={formData.capacidad} onChange={(e) => setFormData({...formData, capacidad: e.target.value})} required />
+              <Input label="Modelo" icon={<Bus size={18} />} placeholder="Ej: Nissan Frontier" value={formData.modelo} onChange={(val) => setFormData({...formData, modelo: val})} required />
+              <Input label="Capacidad" icon={<Settings size={18} />} type="number" value={formData.capacidad} onChange={(val) => setFormData({...formData, capacidad: val})} required />
 
               {role?.type === 'ADMIN' && (
-                 <Input label="ID del Dueño (Opcional)" icon={User} placeholder="UID del dueño" value={formData.ownerId} onChange={(e) => setFormData({...formData, ownerId: e.target.value})} />
+                 <Input label="ID del Dueño (Opcional)" icon={<User size={18} />} placeholder="UID del dueño" value={formData.ownerId} onChange={(val) => setFormData({...formData, ownerId: val})} />
               )}
             </div>
           </div>
