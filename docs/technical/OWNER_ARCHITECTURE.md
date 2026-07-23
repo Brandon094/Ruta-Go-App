@@ -1,88 +1,53 @@
-# 🏗️ Arquitectura del Módulo de Dueños y Desacoplamiento de Activos
+# 🏗️ Arquitectura del Módulo de Dueños y Aislamiento de Activos (v1.5.0)
 
-Este documento define la reingeniería de la base de datos y la lógica de negocio para permitir una gestión de flota escalable, separando la propiedad del vehículo de la operación diaria (conducción).
-
----
-
-## 🎯 1. El Problema de la Relación Estática
-Actualmente, el sistema asume una relación 1:1 persistente entre un conductor y un vehículo (`conductorId` en el nodo `/vehiculos/` y `placaVehiculo` en el nodo `/conductores/`). 
-
-**Limitaciones actuales:**
-*   Un dueño no puede tener múltiples vehículos vinculados a su cuenta.
-*   Un vehículo no puede ser manejado por diferentes conductores (turnos rotativos en un mismo carro).
-*   No existe un panel consolidado para que el inversor (dueño) vea el rendimiento de su activo.
+Este documento detalla la implementación del modelo multi-inquilino que permite la gestión escalable de flota, separando la propiedad de los activos de su operación diaria.
 
 ---
 
-## 🛠️ 2. Nueva Estructura NoSQL (Desacoplamiento)
+## ✅ 1. Estado de Implementación
+El modelo de Dueños ha sido desplegado exitosamente en la versión **v1.5.0 Ecosystem**. El sistema ha pasado de una relación estática 1:1 a una arquitectura de **Propiedad Dinámica**.
 
-### 2.1 Nodo Maestro: `/dueños/` (Nuevo)
-Centraliza la identidad del propietario.
-```json
-{
-  "owner_uid": {
-    "nombre": "Nombre Propietario",
-    "email": "dueño@email.com",
-    "telefono": "310...",
-    "vehiculos": ["PLACA1", "PLACA2"], // Lista de activos
-    "plan": "freemium" // [freemium, premium]
-  }
-}
-```
-
-### 2.2 Nodo: `/vehiculos/` (Refactorizado)
-El vehículo ya no pertenece a un conductor, sino a un dueño.
-```json
-{
-  "PLACA1": {
-    "modelo": "Nissan Frontier",
-    "capacidad": 13,
-    "dueñoId": "owner_uid", // Referencia al propietario
-    "conductorActual": "driver_uid" // ID del conductor asignado hoy (dinámico)
-  }
-}
-```
-
-### 2.3 Nodo: `/asignaciones/` (Nuevo)
-Registra qué conductor maneja qué bus en una fecha específica.
-```json
-{
-  "2026-07-20": {
-    "PLACA1": "driver_uid_A",
-    "PLACA2": "driver_uid_B"
-  }
-}
-```
+### Hitos Logrados:
+*   Desacoplamiento total entre Vehículo y Conductor.
+*   Lanzamiento del **Go Business Dashboard** (Web Portal).
+*   Implementación de aislamiento de datos mediante `ownerId`.
 
 ---
 
-## 📈 3. Dashboard del Dueño (Go Business - Modelo SaaS)
-Interfaz especializada para la gestión de activos bajo un esquema Freemium/Premium.
+## 🛠️ 2. Estructura NoSQL Finalizada
 
-### 3.1 Nivel Freemium (Base):
-*   **Estado de Flota**: Mapa o lista con el estado actual de cada bus.
-*   **Monitor de Conductores**: Visualización de quién opera cada activo en el día.
-*   **Ingresos Brutos**: Reporte simple de la sumatoria de tiquetes vendidos.
+### 2.1 Nodo Maestro: `/dueños/`
+Controla el acceso administrativo al portal web.
+*   `uid`: `true` (Acceso total al dashboard de sus activos).
+*   `uid`: `"pendiente"` (Registro nuevo esperando habilitación).
 
-### 3.2 Nivel Premium (Suscripción):
-*   **Contabilidad Automatizada**: Cálculo neto restando comisiones y gastos registrados.
-*   **Módulo de Egresos**: Gestión de gastos operativos (combustible, repuestos).
-*   **Alertas Legales**: Notificaciones Push preventivas para SOAT y Seguros.
-*   **Prioridad Algorítmica**: Ventaja competitiva en la rotación de turnos.
-
----
-
-## 🔐 4. Reglas de Seguridad (Gobernanza)
-*   Solo el `dueñoId` puede ver las estadísticas financieras de sus vehículos.
-*   El `conductorId` solo puede ver el inventario del vehículo que tiene asignado hoy.
-*   El administrador de ChopCode mantiene la supervisión global.
+### 2.2 Nodo: `/vehiculos/`
+El activo centraliza las referencias de mando.
+*   `ownerId`: UID del socio propietario (Filtro maestro del dashboard).
+*   `driverId`: UID del conductor vinculado (Filtro para la App móvil).
+*   `capacidad`: Valor técnico que resetea el inventario de asientos cada noche.
 
 ---
 
-## 🚀 5. Plan de Migración
-1.  **Script de Limpieza**: Migrar el campo `conductorId` de los vehículos actuales al nuevo nodo `/dueños/` (creando perfiles iniciales).
-2.  **Actualización de Modelos**: Modificar `Vehicle.java` y `Driver.java` para reflejar las nuevas referencias.
-3.  **UI Dueño**: Crear el nuevo flujo de Login/Home especializado para el rol OWNER.
+## 📈 3. Inteligencia del Dashboard (RBAC)
+El portal web utiliza lógica de filtrado en tiempo real para garantizar la privacidad comercial:
+
+1.  **Resolución de Placas**: El sistema identifica qué vehículos pertenecen al socio mediante el cruce de `ownerId`.
+2.  **Agregación Financiera**: Las estadísticas de ingresos se calculan sumando solo las reservas vinculadas a las placas del socio.
+3.  **Monitor de Operadores**: Visualización de conductores vinculados exclusivamente a su flota.
 
 ---
-**Chop Code Solutions - Ingeniería de Producto v1.3.0**
+
+## 🔐 4. Seguridad de Datos
+*   **Aislamiento Comercial**: Un socio no tiene visibilidad sobre los ingresos o la ocupación detallada de la competencia.
+*   **Protección Habeas Data**: El socio tiene acceso a los nombres de los conductores asignados a sus buses, pero no tiene acceso a la base de datos global de pasajeros (`/usuarios/`).
+
+---
+
+## 🚀 5. Próximos Pasos (Fase 3 SaaS)
+1.  **Módulo Contable Premium**: Automatización del cálculo (Ingresos - Egresos - Comisión).
+2.  **Alertas SOAT/Tecno**: Sistema de telemetría legal con cuenta regresiva.
+3.  **Insignia "Vehículo Estrella"**: Algoritmo de reputación basado en puntualidad y calificación de pasajeros.
+
+---
+**ChopCode Solutions - Ingeniería de Producto 2026**

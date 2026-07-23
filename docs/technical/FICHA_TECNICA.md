@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.3.0 Stable
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.5.0 Ecosystem
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura.
 
@@ -6,54 +6,47 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 
 ## 🏗️ 1. Identificación de la Suite
 *   **Nombre Comercial:** Ecosistema "Go".
-*   **Plataformas Incluidas:** RutaGo (Android), AgroGo (Multiplataforma), CargoGo (Web).
+*   **Plataformas:** Ruta-Go (App & Web), Agro-Go (Flutter), Cargo-Go (Logística).
 *   **Fabricante:** ChopCode Solutions.
 *   **Titular:** Brandon Daza Cerquera.
-*   **Versión RutaGo:** v1.3.0 (Android 15 Ready).
+*   **Versión Global:** v1.5.0.
 
 ---
 
-## 💻 2. Stack de Desarrollo por Módulo
+## 💻 2. Stack de Desarrollo
 
-### 2.1 RutaGo (Movilidad)
-*   **Lenguaje:** Java 17.
-*   **Framework:** Android SDK (Nativo).
-*   **Arquitectura:** MVVM Reactivo.
+### 2.1 Ecosistema Móvil (Ruta-Go Android)
+*   **Lenguaje:** Java 17 (Target SDK 35 - Android 15).
+*   **Framework:** Android SDK Nativo.
+*   **Arquitectura:** MVVM Reactivo con LiveData.
+*   **UI/UX:** XML con Material Design 3 y WindowUtils (Edge-to-Edge).
 
-### 2.2 AgroGo (Gestión Agro)
-*   **Lenguaje:** Dart.
-*   **Framework:** Flutter (Mobile).
-*   **Base de Datos Local:** Isar Database (Offline-first).
+### 2.2 Ecosistema Web (Ruta-Go Portal)
+*   **Framework:** React 18.
+*   **Build Tool:** Vite.
+*   **Estilos:** Tailwind CSS 3.
+*   **Arquitectura:** SPA (Single Page Application).
 
-### 2.3 CargoGo & Web Hub (Logística)
-*   **Lenguaje:** HTML5/CSS3/JavaScript (Vue.js o React).
-*   **Hosting:** Firebase Hosting (Infraestructura de Google Cloud).
-
----
-
-## 🛰️ 3. Infraestructura Cloud Unificada
-*   **Autenticación:** Firebase Auth con Identidad Única (SSO).
-*   **Bases de Datos:**
-    *   `Realtime Database`: Baja latencia para RutaGo.
-    *   `Cloud Firestore`: Persistencia estructurada para AgroGo y CargoGo.
-*   **Backend Serverless:** Firebase Cloud Functions para automatización de procesos (Reset de horarios, subastas, limpiezas).
-*   **Almacenamiento:** Firebase Storage para perfiles y documentos.
+### 2.3 Infraestructura Backend (Firebase Cloud)
+*   **Hosting:** Firebase Hosting (HTTPS/SSL).
+*   **Cloud Logic:** Cloud Functions (Node.js 22).
+*   **Bases de Datos:** Realtime Database (RTDB) & Cloud Firestore.
+*   **Auth:** Firebase Authentication (SSO).
 
 ---
 
-## 🛠️ 4. Capacidades del Ecosistema
-1.  **Sincronización Híbrida**: Gestión de datos reactivos y estructurados.
-2.  **Operación Offline Rural**: AgroGo garantiza funcionamiento sin internet en el campo.
-3.  **Subasta Logística**: CargoGo permite optimizar fletes mediante pujas ciegas.
-4.  **Loyalty Hub**: Sistema de puntos unificado para incentivar el uso de la suite.
+## 🛰️ 3. Capacidades y Rendimiento
+1.  **Latencia Ultra-baja**: Motor de reservas con sincronización en milisegundos.
+2.  **Aislamiento de Datos (RBAC)**: Segregación total entre perfiles de Admin, Socio, Conductor y Pasajero.
+3.  **Seguridad**: Blindaje mediante reglas NoSQL y ProGuard.
+4.  **Cumplimiento Legal**: Habeas Data (Ley 1581) y Derecho al Olvido automatizado.
 
 ---
 
-## 🔑 5. Gestión de APIs y Servicios Cloud
-La plataforma utiliza llaves restringidas vinculadas al SHA-1 de producción para:
-*   **Google Maps Platform**: Mapas y cálculo de rutas.
-*   **FCM V1**: Notificaciones push inteligentes.
-*   **Generative Language API**: Preparado para IA en soporte al cliente.
+## 🔑 4. Servicios Cloud Integrados
+*   **FCM v1**: Mensajería push bidireccional.
+*   **Google Auth**: Identidad federada.
+*   **Google Cloud Storage**: Persistencia de archivos y perfiles.
 
 ---
 **© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural.**

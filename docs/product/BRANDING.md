@@ -1,69 +1,48 @@
-# 🎨 Manual de Identidad Visual - Ruta-Go
+# 🎨 Manual de Identidad Visual - Ruta-Go v1.5.0
 
-Este documento define las directrices estéticas, paleta de colores y el uso correcto de los elementos de marca para garantizar una experiencia visual coherente y profesional en toda la plataforma **Ruta-Go**.
+Este documento define las directrices estéticas, paleta de colores y el uso de marca para garantizar una experiencia visual coherente en la App móvil (Android) y el Portal Web (React).
 
 ---
 
 ## 1. Concepto de Marca
-Ruta-Go proyecta una imagen de **agilidad, seguridad y modernidad**. La combinación del naranja vibrante con el azul marino (Navy) busca transmitir la energía del viaje y la seriedad del servicio intermunicipal.
+Ruta-Go proyecta **agilidad, seguridad y modernidad**. La combinación del naranja vibrante con el azul marino (Navy) transmite energía y seriedad corporativa.
 
 ---
 
 ## 2. Paleta de Colores Oficial
 
-### 🟠 Colores Primarios (Acción y Energía)
-Se utilizan para botones principales, estados de selección y elementos de énfasis.
-
+### 🟠 Colores Primarios (Energía)
 | Nombre | Hexadecimal | Uso |
 |:---|:---|:---|
-| **Naranja Ruta-Go** | `#FF7A1A` | Botones FAB, Iconos de acento, Selección de asientos. |
-| **Naranja Vibrante** | `#FF7D00` | Alias de marca para marketing. |
+| **Naranja Ruta-Go** | `#FF7A1A` | Botones, Iconos de acento, Selección de asientos. |
+| **Naranja Vibrante** | `#FF7D00` | Branding de marketing y alertas. |
 
-### 🔵 Colores Secundarios (Estructura y Elegancia)
-Definen la profundidad y el soporte visual de la aplicación.
-
+### 🔵 Colores Secundarios (Estructura)
 | Nombre | Hexadecimal | Uso |
 |:---|:---|:---|
-| **Navy Deep** | `#061426` | Fondo de pantalla (Dark Theme), Splash Screen. |
-| **Navy Card** | `#061929` | Fondos de tarjetas y contenedores. |
-| **Navy Text** | `#B5C5CD` | Textos secundarios y leyendas. |
+| **Navy Deep** | `#061426` | Fondos de App (Dark), Sidebar Web, Botones Admin. |
+| **Navy Card** | `#061929` | Contenedores y tarjetas oscuras. |
+| **Navy Text** | `#B5C5CD` | Textos secundarios y descripciones. |
 
 ---
 
-## 🚥 3. Colores de Estado (Semántica)
-Garantizan que el usuario entienda el estado de sus acciones de forma intuitiva.
-
-*   **Éxito (`#10B981`):** Reservas confirmadas, asientos disponibles.
-*   **Advertencia (`#F59E0B`):** Reservas pendientes, alertas de sistema.
-*   **Error (`#EF4444`):** Reservas canceladas, errores de red.
+## ✨ 3. Estética Web: Glassmorphism & Business
+Para el Portal Web v1.5.0, se introducen elementos de **Glassmorphism** para denotar exclusividad empresarial:
+*   **Transparencias**: Uso de `backdrop-blur-md` en Navbars y tarjetas.
+*   **Contraste**: Logos oficiales siempre sobre contenedores Navy o con bordes de alta definición para legibilidad en fondos blancos.
 
 ---
 
-## 🖼️ 4. Logotipia e Iconografía
-
-### Tipos de Logo
-1.  **`logo_splash`**: Isotipo animado para el inicio. Se presenta sobre fondo Navy Deep.
-2.  **`logo_icon`**: Imagotipo circular para el icono del lanzador y notificaciones Push.
-3.  **`logo_main`**: Versión horizontal optimizada para la barra de herramientas (Toolbar).
-
-### Iconografía
-Se utiliza la familia de iconos **Material Design (Rounded)** para mantener la consistencia con el ecosistema Android.
+## 🖼️ 4. Activos de Marca
+*   **`logo_icon`**: Imagotipo circular oficial usado como Favicon y avatar.
+*   **`logo_main`**: Versión horizontal para Toolbars.
+*   **`logo_splash`**: Identidad animada para el arranque de sistemas.
 
 ---
 
-## ✒️ 5. Tipografía
-Ruta-Go utiliza la tipografía estándar de sistema de Android (Roboto / Google Sans) para maximizar la legibilidad bajo cualquier condición de luz.
-
-*   **Títulos:** Bold (Negrita) para jerarquía clara.
-*   **Cuerpo:** Regular con interlineado de 4dp extra para facilitar la lectura en movimiento.
+## 🌓 5. Adaptabilidad (Responsive & Theme)
+*   **Móvil (Android 15)**: Soporte Edge-to-Edge integral.
+*   **Web (Responsive)**: Layout adaptable que prioriza la visualización de Dashboards en PC y toma de decisiones rápida en móviles.
 
 ---
-
-## 🌓 6. Soporte DayNight
-La marca está diseñada para ser **100% adaptable**:
-
-*   **Modo Oscuro:** Dominancia de Navy Deep (`#061426`) con acentos Naranja.
-*   **Modo Claro:** Fondos blancos/grisáceos (`#F8FAFC`) manteniendo la identidad en botones y logos.
-
----
-**Chop Code Solutions - Branding Department 2026**
+**ChopCode Solutions - Branding Department 2026**

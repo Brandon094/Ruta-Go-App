@@ -10,49 +10,43 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [x] Tutorial Hub Interactivo y Guías de Usuario.
 *   [x] **Optimización Android 15 (SDK 35)**: Edge-to-Edge y 16 KB support.
 *   [x] **Full Documentation Sprint**: Documentación técnica y legal v1.3.0.
-*   [x] **Fix Core de Rotación y Notificaciones**: Estabilización de Cloud Functions y asignación exitosa de los primeros conductores fijos para generar tráfico real.
+*   [x] **Fix Core de Rotación y Notificaciones**: Estabilización de Cloud Functions y asignación de conductores.
 
 ---
 
-## 🎯 Fase 2: Consolidación y Dueños de Vehículos (Prioridad Actual)
+## ✅ Fase 2: Consolidación y Dueños de Vehículos (Completado)
 *Objetivo: Sentar las bases de escalabilidad mediante el desacoplamiento técnico y la creación del rol "Dueño".*
 
-1.  **🚗 Desacoplamiento Vehículo-Conductor (Arquitectura)**:
-    *   Eliminar la relación estática 1:1 en Firebase.
-    *   Creación del nodo `/dueños/` para centralizar la propiedad de los activos.
-    *   Permitir que un vehículo sea operado por diferentes conductores mediante asignación dinámica diaria.
-2.  **👑 Go Business: Dashboard para Dueños (Módulo Base - Freemium)**:
-    *   Visualización del estado de flota en tiempo real.
-    *   Monitor de conductores activos por vehículo.
-    *   Resumen de ingresos brutos diarios (Telemetría básica).
-3.  **💳 Pasarela de Pagos Integrada**: Integración con PSE, Nequi y Daviplata para automatizar el flujo de dinero.
-4.  **🌐 Go Suite Web Hub**: Creación del portal central del ecosistema para información legal y soporte.
-5.  **♿ Accesibilidad**: Modo de alto contraste y fuentes optimizadas.
+*   [x] **🚗 Desacoplamiento Vehículo-Conductor**: Nodo `/dueños/` centralizado y propiedad de activos blindada.
+*   [x] **🌐 Ruta-Go Portal (v1.5.0)**: Lanzamiento del ecosistema web centralizado (Landing Page + Business App).
+*   [x] **👑 Go Business Dashboard**: Módulo para dueños con aislamiento de datos, monitor de flota e ingresos en tiempo real.
+*   [x] **⚖️ Cumplimiento Legal Web**: Integración de Términos, Privacidad y Derecho al Olvido en el portal.
+*   [x] **🚀 Activación Instantánea**: Flujo de registro automatizado para socios y administradores.
 
 ---
 
-## 💎 Fase 3: Fidelización y Monetización Premium (SaaS)
-*Objetivo: Generación de ingresos fuertes mediante el modelo de suscripción.*
+## 🎯 Fase 3: Fidelización y Monetización Premium (Prioridad Actual)
+*Objetivo: Generación de ingresos fuertes mediante el modelo de suscripción y fidelidad.*
 
-1.  **🌟 Programa de Fidelización "Puntos Go"**: Acumulación, niveles y redención.
-2.  **📈 SaaS Contable Premium para Dueños (Suscripción)**:
+1.  **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles (Plata/Oro/Diamante) y redención de puntos por viajes.
+2.  **📉 SaaS Contable Premium para Dueños (Suscripción)**:
     *   **Cálculo Neto Automatizado**: Ingreso - (Comisión Conductor + Gasto Operativo).
-    *   **Alertas Legales Inteligentes**: Push para SOAT, Tecno y Seguros con cuenta regresiva.
     *   **Módulo de Egresos Detallado**: Control de combustible, mantenimiento y repuestos.
-    *   **Insignia "Vehículo Estrella"**: Distintivo visual en la interfaz del pasajero para aumentar reservas.
-    *   **Prioridad de Turnos**: Ventaja algorítmica para vehículos premium en la toma de horarios.
-3.  **📊 Analítica Avanzada**: Gráficas de rentabilidad mensual y comparativas entre vehículos de la misma flota.
+    *   **Analítica Avanzada**: Gráficas de rentabilidad mensual y comparativas de rendimiento.
+3.  **🔔 Alertas Legales Inteligentes**: Notificaciones Push para SOAT, Tecno y Seguros con cuenta regresiva en el Dashboard.
+4.  **💳 Pasarela de Pagos Integrada**: Integración con PSE, Nequi y Daviplata para pagos electrónicos de pasajes.
+5.  **♿ Accesibilidad 360**: Modo de alto contraste y fuentes optimizadas para toda la suite.
 
 ---
 
 ## 📦 Fase 4: Diversificación y Logística (Largo Plazo)
 *Objetivo: Solución integral de movilidad regional y control definitivo del flujo de paquetería local.*
 
-1.  **🚚 Módulo Integrado de Encomiendas "Ruta-Go Cargo"**:
-    *   **UI Conductor (Recepción)**: Botón rápido de registro de paquetes físicos ingresando únicamente el Nombre de quien recibe y su Cédula.
-    *   **UI Pasajero (Buscador)**: Interfaz en el Home para que los usuarios consulten con su CC si tienen un paquete en camino, viendo qué vehículo lo trae y un chat directo con el conductor.
+1.  **🚚 Módulo de Encomiendas "Ruta-Go Cargo"**:
+    *   Registro rápido de paquetes físicos por parte del conductor.
+    *   Buscador de estado de guía para pasajeros con chat directo.
 2.  **🛡️ Seguro de Viaje Digital**: Micro-seguros por trayecto integrados en la reserva.
-3.  **🤖 IA de Predicción de Demanda**: Sugerencias de turnos extra basadas en datos históricos y festividades.
+3.  **🤖 IA de Predicción de Demanda**: Sugerencias de turnos extra basadas en datos históricos de Nátaga y La Plata.
 
 ---
 **ChopCode Solutions - 2026**

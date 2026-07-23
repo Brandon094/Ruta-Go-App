@@ -1,6 +1,6 @@
-# 📖 Enciclopedia Técnica Integral - Ecosistema "Go" v1.3.0 Stable
+# 📖 Enciclopedia Técnica Integral - Ecosistema "Go" v1.5.0 Ecosystem
 
-Bienvenido al centro de conocimiento oficial de **ChopCode Solutions**. Este documento sirve como punto de entrada de alto nivel para comprender el **Ecosistema "Go"**, una suite tecnológica unificada diseñada para revolucionar la movilidad y la productividad rural en la región de Natagá y La Plata.
+Bienvenido al centro de conocimiento oficial de **ChopCode Solutions**. Este documento sirve como punto de entrada de alto nivel para comprender el **Ecosistema "Go"**, una suite tecnológica unificada diseñada para revolucionar la movilidad y la productividad rural en la región de **Nátaga** y **La Plata**.
 
 ---
 
@@ -13,11 +13,12 @@ El Ecosistema "Go" es una solución de **Logística y Gestión Transaccional Rea
 ---
 
 ## 👥 2. Modelo de Actores y Permisos (RBAC)
-El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Auth, permitiendo que un solo `UID` acceda a toda la suite:
+El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Auth, permitiendo que un solo `UID` acceda a toda la suite según su nivel de privilegio:
 
-*   **Pasajero / Productor**: El usuario que viaja en RutaGo y administra su finca en AgroGo.
-*   **Conductor (Operador Técnico)**: Gestiona su vehículo en RutaGo y participa en subastas en CargoGo.
-*   **Administrador (ChopCode)**: Control central de tarifas, monitoreo de flotas y gobernanza del ecosistema.
+*   **Pasajero / Productor**: El usuario final que reserva viajes en RutaGo y gestiona puntos de fidelidad.
+*   **Conductor (Operador)**: Gestiona su planilla digital, pasajeros y reporta ingresos diarios.
+*   **Socio (Dueño de Flota)**: Acceso al **Go Business Dashboard** para monitorear sus vehículos y rentabilidad de forma aislada.
+*   **Administrador Root (ChopCode)**: Control total del Holding, gobernanza de datos y supervisión de la operación global.
 
 ---
 
@@ -25,69 +26,44 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 
 | Módulo | Responsabilidad Técnica | Aplicación |
 |:---|:---|:---|
-| **Auth Engine (SSO)** | Gestión de identidad unificada y segregación de roles. | Suite Go |
-| **Seat Engine** | Gestión transaccional de inventario móvil. | RutaGo |
-| **Loyalty Engine** | Gamificación (Puntos Go) y Niveles de Estatus. | RutaGo |
+| **Auth Engine (SSO)** | Gestión de identidad unificada y segregación de roles (RBAC). | Suite Go |
+| **Seat Engine** | Gestión transaccional de inventario móvil y reservas atómicas. | RutaGo |
+| **Loyalty Engine** | Sistema de gamificación (Puntos Go) y niveles de estatus. | RutaGo |
+| **Ruta-Go Portal** | Landing Page comercial y Business Dashboard (React/Firebase). | Suite Go |
 | **Offline Sync Engine** | Sincronización local-nube vía Isar/Firestore. | AgroGo |
-| **Auction Engine** | Motor de subastas ciegas para fletes. | CargoGo |
-| **Web Hub** | Portal legal, corporativo y acceso a CargoGo. | Suite Go |
+| **Auction Engine** | Motor de subastas ciegas para logística pesada. | CargoGo |
 
 ---
 
 ## 🛠️ 4. Ecosistema de Documentación (Nivel Senior)
 
 ### 📗 Dominio Técnico (Engineering)
-*   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos de datos.
-*   [**Módulo de Dueños**](./technical/OWNER_ARCHITECTURE.md): Diseño del desacoplamiento vehículo-conductor.
+*   [**Arquitectura Web Portal**](./technical/WEB_PORTAL_ARCHITECTURE.md): Diseño del stack React, roles y despliegue cloud.
+*   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos cloud.
 *   [**Mapeo de Flujos Lógicos**](./technical/LOGICAL_FLOWS.md): Secuencias técnicas de reservas y rotación.
 *   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
-*   [**Gestión de Estado**](./technical/VIEWMODELS_DEEP_DIVE.md): Lógica de ViewModels y flujo reactivo LiveData.
-*   [**Capa de Managers**](./technical/MANAGERS_DEEP_DIVE.md): Controladores auxiliares de lógica (Core) y UI Helpers.
-*   [**Capa de Interfaz (UI)**](./technical/UI_LAYER_DEEP_DIVE.md): Actividades, Fragments y Adaptadores.
-*   [**Capa de Utilidades**](./technical/UTILS_DEEP_DIVE.md): Formateo de datos, animaciones y monitores de red.
-*   [**Capa de Servicios**](./technical/SERVICES_DEEP_DIVE.md): Repositorios Firebase y lógica de persistencia.
-
----
-
-## ⚖️ Legal y Cumplimiento
-*   [**Manual de Gestión de Datos**](./legal/DATA_MANAGEMENT_MANUAL.md): Protocolos de borrado y Habeas Data.
-*   [**Políticas de Privacidad**](../privacy.html): Documento legal para usuarios finales.
-*   [**Términos y Condiciones**](../terms.html): Reglas de uso de la plataforma.
-*   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y roles.
-*   [**Notificaciones Push**](./technical/FCM_INTEGRATION_GUIDE.md): Guía de integración FCM v1 y Deep Linking.
-*   [**Cloud Functions**](./technical/CLOUD_FUNCTIONS_DEEP_DIVE.md): Automatización de rotación y mantenimiento legal.
-*   [**Estándares de Código**](./technical/DEVELOPER_GUIDELINES.md): Reglas de oro (Java/Flutter) y Clean Code.
-*   [**Diccionario de Datos**](./technical/DICCIONARIO_DATOS.md): Mapeo del esquema NoSQL unificado.
-*   [**Ficha Técnica**](./technical/FICHA_TECNICA.md): Especificaciones de infraestructura y stack tecnológico.
+*   [**Guías de Desarrollo**](./technical/DEVELOPER_GUIDELINES.md): Estándares de código, Git semántico y Clean Code.
+*   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y blindaje por roles.
 
 ### 📘 Dominio de Producto (Business)
 *   [**Master Plan Ecosistema**](./product/ECOSYSTEM_MASTER_PLAN.md): Visión estratégica de ChopCode Solutions.
-*   [**Flujos de Navegación**](./product/NAVIGATION_FLOWS.md): Mapa de pantallas y experiencia de usuario (UX).
-*   [**Especificación de Requisitos**](./product/REQUISITOS.md): RF, RNF y reglas de negocio de la suite.
-*   [**Portal Web Hub**](./product/GO_WEB_HUB.md): Especificaciones del centro web centralizado.
-*   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo y branding "Go".
-*   [**Guía de Componentes**](./product/COMPONENT_GUIDE.md): Catálogo de elementos UI/UX (Material 3).
-*   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión y monetización.
-*   [**Plan de Marketing**](./product/MARKETING_PLAN.md): Estrategia de crecimiento y retención.
+*   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo, colores Naranja/Navy y logotipos.
+*   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión, monetización y SaaS.
+*   [**Plan de Marketing**](./product/MARKETING_PLAN.md): Estrategia de crecimiento, Puntos Go y Estatus Estrella.
 *   [**Manual de Usuario**](./product/USER_MANUAL.md): Guía práctica para pasajeros y conductores.
 
-### 📙 Dominio Operativo (QA & Ops)
-*   [**Plan de Pruebas**](./operations/RELEASE_TESTING_PLAN.md): Protocolo de certificación de calidad para lanzamientos.
-*   [**Manual de Administración**](./operations/MANUAL_ADMIN.md): Guía operativa para la gestión desde Firebase Console.
-*   [**Auditoría de Documentación**](./operations/DOCUMENTATION_AUDIT.md): Hoja de ruta para alcanzar el estándar "Full Documentation".
-*   [**Historial de Cambios**](./operations/CHANGELOG.md): Registro cronológico de la evolución del software.
-
-### 🤖 Agentes Especializados (AI Agents)
-*   [**Agente Orquestador**](./agents/ORCHESTRATOR.md): Coordinación y visión estratégica.
-*   [**Guías de Agentes**](./agents/): Manuales de Lógica, UI/UX, QA y Documentación.
+### ⚖️ Legal y Cumplimiento
+*   [**Manual de Gestión de Datos**](./legal/DATA_MANAGEMENT_MANUAL.md): Protocolos de borrado y Habeas Data.
+*   [**Políticas de Privacidad**](../web_portal/src/Privacy.jsx): Tratamiento de datos bajo la Ley 1581.
+*   [**Términos y Condiciones**](../web_portal/src/Terms.jsx): Reglas de operación de la plataforma.
 
 ---
 
 ## 🛡️ 5. Seguridad y Gobernanza de Datos
-*   **Aislamiento**: Datos críticos de RutaGo en Realtime Database; datos complejos de AgroGo en Cloud Firestore.
-*   **Hosting**: Despliegue seguro en Firebase Hosting con SSL.
-*   **Privacidad**: Cumplimiento con Habeas Data (Ley 1581) para todo el ecosistema.
+*   **Aislamiento Comercial**: Los dueños solo acceden a la telemetría de sus activos asignados.
+*   **Hosting**: Despliegue seguro en **Firebase Hosting** con certificación SSL automática.
+*   **Privacidad**: Cumplimiento estricto con **Habeas Data** y flujo de "Derecho al Olvido".
 
 ---
 **© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural**
-**Desarrollador Lead: Brandon Daza Cerquera**
+**Lead Architect: Brandon Daza Cerquera**

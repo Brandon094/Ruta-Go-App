@@ -1,52 +1,52 @@
-# ⚖️ Manual de Gestión de Datos y Cumplimiento (Legal)
+# ⚖️ Manual de Gestión de Datos y Cumplimiento (Legal) v1.5.0
 
-Este documento establece los procedimientos internos para el manejo de la información personal de los usuarios del Ecosistema Go, asegurando el cumplimiento con la Ley de Habeas Data y las políticas de privacidad de las tiendas de aplicaciones.
+Este documento establece los procedimientos para el manejo de la información personal en el ecosistema móvil (App) y web (Portal) de Ruta-Go, asegurando el cumplimiento con la Ley de Habeas Data (Ley 1581) y las políticas de Google Play.
 
 ---
 
 ## 🏛️ 1. Marco Normativo
-Ruta-Go se rige por los principios de legalidad, finalidad y veracidad en el tratamiento de datos. Cumplimos con:
-*   **Derecho al Olvido**: Los usuarios tienen la potestad de solicitar la eliminación total de su identidad y datos transaccionales.
-*   **Transparencia**: El usuario sabe exactamente qué datos recolectamos (Nombre, Teléfono, Email, Placa en caso de conductores).
+Ruta-Go opera bajo los principios de **Seguridad y Privacidad por Diseño**:
+*   **Derecho al Olvido**: Implementamos flujos autónomos en App y Web para la eliminación definitiva de datos.
+*   **Aislamiento de Datos (RBAC)**: Garantizamos que la información operativa de los socios esté protegida y no sea accesible por terceros.
 
 ---
 
 ## 🧹 2. Protocolo de Borrado de Cuentas
-Para garantizar el cumplimiento con Google Play, el sistema ofrece un flujo automatizado de eliminación.
+El sistema ofrece un flujo automatizado de eliminación sincronizado entre plataformas.
 
 ### Flujo del Usuario:
-1.  El usuario accede a **Perfil > Editar Perfil > Eliminar Cuenta**.
-2.  El sistema marca la cuenta con el flag `solicitudBorrado: true` y registra la fecha exacta.
-3.  Se inicia un **Periodo de Gracia de 30 días**, durante el cual el usuario puede retractarse iniciando sesión nuevamente (esto resetea el flag).
+1.  **Desde la App**: Perfil > Editar Perfil > Eliminar Cuenta.
+2.  **Desde la Web**: Acceso mediante el link en la Política de Privacidad.
+3.  **Marcado**: Se activa el flag `solicitudBorrado: true`. Se otorga un **Periodo de Gracia de 30 días**. Si el usuario inicia sesión antes del plazo, la solicitud se cancela automáticamente.
 
-### Ejecución de Limpieza (Background):
-La Cloud Function `cleanupMarkedAccounts` se ejecuta cada **Domingo a las 3:00 AM** y realiza un borrado definitivo en tres capas:
-1.  **Firebase Auth**: Eliminación del registro de autenticación (imposibilita el inicio de sesión).
-2.  **Realtime Database**: Remoción del nodo `/usuarios/{uid}` o `/conductores/{uid}`.
-3.  **Activos Vinculados**: Si es conductor, se elimina el nodo del vehículo en `/vehiculos/{placa}`.
+### Ejecución de Limpieza (Serverless):
+La Cloud Function `cleanupMarkedAccounts` realiza el borrado atómico:
+1.  **Firebase Auth**: Eliminación del registro de autenticación.
+2.  **RTDB**: Remoción de perfiles en `/usuarios/`, `/conductores/` y `/dueños/`.
+3.  **Activos**: Desvinculación de placas en `/vehiculos/` (si aplica).
 
 ---
 
-## 📧 3. Solicitudes Manuales (Soporte)
-En caso de que un usuario solicite el borrado vía correo electrónico o soporte técnico externo:
-1.  **Verificación**: Se debe confirmar la identidad del solicitante mediante el correo vinculado.
-2.  **Acción en Consola**: El administrador debe entrar a la Firebase Console y activar manualmente el campo `solicitudBorrado: true` en el nodo del usuario.
-3.  **Confirmación**: Se debe responder al usuario informando que sus datos serán eliminados permanentemente tras el periodo de gracia.
+## 📧 3. Soporte y Consultas Manuales
+Para rectificaciones o eliminaciones manuales:
+1.  **Identidad**: El usuario debe escribir desde el correo registrado a `dazace94@gmail.com`.
+2.  **Acción Admin**: El Admin Root activa el flag de borrado en la consola de Firebase.
+3.  **Confirmación**: Se notifica al usuario del inicio del proceso de limpieza legal.
 
 ---
 
 ## 🛡️ 4. Tipos de Datos y Finalidad
-| Dato | Finalidad |
-|:---|:---|
-| **Nombre** | Identificación en el tiquete y chat. |
-| **Email** | Autenticación y recuperación de cuenta. |
-| **Teléfono** | Contacto inmediato entre pasajero/conductor por emergencias de viaje. |
-| **Placa/Modelo** | Identificación del vehículo para seguridad del pasajero. |
+| Dato | Finalidad | Almacenamiento |
+|:---|:---|:---|
+| **Nombre/Email** | Identidad y Autenticación SSO. | Auth + RTDB |
+| **Teléfono** | Coordinación logística en tiempo real. | RTDB |
+| **Placa/Modelo** | Gestión de activos y seguridad del pasajero. | RTDB |
+| **Ingresos** | Reportes financieros exclusivos para Socios/Admin. | RTDB |
 
 ---
 
-## 📈 5. Auditoría Legal
-Cualquier cambio en la política de privacidad (`privacy.html`) o en los términos de servicio (`terms.html`) debe reflejarse en este manual para mantener la consistencia operativa.
+## 📈 5. Auditoría de Documentos
+Este manual debe estar alineado con los componentes dinámicos `Privacy.jsx` y `Terms.jsx` del Portal Web para garantizar transparencia total.
 
 ---
-**Chop Code Solutions - Departamento Legal y Compliance v1.3.0**
+**ChopCode Solutions - Compliance 2026**

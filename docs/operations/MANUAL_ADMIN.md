@@ -1,53 +1,50 @@
-# ⚙️ Manual de Administración y Operación - Ecosistema Go v1.3.0
+# ⚙️ Manual de Administración y Operación - Ruta-Go v1.5.0 Ecosystem
 
-Este documento guía al administrador en la gestión estratégica, operativa y técnica de la plataforma Ruta-Go, utilizando las herramientas nativas de Firebase para garantizar la continuidad del servicio.
-
----
-
-## 💰 1. Gestión de Tarifas y Economía
-Los precios son dinámicos y se sincronizan en tiempo real mediante el nodo `/precios/`.
-
-1.  **Actualización**: Acceda a **Realtime Database > precios**.
-2.  **Mapeo**: Los valores están segmentados por los identificadores normalizados de las rutas (ej: `nataga`, `la plata`).
-3.  **Impacto**: Cualquier cambio afecta instantáneamente el cálculo de tiquetes en las pantallas de confirmación de los pasajeros.
+Este documento guía al Admin Root en la gestión estratégica del ecosistema, utilizando la Firebase Console y el nuevo Portal Web Administrativo.
 
 ---
 
-## 🕒 2. Planilla Maestra de Horarios
-La logística diaria reside en el nodo `/horarios/`. Aunque la rotación es automática, el administrador puede intervenir manualmente.
-
-### Asignación de Contingencia:
-*   Para asignar un conductor fuera del ciclo de rotación, reemplace el campo `conductorId` con el UID obtenido del nodo `/conductores/`.
-*   Para liberar un turno (ej: bus averiado), deje el campo `conductorId` vacío (`""`). El app lo marcará como **"(Libre)"**.
+## 🌎 1. Centros de Mando
+1.  **Firebase Console**: Para gestión de bajo nivel (nodos JSON, Auth, Cloud Functions).
+2.  **Web Portal (Admin)**: Dashboard centralizado para monitoreo de ingresos, auditoría de dueños y vinculación de conductores.
 
 ---
 
-## 👤 3. Gobierno de Usuarios (Seguridad)
-
-### Bloqueo de Cuentas (Suspensión):
-*   Localice el UID del usuario o conductor.
-*   Cambie el atributo `status` a `blocked`. Esto impide el acceso al app y dispara el feedback visual de "Cuenta Suspendida".
-
-### Gestión de Identidad:
-*   **Verificación**: Antes de asignar horarios a un nuevo conductor, valide que su vehículo esté correctamente registrado en el nodo `/vehiculos/` con la capacidad técnica declarada.
+## 💰 2. Gestión de Tarifas y Economía
+Los precios residen en el nodo `/precios/`.
+*   **Edición**: Solo permitida por el Admin Root.
+*   **Segmentación**: Rutas identificadas como `nataga` y `la plata`.
+*   **Nota**: Los cambios son reactivos; impactan inmediatamente en el cálculo de pasajes en la App.
 
 ---
 
-## 🧹 4. Protocolos de Mantenimiento
+## 💼 3. Gobernanza de Socios (Dueños)
+El modelo v1.5.0 introduce la gestión de socios para escalar la flota.
 
-### Tareas Serverless (Cloud Functions):
-*   **Rotación Nocturna (7:00 PM)**: Prepara los turnos del día siguiente. Si falla, el administrador debe resetear manualmente los nodos en `/disponibilidadAsientos/`.
-*   **Limpieza Semanal (Domingos 3:00 AM)**: Ejecuta el borrado definitivo de cuentas marcadas (Habeas Data).
+### Activación de Socios:
+1.  **Registro**: El socio se registra en el Portal Web. Queda en estado `"pendiente"` en el nodo `/dueños/`.
+2.  **Habilitación**: El Admin Root cambia el valor en `/dueños/$uid` de `"pendiente"` a `true`.
+3.  **Asignación de Activos**: En el nodo `/vehiculos/$placa`, añada el campo `ownerId` con el UID del socio para vincular el bus a su dashboard.
 
-### Gestión de Historial:
-*   **Archivado**: Se recomienda exportar un JSON mensual del nodo `/reservas/` y mover los registros antiguos a un nodo de histórico para optimizar el rendimiento de los dispositivos de gama baja.
+---
+
+## 👨‍✈️ 4. Gestión Operativa
+### Vinculación de Conductores:
+*   Use el portal web para buscar conductores por Email.
+*   Al vincular un conductor, el sistema actualiza atómicamente el campo `driverId` en el vehículo y `vehiclePlate` en el conductor.
+
+### Planilla de Horarios:
+*   Ubicación: Nodo `/horarios/`.
+*   **Intervención**: Si la rotación automática falla, el Admin puede reasignar un `conductorId` manualmente desde la web o la consola.
 
 ---
 
-## 📊 5. Monitoreo y Salud del Sistema
-*   **Firebase Crashlytics**: Monitorear diariamente para identificar fallos en nuevas versiones de Android (ej: SDK 35).
-*   **Firebase Analytics**: Revisar el embudo de conversión (Dashboard -> Selección de Asiento -> Confirmación) para detectar abandonos.
-*   **Auditoría Técnica**: Consulte periódicamente el [**Manual de Gestión de Datos**](../legal/DATA_MANAGEMENT_MANUAL.md) para asegurar el cumplimiento legal.
+## 🛡️ 5. Seguridad y Mantenimiento
+*   **Bloqueo**: Cambie el `status` de un usuario a `blocked` para denegar acceso inmediato.
+*   **Limpieza (Cloud Functions)**:
+    *   `automatedRotation`: (7:00 PM) Prepara la planilla del día siguiente.
+    *   `cleanupMarkedAccounts`: (Domingo 3:00 AM) Ejecuta el borrado legal de 30 días.
+*   **Auditoría**: Monitoree **Crashlytics** para asegurar la estabilidad en Android 15.
 
 ---
-**Chop Code Solutions - Dirección de Operaciones v1.3.0**
+**ChopCode Solutions - Dirección de Operaciones 2026**

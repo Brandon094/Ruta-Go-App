@@ -1,83 +1,50 @@
-# 🎨 Guía de Componentes e Identidad Visual (UI/UX)
+# 🎨 Guía de Componentes e Identidad Visual (UI/UX) v1.5.0
 
-Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en Ruta-Go, basado en los estándares de **Material Design 3 (Material You)** adaptados para el ecosistema rural.
+Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en el ecosistema Ruta-Go, unificando los estándares de **Material Design 3 (Android)** y **Glassmorphism (Web)**.
 
 ---
 
-## 🌈 1. Paleta de Colores (Branding)
-El sistema utiliza un esquema de contraste alto optimizado para legibilidad en exteriores y bajo luz solar directa.
-
+## 🌈 1. Paleta de Colores (Branding Unificado)
 | Color | Token | Hex | Uso Principal |
 |:---|:---|:---|:---|
-| **Naranja Go** | `primary_500` | `#FF7A1A` | Acciones principales, botones, acentos de marca. |
-| **Navy Deep** | `secondary_900` | `#061426` | Fondos de pantalla, textos primarios, navegación. |
-| **Gris Navy** | `secondary_400` | `#2C5C76` | Textos secundarios, iconos desactivados. |
-| **Verde Éxito** | `success_500` | `#10B981` | Estados confirmados, asientos disponibles. |
-| **Rojo Error** | `error_500` | `#EF4444` | Alertas, cancelaciones, estados críticos. |
-| **Amarillo Warning** | `warning_500` | `#F59E0B` | Estados pendientes, alertas de precaución. |
+| **Naranja Go** | `primary_500` | `#FF7A1A` | Botones FAB, acentos, selección de asientos. |
+| **Navy Deep** | `secondary_900` | `#061426` | Fondos de App (Dark), Sidebar Web, Textos primarios. |
+| **Navy Card** | `secondary_800` | `#061929` | Tarjetas en modo oscuro y contenedores de login. |
+| **Verde Éxito** | `success_500` | `#10B981` | Disponibilidad, estados confirmados. |
 
 ---
 
-## 🔘 2. Botones y Acciones
-Implementados mediante `MaterialButton` con estados visuales claros.
-
-### Botón Primario (`ButtonStyle`)
-*   **Estilo**: Fondo sólido naranja, texto blanco, esquinas redondeadas (16dp).
-*   **Uso**: "Confirmar Reserva", "Ingresar", "Venta Física".
-*   **Feedback**: Animación de escala (0.95x) al presionar.
-
-### Botón Secundario (`ButtonStyleSecondary`)
-*   **Estilo**: Outlined (Borde naranja), fondo transparente, texto naranja.
-*   **Uso**: Acciones alternativas, "Cancelar", "Volver".
-
-### Botón de Texto (`ButtonStyleText`)
-*   **Estilo**: Sin bordes, solo texto.
-*   **Uso**: "Olvidaste tu contraseña", "Registrarse".
+## 📱 2. Componentes Móviles (Material 3)
+### Cards de Operación:
+*   **Estilo**: Elevación de 4dp, esquinas redondeadas de 24dp.
+*   **Animación**: Efecto "Overshoot" (Rebote) en la carga de listas.
+### Motor de Asientos:
+*   **Interactividad**: Feedback táctil y visual al seleccionar puestos. Sincronización en tiempo real con RTDB.
 
 ---
 
-## 📇 3. Contenedores (Cards)
-Utilizamos `MaterialCardView` para agrupar información lógica.
-
-*   **Estilo**: Fondo blanco, elevación de 4dp, radio de esquina de 24dp.
-*   **Animación**: Todas las tarjetas principales entran con un efecto de "Overshoot" (Rebote) al cargar la pantalla.
-*   **Uso**: Items de horarios, estadísticas de ingresos, detalles de reserva.
-
----
-
-## ⌨️ 4. Entradas de Texto (Input Fields)
-Basados en `TextInputLayout` con el estilo `OutlinedBox`.
-
-*   **Validación**: Borde rojo dinámico para errores y verde/naranja para enfoque activo.
-*   **Control de Seguridad**: Incluyen icono de "Ojo" para alternar visibilidad en contraseñas.
-*   **Uso**: Formularios de registro, login y edición de perfil.
+## 🖥️ 3. Componentes Web (Glassmorphism & Tailwind)
+### Estética Business:
+*   **Filtros**: Uso de `backdrop-blur-md` para efectos de transparencia en Navbars y Modales.
+*   **Bordes**: `rounded-[3rem]` para tarjetas de Dashboard, transmitiendo modernidad corporativa.
+### Tablas Dinámicas:
+*   **Planilla**: Visualización compacta con scroll horizontal protegido y estados de ocupación anonimizados.
 
 ---
 
-## 🏷️ 5. Badges de Estado (Indicadores)
-Componentes compactos para lectura rápida de estados operativos.
-
-*   **Confirmado**: Fondo verde con borde.
-*   **Pendiente**: Fondo amarillo/naranja.
-*   **Finalizado/Cancelado**: Fondo rojo o gris oscuro.
-*   **Próximo Viaje**: Incluye una animación de **Pulse** (Latido) infinita para captar la atención.
-
----
-
-## 💺 6. Motor Visual de Asientos (Grid)
-Componente personalizado de alta complejidad visual.
-
-*   **Disponible**: Icono de asiento verde.
-*   **Seleccionado**: Icono naranja con animación de escalado.
-*   **Ocupado (App)**: Icono rojo (bloqueado para selección).
-*   **Bloqueado (Físico)**: Icono naranja/grisáceo (exclusivo para conductores).
+## 🔘 4. Botonería y Call to Action (CTA)
+### Botón Primario:
+*   **Android**: `MaterialButton` con escala 0.95x al presionar.
+*   **Web**: Botón Tailwind con sombra `shadow-primary-500/40` y efecto `hover:bg-orange-600`.
+### Botón de Socio:
+*   **Web**: Estilo Navy (`bg-secondary-900`) con tipografía Bold para denotar autoridad empresarial.
 
 ---
 
-## ✨ 7. Estándares de Experiencia (UX)
-*   **Shimmer Effects**: Uso de `ShimmerFrameLayout` durante la carga de datos para evitar saltos bruscos de UI.
-*   **Micro-interacciones**: Cada elemento clicable tiene una respuesta visual instantánea.
-*   **Edge-to-Edge**: Las vistas se extienden detrás de la barra de estado y de navegación (Android 15 Ready).
+## ✨ 5. Estándares de Experiencia (UX)
+*   **Edge-to-Edge**: Pantalla total en Android 15.
+*   **Responsive Pro**: Adaptación automática de Grid (3 col) a Slider (1 col) en la web.
+*   **Shimmer Loaders**: Cargas progresivas en ambas plataformas para evitar el parpadeo de datos.
 
 ---
-**Chop Code Solutions - Dirección de Arte y UI/UX v1.3.0**
+**ChopCode Solutions - Dirección de Arte y UI/UX 2026**

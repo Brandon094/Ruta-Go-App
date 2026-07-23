@@ -1,51 +1,42 @@
-# 🌐 Portal Web Central: Ecosistema "Go"
+# 🌐 Portal Web Central: Ruta-Go (Ecosistema "Go")
 
-Este documento define la estructura y el propósito del hub web centralizado que servirá como punto de anclaje para todas las aplicaciones de la suite y la marca corporativa.
-
----
-
-## 🏗️ 1. Visión General
-El sitio web (ej: `go-suite.web.app`) será la cara pública del ecosistema. Su función principal es proporcionar confianza, transparencia legal y soporte a los usuarios de RutaGo, AgroGo y CargoGo.
-
-*   **Tecnología**: Firebase Hosting + (Vue.js / React / HTML puro para velocidad).
-*   **Alojamiento**: Infraestructura de Google Cloud para garantizar 99.9% de disponibilidad.
+Este documento define la estructura, evolución y despliegue del hub web centralizado que sirve como punto de anclaje para la plataforma **Ruta-Go** y la marca corporativa **ChopCode Solutions**.
 
 ---
 
-## 📂 2. Estructura del Sitio (Mapa Web)
+## ✅ 1. Estado Actual (v1.5.0)
+El sitio web ha sido desplegado exitosamente en **Firebase Hosting** utilizando un stack moderno basado en **React 18** y **Vite**.
 
-### 🏠 Inicio (Landing Page)
-*   Presentación de la misión de **ChopCode Solutions**.
-*   Resumen visual de las tres plataformas (Módulos Go).
-*   Botones de descarga directa (Play Store / Web App).
-
-### ⚖️ Centro Legal (Compliance)
-Sección crítica para la aprobación en tiendas de aplicaciones y confianza del usuario:
-*   **Política de Privacidad Unificada**: Cómo manejamos el UID único en las 3 apps.
-*   **Términos y Condiciones de la Suite**: Reglas generales de uso del ecosistema.
-*   **Manual de Habeas Data**: Procedimientos para la rectificación o borrado de datos.
-
-### 🏢 ChopCode Solutions
-*   Perfil de la empresa.
-*   Portafolio de innovación rural.
-*   Contacto de soporte técnico y comercial.
-
-### 🚛 CargoGo (Web App Interface)
-*   Acceso al panel de subastas de fletes.
-*   Interfaz para que conductores de carga pesada coticen servicios desde el navegador.
+*   **URL Oficial**: `https://trasnporte-nataga---la-plata.web.app`
+*   **Hosting**: Infraestructura de Google Cloud con certificación SSL.
+*   **UX**: Diseño responsivo optimizado para PC y dispositivos móviles.
 
 ---
 
-## 🔗 3. Integración con las Apps
-*   **Deep Links**: La web tendrá botones que, al ser tocados desde un móvil, abrirán directamente **RutaGo** en la pantalla correcta.
-*   **QR Integrado**: Todos los volantes y calcomanías de marketing físico apuntarán a este Hub Central.
+## 📂 2. Módulos Implementados
+
+### 🏠 Landing Page Corporativa
+*   **Propuesta de Valor**: Secciones segmentadas para Pasajeros, Conductores y Dueños de Flota.
+*   **Social Proof**: Insignia de calificación de la App (4.9/5.0).
+*   **Descarga Directa**: Enlaces vinculados a la Play Store para descarga instantánea.
+*   **Mapa de Rutas**: Visualización de la conexión principal **Nátaga ↔ La Plata**.
+
+### 💼 Go Business: Dashboard de Dueños
+*   **Acceso RBAC**: Sistema de login seguro con aislamiento de datos por `ownerId`.
+*   **Telemetría de Flota**: Conteo de vehículos, conductores activos e ingresos generados.
+*   **Planilla de Despachos**: Visualización de horarios en tiempo real con niveles de privacidad para operadores externos.
+
+### ⚖️ Centro Legal & Compliance
+*   **Privacidad (Ley 1581)**: Módulo interactivo de Política de Privacidad.
+*   **Términos y Condiciones**: Reglas de operación unificadas para el ecosistema.
+*   **Derecho al Olvido**: Enlaces directos para la solicitud de eliminación de cuentas.
 
 ---
 
-## 🎯 4. Próximos Pasos
-1.  **Deployment**: Configurar Firebase Hosting en el proyecto raíz.
-2.  **Contenido**: Redactar la versión web de las políticas de privacidad ya auditadas.
-3.  **SEO Local**: Optimizar el sitio para que aparezca en búsquedas de "Transporte Natagá" y "Carga La Plata".
+## 🔗 3. Próximos Pasos (Hoja de Ruta Web)
+1.  **Integración CargoGo**: Incorporar la interfaz de subastas de fletes para conductores de carga pesada.
+2.  **SaaS Contable**: Implementar el módulo de egresos y cálculo neto automatizado para dueños premium.
+3.  **SEO Local**: Optimizar el index para búsquedas orgánicas en el occidente del Huila.
 
 ---
 **ChopCode Solutions - Web Division 2026**

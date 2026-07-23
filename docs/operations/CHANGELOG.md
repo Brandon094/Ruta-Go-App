@@ -4,6 +4,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.5.0] - 2026-07-22 (Ecosystem & Business Edition)
+### Añadido
+- **Ecosistema Web Portal**: Lanzamiento de la plataforma React para gestión empresarial y administrativa.
+- **Landing Page Corporativa**: Interfaz pública responsiva con propuesta de valor y enlace directo a Play Store.
+- **Dashboard de Dueños (Multi-inquilino)**: Implementado aislamiento de datos por `ownerId` para permitir que socios monitoreen solo sus activos.
+- **Motor de Roles (RBAC)**: Nuevo sistema de permisos dinámicos (Admin Root vs. Socio) integrado en el Portal Web.
+- **Módulos Legales Integrados**: Vistas dinámicas de Términos y Condiciones y Política de Privacidad (Habeas Data).
+- **Activación Instantánea**: Flujo de registro automatizado para nuevos dueños de flota con escritura atómica en nodos maestros.
+
+### Cambiado
+- **Estandarización Regional**: Corregida la ortografía de "Nátaga" en toda la interfaz web, metadatos y documentos legales.
+- **Seguridad NoSQL**: Actualizadas las reglas de Firebase para permitir búsqueda de operadores por Email conservando la privacidad de usuarios.
+
+---
+
 ## [1.4.0] - 2026-07-16 (UI & Stability Master Edition)
 ### Añadido
 - **Motor WindowUtils**: Nueva utilidad centralizada para la gestión de insets del sistema (Android 15 Ready).
