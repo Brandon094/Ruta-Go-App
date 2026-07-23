@@ -1,144 +1,121 @@
 import React from 'react';
-import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle, Plus, ChevronRight, Tag, Bus } from 'lucide-react';
 
+/**
+ * 🚌 Componente: ScheduleTable (Totalmente Sincronizado con UI Android v1.5.0)
+ */
 export function ScheduleTable({ schedules, drivers, role, onManage }) {
-  // Función para obtener la información del conductor y si le pertenece al dueño actual
-  const getDriverDisplay = (conductorId) => {
-    if (!conductorId) return { name: "Sin asignar", isExternal: false, isMe: false };
 
-    const driver = drivers.find(d => d.id === conductorId);
+  const getNextTripId = () => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    let closestTrip = null;
+    let minDiff = Infinity;
 
-    // Verificamos si es el usuario actual (Conductor o Admin que gestiona)
-    const isMe = conductorId === role?.uid;
-
-    if (role?.type === 'ADMIN') {
-      return { name: driver ? driver.nombre : "Cargando...", isExternal: false, isMe };
-    }
-
-    // Si es OWNER, verificamos si el conductor le pertenece (está en su lista filtrada)
-    const isMyDriver = drivers.some(d => d.id === conductorId);
-
-    return {
-      name: driver ? driver.nombre : "Conductor Externo",
-      isExternal: !isMyDriver,
-      isMe
-    };
+    schedules.forEach(s => {
+      const [time, ampm] = s.hora.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (ampm === 'PM' && hours < 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+      const tripMinutes = hours * 60 + minutes;
+      const diff = tripMinutes - currentMinutes;
+      if (diff > 0 && diff < minDiff) {
+        minDiff = diff;
+        closestTrip = s.id;
+      }
+    });
+    return closestTrip;
   };
 
+  const nextTripId = getNextTripId();
+
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-      <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left border-collapse min-w-[600px]">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="px-4 md:px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Hora & Ruta</th>
-              <th className="px-4 md:px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Conductor Asignado</th>
-              <th className="px-4 md:px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Disponibilidad</th>
-              <th className="px-4 md:px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Estado</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {schedules.map((schedule) => {
-              const driverInfo = getDriverDisplay(schedule.conductorId);
-              const total = schedule.totalAsientos || 0;
-              const available = schedule.asientosDisponibles || 0;
-              const occupied = total - available;
-              const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
-              const isFull = available === 0 && total > 0;
-              const noDriver = !schedule.conductorId;
+    <div className="space-y-4 px-2">
+      {schedules.length > 0 ? (
+        schedules.map((schedule) => (
+          <ScheduleCard
+            key={schedule.id}
+            schedule={schedule}
+            drivers={drivers}
+            role={role}
+            onManage={onManage}
+            isNext={schedule.id === nextTripId}
+          />
+        ))
+      ) : (
+        <div className="py-20 text-center space-y-4 opacity-20">
+          <Clock size={48} className="mx-auto" />
+          <p className="font-black uppercase tracking-widest text-xs">Sin horarios disponibles</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
-              return (
-                <tr key={schedule.id} className="hover:bg-slate-50/50 transition-colors group">
-                  <td className="px-4 md:px-6 py-4 md:py-5">
-                    <div className="flex items-center justify-between">
-                       <div className="flex items-center gap-3 md:gap-4 min-w-0">
-                          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary-50 rounded-xl md:rounded-2xl flex flex-col items-center justify-center text-primary-600 shrink-0">
-                            <Clock size={14} className="md:size-4" />
-                            <span className="text-[8px] md:text-[10px] font-black mt-0.5 uppercase tracking-tighter leading-none">
-                              {schedule.hora.split(' ')[1]}
-                            </span>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs md:text-sm font-black text-slate-800 leading-tight mb-0.5">{schedule.hora.split(' ')[0]}</p>
-                            <div className="flex items-center gap-1 text-slate-400">
-                              <MapPin size={10} className="shrink-0" />
-                              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight truncate">{schedule.ruta}</span>
-                            </div>
-                          </div>
-                       </div>
+function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
+  const [timeStr, ampm] = schedule.hora.split(' ');
+  const available = schedule.asientosDisponibles || 0;
+  const isFull = available === 0 && (schedule.totalAsientos || 0) > 0;
 
-                       {/* Botón de Gestión para el conductor actual */}
-                       {driverInfo.isMe && onManage && (
-                         <button
-                           onClick={() => onManage(schedule)}
-                           className="ml-4 p-2 bg-primary-500 text-white rounded-lg shadow-lg shadow-primary-500/20 hover:bg-orange-600 transition-all transform active:scale-90 flex items-center gap-2"
-                         >
-                           <UsersIcon size={14} />
-                           <span className="text-[10px] font-black uppercase hidden md:inline">Gestionar</span>
-                         </button>
-                       )}
-                    </div>
-                  </td>
+  const driver = drivers.find(d => d.id === schedule.conductorId);
+  const isMe = schedule.conductorId === role?.uid;
 
-                  <td className="px-4 md:px-6 py-4 md:py-5">
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl shrink-0 ${noDriver ? 'bg-red-50 text-red-400' : driverInfo.isExternal ? 'bg-slate-50 text-slate-300' : 'bg-slate-100 text-slate-500'}`}>
-                        <User size={14} className="md:size-4" />
-                      </div>
-                      <span className={`text-xs md:text-sm font-bold truncate max-w-[120px] md:max-w-none ${noDriver ? 'text-red-500 italic' : driverInfo.isExternal ? 'text-slate-400 italic font-medium' : 'text-slate-700'}`}>
-                        {driverInfo.name}
-                      </span>
-                    </div>
-                  </td>
+  return (
+    <div className={`card-navy rounded-[2.5rem] p-5 md:p-6 transition-all duration-500 group relative overflow-hidden ${isNext ? 'ring-2 ring-primary-500/50' : ''}`}>
 
-                  <td className="px-4 md:px-6 py-4 md:py-5">
-                    <div className="flex justify-center">
-                      {role?.type !== 'ADMIN' && driverInfo.isExternal ? (
-                        <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-slate-300 uppercase tracking-widest italic leading-none">
-                           <div className="w-6 md:w-8 h-1 bg-slate-100 rounded-full"></div>
-                           Privado
-                        </div>
-                      ) : (
-                        <div className="space-y-1.5 w-full max-w-[100px] md:max-w-[140px]">
-                          <div className="flex items-center justify-between text-[8px] md:text-[10px] font-black uppercase tracking-tighter">
-                            <span className={isFull ? 'text-red-500' : 'text-slate-400'}>
-                              {isFull ? 'Agotado' : `${available} Libres`}
-                            </span>
-                            <span className="text-slate-800">{occupancyRate}%</span>
-                          </div>
-                          <div className="h-1 md:h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full transition-all duration-1000 ${isFull ? 'bg-red-500' : 'bg-primary-500 shadow-[0_0_8px_rgba(255,109,0,0.3)]'}`}
-                              style={{ width: `${occupancyRate}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+      <div className="flex items-center gap-6">
 
-                  <td className="px-4 md:px-6 py-4 md:py-5 text-center">
-                    <div className="inline-flex items-center gap-1.5 px-2 md:px-3 py-1 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest shrink-0">
-                      {noDriver ? (
-                        <span className="bg-red-100 text-red-600 px-2 md:px-3 py-1 rounded-full flex items-center gap-1 leading-none">
-                          <AlertCircle size={10} /> Pendiente
-                        </span>
-                      ) : isFull ? (
-                        <span className="bg-slate-800 text-white px-2 md:px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-slate-800/20 leading-none">
-                          Completado
-                        </span>
-                      ) : (
-                        <span className="bg-green-100 text-green-600 px-2 md:px-3 py-1 rounded-full flex items-center gap-1 leading-none">
-                          <CheckCircle2 size={10} /> En Venta
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {/* 🕒 Círculo de Tiempo (Fiel a Android) */}
+        <div className="relative flex-shrink-0">
+           <div className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-colors duration-500 ${isNext ? 'border-primary-500 shadow-[0_0_15px_rgba(255,109,0,0.3)]' : 'border-primary-500/30'}`}>
+              <span className="text-lg font-black text-white leading-none">{timeStr}</span>
+              <span className="text-[10px] font-black text-primary-500 uppercase mt-1">{ampm}</span>
+           </div>
+        </div>
+
+        {/* ℹ️ Info Central */}
+        <div className="flex-1 min-w-0 space-y-2">
+          <h4 className="text-sm md:text-base font-black text-white tracking-tight truncate uppercase">
+            {schedule.ruta}
+          </h4>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-navy-light">
+               <Bus size={14} className="text-primary-500" />
+               <span className="text-[11px] font-bold uppercase tracking-tight">
+                 {isFull ? 'Agotado' : `${available} disponibles`}
+               </span>
+            </div>
+
+            <div className="flex items-center gap-2 text-primary-500 font-black">
+               <Tag size={14} />
+               <span className="text-xs tracking-tighter">$ 12.000 COP</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-1">
+             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isFull ? 'bg-red-500/20 text-red-500' : 'bg-green-500/10 text-green-500 border border-green-500/20'}`}>
+               {isFull ? 'Lleno' : 'Disponible'}
+             </span>
+             {isNext && (
+               <span className="bg-slate-700 text-white text-[8px] font-black uppercase px-2 py-1 rounded-md animate-pulse">
+                 Siguiente
+               </span>
+             )}
+          </div>
+        </div>
+
+        {/* 🔘 Botón FAB Estilo Android */}
+        <div className="shrink-0">
+           {(isMe || role?.type === 'PASSENGER') && (
+             <button
+               onClick={() => onManage ? onManage(schedule) : null}
+               className="w-14 h-14 bg-primary-500 text-white rounded-full shadow-2xl shadow-primary-500/40 hover:bg-orange-600 transition-all transform active:scale-90 flex items-center justify-center group/btn"
+             >
+               <Plus size={28} className="group-hover/btn:rotate-90 transition-transform" />
+             </button>
+           )}
+        </div>
       </div>
     </div>
   );

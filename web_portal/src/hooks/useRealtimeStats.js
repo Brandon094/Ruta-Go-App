@@ -16,6 +16,10 @@ export const useRealtimeStats = (user) => {
     totalOwners: 0,
     todayReservations: 0,
     totalRevenue: 0,
+    // Estadísticas específicas para Pasajeros
+    confirmedReservations: 0,
+    canceledReservations: 0,
+    totalUserReservations: 0,
     loading: true
   });
 
@@ -118,7 +122,7 @@ export const useRealtimeStats = (user) => {
         unsubs.push(dOwnersSub);
       }
 
-      // --- 👨‍✈️ CONDUCTORES (Suscripción Permanente para datos de chofer) ---
+      // --- 👨‍✈️ CONDUCTORES ---
       const driversSub = onValue(ref(db, 'conductores'), (snap) => {
         if (snap.exists()) {
           const allD = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
@@ -147,35 +151,44 @@ export const useRealtimeStats = (user) => {
       // --- 🎫 RESERVAS & FINANZAS ---
       const rSub = onValue(ref(db, 'reservas'), (snap) => {
         let totalRev = 0;
+        let confirmed = 0;
+        let canceled = 0;
+        let totalUserRes = 0;
         const resList = [];
-        const now = new Date();
-        const offset = now.getTimezoneOffset() * 60000;
-        const todayISO = new Date(now.getTime() - offset).toISOString().split('T')[0];
 
         if (snap.exists()) {
           Object.entries(snap.val()).forEach(([id, res]) => {
             const resPlate = res.vehiculoId || res.vehiculoPlaca;
             const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
             const isDriverMatch = userType === 'DRIVER' && (res.conductorId === user.uid);
-
-            // Si soy pasajero, solo veo mis propias reservas
             const isMyPassengerRes = userType === 'PASSENGER' && res.usuarioId === user.uid;
 
             if (isOwned || isDriverMatch || isMyPassengerRes) {
               resList.push({ id, ...res });
-
               const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
 
-              // Sumar ingresos solo si soy admin o dueño de la flota
               if (isOwned && (status === "confirmada" || status === "completada")) {
                 totalRev += Number(res.precio || res.price || 0);
+              }
+
+              if (isMyPassengerRes) {
+                totalUserRes++;
+                if (status === "confirmada" || status === "completada") confirmed++;
+                else if (status === "cancelada") canceled++;
               }
             }
           });
 
           if (isMounted) {
             setReservations(resList);
-            setStats(prev => ({ ...prev, totalRevenue: totalRev, loading: false }));
+            setStats(prev => ({
+              ...prev,
+              totalRevenue: totalRev,
+              confirmedReservations: confirmed,
+              canceledReservations: canceled,
+              totalUserReservations: totalUserRes,
+              loading: false
+            }));
           }
         } else if (isMounted) {
           setReservations([]);
@@ -200,7 +213,6 @@ export const useRealtimeStats = (user) => {
             const avail = s.asientosDisponibles || 0;
             const res = Math.max(0, total - avail);
 
-            // Si soy conductor, solo sumo MIS reservas para el contador principal
             const isMine = userType === 'DRIVER' && s.conductorId === user.uid;
 
             if (ruta.includes("la plata")) {

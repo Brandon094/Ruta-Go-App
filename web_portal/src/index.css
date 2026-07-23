@@ -3,5 +3,43 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[#061426] text-white antialiased;
+  }
+}
+
+@layer components {
+  .card-navy {
+    @apply bg-[#061929] border border-white/5 shadow-2xl;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-orange-600 text-white font-black transition-all active:scale-95;
+  }
+
+  .text-navy-light {
+    @apply text-[#B5C5CD];
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
