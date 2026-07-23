@@ -1,315 +1,42 @@
-import { useState, useEffect } from 'react';
-import { ref, onValue, get } from "firebase/database";
-import { db } from '../firebase';
+import { useRoleResolver } from './modules/useRoleResolver';
+import { useRealtimeData } from './modules/useRealtimeData';
 
 /**
- * 🛰️ Hook: useRealtimeStats
+ * 🛰️ Hook: useRealtimeStats (Orquestador Modularizado v1.5.1)
  *
- * Centraliza la lógica de sincronización con Firebase RTDB con soporte para Roles (Admin/Owner/Driver/Passenger).
+ * Centraliza la lógica de sincronización con Firebase RTDB con soporte para Roles.
+ * Delega la resolución de roles a useRoleResolver y la sincronización a useRealtimeData.
  */
 export const useRealtimeStats = (user) => {
-  const [role, setRole] = useState({ type: null, uid: null, ownedPlates: [] });
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeDrivers: 0,
-    totalVehicles: 0,
-    totalOwners: 0,
-    todayReservations: 0,
-    totalRevenue: 0,
-    // Estadísticas específicas para Pasajeros
-    confirmedReservations: 0,
-    canceledReservations: 0,
-    totalUserReservations: 0,
-    loading: true
-  });
 
-  const [drivers, setDrivers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-  const [reservations, setReservations] = useState([]);
-  const [routeStats, setRouteStats] = useState({
-    toLaPlata: { reservations: 0, seats: 0 },
-    toNataga: { reservations: 0, seats: 0 }
-  });
+  // 1. Resolver el Rol y Perfil del usuario
+  const role = useRoleResolver(user);
 
-  useEffect(() => {
-    if (!user) return;
+  // 2. Sincronizar datos basados en el rol resuelto
+  const {
+    users,
+    drivers,
+    vehicles,
+    schedules,
+    reservations,
+    stats,
+    routeStats
+  } = useRealtimeData(user, role);
 
-    let isMounted = true;
-    const unsubs = [];
+  // Unificar el estado de carga
+  const combinedStats = {
+    ...stats,
+    loading: stats.loading || role.loading
+  };
 
-    const initializePortal = async () => {
-      try {
-        // 0. Obtener datos base del usuario (Nombre/Teléfono) desde /usuarios
-        const userSnap = await get(ref(db, `usuarios/${user.uid}`));
-        const userData = userSnap.exists() ? userSnap.val() : {};
-        const profileName = userData.nombre || user.displayName || '';
-        const profilePhone = userData.telefono || '---';
-
-        // 1. Resolver Admin
-        const adminSnap = await get(ref(db, `admins/${user.uid}`));
-        if (adminSnap.exists() && adminSnap.val() === true) {
-          if (isMounted) {
-            setRole({
-              type: 'ADMIN',
-              uid: user.uid,
-              ownedPlates: [],
-              name: profileName || 'Administrador Maestro',
-              phone: profilePhone
-            });
-            setupSync('ADMIN', []);
-          }
-          return;
-        }
-
-        // 2. Resolver Dueño
-        const ownerSnap = await get(ref(db, `dueños/${user.uid}`));
-        if (ownerSnap.exists()) {
-          const vSnap = await get(ref(db, 'vehiculos'));
-          let ownedPlates = [];
-          if (vSnap.exists()) {
-            ownedPlates = Object.entries(vSnap.val())
-              .filter(([id, v]) => v.ownerId === user.uid)
-              .map(([id, v]) => id);
-          }
-
-          if (isMounted) {
-            setRole({
-              type: 'OWNER',
-              uid: user.uid,
-              ownedPlates,
-              name: profileName || 'Socio Ruta-Go',
-              phone: profilePhone
-            });
-            setupSync('OWNER', ownedPlates);
-          }
-          return;
-        }
-
-        // 3. Resolver Conductor
-        const driverSnap = await get(ref(db, `conductores/${user.uid}`));
-        if (driverSnap.exists()) {
-          const driverData = driverSnap.val();
-          const plate = driverData.placaVehiculo || driverData.vehiculoId;
-
-          let vehicleDetails = null;
-          if (plate) {
-            const vSnap = await get(ref(db, `vehiculos/${plate}`));
-            if (vSnap.exists()) vehicleDetails = { id: plate, ...vSnap.val() };
-          }
-
-          if (isMounted) {
-            setRole({
-              type: 'DRIVER',
-              uid: user.uid,
-              ownedPlates: plate ? [plate] : [],
-              name: driverData.nombre || profileName || 'Conductor Ruta-Go',
-              phone: driverData.telefono || profilePhone,
-              vehicle: vehicleDetails
-            });
-            setupSync('DRIVER', plate ? [plate] : []);
-          }
-          return;
-        }
-
-        // 4. Resolver Pasajero
-        if (userData.rol === 'usuario' || userData.rol === 'pasajero' || userData.nombre) {
-          if (isMounted) {
-            setRole({
-              type: 'PASSENGER',
-              uid: user.uid,
-              ownedPlates: [],
-              name: profileName || 'Pasajero Ruta-Go',
-              phone: profilePhone
-            });
-            setupSync('PASSENGER', []);
-          }
-        } else if (isMounted) {
-          // Si no es admin, dueño ni conductor, pero está en usuarios, tratar como pasajero por defecto
-          setRole({
-            type: 'PASSENGER',
-            uid: user.uid,
-            ownedPlates: [],
-            name: profileName || 'Usuario Ruta-Go',
-            phone: profilePhone
-          });
-          setupSync('PASSENGER', []);
-        }
-      } catch (err) {
-        console.error("Error resolviendo rol:", err);
-        if (isMounted) setStats(prev => ({ ...prev, loading: false }));
-      }
-    };
-
-    const setupSync = (userType, ownedPlates) => {
-      const now = new Date();
-      const offset = now.getTimezoneOffset() * 60000;
-      const todayISO = new Date(now.getTime() - offset).toISOString().split('T')[0];
-
-      // --- 👤 MI PERFIL (Sincronización de Nombre/Teléfono en tiempo real) ---
-      const myProfileSub = onValue(ref(db, `usuarios/${user.uid}`), (snap) => {
-        if (snap.exists()) {
-          const data = snap.val();
-          setRole(prev => ({
-            ...prev,
-            name: data.nombre || prev.name,
-            phone: data.telefono || prev.phone
-          }));
-        }
-      });
-      unsubs.push(myProfileSub);
-
-      // --- 👥 USUARIOS (Solo para el Jefe) ---
-      if (userType === 'ADMIN') {
-        const uSub = onValue(ref(db, 'usuarios'), (snap) => {
-          if (snap.exists()) {
-            const list = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
-            setUsers(list);
-            setStats(prev => ({ ...prev, totalUsers: list.filter(u => !u.solicitudBorrado).length }));
-          }
-        });
-        unsubs.push(uSub);
-
-        const dOwnersSub = onValue(ref(db, 'dueños'), (snap) => {
-          if (snap.exists()) {
-            const count = Object.keys(snap.val()).length;
-            setStats(prev => ({ ...prev, totalOwners: count }));
-          }
-        });
-        unsubs.push(dOwnersSub);
-      }
-
-      // --- 👨‍✈️ CONDUCTORES ---
-      const driversSub = onValue(ref(db, 'conductores'), (snap) => {
-        if (snap.exists()) {
-          const allD = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
-          const filteredD = userType === 'ADMIN'
-            ? allD
-            : userType === 'DRIVER'
-              ? allD.filter(d => d.id === user.uid)
-              : allD.filter(d => ownedPlates.includes(d.placaVehiculo || d.vehiculoId));
-
-          setDrivers(filteredD);
-          setStats(prev => ({ ...prev, activeDrivers: filteredD.filter(d => d.status === 'active').length }));
-        }
-      });
-      unsubs.push(driversSub);
-
-      // --- 🚗 VEHÍCULOS ---
-      const vSub = onValue(ref(db, 'vehiculos'), (snap) => {
-        if (snap.exists()) {
-          const all = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
-          setVehicles(all);
-          const filtered = userType === 'ADMIN' ? all : all.filter(v => v.ownerId === user.uid);
-          setStats(prev => ({ ...prev, totalVehicles: filtered.length }));
-        }
-      });
-      unsubs.push(vSub);
-
-      // --- 🎫 RESERVAS & FINANZAS ---
-      const rSub = onValue(ref(db, 'reservas'), (snap) => {
-        let totalRev = 0;
-        let confirmed = 0;
-        let canceled = 0;
-        let totalUserRes = 0;
-        const resList = [];
-
-        if (snap.exists()) {
-          Object.entries(snap.val()).forEach(([id, res]) => {
-            const resPlate = res.vehiculoId || res.vehiculoPlaca;
-            const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
-            const isDriverMatch = userType === 'DRIVER' && (res.conductorId === user.uid);
-            const isMyPassengerRes = userType === 'PASSENGER' && res.usuarioId === user.uid;
-
-            if (isOwned || isDriverMatch || isMyPassengerRes) {
-              resList.push({ id, ...res });
-              const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-
-              if (isOwned && (status === "confirmada" || status === "completada")) {
-                totalRev += Number(res.precio || res.price || 0);
-              }
-
-              if (isMyPassengerRes) {
-                totalUserRes++;
-                if (status === "confirmada" || status === "completada") confirmed++;
-                else if (status === "cancelada") canceled++;
-              }
-            }
-          });
-
-          if (isMounted) {
-            setReservations(resList);
-            setStats(prev => ({
-              ...prev,
-              totalRevenue: totalRev,
-              confirmedReservations: confirmed,
-              canceledReservations: canceled,
-              totalUserReservations: totalUserRes,
-              loading: false
-            }));
-          }
-        } else if (isMounted) {
-          setReservations([]);
-          setStats(prev => ({ ...prev, loading: false }));
-        }
-      });
-      unsubs.push(rSub);
-
-      // --- 🕒 HORARIOS ---
-      const hSub = onValue(ref(db, 'horarios'), (snap) => {
-        if (snap.exists()) {
-          const list = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
-          setSchedules(list);
-
-          let lpRes = 0, lpSeats = 0;
-          let ntRes = 0, ntSeats = 0;
-          let totalResHoy = 0;
-
-          list.forEach(s => {
-            const ruta = s.ruta.toLowerCase();
-
-            // Buscar el vehículo para tener la capacidad base si no hay dato de disponibilidad
-            const vehicle = vehicles.find(v => v.id === s.vehiculoId || v.placa === s.vehiculoId);
-            const capacity = vehicle?.capacidad || 13;
-
-            // Priorizar asientosDisponibles, luego asientosLibres, y si no, la capacidad total
-            const avail = s.asientosDisponibles !== undefined ? s.asientosDisponibles :
-                         (s.asientosLibres !== undefined ? s.asientosLibres : capacity);
-
-            const total = s.totalAsientos || capacity;
-            const res = Math.max(0, total - avail);
-
-            const isMine = userType === 'DRIVER' && s.conductorId === user.uid;
-            const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(s.placaVehiculo || s.vehiculoId));
-
-            if (isOwned || isMine) {
-              if (ruta.includes("la plata")) {
-                lpRes += res;
-                lpSeats += avail;
-              } else if (ruta.includes("nátaga") || ruta.includes("nataga")) {
-                ntRes += res;
-                ntSeats += avail;
-              }
-              totalResHoy += res;
-            }
-          });
-
-          if (isMounted) {
-            setRouteStats({
-              toLaPlata: { reservations: lpRes, seats: lpSeats },
-              toNataga: { reservations: ntRes, seats: ntSeats }
-            });
-            setStats(prev => ({ ...prev, todayReservations: totalResHoy }));
-          }
-        }
-      });
-      unsubs.push(hSub);
-    };
-
-    initializePortal();
-    return () => { isMounted = false; unsubs.forEach(unsub => unsub()); };
-  }, [user]);
-
-  return { role, stats, drivers, users, schedules, reservations, routeStats, vehicles };
+  return {
+    role,
+    stats: combinedStats,
+    drivers,
+    users,
+    schedules,
+    reservations,
+    routeStats,
+    vehicles
+  };
 };

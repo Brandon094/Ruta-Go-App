@@ -9,8 +9,9 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
+*   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
 *   **Estructura**: Arquitectura modular basada en componentes desacoplados y centralización de UI-Atoms.
-*   **Reactividad**: Custom Hooks (`useRealtimeStats`) para sincronización bidireccional con RTDB.
+*   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
 *   **Despliegue**: [Firebase Hosting](https://firebase.google.com/products/hosting).
 
@@ -71,8 +72,11 @@ web_portal/
 │   │   ├── history/    # Historial de Reservas
 │   │   ├── profile/    # Perfil y Gestión de Vehículos
 │   │   └── common/     # Sidebar, Header
-│   ├── hooks/          # Lógica de negocio (useRealtimeStats)
+│   ├── hooks/          # Motores de Sincronización
+│   │   ├── modules/    # useRoleResolver.js, useRealtimeData.js
+│   │   └── useRealtimeStats.js # Orquestador
 │   ├── services/       # Firebase Data Services
+│   ├── firebase.js     # Singleton: FirebaseManager
 │   ├── App.jsx         # Orquestador (Refactorizado v1.5.1)
 │   ├── LandingPage.jsx # Ficha Pública
 │   ├── Login.jsx       # Gateway de Acceso
