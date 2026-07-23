@@ -214,18 +214,16 @@ export const useRealtimeStats = (user) => {
             const res = Math.max(0, total - avail);
 
             const isMine = userType === 'DRIVER' && s.conductorId === user.uid;
+            const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(s.placaVehiculo || s.vehiculoId));
 
-            if (ruta.includes("la plata")) {
-              lpRes += res;
-              lpSeats += avail;
-            } else if (ruta.includes("nátaga") || ruta.includes("nataga")) {
-              ntRes += res;
-              ntSeats += avail;
-            }
-
-            if (userType === 'DRIVER') {
-              if (isMine) totalResHoy += res;
-            } else {
+            if (isOwned || isMine) {
+              if (ruta.includes("la plata")) {
+                lpRes += res;
+                lpSeats += avail;
+              } else if (ruta.includes("nátaga") || ruta.includes("nataga")) {
+                ntRes += res;
+                ntSeats += avail;
+              }
               totalResHoy += res;
             }
           });
