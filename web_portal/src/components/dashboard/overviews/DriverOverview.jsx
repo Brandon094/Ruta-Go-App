@@ -3,7 +3,7 @@ import { Activity, CheckCircle2, Ticket, Calendar } from 'lucide-react';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Badge } from '../../ui/Badge';
 
-export function DriverOverview({ stats, schedules, drivers, reservations = [], role, onManage }) {
+export function DriverOverview({ stats, schedules, drivers, reservations = [], role, onManage, vehicles = [] }) {
   const currentDriverData = drivers.find(d => d.id === role.uid) || {};
   const myName = currentDriverData.nombre || 'Cargando...';
   const myPlate = currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
@@ -103,7 +103,7 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
               <Calendar className="text-primary-500" size={18} />
               <h3 className="text-lg font-black uppercase tracking-tight italic">Mi Itinerario</h3>
            </div>
-           <ScheduleTable schedules={mySchedules} drivers={drivers} role={role} onManage={onManage} />
+           <ScheduleTable schedules={mySchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
         </div>
       </div>
     </div>

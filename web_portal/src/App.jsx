@@ -68,7 +68,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, users: usersList, schedules, reservations, routeStats } = useRealtimeStats(user);
+  const { role, stats, drivers, users: usersList, schedules, reservations, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -145,9 +145,10 @@ function App() {
                 role={role}
                 user={user}
                 onManage={(s) => setManagingSchedule(s)}
+                vehicles={vehicles}
               />
             ) : role?.type === 'DRIVER' ? (
-              <DriverOverview stats={stats} routeStats={routeStats} schedules={schedules} drivers={drivers} reservations={reservations} role={role} onManage={(s) => setManagingSchedule(s)} />
+              <DriverOverview stats={stats} routeStats={routeStats} schedules={schedules} drivers={drivers} reservations={reservations} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
             ) : (
@@ -162,7 +163,7 @@ function App() {
           ) : activeTab === 'users' ? (
             <UserDirectory users={usersList} />
           ) : activeTab === 'schedules' ? (
-            <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} onManage={(s) => setManagingSchedule(s)} />
+            <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
           ) : activeTab === 'manual' ? (
             <UserManual role={role} isTab={true} />
           ) : null}

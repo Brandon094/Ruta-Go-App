@@ -25,6 +25,7 @@ export const useRealtimeStats = (user) => {
 
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [routeStats, setRouteStats] = useState({
@@ -170,6 +171,7 @@ export const useRealtimeStats = (user) => {
       const vSub = onValue(ref(db, 'vehiculos'), (snap) => {
         if (snap.exists()) {
           const all = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
+          setVehicles(all);
           const filtered = userType === 'ADMIN' ? all : all.filter(v => v.ownerId === user.uid);
           setStats(prev => ({ ...prev, totalVehicles: filtered.length }));
         }
@@ -272,5 +274,5 @@ export const useRealtimeStats = (user) => {
     return () => { isMounted = false; unsubs.forEach(unsub => unsub()); };
   }, [user]);
 
-  return { role, stats, drivers, users, schedules, reservations, routeStats };
+  return { role, stats, drivers, users, schedules, reservations, routeStats, vehicles };
 };

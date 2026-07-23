@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Clock } from 'lucide-react';
 import { ScheduleTable } from './ScheduleTable';
 
-export function ScheduleDirectory({ schedules, drivers, role, onManage }) {
+export function ScheduleDirectory({ schedules, drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
   const natagaToLaPlata = schedules.filter(s => s.ruta.toLowerCase().includes('nátaga -> la plata') || (s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().indexOf('nátaga') < s.ruta.toLowerCase().indexOf('plata')));
   const laPlataToNataga = schedules.filter(s => s.ruta.toLowerCase().includes('la plata -> nátaga') || (s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().indexOf('plata') < s.ruta.toLowerCase().indexOf('nátaga')));
@@ -21,7 +21,7 @@ export function ScheduleDirectory({ schedules, drivers, role, onManage }) {
         </div>
       </div>
       <div className="px-2">
-        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
+        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
       </div>
     </div>
   );

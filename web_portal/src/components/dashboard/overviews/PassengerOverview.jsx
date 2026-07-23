@@ -4,7 +4,7 @@ import { SummaryMetric } from '../SummaryMetric';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Badge } from '../../ui/Badge';
 
-export function PassengerOverview({ stats, schedules, drivers, role, onManage }) {
+export function PassengerOverview({ stats, schedules, drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
 
   const natagaToLaPlata = schedules.filter(s =>
@@ -86,7 +86,7 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage })
           </div>
         </div>
 
-        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
+        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
 
         <div className="p-8 bg-white dark:bg-[#061929] rounded-[2.5rem] border border-slate-100 dark:border-white/5 flex flex-col md:flex-row items-center gap-6 shadow-sm mx-2 group">
           <div className="w-16 h-16 bg-blue-500/10 dark:bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 shrink-0 group-hover:scale-110 transition-transform">
