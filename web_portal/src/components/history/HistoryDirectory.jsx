@@ -65,11 +65,17 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
 
           {/* Botones de Acción */}
           <div className="flex gap-4 shrink-0">
-            <button className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group">
-              <Search size={20} className="group-hover:scale-110 transition-transform" />
+            <button
+              disabled={true}
+              className="p-3 bg-white/10 text-white opacity-40 cursor-not-allowed rounded-2xl border border-white/10 transition-all"
+            >
+              <Search size={20} />
             </button>
-            <button className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group">
-              <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+            <button
+              disabled={true}
+              className="p-3 bg-white/10 text-white opacity-40 cursor-not-allowed rounded-2xl border border-white/10 transition-all"
+            >
+              <RefreshCw size={20} />
             </button>
           </div>
         </div>

@@ -239,8 +239,16 @@ export const useRealtimeStats = (user) => {
 
           list.forEach(s => {
             const ruta = s.ruta.toLowerCase();
-            const total = s.totalAsientos || 0;
-            const avail = s.asientosDisponibles || 0;
+
+            // Buscar el vehículo para tener la capacidad base si no hay dato de disponibilidad
+            const vehicle = vehicles.find(v => v.id === s.vehiculoId || v.placa === s.vehiculoId);
+            const capacity = vehicle?.capacidad || 13;
+
+            // Priorizar asientosDisponibles, luego asientosLibres, y si no, la capacidad total
+            const avail = s.asientosDisponibles !== undefined ? s.asientosDisponibles :
+                         (s.asientosLibres !== undefined ? s.asientosLibres : capacity);
+
+            const total = s.totalAsientos || capacity;
             const res = Math.max(0, total - avail);
 
             const isMine = userType === 'DRIVER' && s.conductorId === user.uid;

@@ -88,12 +88,16 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
 
 function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, vehicles = [], innerRef }) {
   const [timeStr, ampm] = schedule.hora.split(' ');
-  const available = schedule.asientosDisponibles || 0;
 
   // Buscar vehículo para obtener capacidad real
   const vehicle = vehicles.find(v => v.id === schedule.vehiculoId || v.placa === schedule.vehiculoId);
   const totalSeats = vehicle?.capacidad || 13;
-  const isFull = available === 0;
+
+  // Lógica Dinámica: Priorizar campos de disponibilidad, fallback a capacidad total
+  const available = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles :
+                   (schedule.asientosLibres !== undefined ? schedule.asientosLibres : totalSeats);
+
+  const isFull = available === 0 && (schedule.asientosDisponibles !== undefined);
 
   const driver = drivers.find(d => d.id === schedule.conductorId);
   const isMe = schedule.conductorId === role?.uid;
