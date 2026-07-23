@@ -17,7 +17,7 @@ import {
  * Ficha de presentación pública de Ruta-Go.
  * Expone la propuesta de valor para Pasajeros, Conductores y Dueños.
  */
-export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onViewPrivacy }) {
+export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onViewPrivacy, onViewManual }) {
   const [activeSolution, setActiveCard] = useState(0);
 
   const solutions = [
@@ -225,6 +225,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onV
                ChopCode Solutions © 2026 • Huila, CO
             </div>
             <div className="flex justify-center md:justify-end gap-6 text-white/40 text-sm md:text-base order-2 md:order-none">
+               <span onClick={onViewManual} className="hover:text-primary-500 cursor-pointer transition-colors">Manual</span>
                <span onClick={onViewPrivacy} className="hover:text-primary-500 cursor-pointer transition-colors">Privacidad</span>
                <span onClick={onViewTerms} className="hover:text-primary-500 cursor-pointer transition-colors">Términos</span>
             </div>

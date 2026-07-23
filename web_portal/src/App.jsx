@@ -17,6 +17,7 @@ import Login from './Login';
 import Register from './Register';
 import Terms from './Terms';
 import Privacy from './Privacy';
+import UserManual from './UserManual';
 import { Sidebar } from './components/common/Sidebar';
 import { Header } from './components/common/Header';
 import { StatCard } from './components/dashboard/StatCard';
@@ -35,7 +36,7 @@ import { useRealtimeStats } from './hooks/useRealtimeStats';
  */
 function App() {
   const [user, setUser] = useState(null);
-  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'register' | 'terms' | 'privacy'
+  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'register' | 'terms' | 'privacy' | 'manual'
   const [activeTab, setActiveTab] = useState('overview');
   const [loadingAuth, setLoadingAuth] = useState(true);
 
@@ -75,12 +76,14 @@ function App() {
     if (view === 'register') return <Register onBack={() => setView('landing')} />;
     if (view === 'terms') return <Terms onBack={() => setView('landing')} />;
     if (view === 'privacy') return <Privacy onBack={() => setView('landing')} />;
+    if (view === 'manual') return <UserManual onBack={() => setView('landing')} />;
     return (
       <LandingPage
         onLogin={() => setView('login')}
         onRegisterOwner={() => setView('register')}
         onViewTerms={() => setView('terms')}
         onViewPrivacy={() => setView('privacy')}
+        onViewManual={() => setView('manual')}
       />
     );
   }
