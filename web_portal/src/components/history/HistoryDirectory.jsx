@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, History, ArrowRight } from 'lucide-react';
+import { Search, RefreshCw, History, ArrowRight, X } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
+import { Input } from '../ui/Input';
 
 export function HistoryDirectory({ reservations, role, onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   const filteredList = reservations
     .filter(res => {
@@ -24,7 +26,8 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
         const search = searchTerm.toLowerCase();
         const name = (res.name || res.nombre || res.nombreUsuario || "").toLowerCase();
         const route = (res.origen || res.origin || "").toLowerCase() + (res.destino || res.destination || "").toLowerCase();
-        return name.includes(search) || route.includes(search);
+        const plate = (res.vehicleId || res.vehiculoId || "").toLowerCase();
+        return name.includes(search) || route.includes(search) || plate.includes(search);
       }
       return true;
     })
@@ -44,40 +47,55 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
 
       {/* 🟠 HEADER NARANJA */}
       <div className="bg-primary-500 p-6 lg:p-8 pb-32 relative overflow-hidden shadow-2xl transition-all duration-300">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+        <div className="max-w-5xl mx-auto space-y-6 relative z-10">
 
-          {/* Chips de Filtro */}
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 w-full md:w-auto justify-center md:justify-start">
-            {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Chips de Filtro (Scrollable en móvil) */}
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 w-full md:w-auto justify-start px-2 md:px-0">
+              {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
+                    filter === f
+                    ? 'bg-secondary-900 text-white border-transparent'
+                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            {/* Botones de Acción */}
+            <div className="flex gap-4 shrink-0 w-full md:w-auto justify-end px-2 md:px-0">
               <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
-                  filter === f
-                  ? 'bg-secondary-900 text-white border-transparent'
-                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                }`}
+                onClick={() => setShowSearch(!showSearch)}
+                className={`p-3 rounded-2xl border transition-all shadow-lg group ${showSearch ? 'bg-white text-primary-500 border-white' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'}`}
               >
-                {f}
+                {showSearch ? <X size={20} /> : <Search size={20} className="group-hover:scale-110 transition-transform" />}
               </button>
-            ))}
+              <button
+                className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group"
+                onClick={() => window.location.reload()}
+              >
+                <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+              </button>
+            </div>
           </div>
 
-          {/* Botones de Acción */}
-          <div className="flex gap-4 shrink-0">
-            <button
-              disabled={true}
-              className="p-3 bg-white/10 text-white opacity-40 cursor-not-allowed rounded-2xl border border-white/10 transition-all"
-            >
-              <Search size={20} />
-            </button>
-            <button
-              disabled={true}
-              className="p-3 bg-white/10 text-white opacity-40 cursor-not-allowed rounded-2xl border border-white/10 transition-all"
-            >
-              <RefreshCw size={20} />
-            </button>
-          </div>
+          {/* Barra de Búsqueda Animada */}
+          {showSearch && (
+            <div className="animate-in slide-in-from-top-4 duration-300 px-2 md:px-0">
+              <Input
+                placeholder="Buscar por pasajero, ruta o placa..."
+                icon={Search}
+                value={searchTerm}
+                onChange={(val) => setSearchTerm(val)}
+                className="!bg-white/10 !border-white/20 !text-white !placeholder:text-white/40 focus:!ring-white/20"
+              />
+            </div>
+          )}
         </div>
       </div>
 

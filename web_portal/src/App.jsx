@@ -102,15 +102,19 @@ function App() {
     );
   }
 
+  const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
+
   return (
     <div className="flex h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white antialiased font-sans overflow-hidden transition-colors duration-300">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        role={role}
-      />
+      {isManagement && (
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          role={role}
+        />
+      )}
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <Header
@@ -184,8 +188,8 @@ function App() {
           ) : null}
         </div>
 
-        {/* Bottom Nav Simulation for Mobile */}
-        <div className="lg:hidden h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
+        {/* Bottom Nav Simulation - Espejo de App Móvil */}
+        <div className={`h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl ${isManagement ? 'lg:hidden' : ''}`}>
            <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
            <BottomNavItem icon={<HistoryIcon size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
            <BottomNavItem icon={<User size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />

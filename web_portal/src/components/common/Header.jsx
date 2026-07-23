@@ -19,13 +19,15 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
   return (
     <header className="h-20 bg-white dark:bg-[#061929] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 lg:px-10 shrink-0 z-30 transition-colors duration-300">
       <div className="flex items-center gap-4">
-        {/* Botón Hamburguesa */}
-        <button
-          onClick={onMenuClick}
-          className="lg:hidden p-2.5 text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-90"
-        >
-          <Menu size={24} />
-        </button>
+        {/* Botón Hamburguesa (Solo para Admin/Dueño) */}
+        {(isRoot || isOwner) && (
+          <button
+            onClick={onMenuClick}
+            className="lg:hidden p-2.5 text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-90"
+          >
+            <Menu size={24} />
+          </button>
+        )}
 
         <h2 className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight truncate max-w-[200px] md:max-w-none uppercase italic">
           {isLoading ? 'Verificando...' : title}
