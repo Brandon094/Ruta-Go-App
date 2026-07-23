@@ -155,7 +155,7 @@ function App() {
               <AdminOverview stats={stats} role={role} />
             )
           ) : activeTab === 'history' ? (
-            <HistoryDirectory reservations={reservations} role={role} />
+            <HistoryDirectory reservations={reservations} role={role} onNavigate={() => setActiveTab('overview')} />
           ) : activeTab === 'profile' ? (
             <ProfileDirectory user={user} role={role} />
           ) : activeTab === 'drivers' ? (
