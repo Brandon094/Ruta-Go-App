@@ -291,28 +291,6 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
 
         <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
 
-        {/* CARTA DE ESTADO POR RUTA */}
-        <div className="space-y-6">
-            <div className="flex items-center gap-3 px-2">
-               <Activity className="text-primary-500" size={18} />
-               <h3 className="text-sm font-black text-slate-400 dark:text-white/40 uppercase tracking-widest">Estado por ruta</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
-              <RouteStatCard
-                name="Nátaga → La Plata"
-                reservations={routeStats.toLaPlata.reservations}
-                available={routeStats.toLaPlata.seats}
-                color="border-orange-500"
-              />
-              <RouteStatCard
-                name="La Plata → Nátaga"
-                reservations={routeStats.toNataga.reservations}
-                available={routeStats.toNataga.seats}
-                color="border-secondary-400"
-              />
-            </div>
-         </div>
-
         <div className="p-8 bg-white dark:bg-[#061929] rounded-[2.5rem] border border-slate-100 dark:border-white/5 flex flex-col md:flex-row items-center gap-6 shadow-sm mx-2 group">
           <div className="w-16 h-16 bg-blue-500/10 dark:bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 shrink-0 group-hover:scale-110 transition-transform">
              <Info size={32} />
