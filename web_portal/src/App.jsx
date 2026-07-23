@@ -22,6 +22,7 @@ import { OwnerOverview } from './components/dashboard/overviews/OwnerOverview';
 // Components - Directories
 import { UserDirectory } from './components/users/UserDirectory';
 import { DriverDirectory } from './components/drivers/DriverDirectory';
+import { OwnerDirectory } from './components/owners/OwnerDirectory';
 import { HistoryDirectory } from './components/history/HistoryDirectory';
 import { ScheduleDirectory } from './components/schedules/ScheduleDirectory';
 import { ProfileDirectory } from './components/profile/ProfileDirectory';
@@ -68,7 +69,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, users: usersList, schedules, reservations, routeStats, vehicles } = useRealtimeStats(user);
+  const { role, stats, drivers, users: usersList, owners, schedules, reservations, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -121,6 +122,7 @@ function App() {
                'Centro de Reservas') :
             activeTab === 'history' ? 'Historial de Reservas' :
             activeTab === 'profile' ? 'Mi Perfil' :
+            activeTab === 'owners' ? 'Gestión de Socios' :
             activeTab === 'drivers' ? 'Conductores' :
             activeTab === 'users' ? 'Pasajeros' :
             activeTab === 'schedules' ? 'Planilla' :
@@ -152,12 +154,14 @@ function App() {
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
             ) : (
-              <AdminOverview stats={stats} role={role} />
+              <AdminOverview stats={stats} role={role} users={usersList} drivers={drivers} owners={owners} />
             )
           ) : activeTab === 'history' ? (
             <HistoryDirectory reservations={reservations} role={role} onNavigate={() => setActiveTab('overview')} />
           ) : activeTab === 'profile' ? (
             <ProfileDirectory user={user} role={role} />
+          ) : activeTab === 'owners' ? (
+            <OwnerDirectory owners={owners} users={usersList} />
           ) : activeTab === 'drivers' ? (
             <DriverDirectory drivers={drivers} onEditDriver={(driver) => setEditingDriver(driver)} onAddDriver={() => setIsAddingDriver(true)} />
           ) : activeTab === 'users' ? (

@@ -3,6 +3,10 @@ import { ShieldCheck, Users, Bus, Calendar, Activity } from 'lucide-react';
 import { SummaryMetric } from '../SummaryMetric';
 import { Badge } from '../../ui/Badge';
 
+/**
+ * 👑 Component: AdminOverview
+ * Vista analítica maestra para el Administrador Root.
+ */
 export function AdminOverview({ stats }) {
   const formatCurrency = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
 
@@ -13,7 +17,7 @@ export function AdminOverview({ stats }) {
       <div className="bg-white dark:bg-[#061426] -mt-4 lg:-mt-8 -mx-4 lg:-mx-8 p-6 lg:p-10 pb-16 relative overflow-hidden shadow-2xl transition-colors duration-300">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
 
-        <div className="max-w-6xl mx-auto flex items-center justify-between relative z-10">
+        <div className="max-w-7xl mx-auto flex items-center justify-between relative z-10">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 lg:w-20 lg:h-20 bg-primary-500/10 rounded-[2.5rem] border-2 border-primary-500/20 p-1 flex items-center justify-center shadow-inner">
                <div className="w-full h-full bg-secondary-900 dark:bg-white/10 rounded-[2.3rem] flex items-center justify-center text-primary-500 font-black text-xl lg:text-2xl shadow-sm">
@@ -32,7 +36,7 @@ export function AdminOverview({ stats }) {
         </div>
 
         {/* 📊 GLOBAL KPI BAR */}
-        <div className="max-w-6xl mx-auto mt-8">
+        <div className="max-w-7xl mx-auto mt-8">
           <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-6 lg:p-8 shadow-xl dark:shadow-none transition-colors duration-300">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-8">
               <SummaryMetric label="Usuarios" value={stats.totalUsers} icon={<Users size={18} className="text-blue-500 mb-1"/>} color="text-[#061426] dark:text-white" />
@@ -47,7 +51,7 @@ export function AdminOverview({ stats }) {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto pt-6 px-2 lg:px-0">
+      <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0">
         <div className="grid grid-cols-1 gap-8">
           {/* Módulo de Gráficas Estilizado */}
           <div className="card-base p-12 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center text-center space-y-6 group hover:border-primary-500/50 transition-all duration-500 bg-gradient-to-b from-transparent to-slate-50/50 dark:to-white/5">

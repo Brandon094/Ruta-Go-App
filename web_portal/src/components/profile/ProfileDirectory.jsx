@@ -8,6 +8,7 @@ import { db } from '../../firebase';
 import { ProfileInfoItem } from './ProfileInfoItem';
 import { Input } from '../ui/Input';
 import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 
 export function ProfileDirectory({ user: currentUser, role }) {
   // 1. Mover definiciones de constantes al tope para evitar ReferenceError
@@ -284,19 +285,23 @@ export function ProfileDirectory({ user: currentUser, role }) {
 
           {/* Botones de Acción */}
           <div className="space-y-4 pt-6">
-            <button
+            <Button
               onClick={editTab === 'PERSONAL' ? handleSavePersonal : handleSaveVehicle}
-              disabled={loading}
-              className="w-full py-5 bg-primary-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 shadow-2xl shadow-primary-500/30 active:scale-95 transition-all"
+              isLoading={loading}
+              variant="primary"
+              size="full"
+              icon={CheckCircle2}
             >
-              {loading ? <Loader2 className="animate-spin" size={20}/> : <><CheckCircle2 size={20}/> Guardar Cambios</>}
-            </button>
-            <button
+              Guardar Cambios
+            </Button>
+            <Button
               onClick={() => setIsEditing(false)}
-              className="w-full py-5 border-2 border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/60 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-slate-100 dark:hover:bg-white/5"
+              variant="secondary"
+              size="full"
+              icon={X}
             >
-              <X size={20}/> Cancelar
-            </button>
+              Cancelar
+            </Button>
           </div>
         </div>
       </div>
@@ -378,13 +383,15 @@ export function ProfileDirectory({ user: currentUser, role }) {
           </div>
         )}
 
-        <button
+        <Button
           onClick={() => setIsEditing(true)}
-          className="w-full py-5 border-2 border-orange-500 rounded-[2rem] flex items-center justify-center gap-3 text-orange-500 font-black uppercase tracking-widest text-xs hover:bg-orange-500 hover:text-white transition-all shadow-lg shadow-orange-500/10 active:scale-95"
+          variant="outline"
+          size="full"
+          icon={Pencil}
+          className="rounded-[2rem]"
         >
-           <Pencil size={20} />
-           Editar Perfil
-        </button>
+          Editar Perfil
+        </Button>
 
         {/* Link de Borrado */}
         <div className="text-center pt-4">

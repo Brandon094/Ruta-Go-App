@@ -3,6 +3,7 @@ import { CheckCircle2, XCircle, ChevronDown, Clock, Activity, Info } from 'lucid
 import { SummaryMetric } from '../SummaryMetric';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Badge } from '../../ui/Badge';
+import { Button } from '../../ui/Button';
 
 export function PassengerOverview({ stats, schedules, drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
@@ -67,22 +68,22 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage, v
           </div>
 
           <div className="flex bg-white dark:bg-[#061929] p-1 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm transition-colors duration-300">
-            <button
+            <Button
+              variant={activeRoute === 'toLaPlata' ? 'primary' : 'ghost'}
+              size="md"
+              className={`flex-1 ${activeRoute === 'toLaPlata' ? '' : 'text-slate-400 dark:text-white/40'}`}
               onClick={() => setActiveRoute('toLaPlata')}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${
-                activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white'
-              }`}
             >
-              NATAGÁ -> LA PLATA
-            </button>
-            <button
+              NATAGÁ ➔ LA PLATA
+            </Button>
+            <Button
+              variant={activeRoute === 'toNataga' ? 'primary' : 'ghost'}
+              size="md"
+              className={`flex-1 ${activeRoute === 'toNataga' ? '' : 'text-slate-400 dark:text-white/40'}`}
               onClick={() => setActiveRoute('toNataga')}
-              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${
-                activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white'
-              }`}
             >
-              LA PLATA -> NATAGÁ
-            </button>
+              LA PLATA ➔ NATAGÁ
+            </Button>
           </div>
         </div>
 

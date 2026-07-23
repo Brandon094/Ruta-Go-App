@@ -2,6 +2,7 @@ import React from 'react';
 import { Activity, CheckCircle2, Ticket, Calendar } from 'lucide-react';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Badge } from '../../ui/Badge';
+import { Button } from '../../ui/Button';
 
 export function DriverOverview({ stats, schedules, drivers, reservations = [], role, onManage, vehicles = [] }) {
   const currentDriverData = drivers.find(d => d.id === role.uid) || {};
@@ -85,9 +86,13 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
                       </p>
                     </div>
                   </div>
-                  <button className="px-6 py-2.5 bg-green-500 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-green-500/20 active:scale-95 transition-all">
+                  <Button
+                    variant="success"
+                    size="sm"
+                    className="md:px-6"
+                  >
                     Confirmar
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

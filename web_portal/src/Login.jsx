@@ -3,6 +3,7 @@ import { auth } from './firebase';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { Lock, Mail, Loader2, ArrowLeft, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Input } from './components/ui/Input';
+import { Button } from './components/ui/Button';
 
 /**
  * 🔐 Login Component - Acceso Administrativo & Dueños
@@ -81,12 +82,16 @@ function Login({ onShowRegister, onBack }) {
       <div className="flex-1 bg-transparent p-6 lg:p-20 flex flex-col justify-center relative animate-in fade-in slide-in-from-right-4 duration-500">
 
         {/* Botón Volver */}
-        <button
-          onClick={onBack}
-          className="absolute top-8 left-8 lg:left-20 p-3 text-slate-400 dark:text-white/20 hover:text-primary-500 hover:bg-slate-50 dark:hover:bg-white/5 rounded-full transition-all group"
-        >
-          <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-        </button>
+        <div className="absolute top-8 left-8 lg:left-20">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            icon={ArrowLeft}
+            className="!p-3 rounded-full group"
+          >
+          </Button>
+        </div>
 
         <div className="max-w-md mx-auto w-full space-y-10">
           <div className="space-y-2">
@@ -143,17 +148,15 @@ function Login({ onShowRegister, onBack }) {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-secondary-800 dark:bg-primary-500 hover:bg-black dark:hover:bg-primary-600 text-white font-black py-5 rounded-2xl shadow-2xl shadow-slate-900/30 dark:shadow-primary-500/20 transition-all transform active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed text-sm uppercase tracking-widest"
+              isLoading={loading}
+              variant="primary"
+              size="full"
+              className="py-5 text-sm"
             >
-              {loading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                "Entrar a Ruta-Go"
-              )}
-            </button>
+              Entrar a Ruta-Go
+            </Button>
           </form>
 
           {/* Registro Link */}

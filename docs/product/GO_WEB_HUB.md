@@ -24,10 +24,8 @@ El sitio web ha sido desplegado exitosamente en **Firebase Hosting** utilizando 
 ### 💼 Go Business: Dashboard de Dueños & Operadores
 *   **Acceso RBAC**: Sistema de login seguro con aislamiento de datos por `ownerId`.
 *   **Telemetría de Flota**: Conteo de vehículos, conductores activos e ingresos generados.
-*   **Planilla de Despachos**: Visualización de horarios en tiempo real con **UI Mirror (v1.5.1)**:
-    *   Sincronización de capacidad real y cupos disponibles (Fallback dinámico).
-    *   Auto-scroll al próximo despacho disponible para agilidad operativa.
-    *   Botón circular "+" consistente con la App móvil.
+*   **Administración Root**: Módulo dedicado para la aprobación y auditoría de Socios de Flota.
+*   **Planilla de Despachos**: Visualización de horarios en tiempo real con **UI Mirror (v1.5.1)**.
 
 ### ⚖️ Centro Legal & Compliance
 *   **Privacidad (Ley 1581)**: Módulo interactivo de Política de Privacidad.

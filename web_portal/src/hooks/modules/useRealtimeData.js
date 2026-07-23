@@ -11,6 +11,7 @@ export const useRealtimeData = (user, role) => {
   const [data, setData] = useState({
     users: [],
     drivers: [],
+    owners: [],
     vehicles: [],
     schedules: [],
     reservations: [],
@@ -56,9 +57,11 @@ export const useRealtimeData = (user, role) => {
 
       const dOwnersSub = onValue(firebaseManager.getRef('dueños'), (snap) => {
         if (snap.exists() && isMounted) {
+          const list = Object.entries(snap.val()).map(([id, status]) => ({ id, status }));
           setData(prev => ({
             ...prev,
-            stats: { ...prev.stats, totalOwners: Object.keys(snap.val()).length }
+            owners: list,
+            stats: { ...prev.stats, totalOwners: list.length }
           }));
         }
       });

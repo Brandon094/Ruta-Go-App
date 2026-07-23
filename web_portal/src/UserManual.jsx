@@ -6,6 +6,7 @@ import {
   ClipboardCheck, UserPlus, TrendingUp, Trash2,
   HelpCircle, Info, ShieldCheck, Zap
 } from 'lucide-react';
+import { Button } from './components/ui/Button';
 
 /**
  * 📖 Componente: UserManual
@@ -124,9 +125,14 @@ export default function UserManual({ role, onBack, isTab = false }) {
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white font-sans overflow-y-auto transition-colors duration-300">
       <nav className="h-20 flex items-center gap-4 px-6 border-b border-slate-200 dark:border-white/5 sticky top-0 bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md z-50">
-        <button onClick={onBack} className="p-3 text-slate-400 dark:text-white/40 hover:text-primary-500 hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl transition-all">
-          <ArrowLeft size={24} />
-        </button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          icon={ArrowLeft}
+          className="!p-3 rounded-2xl"
+        >
+        </Button>
         <div className="flex items-center gap-3">
           <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-8 h-8 object-contain" />
           <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">Manual de Usuario</h1>

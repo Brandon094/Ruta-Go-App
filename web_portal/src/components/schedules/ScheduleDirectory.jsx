@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Clock } from 'lucide-react';
 import { ScheduleTable } from './ScheduleTable';
+import { Button } from '../ui/Button';
 
 export function ScheduleDirectory({ schedules, drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
@@ -16,8 +17,22 @@ export function ScheduleDirectory({ schedules, drivers, role, onManage, vehicles
           <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Planilla de Despachos</h3>
         </div>
         <div className="flex bg-white dark:bg-[#061929] p-1 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm transition-colors">
-          <button onClick={() => setActiveRoute('toLaPlata')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-2xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600'}`}>Nátaga ➔ LP</button>
-          <button onClick={() => setActiveRoute('toNataga')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-2xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600'}`}>LP ➔ Nátaga</button>
+          <Button
+            variant={activeRoute === 'toLaPlata' ? 'primary' : 'ghost'}
+            size="md"
+            className={`flex-1 md:px-8 ${activeRoute === 'toLaPlata' ? '' : 'text-slate-400 dark:text-white/40'}`}
+            onClick={() => setActiveRoute('toLaPlata')}
+          >
+            Nátaga ➔ LP
+          </Button>
+          <Button
+            variant={activeRoute === 'toNataga' ? 'primary' : 'ghost'}
+            size="md"
+            className={`flex-1 md:px-8 ${activeRoute === 'toNataga' ? '' : 'text-slate-400 dark:text-white/40'}`}
+            onClick={() => setActiveRoute('toNataga')}
+          >
+            LP ➔ Nátaga
+          </Button>
         </div>
       </div>
       <div className="px-2">

@@ -67,8 +67,9 @@ web_portal/
 ├── public/assets/      # Logos oficiales (Naranja/Navy)
 ├── src/
 │   ├── components/     # UI Atómica
-│   │   ├── ui/         # Átomos: Input.jsx (Renderizado Seguro), Badge.jsx (DRY)
-│   │   ├── dashboard/  # Overviews por Rol (Admin, Owner, etc.)
+│   │   ├── ui/         # Átomos: Input.jsx, Badge.jsx, Button.jsx (DRY Core)
+│   │   ├── dashboard/  # Overviews analíticos por Rol
+│   │   ├── owners/     # Gestión de Socios (Solo Admin)
 │   │   ├── history/    # Historial de Reservas
 │   │   ├── profile/    # Perfil y Gestión de Vehículos
 │   │   └── common/     # Sidebar, Header

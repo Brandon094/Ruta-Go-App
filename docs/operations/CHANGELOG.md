@@ -13,11 +13,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Caja de Beneficios en Registro**: Nueva sección dinámica que explica las ventajas del perfil (Pasajero o Socio) seleccionado para guiar al usuario.
 - **Centro de Ayuda Enriquecido**: Guía del pasajero expandida con descripciones detalladas sobre itinerarios, puntos de fidelidad y Web App en iPhone.
 - **Ecosistema Firebase Singleton**: Implementación de la clase `FirebaseManager` para centralizar Auth, DB y Storage, garantizando una única instancia global espejo de la App Android.
+- **Módulo de Gestión de Socios**: Nueva interfaz dedicada para que el Administrador Root gestione aprobaciones y estados de los dueños de flota de forma independiente.
+- **Librería de Átomos (UI Core)**: Creación del componente `Button.jsx` para estandarizar todas las acciones del portal bajo principios de Atomic Design.
 
 ### Cambiado
 - **Arquitectura de Sincronización Modular**: El hook maestro `useRealtimeStats` ha sido desacoplado en motores especializados: `useRoleResolver` (Identidad) y `useRealtimeData` (Operación).
 - **Identidad Dinámica Prioritaria**: Optimización del flujo de carga para obtener nombres reales desde el nodo `/usuarios` antes de renderizar Dashboards administrativos.
-- **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`) para eliminar redundancia y facilitar el mantenimiento.
+- **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`, `Button`) para eliminar redundancia y facilitar el mantenimiento.
+- **Reorganización del Panel Maestro**: El Dashboard administrativo ahora es puramente analítico, moviendo la gestión de socios y pasajeros a secciones dedicadas en el Sidebar.
 - **UI Mirror v1.5.1**: Actualización estética de la planilla web para ser un espejo fiel de Android, incluyendo el botón circular "+" y el sistema de badges de estado ("Finalizado", "Completado", "Disponible").
 - **Optimización de Temas**: Eliminación de residuos visuales en el modo claro dentro de las secciones de Perfil e Historial, logrando una adaptabilidad del 100% a las preferencias del usuario.
 - **Congelamiento de Acciones en Historial**: Botones de búsqueda y actualización deshabilitados visualmente para priorizar la visualización de datos en esta fase.

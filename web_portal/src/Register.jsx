@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { ref, set } from "firebase/database";
 import { Lock, Mail, User, Loader2, ArrowLeft, Phone, CheckCircle2, TrendingUp, Users } from 'lucide-react';
 import { Input } from './components/ui/Input';
+import { Button } from './components/ui/Button';
 
 /**
  * 📝 Register Component - Registro Universal (Pasajeros & Socios)
@@ -84,12 +85,13 @@ export default function Register({ onBack, initialMode = 'owner' }) {
               </div>
             )}
           </div>
-          <button
+          <Button
             onClick={onBack}
-            className="w-full py-4 bg-[#061426] dark:bg-primary-500 text-white font-black rounded-2xl shadow-xl hover:bg-black dark:hover:bg-primary-600 transition-all active:scale-95 uppercase tracking-widest text-sm"
+            variant="primary"
+            size="full"
           >
             Ir al Inicio
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -133,12 +135,16 @@ export default function Register({ onBack, initialMode = 'owner' }) {
 
       {/* Lado Derecho: Formulario */}
       <div className="flex-1 bg-transparent p-6 lg:p-20 flex flex-col justify-center relative animate-in slide-in-from-right-4 duration-500">
-        <button
-          onClick={onBack}
-          className="absolute top-8 left-8 lg:left-20 p-3 text-slate-400 dark:text-white/20 hover:text-primary-500 hover:bg-slate-50 dark:hover:bg-white/5 rounded-full transition-all group"
-        >
-          <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-        </button>
+        <div className="absolute top-8 left-8 lg:left-20">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            icon={ArrowLeft}
+            className="!p-3 rounded-full group"
+          >
+          </Button>
+        </div>
 
         <div className="max-w-md mx-auto w-full space-y-10">
           <div className="space-y-4">
@@ -243,19 +249,15 @@ export default function Register({ onBack, initialMode = 'owner' }) {
               </div>
             )}
 
-            <button
+            <Button
               type="submit"
-              disabled={loading}
-              className={`w-full text-white font-black py-5 rounded-2xl shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed text-sm uppercase tracking-widest ${
-                mode === 'owner' ? 'bg-[#061426] dark:bg-primary-500 hover:bg-black dark:hover:bg-primary-600 shadow-slate-900/30' : 'bg-primary-500 hover:bg-primary-600 shadow-primary-500/30'
-              }`}
+              isLoading={loading}
+              variant="primary"
+              size="full"
+              className="py-5 text-sm"
             >
-              {loading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                mode === 'owner' ? "Enviar Solicitud de Socio" : "Crear mi Cuenta de Pasajero"
-              )}
-            </button>
+              {mode === 'owner' ? "Enviar Solicitud de Socio" : "Crear mi Cuenta de Pasajero"}
+            </Button>
           </form>
 
           <p className="text-center text-[10px] text-slate-300 dark:text-white/10 font-black uppercase tracking-[0.2em]">
