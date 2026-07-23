@@ -33,6 +33,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
     {
       title: "Usuario",
       items: [
+        { id: 'passenger_view', label: 'Reservar Viaje', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
         { id: 'history', label: 'Historial', icon: <History size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
         { id: 'profile', label: 'Mi Perfil', icon: <UserCircle size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
       ]

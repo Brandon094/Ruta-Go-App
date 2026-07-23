@@ -27,18 +27,17 @@ La puerta de entrada (`LandingPage.jsx`) está diseñada como un embudo de conve
 
 ---
 
-## 🔐 3. Motor de Roles y Seguridad (RBAC)
-El portal implementa un sistema de **Control de Acceso Basado en Roles** mediante la resolución dinámica en el hook `useRealtimeStats`:
+## 🔐 3. Motor de Roles y Estrategia de Navegación (RBAC)
+El portal implementa un sistema de **Control de Acceso Basado en Roles** con una UX diferenciada por perfil:
 
-### 👑 Admin Root (Propietario del Holding)
-*   **Visibilidad**: 100% de los datos (Usuarios, Dueños, Conductores, Reservas Totales).
-*   **Dashboard**: 5 KPIs maestros incluyendo métrica de Socios Activos.
-*   **Permisos**: Gestión total de la base de datos y aprobación de nuevos conductores.
+### 📱 Experiencia Operativa (Passenger & Driver)
+*   **Interfaz Mobile-First**: Eliminación total del Sidebar para maximizar el foco en la tarea.
+*   **Navegación**: Exclusiva mediante **Bottom Nav** (Home, Historial, Perfil), replicando la ergonomía de la App nativa.
 
-### 💼 Owner (Dueño de Flota)
-*   **Aislamiento de Datos**: Solo visualiza vehículos, conductores y ganancias vinculadas a su `ownerId`.
-*   **Privacidad Competitiva**: En la planilla de horarios, ve los nombres de otros conductores pero la ocupación de buses ajenos aparece como "Privado".
-*   **Restricciones**: El tab de "Usuarios" (Pasajeros) está bloqueado por Habeas Data.
+### 👑 Gestión Administrativa (Admin Root & Owner)
+*   **Navegación**: Exclusiva mediante **Administrative Sidebar**. Sin barra inferior para evitar redundancias.
+*   **Acceso Híbrido**: Capacidad de realizar reservas de usuario desde el menú lateral sin perder la sesión administrativa.
+*   **Visibilidad Root**: Gestión total de Socios, Conductores y Pasajeros.
 
 ---
 

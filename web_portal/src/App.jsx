@@ -128,6 +128,7 @@ function App() {
             activeTab === 'history' ? 'Historial de Reservas' :
             activeTab === 'profile' ? 'Mi Perfil' :
             activeTab === 'owners' ? 'Gestión de Socios' :
+            activeTab === 'passenger_view' ? 'Centro de Reservas' :
             activeTab === 'itinerary' ? 'Mi Itinerario' :
             activeTab === 'drivers' ? 'Conductores' :
             activeTab === 'users' ? 'Pasajeros' :
@@ -177,6 +178,17 @@ function App() {
             <ProfileDirectory user={user} role={role} />
           ) : activeTab === 'owners' ? (
             <OwnerDirectory owners={owners} users={usersList} />
+          ) : activeTab === 'passenger_view' ? (
+            <PassengerOverview
+              stats={stats}
+              routeStats={routeStats}
+              schedules={schedules}
+              drivers={drivers}
+              role={role}
+              user={user}
+              onManage={(s) => setManagingSchedule(s)}
+              vehicles={vehicles}
+            />
           ) : activeTab === 'drivers' ? (
             <DriverDirectory drivers={drivers} onEditDriver={(driver) => setEditingDriver(driver)} onAddDriver={() => setIsAddingDriver(true)} />
           ) : activeTab === 'users' ? (
@@ -189,12 +201,14 @@ function App() {
         </div>
 
         {/* Bottom Nav Simulation - Espejo de App Móvil */}
-        <div className={`h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl ${isManagement ? 'lg:hidden' : ''}`}>
-           <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
-           <BottomNavItem icon={<HistoryIcon size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
-           <BottomNavItem icon={<User size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-           <button onClick={() => auth.signOut()} className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"><XCircle size={22}/></button>
-        </div>
+        {!isManagement && (
+          <div className="h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
+             <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
+             <BottomNavItem icon={<HistoryIcon size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+             <BottomNavItem icon={<User size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
+             <button onClick={() => auth.signOut()} className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"><XCircle size={22}/></button>
+          </div>
+        )}
       </main>
 
       {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} />}

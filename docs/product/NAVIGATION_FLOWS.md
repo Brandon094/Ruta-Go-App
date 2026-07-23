@@ -1,4 +1,4 @@
-# 🗺️ Mapa de Navegación y Experiencia de Usuario (UX) v1.5.0
+# 🗺️ Mapa de Navegación y Experiencia de Usuario (UX) v1.5.1
 
 Este documento describe la arquitectura de navegación del ecosistema Ruta-Go, integrando los flujos de la App móvil y el nuevo Portal Web.
 
