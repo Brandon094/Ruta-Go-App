@@ -17,7 +17,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Roles**: El sistema ahora detecta automáticamente el rol (Admin/Owner/Driver/Passenger) tras el login y adapta la interfaz dinámicamente.
 - **Estandarización Regional**: Corregida la ortografía de "Nátaga" en todos los metadatos y etiquetas de la plataforma.
-- **Gobernanza de Datos**: Actualización de reglas de Firebase para permitir el aislamiento comercial por `ownerId`.
+- **Sincronización de Identidad**: El Dashboard de pasajeros ahora muestra el nombre real del usuario logueado.
+- **Centro de Ayuda Contextual**: Implementada nueva sección de Ayuda en el Sidebar que muestra el manual de usuario adaptado al rol (Pasajero, Conductor, Dueño o Admin).
+- **Consistencia Visual (UI Mirroring)**: Todas las nuevas vistas web (Ayuda, Planilla, Reservas) siguen el patrón estético Navy Deep y Naranja de la App nativa.
 
 ---
 

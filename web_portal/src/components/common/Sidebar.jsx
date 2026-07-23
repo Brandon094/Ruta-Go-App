@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle } from 'lucide-react';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 
@@ -9,16 +9,41 @@ import { auth } from '../../firebase';
 export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
   const handleLogout = () => signOut(auth);
 
-  const menuItems = [
-    { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
-    { id: 'history', label: 'Historial', icon: <History size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
-    { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
-    { id: 'users', label: 'Usuarios', icon: <Users size={20} />, roles: ['ADMIN'] },
-    { id: 'schedules', label: 'Horarios', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
-    { id: 'profile', label: 'Mi Perfil', icon: <UserCircle size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
-  ];
+  const isAdmin = role?.type === 'ADMIN';
+  const isOwner = role?.type === 'OWNER';
+  const isManagement = isAdmin || isOwner;
 
-  const filteredItems = menuItems.filter(item => item.roles.includes(role?.type));
+  // Definición de Secciones
+  const sections = [
+    {
+      title: "Principal",
+      items: [
+        { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
+      ]
+    },
+    {
+      title: "Gestión Operativa",
+      hidden: !isManagement,
+      items: [
+        { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
+        { id: 'users', label: 'Pasajeros', icon: <Users size={20} />, roles: ['ADMIN'] },
+        { id: 'schedules', label: 'Planilla', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
+      ]
+    },
+    {
+      title: "Usuario",
+      items: [
+        { id: 'history', label: 'Historial', icon: <History size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
+        { id: 'profile', label: 'Mi Perfil', icon: <UserCircle size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
+      ]
+    },
+    {
+      title: "Soporte",
+      items: [
+        { id: 'manual', label: 'Ayuda', icon: <HelpCircle size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
+      ]
+    }
+  ];
 
   return (
     <>
@@ -54,19 +79,36 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto text-left">
-          {filteredItems.map((item) => (
-            <NavItem
-              key={item.id}
-              icon={item.icon}
-              label={item.label}
-              active={activeTab === item.id}
-              onClick={() => {
-                setActiveTab(item.id);
-                if (window.innerWidth < 1024) onClose();
-              }}
-            />
-          ))}
+        <nav className="flex-1 px-4 space-y-8 overflow-y-auto scrollbar-hide py-4">
+          {sections.map((section, idx) => {
+            if (section.hidden) return null;
+
+            // Filtrar items de la sección por rol
+            const filteredItems = section.items.filter(item => item.roles.includes(role?.type));
+            if (filteredItems.length === 0) return null;
+
+            return (
+              <div key={idx} className="space-y-2">
+                <h4 className="px-5 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                  {section.title}
+                </h4>
+                <div className="space-y-1">
+                  {filteredItems.map((item) => (
+                    <NavItem
+                      key={item.id}
+                      icon={item.icon}
+                      label={item.label}
+                      active={activeTab === item.id}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        if (window.innerWidth < 1024) onClose();
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </nav>
 
         {/* Footer del Sidebar */}

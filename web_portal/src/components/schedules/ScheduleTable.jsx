@@ -59,13 +59,23 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
 
   const driver = drivers.find(d => d.id === schedule.conductorId);
   const isMe = schedule.conductorId === role?.uid;
+  const isExternal = role?.type === 'OWNER' && !drivers.some(d => d.id === schedule.conductorId);
 
   return (
     <div className={`card-navy rounded-[2.5rem] p-5 md:p-6 transition-all duration-500 group relative overflow-hidden ${isNext ? 'ring-2 ring-primary-500/50' : ''}`}>
 
+      {/* Badge Siguiente */}
+      {isNext && (
+        <div className="absolute top-0 right-0">
+          <div className="bg-primary-500 text-white text-[8px] font-black uppercase px-4 py-1 rounded-bl-2xl shadow-lg animate-pulse">
+            Siguiente
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-6">
 
-        {/* 🕒 Círculo de Tiempo (Fiel a Android) */}
+        {/* 🕒 Círculo de Tiempo */}
         <div className="relative flex-shrink-0">
            <div className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-colors duration-500 ${isNext ? 'border-primary-500 shadow-[0_0_15px_rgba(255,109,0,0.3)]' : 'border-primary-500/30'}`}>
               <span className="text-lg font-black text-white leading-none">{timeStr}</span>
@@ -97,24 +107,34 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isFull ? 'bg-red-500/20 text-red-500' : 'bg-green-500/10 text-green-500 border border-green-500/20'}`}>
                {isFull ? 'Lleno' : 'Disponible'}
              </span>
-             {isNext && (
-               <span className="bg-slate-700 text-white text-[8px] font-black uppercase px-2 py-1 rounded-md animate-pulse">
-                 Siguiente
-               </span>
-             )}
+             {!(role?.type === 'OWNER' && isExternal) && driver && (
+              <div className="flex items-center gap-2 text-white/30 italic">
+                 <User size={12} />
+                 <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[80px]">
+                   {isMe ? 'Tú' : driver.nombre}
+                 </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* 🔘 Botón FAB Estilo Android */}
+        {/* 🔘 Botón de Acción */}
         <div className="shrink-0">
-           {(isMe || role?.type === 'PASSENGER') && (
+           {isMe && onManage ? (
              <button
-               onClick={() => onManage ? onManage(schedule) : null}
+               onClick={() => onManage(schedule)}
                className="w-14 h-14 bg-primary-500 text-white rounded-full shadow-2xl shadow-primary-500/40 hover:bg-orange-600 transition-all transform active:scale-90 flex items-center justify-center group/btn"
              >
                <Plus size={28} className="group-hover/btn:rotate-90 transition-transform" />
              </button>
-           )}
+           ) : role?.type === 'PASSENGER' ? (
+             <button
+               onClick={() => onManage && onManage(schedule)}
+               className="flex items-center gap-2 px-6 py-3 bg-[#061929] text-white border border-white/10 rounded-2xl shadow-xl hover:bg-black transition-all active:scale-95 font-black text-[10px] uppercase tracking-widest"
+             >
+               Reservar <ChevronRight size={14} />
+             </button>
+           ) : null}
         </div>
       </div>
     </div>

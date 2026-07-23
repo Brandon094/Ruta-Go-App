@@ -122,6 +122,7 @@ function App() {
             activeTab === 'drivers' ? 'Conductores' :
             activeTab === 'users' ? 'Pasajeros' :
             activeTab === 'schedules' ? 'Planilla' :
+            activeTab === 'manual' ? 'Centro de Ayuda' :
             'Dashboard'
           }
           userEmail={user.email}
@@ -132,7 +133,15 @@ function App() {
         <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-[#061426]">
           {activeTab === 'overview' ? (
             role?.type === 'PASSENGER' ? (
-              <PassengerOverview stats={stats} routeStats={routeStats} schedules={schedules} drivers={drivers} role={role} />
+              <PassengerOverview
+                stats={stats}
+                routeStats={routeStats}
+                schedules={schedules}
+                drivers={drivers}
+                role={role}
+                user={user}
+                onManage={(s) => setManagingSchedule(s)}
+              />
             ) : role?.type === 'DRIVER' ? (
               <DriverOverview stats={stats} routeStats={routeStats} schedules={schedules} drivers={drivers} reservations={reservations} role={role} onManage={(s) => setManagingSchedule(s)} />
             ) : (
@@ -148,6 +157,8 @@ function App() {
             <UserDirectory users={users} />
           ) : activeTab === 'schedules' ? (
             <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} onManage={(s) => setManagingSchedule(s)} />
+          ) : activeTab === 'manual' ? (
+            <UserManual role={role} isTab={true} />
           ) : null}
         </div>
 
@@ -162,7 +173,7 @@ function App() {
 
       {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} />}
       {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={users} currentUser={user} role={role} />}
-      {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} />}
+      {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} />}
     </div>
   );
 }
@@ -178,7 +189,7 @@ function BottomNavItem({ icon, active, onClick }) {
 /**
  * 🎒 Sub-vista: PassengerOverview (Clonación de Android)
  */
-function PassengerOverview({ stats, routeStats, schedules, drivers, role }) {
+function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, onManage }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
 
   const natagaToLaPlata = schedules.filter(s =>
@@ -260,7 +271,7 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role }) {
           </div>
         </div>
 
-        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} />
+        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
 
         {/* CARTA DE ESTADO POR RUTA (Como en la foto) */}
         <div className="space-y-6">
