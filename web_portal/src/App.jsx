@@ -210,8 +210,8 @@ function Overview({ stats, routeStats, role }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          <RouteProgress label="Natagá → La Plata" value={routeStats.toLaPlata} color="bg-orange-500" icon={<MapPin size={16}/>} />
-          <RouteProgress label="La Plata → Natagá" value={routeStats.toNataga} color="bg-secondary-900" icon={<MapPin size={16}/>} />
+          <RouteProgress label="Nátaga → La Plata" value={routeStats.toLaPlata} color="bg-orange-500" icon={<MapPin size={16}/>} />
+          <RouteProgress label="La Plata → Nátaga" value={routeStats.toNataga} color="bg-secondary-900" icon={<MapPin size={16}/>} />
         </div>
       </div>
     </>
@@ -226,13 +226,13 @@ function ScheduleDirectory({ schedules, drivers, role }) {
 
   // Filtrado de horarios por ruta
   const natagaToLaPlata = schedules.filter(s =>
-    s.ruta.toLowerCase().includes('natagá -> la plata') ||
-    (s.ruta.toLowerCase().includes('nataga') && s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().indexOf('nataga') < s.ruta.toLowerCase().indexOf('plata'))
+    s.ruta.toLowerCase().includes('nátaga -> la plata') ||
+    (s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().indexOf('nátaga') < s.ruta.toLowerCase().indexOf('plata'))
   );
 
   const laPlataToNataga = schedules.filter(s =>
-    s.ruta.toLowerCase().includes('la plata -> natagá') ||
-    (s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().includes('nataga') && s.ruta.toLowerCase().indexOf('plata') < s.ruta.toLowerCase().indexOf('nataga'))
+    s.ruta.toLowerCase().includes('la plata -> nátaga') ||
+    (s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().indexOf('plata') < s.ruta.toLowerCase().indexOf('nátaga'))
   );
 
   const currentSchedules = activeRoute === 'toLaPlata' ? natagaToLaPlata : laPlataToNataga;
@@ -253,7 +253,7 @@ function ScheduleDirectory({ schedules, drivers, role }) {
               activeRoute === 'toLaPlata' ? 'bg-white text-primary-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            Natagá → La Plata
+            Nátaga → La Plata
           </button>
           <button
             onClick={() => setActiveRoute('toNataga')}
@@ -261,7 +261,7 @@ function ScheduleDirectory({ schedules, drivers, role }) {
               activeRoute === 'toNataga' ? 'bg-white text-secondary-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
             }`}
           >
-            La Plata → Natagá
+            La Plata → Nátaga
           </button>
         </div>
       </div>
@@ -288,7 +288,7 @@ function ScheduleDirectory({ schedules, drivers, role }) {
           <h4 className="text-sm font-black text-blue-900 uppercase">Estado de la Operación</h4>
           <p className="text-xs text-blue-700 font-medium">
             Mostrando planilla en tiempo real para la ruta:
-            <strong className="ml-1 uppercase">{activeRoute === 'toLaPlata' ? 'Natagá a La Plata' : 'La Plata a Natagá'}</strong>.
+            <strong className="ml-1 uppercase">{activeRoute === 'toLaPlata' ? 'Nátaga a La Plata' : 'La Plata a Nátaga'}</strong>.
           </p>
         </div>
       </div>

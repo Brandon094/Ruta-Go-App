@@ -68,7 +68,7 @@ export default function Terms({ onBack }) {
 
         <footer className="text-center pb-10">
           <p className="text-[10px] text-slate-300 font-black uppercase tracking-[0.3em]">
-            ChopCode Solutions © 2026 • Natagá - La Plata, Huila
+            ChopCode Solutions © 2026 • Nátaga - La Plata, Huila
           </p>
         </footer>
       </main>

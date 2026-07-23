@@ -142,7 +142,7 @@ export const useRealtimeStats = (user) => {
               tCount++;
               const dest = (res.destino || res.destination || "").toLowerCase();
               if (dest.includes("la plata")) lpCount++;
-              else if (dest.includes("natagá") || dest.includes("nataga")) ntCount++;
+              else if (dest.includes("nátaga") || dest.includes("nataga")) ntCount++;
             }
           });
           if (isMounted) {
