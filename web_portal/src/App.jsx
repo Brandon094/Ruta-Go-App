@@ -459,13 +459,27 @@ function Overview({ stats, routeStats, role }) {
         <StatCard label="Ingresos" value={formatCurrency(stats.totalRevenue)} icon={<Activity className="text-primary-500" />} />
       </div>
 
-      <div className="space-y-6">
-        <h3 className="font-black text-xl uppercase tracking-tighter ml-2 text-[#061426] dark:text-white italic">Estado por ruta</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <RouteStatCard name="Nátaga → La Plata" reservations={routeStats.toLaPlata.reservations} available={routeStats.toLaPlata.seats} color="border-orange-500" />
-          <RouteStatCard name="La Plata → Nátaga" reservations={routeStats.toNataga.reservations} available={routeStats.toNataga.seats} color="border-secondary-400" />
+      {!isAdmin ? (
+        <div className="space-y-6">
+          <h3 className="font-black text-xl uppercase tracking-tighter ml-2 text-[#061426] dark:text-white italic">Estado por ruta</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <RouteStatCard name="Nátaga → La Plata" reservations={routeStats.toLaPlata.reservations} available={routeStats.toLaPlata.seats} color="border-orange-500" />
+            <RouteStatCard name="La Plata → Nátaga" reservations={routeStats.toNataga.reservations} available={routeStats.toNataga.seats} color="border-secondary-400" />
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6">
+           <div className="card-base p-10 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/5 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+              <div className="w-16 h-16 bg-primary-500/10 rounded-full flex items-center justify-center text-primary-500">
+                 <Activity size={32} />
+              </div>
+              <div>
+                <h4 className="text-lg font-black text-[#061426] dark:text-white uppercase italic">Análisis de Rendimiento</h4>
+                <p className="text-sm font-medium text-slate-400 dark:text-white/20">Módulo de gráficas avanzadas en desarrollo para el Panel Maestro.</p>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
