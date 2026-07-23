@@ -16,6 +16,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Módulo de Gestión de Socios**: Nueva interfaz dedicada para que el Administrador Root gestione aprobaciones y estados de los dueños de flota de forma independiente.
 - **Acceso Híbrido a Reservas**: Los Administradores y Dueños ahora pueden realizar reservas de viaje directamente desde su Sidebar sin salir de la interfaz de gestión.
 - **Librería de Átomos (UI Core)**: Creación del componente `Button.jsx` para estandarizar todas las acciones del portal bajo principios de Atomic Design.
+- **Selector de Dueños Pro**: Implementación de listas desplegables para asignar propietarios a conductores, eliminando la entrada manual de UIDs y reduciendo errores operativos.
+- **Panel de Moderación de Pasajeros**: Suite de herramientas para que el Administrador Root pueda **Banear, Inactivar o Borrar** cuentas de pasajeros directamente desde la web con diálogos de confirmación.
 
 ### Cambiado
 - **Navegación "Mobile Mirror"**: Los roles de Pasajero y Conductor ahora tienen una interfaz 100% despejada sin Sidebar, navegando exclusivamente mediante la barra inferior (Bottom Nav) para una experiencia idéntica a la App móvil.

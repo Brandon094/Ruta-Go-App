@@ -39,9 +39,9 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web.
 
 ### 👑 2. Gobernanza Root Pro (Control Maestro)
-*   [ ] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
-*   [ ] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
-*   [ ] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
+*   [x] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
+*   [x] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
+*   [x] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
 
 ### 🎫 3. Experiencia de Usuario "Premium"
 *   [ ] **📱 Suite de Viaje en Historial**:

@@ -21,8 +21,9 @@ Este documento detalla los requisitos funcionales y no funcionales de la suite t
 ---
 
 ## 🌎 3. Requisitos Portal Web (Dashboard & Landing)
-*   **RF-W01 (Búsqueda Operativa):** Los administradores y dueños podrán buscar perfiles de usuarios por Email para la vinculación rápida de conductores.
-*   **RF-W02 (Responsive Design):** Interfaz adaptativa que garantiza funcionalidad 100% en dispositivos móviles y PC.
+*   **RF-W01 (Gestión de Identidad):** Los administradores pueden moderar pasajeros (Ban/Inactivar/Borrar) y los dueños vincular conductores mediante búsqueda por Email.
+*   **RF-W02 (Responsive Design):** Interfaz adaptativa que garantiza funcionalidad 100% en dispositivos móviles y PC, con navegación especializada por rol.
+*   **RF-W04 (Vinculación Root):** El Administrador Root puede asignar conductores a dueños de flota específicos mediante un selector de socios aprobados.
 *   **RF-W03 (Planilla Privada):** En la visualización de horarios, los datos de ocupación de buses de terceros deben permanecer ocultos para dueños externos.
 
 ---
