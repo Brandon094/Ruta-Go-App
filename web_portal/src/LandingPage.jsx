@@ -17,33 +17,42 @@ import {
  * Ficha de presentación pública de Ruta-Go.
  * Expone la propuesta de valor para Pasajeros, Conductores y Dueños.
  */
-export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onViewPrivacy, onViewManual }) {
+export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassenger, onViewTerms, onViewPrivacy, onViewManual }) {
   const [activeSolution, setActiveCard] = useState(0);
 
   const solutions = [
     {
       icon: <Users size={32} />,
       title: "Pasajeros",
-      desc: "Adiós a la incertidumbre. Reserva tu asiento desde casa, acumula Puntos Go en cada viaje y sube de nivel para desbloquear beneficios exclusivos.",
+      desc: "Reserva tu asiento desde cualquier dispositivo. Usa la App nativa en Android o nuestra plataforma web optimizada para iPhone.",
       color: "text-blue-500",
-      features: ['Puntos Go por fidelidad', 'Estatus PRO (Plata/Oro/Diamante)', 'Chat directo con el conductor'],
-      action: () => window.open('https://play.google.com/store/apps/details?id=com.chopcode.rutago.app', '_blank')
+      features: ['Reserva Web & App', 'Puntos Go por fidelidad', 'Estatus PRO exclusivo'],
+      actions: [
+        { label: "Android App", type: "primary", link: 'https://play.google.com/store/apps/details?id=com.chopcode.rutago.app' },
+        { label: "Versión Web", type: "secondary", action: onRegisterPassenger }
+      ]
     },
     {
       icon: <Bus size={32} />,
       title: "Conductores",
-      desc: "Optimiza tus ingresos con el Estatus Estrella. Gestiona tu planilla digital, visualiza tu rentabilidad diaria y asegura tus cupos antes de salir.",
+      desc: "Optimiza tus ingresos con herramientas digitales. Gestiona tu planilla desde Android o consulta tu ruta desde la web.",
       color: "text-primary-500",
-      features: ['Estatus Estrella de confianza', 'Check-in digital de pasajeros', 'Reporte de rentabilidad diaria'],
-      action: () => window.open('https://play.google.com/store/apps/details?id=com.chopcode.rutago.app', '_blank')
+      features: ['Planilla Digital', 'Estatus Estrella', 'Check-in en vivo'],
+      actions: [
+        { label: "Descargar App", type: "primary", link: 'https://play.google.com/store/apps/details?id=com.chopcode.rutago.app' },
+        { label: "Acceso Web", type: "secondary", action: onLogin }
+      ]
     },
     {
       icon: <TrendingUp size={32} />,
       title: "Dueños de Flota",
-      desc: "Control room total de tus activos. Vigila la ocupación en tiempo real, monitorea ingresos y recibe alertas legales de tu flota desde un solo lugar.",
+      desc: "Control room total de tus activos. Vigila la ocupación en tiempo real y monitorea ingresos desde tu oficina o celular.",
       color: "text-green-500",
-      features: ['Aislamiento de datos de propiedad', 'Seguimiento de buses en vivo', 'Panel financiero centralizado'],
-      action: onLogin
+      features: ['Aislamiento de propiedad', 'Métricas en tiempo real', 'Control de flota'],
+      actions: [
+        { label: "Entrar al Portal", type: "primary", action: onLogin },
+        { label: "Afiliar Flota", type: "secondary", action: onRegisterOwner }
+      ]
     }
   ];
 
@@ -100,10 +109,13 @@ export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onV
                 rel="noopener noreferrer"
                 className="px-6 md:px-10 py-3.5 md:py-5 bg-primary-500 text-white font-black rounded-2xl shadow-2xl shadow-primary-500/40 hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-2 md:gap-3 group text-sm md:text-lg"
               >
-                Descargar App <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                Android App <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </a>
-              <button onClick={onRegisterOwner} className="px-6 md:px-10 py-3.5 md:py-5 bg-slate-50 text-slate-700 font-black rounded-2xl border border-slate-200 hover:bg-white transition-all active:scale-95 text-sm md:text-lg">
-                Afiliar mi vehículo
+              <button
+                onClick={onRegisterPassenger}
+                className="px-6 md:px-10 py-3.5 md:py-5 bg-white text-secondary-900 font-black rounded-2xl border-2 border-secondary-900 hover:bg-secondary-50 transition-all active:scale-95 text-sm md:text-lg"
+              >
+                Versión Web (iPhone)
               </button>
             </div>
           </div>
@@ -236,11 +248,10 @@ export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onV
   );
 }
 
-function ValueCard({ icon, title, desc, color, features, onClick, isStatic }) {
+function ValueCard({ icon, title, desc, color, features, actions, isStatic }) {
   return (
     <div
-      onClick={onClick}
-      className={`bg-white p-8 md:p-10 rounded-3xl md:rounded-[3rem] shadow-xl shadow-slate-200/50 border border-slate-100 transition-all duration-500 group cursor-pointer active:scale-95 ${
+      className={`bg-white p-8 md:p-10 rounded-3xl md:rounded-[3rem] shadow-xl shadow-slate-200/50 border border-slate-100 transition-all duration-500 group ${
         isStatic ? 'hover:shadow-2xl hover:-translate-y-2' : ''
       }`}
     >
@@ -248,16 +259,46 @@ function ValueCard({ icon, title, desc, color, features, onClick, isStatic }) {
         {icon}
       </div>
       <h3 className="text-xl md:text-2xl font-black text-secondary-900 mb-3 md:mb-4">{title}</h3>
-      <p className="text-sm md:text-base text-slate-500 leading-relaxed mb-6 md:mb-8">{desc}</p>
-      <ul className="space-y-2 md:space-y-3">
+      <p className="text-sm md:text-base text-slate-500 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem]">{desc}</p>
+
+      <ul className="space-y-2 md:space-y-3 mb-8">
         {features.map((f, i) => (
           <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wide">
             <CheckCircle2 size={14} className="text-green-500 md:size-4" /> {f}
           </li>
         ))}
       </ul>
-      <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between text-primary-500 font-black text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-        Ir ahora <ChevronRight size={14} />
+
+      <div className="flex flex-col gap-3">
+        {actions.map((act, i) => (
+          act.link ? (
+            <a
+              key={i}
+              href={act.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                act.type === 'primary'
+                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 hover:bg-orange-600'
+                  : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-white'
+              }`}
+            >
+              {act.label} <ChevronRight size={14} />
+            </a>
+          ) : (
+            <button
+              key={i}
+              onClick={act.action}
+              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                act.type === 'primary'
+                  ? 'bg-secondary-900 text-white shadow-lg shadow-slate-900/30 hover:bg-black'
+                  : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-white'
+              }`}
+            >
+              {act.label} <ChevronRight size={14} />
+            </button>
+          )
+        ))}
       </div>
     </div>
   );

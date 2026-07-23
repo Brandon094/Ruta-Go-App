@@ -37,16 +37,24 @@ export function Header({ title, userEmail, onMenuClick, role }) {
           </p>
           <p className={`text-[9px] font-bold uppercase tracking-tighter mt-1 ${
             isLoading ? 'text-slate-300' :
-            isRoot ? 'text-primary-500' : 'text-blue-500'
+            isRoot ? 'text-primary-500' :
+            role?.type === 'DRIVER' ? 'text-amber-500' :
+            role?.type === 'PASSENGER' ? 'text-green-500' : 'text-blue-500'
           }`}>
-            {isLoading ? 'Cargando Perfil' : isRoot ? 'Sesión Root' : 'Sesión Dueño'}
+            {isLoading ? 'Cargando Perfil' :
+             isRoot ? 'Sesión Root' :
+             role?.type === 'OWNER' ? 'Sesión Dueño' :
+             role?.type === 'DRIVER' ? 'Sesión Conductor' :
+             'Sesión Pasajero'}
           </p>
         </div>
 
         {/* Avatar Compacto */}
         <div className={`w-10 h-10 lg:w-11 lg:h-11 rounded-xl flex items-center justify-center text-white font-black shadow-lg text-sm transition-colors duration-500 ${
           isLoading ? 'bg-slate-200 shadow-none' :
-          isRoot ? 'bg-primary-500 shadow-primary-500/20' : 'bg-blue-600 shadow-blue-500/20'
+          isRoot ? 'bg-primary-500 shadow-primary-500/20' :
+          role?.type === 'DRIVER' ? 'bg-amber-500 shadow-amber-500/20' :
+          role?.type === 'PASSENGER' ? 'bg-green-600 shadow-green-500/20' : 'bg-blue-600 shadow-blue-500/20'
         }`}>
           {userEmail?.substring(0, 2).toUpperCase()}
         </div>

@@ -1,24 +1,21 @@
 import React from 'react';
-import { LayoutDashboard, Users, Bus, Calendar, Settings, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X } from 'lucide-react';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 
 /**
  * 🟦 Sidebar Component - Navegación Principal Responsiva
- *
- * @param {boolean} isOpen - Estado del menú en móviles
- * @param {function} onClose - Función para cerrar el menú
- * @param {string} activeTab - Tab actual
- * @param {function} setActiveTab - Navegador entre tabs
  */
 export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
   const handleLogout = () => signOut(auth);
 
   const menuItems = [
-    { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} />, roles: ['ADMIN', 'OWNER'] },
+    { id: 'overview', label: 'Vista General', icon: <LayoutDashboard size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
+    { id: 'history', label: 'Historial', icon: <History size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
     { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
     { id: 'users', label: 'Usuarios', icon: <Users size={20} />, roles: ['ADMIN'] },
     { id: 'schedules', label: 'Horarios', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
+    { id: 'profile', label: 'Mi Perfil', icon: <UserCircle size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER', 'PASSENGER'] },
   ];
 
   const filteredItems = menuItems.filter(item => item.roles.includes(role?.type));
@@ -45,7 +42,10 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
             <div className="flex flex-col leading-tight text-left">
               <span className="text-lg font-bold tracking-tight">Ruta-Go</span>
               <span className="text-[10px] text-primary-500 font-bold tracking-widest uppercase opacity-80">
-                {role?.type === 'ADMIN' ? 'Admin Maestro' : 'Panel Dueños'}
+                {role?.type === 'ADMIN' ? 'Admin Maestro' :
+                 role?.type === 'OWNER' ? 'Panel Dueños' :
+                 role?.type === 'DRIVER' ? 'Panel Conductor' :
+                 'Portal Pasajero'}
               </span>
             </div>
           </div>

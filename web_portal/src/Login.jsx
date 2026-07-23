@@ -41,13 +41,13 @@ function Login({ onShowRegister, onBack }) {
 
         <div className="relative z-10 space-y-8">
           <h2 className="text-6xl font-black text-white leading-tight tracking-tight">
-            Acceso al <br />
-            <span className="text-primary-500 text-7xl italic">centro de</span> <br />
-            control.
+            Acceso <br />
+            <span className="text-primary-500 text-7xl italic">Inteligente</span> <br />
+            Universal.
           </h2>
           <div className="flex items-center gap-4 text-white/50 font-bold uppercase tracking-widest text-xs border-l-4 border-primary-500 pl-6">
-            Ingresa para gestionar tu flota, <br />
-            monitorear rutas y revisar ingresos.
+            Una sola llave para todo el Holding. <br />
+            El sistema detectará tu rol automáticamente.
           </div>
         </div>
 
@@ -70,7 +70,10 @@ function Login({ onShowRegister, onBack }) {
         <div className="max-w-md mx-auto w-full space-y-10">
           <div className="space-y-2">
             <h3 className="text-3xl font-black text-slate-800 tracking-tight">Iniciar Sesión</h3>
-            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Portal de Administradores y Socios</p>
+            <div className="flex items-center gap-2">
+               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Puerta de Enlace Única (SSO)</p>
+            </div>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
@@ -107,7 +110,7 @@ function Login({ onShowRegister, onBack }) {
               {loading ? (
                 <Loader2 className="animate-spin" size={20} />
               ) : (
-                "Ingresar al Dashboard"
+                "Entrar a Ruta-Go"
               )}
             </button>
           </form>

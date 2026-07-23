@@ -1,15 +1,18 @@
 import React from 'react';
 import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export function ScheduleTable({ schedules, drivers, role }) {
+export function ScheduleTable({ schedules, drivers, role, onManage }) {
   // Función para obtener la información del conductor y si le pertenece al dueño actual
   const getDriverDisplay = (conductorId) => {
-    if (!conductorId) return { name: "Sin asignar", isExternal: false };
+    if (!conductorId) return { name: "Sin asignar", isExternal: false, isMe: false };
 
     const driver = drivers.find(d => d.id === conductorId);
 
+    // Verificamos si es el usuario actual (Conductor o Admin que gestiona)
+    const isMe = conductorId === role?.uid;
+
     if (role?.type === 'ADMIN') {
-      return { name: driver ? driver.nombre : "Cargando...", isExternal: false };
+      return { name: driver ? driver.nombre : "Cargando...", isExternal: false, isMe };
     }
 
     // Si es OWNER, verificamos si el conductor le pertenece (está en su lista filtrada)
@@ -17,7 +20,8 @@ export function ScheduleTable({ schedules, drivers, role }) {
 
     return {
       name: driver ? driver.nombre : "Conductor Externo",
-      isExternal: !isMyDriver
+      isExternal: !isMyDriver,
+      isMe
     };
   };
 
@@ -46,20 +50,33 @@ export function ScheduleTable({ schedules, drivers, role }) {
               return (
                 <tr key={schedule.id} className="hover:bg-slate-50/50 transition-colors group">
                   <td className="px-4 md:px-6 py-4 md:py-5">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-primary-50 rounded-xl md:rounded-2xl flex flex-col items-center justify-center text-primary-600 shrink-0">
-                        <Clock size={14} className="md:size-4" />
-                        <span className="text-[8px] md:text-[10px] font-black mt-0.5 uppercase tracking-tighter leading-none">
-                          {schedule.hora.split(' ')[1]}
-                        </span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs md:text-sm font-black text-slate-800 leading-tight mb-0.5">{schedule.hora.split(' ')[0]}</p>
-                        <div className="flex items-center gap-1 text-slate-400">
-                          <MapPin size={10} className="shrink-0" />
-                          <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight truncate">{schedule.ruta}</span>
-                        </div>
-                      </div>
+                    <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary-50 rounded-xl md:rounded-2xl flex flex-col items-center justify-center text-primary-600 shrink-0">
+                            <Clock size={14} className="md:size-4" />
+                            <span className="text-[8px] md:text-[10px] font-black mt-0.5 uppercase tracking-tighter leading-none">
+                              {schedule.hora.split(' ')[1]}
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs md:text-sm font-black text-slate-800 leading-tight mb-0.5">{schedule.hora.split(' ')[0]}</p>
+                            <div className="flex items-center gap-1 text-slate-400">
+                              <MapPin size={10} className="shrink-0" />
+                              <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight truncate">{schedule.ruta}</span>
+                            </div>
+                          </div>
+                       </div>
+
+                       {/* Botón de Gestión para el conductor actual */}
+                       {driverInfo.isMe && onManage && (
+                         <button
+                           onClick={() => onManage(schedule)}
+                           className="ml-4 p-2 bg-primary-500 text-white rounded-lg shadow-lg shadow-primary-500/20 hover:bg-orange-600 transition-all transform active:scale-90 flex items-center gap-2"
+                         >
+                           <UsersIcon size={14} />
+                           <span className="text-[10px] font-black uppercase hidden md:inline">Gestionar</span>
+                         </button>
+                       )}
                     </div>
                   </td>
 
