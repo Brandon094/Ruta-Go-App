@@ -29,7 +29,7 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 | **Auth Engine (SSO)** | Gestión de identidad unificada y segregación de roles (RBAC). | Suite Go |
 | **Seat Engine** | Gestión transaccional de inventario móvil y reservas atómicas. | RutaGo |
 | **Loyalty Engine** | Sistema de gamificación (Puntos Go) y niveles de estatus. | RutaGo |
-| **Ruta-Go Portal** | Landing Page comercial y Business Dashboard (React/Firebase). | Suite Go |
+| **Ruta-Go Portal** | Landing Page comercial, Business Dashboard y Motor de Reservas Web con soporte de Tema Dual (React/Firebase). | Suite Go |
 | **Offline Sync Engine** | Sincronización local-nube vía Isar/Firestore. | AgroGo |
 | **Auction Engine** | Motor de subastas ciegas para logística pesada. | CargoGo |
 

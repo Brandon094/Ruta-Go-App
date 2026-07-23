@@ -9,10 +9,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Soporte Universal iPhone (PWA)**: Implementación de Web App instalable para usuarios de Apple con soporte para iconos nativos y modo pantalla completa.
 - **Identidad Única (SSO)**: Sistema de login y registro unificado para Pasajeros, Conductores y Socios desde un solo punto de entrada web.
 - **Dashboard de Pasajeros Web**: Los usuarios de iPhone ahora pueden consultar horarios, estados de ocupación y su historial desde Safari.
-- **Gestión de Conductores Web**: Los conductores ahora pueden gestionar sus turnos y realizar ventas físicas desde cualquier dispositivo móvil o PC.
-- **Clonación de UI (Mirroring)**: Rediseño total del portal web para replicar la estética Navy Deep y Naranja de la App de Android, asegurando una experiencia de marca coherente.
+- **Gestión de Conductores Web**: Los conductores ahora pueden gestionar sus turnos y realizar ventas físicas desde cualquier dispositivo móvil o PC con sincronización en tiempo real.
+- **Motor de Reservas para Pasajeros**: Habilitada la selección de asientos y creación de reservas oficiales directamente desde la web (Especial para iPhone).
+- **Clonación de UI (Mirroring)**: Rediseño total del portal web para replicar la estética Navy Deep y Naranja de la App de Android, incluyendo el soporte de **Tema Dual (Claro/Oscuro)** sincronizado con las preferencias del usuario.
+- **Centro de Ayuda Contextual**: Implementada nueva sección de Ayuda en el Sidebar que muestra el manual de usuario adaptado al rol logueado (Pasajero, Conductor, Dueño o Admin).
+- **Optimización de Contraste**: Refinamiento del tema claro con fondo `secondary-50` (#E1E8EB) para mejorar la profundidad visual y legibilidad en dispositivos móviles.
 - **SEO & Visibilidad**: Integración de Sitemap, Robots y Meta-tags dinámicos para indexación en Google.
-- **Módulo de Reservas Web**: Base técnica para la próxima habilitación de compras digitales desde el navegador.
 
 ### Cambiado
 - **Refactor de Roles**: El sistema ahora detecta automáticamente el rol (Admin/Owner/Driver/Passenger) tras el login y adapta la interfaz dinámicamente.
