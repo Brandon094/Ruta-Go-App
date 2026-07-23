@@ -73,3 +73,9 @@ app_backup_refactored/
 *_backup.md
 release/
 debug/
+
+# --- Web Portal ---
+web_portal/node_modules/
+web_portal/dist/
+web_portal/.env
+web_portal/.env.local
