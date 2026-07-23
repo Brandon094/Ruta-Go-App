@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Search, RefreshCw, History, ArrowRight, X } from 'lucide-react';
+import { Search, History, ArrowRight } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
 import { Input } from '../ui/Input';
 
 export function HistoryDirectory({ reservations, role, onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
 
   const filteredList = reservations
     .filter(res => {
@@ -46,60 +45,40 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
     <div className="animate-in fade-in duration-700 -m-4 lg:-m-8">
 
       {/* 🟠 HEADER NARANJA */}
-      <div className="bg-primary-500 p-6 lg:p-8 pb-32 relative overflow-hidden shadow-2xl transition-all duration-300">
+      <div className="bg-primary-500 p-6 lg:p-8 pb-20 relative overflow-hidden shadow-2xl transition-all duration-300">
         <div className="max-w-5xl mx-auto space-y-6 relative z-10">
 
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Chips de Filtro (Scrollable en móvil) */}
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 w-full md:w-auto justify-start px-2 md:px-0">
-              {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
-                    filter === f
-                    ? 'bg-secondary-900 text-white border-transparent'
-                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                  }`}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-
-            {/* Botones de Acción */}
-            <div className="flex gap-4 shrink-0 w-full md:w-auto justify-end px-2 md:px-0">
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className={`p-3 rounded-2xl border transition-all shadow-lg group ${showSearch ? 'bg-white text-primary-500 border-white' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'}`}
-              >
-                {showSearch ? <X size={20} /> : <Search size={20} className="group-hover:scale-110 transition-transform" />}
-              </button>
-              <button
-                className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group"
-                onClick={() => window.location.reload()}
-              >
-                <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500" />
-              </button>
-            </div>
+          {/* Barra de Búsqueda Siempre Visible Arriba */}
+          <div className="px-2 md:px-0">
+            <Input
+              placeholder="Buscar por pasajero, ruta o placa..."
+              icon={Search}
+              value={searchTerm}
+              onChange={(val) => setSearchTerm(val)}
+              className="!bg-white/10 !border-white/20 !text-white !placeholder:text-white/40 focus:!ring-white/20 shadow-lg"
+            />
           </div>
 
-          {/* Barra de Búsqueda Animada */}
-          {showSearch && (
-            <div className="animate-in slide-in-from-top-4 duration-300 px-2 md:px-0">
-              <Input
-                placeholder="Buscar por pasajero, ruta o placa..."
-                icon={Search}
-                value={searchTerm}
-                onChange={(val) => setSearchTerm(val)}
-                className="!bg-white/10 !border-white/20 !text-white !placeholder:text-white/40 focus:!ring-white/20"
-              />
-            </div>
-          )}
+          {/* Chips de Filtro */}
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 w-full justify-start px-2 md:px-0">
+            {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
+                  filter === f
+                  ? 'bg-secondary-900 text-white border-transparent'
+                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto -mt-0 relative z-20 px-4 space-y-10 pb-20">
+      <div className="max-w-3xl mx-auto -mt-15 relative z-20 px-4 space-y-10 pb-20">
 
         {/* 📊 SUMMARY CARD */}
         <div className="card-base rounded-[2.5rem] p-8 md:p-10 grid grid-cols-3 gap-8 border-none shadow-2xl bg-white dark:bg-[#061426] transition-colors duration-300">
