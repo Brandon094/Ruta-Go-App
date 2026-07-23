@@ -43,48 +43,53 @@ export function HistoryDirectory({ reservations, role }) {
     <div className="animate-in fade-in duration-700 -m-4 lg:-m-8">
 
       {/* 🟠 HEADER NARANJA */}
-      <div className="bg-primary-500 p-6 lg:p-10 pb-20 relative overflow-hidden shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10 text-white">
-          <h3 className="text-xl lg:text-2xl font-black uppercase tracking-tight italic">Historial de Reservas</h3>
-          <div className="flex gap-4">
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors"><Search size={22}/></button>
-            <button className="p-2 hover:bg-white/10 rounded-full transition-colors"><RefreshCw size={22}/></button>
-          </div>
-        </div>
+      <div className="bg-primary-500 p-6 lg:p-8 pb-32 relative overflow-hidden shadow-2xl transition-all duration-300">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
 
-        {/* Chips de Filtro */}
-        <div className="max-w-4xl mx-auto mt-8 flex gap-3 overflow-x-auto scrollbar-hide pb-2 relative z-10">
-          {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
-                filter === f
-                ? 'bg-secondary-900 text-white border-transparent'
-                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-              }`}
-            >
-              {f}
+          {/* Chips de Filtro */}
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 w-full md:w-auto justify-center md:justify-start">
+            {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
+                  filter === f
+                  ? 'bg-secondary-900 text-white border-transparent'
+                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* Botones de Acción */}
+          <div className="flex gap-4 shrink-0">
+            <button className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group">
+              <Search size={20} className="group-hover:scale-110 transition-transform" />
             </button>
-          ))}
+            <button className="p-3 bg-white/10 text-white hover:bg-white/20 rounded-2xl border border-white/10 transition-all shadow-lg group">
+              <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto -mt-12 relative z-20 px-4 space-y-8 pb-20">
+      <div className="max-w-3xl mx-auto -mt-0 relative z-20 px-4 space-y-10 pb-20">
 
         {/* 📊 SUMMARY CARD */}
-        <div className="card-base rounded-[2rem] p-6 grid grid-cols-3 gap-4 border-none shadow-2xl bg-white dark:bg-[#061426] transition-colors duration-300">
-           <div className="text-center space-y-1">
-              <span className="text-2xl font-black text-green-500 dark:text-green-400">{stats.confirmed}</span>
-              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Confirmados</p>
+        <div className="card-base rounded-[2.5rem] p-8 md:p-10 grid grid-cols-3 gap-8 border-none shadow-2xl bg-white dark:bg-[#061426] transition-colors duration-300">
+           <div className="text-center space-y-2">
+              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Confirmados</p>
+              <span className="text-4xl font-black text-green-500 dark:text-green-400 block">{stats.confirmed}</span>
            </div>
-           <div className="text-center space-y-1 border-x border-slate-100 dark:border-white/5">
-              <span className="text-2xl font-black text-red-500 dark:text-red-400">{stats.canceled}</span>
-              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Cancelados</p>
+           <div className="text-center space-y-2 border-x border-slate-100 dark:border-white/5 px-4">
+              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Cancelados</p>
+              <span className="text-4xl font-black text-red-500 dark:text-red-400 block">{stats.canceled}</span>
            </div>
-           <div className="text-center space-y-1">
-              <span className="text-2xl font-black text-orange-500 dark:text-orange-400">{stats.total}</span>
-              <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Total</p>
+           <div className="text-center space-y-2">
+              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Total</p>
+              <span className="text-4xl font-black text-orange-500 dark:text-orange-400 block">{stats.total}</span>
            </div>
         </div>
 

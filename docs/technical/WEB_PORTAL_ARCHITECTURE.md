@@ -8,7 +8,8 @@ Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go 
 La plataforma utiliza una arquitectura de **Single Page Application** optimizada para rendimiento y SEO:
 
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
-*   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) (Atomic CSS) con extensiones de **Glassmorphism**.
+*   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
+*   **Estructura**: Arquitectura modular basada en componentes desacoplados y centralización de UI-Atoms.
 *   **Reactividad**: Custom Hooks (`useRealtimeStats`) para sincronización bidireccional con RTDB.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
 *   **Despliegue**: [Firebase Hosting](https://firebase.google.com/products/hosting).
@@ -62,14 +63,19 @@ Módulos integrados para transparencia y cumplimiento de normativas de Google Pl
 web_portal/
 ├── public/assets/      # Logos oficiales (Naranja/Navy)
 ├── src/
-│   ├── components/     # UI Atómica (Common, Dashboard, Drivers, Schedules, Users)
+│   ├── components/     # UI Atómica
+│   │   ├── ui/         # Átomos: Input.jsx, Badge.jsx (DRY)
+│   │   ├── dashboard/  # Overviews por Rol (Admin, Owner, etc.)
+│   │   ├── history/    # Historial de Reservas
+│   │   ├── profile/    # Perfil y Gestión de Vehículos
+│   │   └── common/     # Sidebar, Header
 │   ├── hooks/          # Lógica de negocio (useRealtimeStats)
 │   ├── services/       # Firebase Data Services
-│   ├── App.jsx         # Orquestador de Vistas y Roles
+│   ├── App.jsx         # Orquestador (Refactorizado v1.5.1)
 │   ├── LandingPage.jsx # Ficha Pública
 │   ├── Login.jsx       # Gateway de Acceso
-│   └── Register.jsx    # Registro con Activación Instantánea
-└── index.html          # Punto de entrada (SEO optimizado)
+│   └── Register.jsx    # Registro Universal
+└── index.html          # Punto de entrada
 ```
 
 ---

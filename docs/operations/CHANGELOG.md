@@ -4,6 +4,23 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.5.1] - 2026-07-23 (Web Refactor & UI Mirror Edition)
+### Añadido
+- **Auto-Scroll Inteligente**: La planilla web ahora se desplaza automáticamente hacia el próximo viaje disponible al cargar o cambiar de ruta, igualando la comodidad de la App móvil.
+- **Sincronización de Capacidad Real**: Integración directa con el nodo `/vehiculos/` para mostrar la capacidad y asientos disponibles exactos de cada bus asignado.
+- **Distribución Adaptativa Desktop**: Rediseño de la tarjeta de horarios para aprovechar el ancho de pantallas grandes, distribuyendo la información de forma horizontal sin perder la esencia móvil.
+
+### Cambiado
+- **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`) para eliminar redundancia y facilitar el mantenimiento.
+- **UI Mirror v1.5.1**: Actualización estética de la planilla web para ser un espejo fiel de Android, incluyendo el botón circular "+" y el sistema de badges de estado ("Finalizado", "Completado", "Disponible").
+- **Optimización de Temas**: Eliminación de residuos visuales en el modo claro dentro de las secciones de Perfil e Historial, logrando una adaptabilidad del 100% a las preferencias del usuario.
+
+### Corregido
+- **Inconsistencia de Fondos**: Corregidos contenedores con fondos oscuros "hardcoded" que afectaban la legibilidad en el Tema Claro.
+- **Mapeo de Datos Dual**: Unificación de nomenclatura entre `puestoReservado` y `reservedSeat` en la lógica de visualización para asegurar consistencia total con la base de datos de la App móvil.
+
+---
+
 ## [1.5.0] - 2026-07-22 (Ecosystem & Business Edition)
 ### Añadido
 - **Soporte Universal iPhone (PWA)**: Implementación de Web App instalable para usuarios de Apple con soporte para iconos nativos y modo pantalla completa.
