@@ -36,7 +36,7 @@ export function ScheduleDirectory({ schedules, drivers, role, onManage, vehicles
         </div>
       </div>
       <div className="px-2">
-        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
+        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} hideActions={true} />
       </div>
     </div>
   );

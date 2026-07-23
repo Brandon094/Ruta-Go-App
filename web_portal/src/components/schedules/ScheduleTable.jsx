@@ -4,7 +4,7 @@ import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle, Plu
 /**
  * 🚌 Componente: ScheduleTable (Totalmente Sincronizado con UI Android v1.5.0)
  */
-export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [] }) {
+export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [], hideActions = false }) {
   const nextTripRef = useRef(null);
 
   const getTripMinutes = (horaStr) => {
@@ -49,7 +49,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   }, [nextTripId]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-5xl mx-auto">
       {schedules.length > 0 ? (
         schedules.map((schedule) => {
           const hasPassed = getTripMinutes(schedule.hora) < currentMinutes;
@@ -65,6 +65,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
               isNext={isNext}
               hasPassed={hasPassed}
               vehicles={vehicles}
+              hideActions={hideActions}
             />
           );
         })
@@ -86,7 +87,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   );
 }
 
-function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, vehicles = [], innerRef }) {
+function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, vehicles = [], innerRef, hideActions = false }) {
   const [timeStr, ampm] = schedule.hora.split(' ');
 
   // Buscar vehículo para obtener capacidad real
@@ -177,32 +178,34 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, ve
         </div>
 
         {/* 🔘 Botón de Acción (Android Style) */}
-        <div className="shrink-0">
-           {role?.type === 'DRIVER' && isMe && onManage ? (
-             <button
-               disabled={hasPassed}
-               onClick={() => !hasPassed && onManage(schedule)}
-               className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
-                 hasPassed
-                 ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
-                 : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
-               }`}
-             >
-               <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
-             </button>
-           ) : (
-             <button
-               disabled={true}
-               className={`w-16 h-16 rounded-full shadow-2xl transition-all flex items-center justify-center ${
-                 hasPassed
-                 ? 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/10 cursor-not-allowed border border-slate-200 dark:border-white/5'
-                 : 'bg-primary-500 text-white shadow-primary-500/40 opacity-50 cursor-not-allowed'
-               }`}
-             >
-               <Plus size={32} />
-             </button>
-           )}
-        </div>
+        {!hideActions && (
+          <div className="shrink-0">
+             {role?.type === 'DRIVER' && isMe && onManage ? (
+               <button
+                 disabled={hasPassed}
+                 onClick={() => !hasPassed && onManage(schedule)}
+                 className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
+                   hasPassed
+                   ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
+                   : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
+                 }`}
+               >
+                 <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
+               </button>
+             ) : (
+               <button
+                 disabled={true}
+                 className={`w-16 h-16 rounded-full shadow-2xl transition-all flex items-center justify-center ${
+                   hasPassed
+                   ? 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/10 cursor-not-allowed border border-slate-200 dark:border-white/5'
+                   : 'bg-primary-500 text-white shadow-primary-500/40 opacity-50 cursor-not-allowed'
+                 }`}
+               >
+                 <Plus size={32} />
+               </button>
+             )}
+          </div>
+        )}
       </div>
     </div>
   );
