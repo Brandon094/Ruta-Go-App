@@ -205,9 +205,9 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role }) {
                  {role?.uid?.substring(0, 1).toUpperCase() || 'P'}
                </div>
             </div>
-            <div className="text-secondary-900">
+            <div>
               <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-60">Welcome!</p>
-              <h2 className="text-xl lg:text-2xl font-black tracking-tight">Brandon Daza Cerq...</h2>
+              <h2 className="text-xl lg:text-2xl font-black tracking-tight">{user.displayName || 'Pasajero Ruta-Go'}</h2>
             </div>
           </div>
           <div className="px-4 py-1.5 bg-secondary-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">

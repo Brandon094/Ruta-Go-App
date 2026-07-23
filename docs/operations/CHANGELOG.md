@@ -6,16 +6,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ## [1.5.0] - 2026-07-22 (Ecosystem & Business Edition)
 ### Añadido
-- **Ecosistema Web Portal**: Lanzamiento de la plataforma React para gestión empresarial y administrativa.
-- **Landing Page Corporativa**: Interfaz pública responsiva con propuesta de valor y enlace directo a Play Store.
-- **Dashboard de Dueños (Multi-inquilino)**: Implementado aislamiento de datos por `ownerId` para permitir que socios monitoreen solo sus activos.
-- **Motor de Roles (RBAC)**: Nuevo sistema de permisos dinámicos (Admin Root vs. Socio) integrado en el Portal Web.
-- **Módulos Legales Integrados**: Vistas dinámicas de Términos y Condiciones y Política de Privacidad (Habeas Data).
-- **Activación Instantánea**: Flujo de registro automatizado para nuevos dueños de flota con escritura atómica en nodos maestros.
+- **Soporte Universal iPhone (PWA)**: Implementación de Web App instalable para usuarios de Apple con soporte para iconos nativos y modo pantalla completa.
+- **Identidad Única (SSO)**: Sistema de login y registro unificado para Pasajeros, Conductores y Socios desde un solo punto de entrada web.
+- **Dashboard de Pasajeros Web**: Los usuarios de iPhone ahora pueden consultar horarios, estados de ocupación y su historial desde Safari.
+- **Gestión de Conductores Web**: Los conductores ahora pueden gestionar sus turnos y realizar ventas físicas desde cualquier dispositivo móvil o PC.
+- **Clonación de UI (Mirroring)**: Rediseño total del portal web para replicar la estética Navy Deep y Naranja de la App de Android, asegurando una experiencia de marca coherente.
+- **SEO & Visibilidad**: Integración de Sitemap, Robots y Meta-tags dinámicos para indexación en Google.
+- **Módulo de Reservas Web**: Base técnica para la próxima habilitación de compras digitales desde el navegador.
 
 ### Cambiado
-- **Estandarización Regional**: Corregida la ortografía de "Nátaga" en toda la interfaz web, metadatos y documentos legales.
-- **Seguridad NoSQL**: Actualizadas las reglas de Firebase para permitir búsqueda de operadores por Email conservando la privacidad de usuarios.
+- **Refactor de Roles**: El sistema ahora detecta automáticamente el rol (Admin/Owner/Driver/Passenger) tras el login y adapta la interfaz dinámicamente.
+- **Estandarización Regional**: Corregida la ortografía de "Nátaga" en todos los metadatos y etiquetas de la plataforma.
+- **Gobernanza de Datos**: Actualización de reglas de Firebase para permitir el aislamiento comercial por `ownerId`.
 
 ---
 

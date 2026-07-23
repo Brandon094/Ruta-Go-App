@@ -19,6 +19,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 *   [x] **🚗 Desacoplamiento Vehículo-Conductor**: Nodo `/dueños/` centralizado y propiedad de activos blindada.
 *   [x] **🌐 Ruta-Go Portal (v1.5.0)**: Lanzamiento del ecosistema web centralizado (Landing Page + Business App).
+*   [x] **🍏 Soporte Universal (iPhone)**: Implementación de PWA para permitir que pasajeros y conductores de Apple usen la plataforma sin depender de la App Store.
 *   [x] **👑 Go Business Dashboard**: Módulo para dueños con aislamiento de datos, monitor de flota e ingresos en tiempo real.
 *   [x] **⚖️ Cumplimiento Legal Web**: Integración de Términos, Privacidad y Derecho al Olvido en el portal.
 *   [x] **🚀 Activación Instantánea**: Flujo de registro automatizado para socios y administradores.
