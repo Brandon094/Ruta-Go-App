@@ -15,6 +15,8 @@ import { auth } from './firebase';
 import LandingPage from './LandingPage';
 import Login from './Login';
 import Register from './Register';
+import Terms from './Terms';
+import Privacy from './Privacy';
 import { Sidebar } from './components/common/Sidebar';
 import { Header } from './components/common/Header';
 import { StatCard } from './components/dashboard/StatCard';
@@ -33,7 +35,7 @@ import { useRealtimeStats } from './hooks/useRealtimeStats';
  */
 function App() {
   const [user, setUser] = useState(null);
-  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'register'
+  const [view, setView] = useState('landing'); // 'landing' | 'login' | 'register' | 'terms' | 'privacy'
   const [activeTab, setActiveTab] = useState('overview');
   const [loadingAuth, setLoadingAuth] = useState(true);
 
@@ -58,8 +60,11 @@ function App() {
 
   if (loadingAuth) {
     return (
-      <div className="h-screen bg-secondary-900 flex flex-col items-center justify-center gap-4">
-        <Loader2 className="text-primary-500 animate-spin" size={48} />
+      <div className="h-screen bg-secondary-900 flex flex-col items-center justify-center gap-6">
+        <div className="relative">
+          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-16 h-16 object-contain animate-pulse" />
+          <Loader2 className="text-primary-500 animate-spin absolute -bottom-2 -right-2" size={24} />
+        </div>
         <p className="text-white/40 text-[10px] font-black uppercase tracking-widest animate-pulse">Autenticando...</p>
       </div>
     );
@@ -68,7 +73,16 @@ function App() {
   if (!user) {
     if (view === 'login') return <Login onBack={() => setView('landing')} onShowRegister={() => setView('register')} />;
     if (view === 'register') return <Register onBack={() => setView('landing')} />;
-    return <LandingPage onLogin={() => setView('login')} onRegisterOwner={() => setView('register')} />;
+    if (view === 'terms') return <Terms onBack={() => setView('landing')} />;
+    if (view === 'privacy') return <Privacy onBack={() => setView('landing')} />;
+    return (
+      <LandingPage
+        onLogin={() => setView('login')}
+        onRegisterOwner={() => setView('register')}
+        onViewTerms={() => setView('terms')}
+        onViewPrivacy={() => setView('privacy')}
+      />
+    );
   }
 
   // Si no es admin ni dueño, bloquear acceso (Seguridad)

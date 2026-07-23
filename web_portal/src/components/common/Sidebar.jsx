@@ -41,7 +41,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
       `}>
         <div className="p-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center font-black text-xl transform -rotate-3 shadow-lg">R</div>
+            <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-10 h-10 object-contain drop-shadow-md" />
             <div className="flex flex-col leading-tight text-left">
               <span className="text-lg font-bold tracking-tight">Ruta-Go</span>
               <span className="text-[10px] text-primary-500 font-bold tracking-widest uppercase opacity-80">

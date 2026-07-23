@@ -35,7 +35,7 @@ function Login({ onShowRegister, onBack }) {
         </div>
 
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg transform -rotate-3">R</div>
+          <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-12 h-12 object-contain" />
           <span className="text-3xl font-black tracking-tighter text-white">Ruta-Go</span>
         </div>
 

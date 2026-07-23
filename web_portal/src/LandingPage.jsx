@@ -17,15 +17,17 @@ import {
  * Ficha de presentación pública de Ruta-Go.
  * Expone la propuesta de valor para Pasajeros, Conductores y Dueños.
  */
-export default function LandingPage({ onLogin, onRegisterOwner }) {
+export default function LandingPage({ onLogin, onRegisterOwner, onViewTerms, onViewPrivacy }) {
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-primary-100">
 
       {/* 🔝 NAVBAR */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary-500/20">R</div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-secondary-900 rounded-xl flex items-center justify-center shadow-lg">
+              <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-7 h-7 object-contain" />
+            </div>
             <span className="text-2xl font-black tracking-tighter text-secondary-900">Ruta-Go</span>
           </div>
           <div className="flex items-center gap-4">
@@ -164,15 +166,17 @@ export default function LandingPage({ onLogin, onRegisterOwner }) {
 
           <div className="pt-20 grid grid-cols-1 md:grid-cols-3 items-center gap-10">
             <div className="flex items-center gap-2 justify-center md:justify-start">
-              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center text-white font-black text-sm">R</div>
+              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-7 h-7 object-contain" />
+              </div>
               <span className="text-xl font-bold tracking-tighter">Ruta-Go</span>
             </div>
             <div className="text-white/30 text-[10px] font-bold uppercase tracking-[0.2em]">
                ChopCode Solutions © 2026 • Huila, CO
             </div>
             <div className="flex justify-center md:justify-end gap-6 text-white/40">
-               <span className="hover:text-primary-500 cursor-pointer transition-colors">Privacidad</span>
-               <span className="hover:text-primary-500 cursor-pointer transition-colors">Términos</span>
+               <span onClick={onViewPrivacy} className="hover:text-primary-500 cursor-pointer transition-colors">Privacidad</span>
+               <span onClick={onViewTerms} className="hover:text-primary-500 cursor-pointer transition-colors">Términos</span>
             </div>
           </div>
         </div>

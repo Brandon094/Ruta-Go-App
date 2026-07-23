@@ -2,5 +2,19 @@
   "functions": {
     "source": "firebase_functions",
     "runtime": "nodejs22"
+  },
+  "hosting": {
+    "public": "web_portal/dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
