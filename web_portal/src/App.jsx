@@ -23,6 +23,7 @@ import { OwnerOverview } from './components/dashboard/overviews/OwnerOverview';
 import { UserDirectory } from './components/users/UserDirectory';
 import { DriverDirectory } from './components/drivers/DriverDirectory';
 import { OwnerDirectory } from './components/owners/OwnerDirectory';
+import { DriverItinerary } from './components/itinerary/DriverItinerary';
 import { HistoryDirectory } from './components/history/HistoryDirectory';
 import { ScheduleDirectory } from './components/schedules/ScheduleDirectory';
 import { ProfileDirectory } from './components/profile/ProfileDirectory';
@@ -123,6 +124,7 @@ function App() {
             activeTab === 'history' ? 'Historial de Reservas' :
             activeTab === 'profile' ? 'Mi Perfil' :
             activeTab === 'owners' ? 'Gestión de Socios' :
+            activeTab === 'itinerary' ? 'Mi Itinerario' :
             activeTab === 'drivers' ? 'Conductores' :
             activeTab === 'users' ? 'Pasajeros' :
             activeTab === 'schedules' ? 'Planilla' :
@@ -150,7 +152,16 @@ function App() {
                 vehicles={vehicles}
               />
             ) : role?.type === 'DRIVER' ? (
-              <DriverOverview stats={stats} routeStats={routeStats} schedules={schedules} drivers={drivers} reservations={reservations} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
+              <DriverOverview
+                stats={stats}
+                routeStats={routeStats}
+                schedules={schedules}
+                drivers={drivers}
+                reservations={reservations}
+                role={role}
+                onManage={(s) => setManagingSchedule(s)}
+                vehicles={vehicles}
+              />
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
             ) : (

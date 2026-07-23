@@ -9,7 +9,7 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
   const myName = currentDriverData.nombre || 'Cargando...';
   const myPlate = currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
   const mySchedules = schedules.filter(s => s.conductorId === role.uid);
-  const pendingReservations = reservations.filter(r => (r.estadoReserva === 'Pendiente' || r.reservationStatus === 'Pendiente'));
+  const pendingReservations = reservations.filter(r => (r.estadoReserva === 'Pendiente' || r.reservationStatus === 'Pendiente' || r.estadoReserva === 'Por confirmar' || r.reservationStatus === 'Por confirmar'));
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
@@ -86,13 +86,7 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="success"
-                    size="sm"
-                    className="md:px-6"
-                  >
-                    Confirmar
-                  </Button>
+                  <Button variant="success" size="sm">Confirmar</Button>
                 </div>
               ))}
             </div>

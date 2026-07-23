@@ -33,7 +33,7 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage, v
                </div>
             </div>
             <div className="text-white">
-              <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-80">Welcome!</p>
+              <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-80 italic">¡Bienvenido de nuevo!</p>
               <h2 className="text-xl lg:text-2xl font-black tracking-tight uppercase italic">{role?.name || 'Pasajero Ruta-Go'}</h2>
             </div>
           </div>
@@ -50,15 +50,11 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage, v
               <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />
               <SummaryMetric label="Total" value={stats.totalUserReservations} icon={<CheckCircle2 size={16} className="text-green-500 mb-1"/>} />
             </div>
-            <div className="pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-slate-400 dark:text-white/40 cursor-pointer hover:text-slate-600 dark:hover:text-white/60 transition-colors">
-               <span className="text-[10px] font-bold uppercase tracking-widest">Significado de cada contador</span>
-               <ChevronDown size={14} />
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto pt-4 space-y-12">
+      <div className="max-w-4xl mx-auto pt-4 space-y-12 pb-20">
 
         {/* 🕒 TITULO Y TABS */}
         <div className="space-y-6">
