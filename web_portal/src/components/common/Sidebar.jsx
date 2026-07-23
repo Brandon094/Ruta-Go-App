@@ -13,7 +13,6 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
   const isOwner = role?.type === 'OWNER';
   const isManagement = isAdmin || isOwner;
 
-  // Definición de Secciones
   const sections = [
     {
       title: "Principal",
@@ -50,23 +49,25 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
       {/* Overlay para móviles */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-secondary-900/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-secondary-900/60 dark:bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       {/* Aside */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-secondary-900 text-white flex flex-col shadow-2xl transition-transform duration-300
+        fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-[#061426] flex flex-col shadow-2xl transition-all duration-300 border-r border-slate-100 dark:border-white/5
         lg:relative lg:translate-x-0 lg:z-20
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="p-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-10 h-10 object-contain drop-shadow-md" />
+            <div className="w-10 h-10 bg-[#061426] dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg transition-colors">
+              <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-6 h-6 object-contain" />
+            </div>
             <div className="flex flex-col leading-tight text-left">
-              <span className="text-lg font-bold tracking-tight">Ruta-Go</span>
-              <span className="text-[10px] text-primary-500 font-bold tracking-widest uppercase opacity-80">
+              <span className="text-lg font-black tracking-tight text-[#061426] dark:text-white uppercase italic">Ruta-Go</span>
+              <span className="text-[10px] text-primary-500 font-black tracking-widest uppercase opacity-80">
                 {role?.type === 'ADMIN' ? 'Admin Maestro' :
                  role?.type === 'OWNER' ? 'Panel Dueños' :
                  role?.type === 'DRIVER' ? 'Panel Conductor' :
@@ -74,7 +75,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
               </span>
             </div>
           </div>
-          <button onClick={onClose} className="lg:hidden p-2 text-white/50 hover:text-white">
+          <button onClick={onClose} className="lg:hidden p-2 text-slate-400 dark:text-white/50 hover:text-primary-500 transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -83,13 +84,12 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
           {sections.map((section, idx) => {
             if (section.hidden) return null;
 
-            // Filtrar items de la sección por rol
             const filteredItems = section.items.filter(item => item.roles.includes(role?.type));
             if (filteredItems.length === 0) return null;
 
             return (
               <div key={idx} className="space-y-2">
-                <h4 className="px-5 text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">
+                <h4 className="px-5 text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">
                   {section.title}
                 </h4>
                 <div className="space-y-1">
@@ -112,10 +112,10 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-4 border-t border-white/5 space-y-1 text-left">
+        <div className="p-4 border-t border-slate-100 dark:border-white/5 space-y-1 text-left">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-400 hover:bg-red-500/10 transition-all font-bold text-xs uppercase tracking-widest"
+            className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-black text-xs uppercase tracking-widest"
           >
             <LogOut size={18} /> Salir del Portal
           </button>
@@ -132,8 +132,8 @@ function NavItem({ icon, label, active, onClick }) {
       className={`
         w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 group
         ${active
-          ? 'bg-primary-500 text-white shadow-xl shadow-primary-500/20'
-          : 'text-white/50 hover:bg-white/5 hover:text-white'
+          ? 'bg-primary-500 text-white shadow-xl shadow-orange-500/30'
+          : 'text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-[#061426] dark:hover:text-white'
         }
       `}
     >

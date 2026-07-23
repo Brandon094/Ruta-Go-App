@@ -7,22 +7,46 @@
 }
 
 @layer base {
+  html, body, #root {
+    height: 100%;
+    @apply transition-colors duration-300;
+  }
+
   body {
-    @apply bg-[#061426] text-white antialiased;
+    /*
+       Tema Claro: Usamos un gris Navy muy sutil (#E1E8EB) para el fondo.
+       Esto evita que el blanco de las cards sea "brillante" por falta de contraste.
+    */
+    @apply bg-secondary-50 text-[#061426] antialiased dark:bg-secondary-900 dark:text-white;
   }
 }
 
 @layer components {
+  /* Tarjetas universales */
+  .card-base {
+    /* En modo claro, fondo blanco puro resalta sobre el fondo grisáceo */
+    @apply bg-white border border-slate-200/60 shadow-lg shadow-slate-200/50 transition-all duration-300
+           dark:bg-secondary-800 dark:border-white/5 dark:shadow-2xl dark:shadow-black/40;
+  }
+
   .card-navy {
-    @apply bg-[#061929] border border-white/5 shadow-2xl;
+    @apply card-base;
   }
 
   .btn-primary {
-    @apply bg-primary-500 hover:bg-orange-600 text-white font-black transition-all active:scale-95;
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-black transition-all active:scale-95 shadow-lg shadow-orange-500/20;
   }
 
   .text-navy-light {
-    @apply text-[#B5C5CD];
+    @apply text-secondary-400 dark:text-secondary-100;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 border border-green-200 dark:border-green-500/20;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 border border-red-200 dark:border-red-500/20;
   }
 }
 

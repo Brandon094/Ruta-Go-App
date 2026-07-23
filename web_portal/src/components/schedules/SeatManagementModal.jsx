@@ -133,22 +133,22 @@ export function SeatManagementModal({ schedule, onClose, role }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-10">
       <div className="absolute inset-0 bg-secondary-900/80 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-2xl bg-white rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-[#061929] rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border dark:border-white/5">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+        <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-white/5">
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${isPassenger ? 'bg-blue-600 shadow-blue-500/20' : 'bg-primary-500 shadow-primary-500/20'}`}>
                {isPassenger ? <Ticket size={24} /> : <Bus size={24} />}
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+              <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
                 {isPassenger ? 'Selecciona tu Asiento' : 'Venta Física de Pasajes'}
               </h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{schedule.hora} • {schedule.ruta}</p>
+              <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest">{schedule.hora} • {schedule.ruta}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
+          <button onClick={onClose} className="p-3 text-slate-400 dark:text-white/20 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all">
             <X size={24} />
           </button>
         </div>
@@ -160,14 +160,14 @@ export function SeatManagementModal({ schedule, onClose, role }) {
             {/* Bus Layout */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                 <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest">Esquema del Bus</h4>
+                 <h4 className="text-xs font-black text-slate-400 dark:text-white/40 uppercase tracking-widest">Esquema del Bus</h4>
                  <div className="flex gap-4">
-                    <Legend item="Libre" color="bg-green-100 border-green-200" />
+                    <Legend item="Libre" color="bg-green-100 dark:bg-green-500/20 border-green-200 dark:border-green-500/30" />
                     <Legend item="Ocupado" color="bg-orange-500 border-orange-600" />
                  </div>
               </div>
 
-              <div className="bg-slate-50 rounded-[2.5rem] p-8 border border-slate-100 relative">
+              <div className="bg-slate-50 dark:bg-black/20 rounded-[2.5rem] p-8 border border-slate-100 dark:border-white/5 relative">
                 {loading ? (
                   <div className="h-64 flex items-center justify-center">
                     <Loader2 className="animate-spin text-primary-500" size={32} />
@@ -175,8 +175,8 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                 ) : (
                   <div className="grid grid-cols-4 gap-4">
                     {/* Volante */}
-                    <div className="col-start-4 bg-slate-200/50 rounded-xl h-10 flex items-center justify-center text-slate-400 mb-4">
-                       <div className="w-6 h-6 rounded-full border-4 border-slate-300"></div>
+                    <div className="col-start-4 bg-slate-200/50 dark:bg-white/5 rounded-xl h-10 flex items-center justify-center text-slate-400 dark:text-white/20 mb-4">
+                       <div className="w-6 h-6 rounded-full border-4 border-slate-300 dark:border-white/10"></div>
                     </div>
 
                     {seatGrid.map(id => {
@@ -194,7 +194,7 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                               ? 'bg-primary-500 border-orange-700 text-white shadow-lg'
                               : isSelected
                                 ? 'bg-blue-600 border-blue-800 text-white shadow-xl scale-105'
-                                : 'bg-white border-slate-200 text-slate-400 hover:border-green-400 hover:text-green-500'}
+                                : 'bg-white dark:bg-[#061426] border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/20 hover:border-green-400 dark:hover:border-green-500 hover:text-green-500 dark:hover:text-green-400'}
                           `}
                         >
                           {id}
@@ -209,20 +209,20 @@ export function SeatManagementModal({ schedule, onClose, role }) {
             {/* Instruction / Confirmation */}
             <div className="space-y-6">
               {isPassenger ? (
-                <div className="card-navy rounded-[2.5rem] p-8 space-y-6">
+                <div className="bg-slate-50 dark:bg-white/5 rounded-[2.5rem] p-8 space-y-6 border dark:border-white/5">
                   <div className="flex items-center gap-3">
                      <User className="text-primary-500" size={20} />
-                     <h4 className="font-black uppercase text-sm tracking-tight text-white">Tu Selección</h4>
+                     <h4 className="font-black uppercase text-sm tracking-tight text-slate-800 dark:text-white">Tu Selección</h4>
                   </div>
 
                   {selectedSeat ? (
                     <div className="space-y-6">
-                      <div className="p-6 bg-white/5 rounded-2xl border border-white/5 text-center">
-                         <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">Asiento Seleccionado</p>
-                         <p className="text-5xl font-black text-white mt-2">#{selectedSeat}</p>
+                      <div className="p-6 bg-white dark:bg-secondary-900 rounded-2xl border border-slate-200 dark:border-white/5 text-center shadow-sm">
+                         <p className="text-[10px] text-slate-400 dark:text-white/40 uppercase font-black tracking-widest">Asiento Seleccionado</p>
+                         <p className="text-5xl font-black text-slate-800 dark:text-white mt-2">#{selectedSeat}</p>
                       </div>
-                      <div className="flex items-center justify-between text-white">
-                         <span className="text-xs font-bold text-white/40 uppercase">Valor Pasaje:</span>
+                      <div className="flex items-center justify-between">
+                         <span className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase">Valor Pasaje:</span>
                          <span className="text-lg font-black text-primary-500">$ 12.000</span>
                       </div>
                       <button
@@ -234,11 +234,11 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                       </button>
                     </div>
                   ) : (
-                    <p className="text-white/30 text-xs italic text-center py-10">Toca un asiento disponible para continuar.</p>
+                    <p className="text-slate-400 dark:text-white/30 text-xs italic text-center py-10">Toca un asiento disponible para continuar.</p>
                   )}
                 </div>
               ) : (
-                <div className="bg-secondary-900 rounded-[2.5rem] p-8 text-white space-y-4">
+                <div className="bg-secondary-900 rounded-[2.5rem] p-8 text-white space-y-4 border border-white/5">
                   <div className="flex items-center gap-3">
                      <UserPlus className="text-primary-500" size={20} />
                      <h4 className="font-black uppercase text-sm tracking-tight">Venta Manual</h4>
@@ -250,9 +250,9 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                 </div>
               )}
 
-              <div className="p-6 bg-blue-50 rounded-[2rem] border border-blue-100 flex items-start gap-4">
+              <div className="p-6 bg-blue-50 dark:bg-blue-500/10 rounded-[2rem] border border-blue-100 dark:border-blue-500/20 flex items-start gap-4">
                 <Info className="text-blue-500 shrink-0" size={20} />
-                <p className="text-[11px] text-blue-800 font-medium leading-relaxed">
+                <p className="text-[11px] text-blue-800 dark:text-blue-200 font-medium leading-relaxed">
                   {isPassenger
                     ? "Al confirmar, tu reserva será visible para el conductor y se generará tu tiquete digital."
                     : "Asegúrate de recibir el pago antes de marcar el asiento como vendido."}
@@ -264,8 +264,8 @@ export function SeatManagementModal({ schedule, onClose, role }) {
 
         {/* Footer for non-passengers */}
         {!isPassenger && (
-          <div className="p-8 border-t border-slate-100 flex justify-end shrink-0 bg-slate-50/50">
-            <button onClick={onClose} className="px-10 py-4 bg-secondary-900 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest text-xs">
+          <div className="p-8 border-t border-slate-100 dark:border-white/5 flex justify-end shrink-0 bg-slate-50/50 dark:bg-white/5">
+            <button onClick={onClose} className="px-10 py-4 bg-secondary-900 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest text-xs hover:bg-black transition-all">
               Finalizar Gestión
             </button>
           </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, User as UserIcon } from 'lucide-react';
+import { Menu, User as UserIcon, Moon, Sun } from 'lucide-react';
 
 /**
  * 🔝 Header Component - Barra Superior Responsiva
@@ -8,31 +8,46 @@ import { Menu, User as UserIcon } from 'lucide-react';
  * @param {string} userEmail - Email del usuario logueado
  * @param {function} onMenuClick - Disparador para abrir el sidebar en móviles
  * @param {object} role - Objeto de rol del usuario
+ * @param {string} theme - Tema actual ('dark' | 'light')
+ * @param {function} onToggleTheme - Función para cambiar de tema
  */
-export function Header({ title, userEmail, onMenuClick, role }) {
+export function Header({ title, userEmail, onMenuClick, role, theme, onToggleTheme }) {
   const isRoot = role?.type === 'ADMIN';
   const isOwner = role?.type === 'OWNER';
   const isLoading = !role?.type;
 
   return (
-    <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 shrink-0 z-30">
+    <header className="h-20 bg-white dark:bg-[#061929] border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 lg:px-10 shrink-0 z-30 transition-colors duration-300">
       <div className="flex items-center gap-4">
         {/* Botón Hamburguesa */}
         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-all active:scale-90"
+          className="lg:hidden p-2.5 text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-90"
         >
           <Menu size={24} />
         </button>
 
-        <h2 className="text-xl lg:text-2xl font-black text-slate-800 tracking-tight truncate max-w-[200px] md:max-w-none">
+        <h2 className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight truncate max-w-[200px] md:max-w-none uppercase italic">
           {isLoading ? 'Verificando...' : title}
         </h2>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 md:gap-6">
+        {/* Theme Toggle */}
+        <button
+          onClick={onToggleTheme}
+          className="p-3 text-slate-400 dark:text-white/20 hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl transition-all group"
+          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+        >
+          {theme === 'dark' ? (
+            <Sun size={20} className="group-hover:text-amber-400 transition-colors" />
+          ) : (
+            <Moon size={20} className="group-hover:text-indigo-600 transition-colors" />
+          )}
+        </button>
+
         <div className="text-right hidden sm:block">
-          <p className="text-[11px] font-black text-slate-700 leading-none truncate max-w-[150px]">
+          <p className="text-[11px] font-black text-slate-700 dark:text-white leading-none truncate max-w-[150px]">
             {userEmail}
           </p>
           <p className={`text-[9px] font-bold uppercase tracking-tighter mt-1 ${

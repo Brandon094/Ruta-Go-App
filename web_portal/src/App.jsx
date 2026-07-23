@@ -18,7 +18,9 @@ import {
   Info,
   ChevronDown,
   LayoutDashboard,
-  Tag
+  Tag,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase';
@@ -57,6 +59,7 @@ function App() {
   const [editingDriver, setEditingDriver] = useState(null);
   const [isAddingDriver, setIsAddingDriver] = useState(false);
   const [managingSchedule, setManagingSchedule] = useState(null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -65,6 +68,17 @@ function App() {
     });
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const { role, stats, drivers, users, schedules, reservations, routeStats } = useRealtimeStats(user);
 
@@ -99,7 +113,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[#061426] text-white antialiased font-sans overflow-hidden">
+    <div className="flex h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white antialiased font-sans overflow-hidden transition-colors duration-300">
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -128,9 +142,11 @@ function App() {
           userEmail={user.email}
           onMenuClick={() => setIsSidebarOpen(true)}
           role={role}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
 
-        <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-[#061426]">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-secondary-50 dark:bg-secondary-900 transition-colors duration-300">
           {activeTab === 'overview' ? (
             role?.type === 'PASSENGER' ? (
               <PassengerOverview
@@ -163,11 +179,11 @@ function App() {
         </div>
 
         {/* Bottom Nav Simulation for Mobile */}
-        <div className="lg:hidden h-20 bg-[#061929] border-t border-white/5 flex items-center justify-around px-6 shrink-0">
+        <div className="lg:hidden h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
            <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
            <BottomNavItem icon={<History size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
            <BottomNavItem icon={<UserPlus size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-           <button onClick={() => auth.signOut()} className="p-3 text-red-400 opacity-50"><XCircle size={22}/></button>
+           <button onClick={() => auth.signOut()} className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"><XCircle size={22}/></button>
         </div>
       </main>
 
@@ -180,7 +196,7 @@ function App() {
 
 function BottomNavItem({ icon, active, onClick }) {
   return (
-    <button onClick={onClick} className={`p-4 transition-all ${active ? 'text-primary-500 scale-110' : 'text-white/20 hover:text-white/40'}`}>
+    <button onClick={onClick} className={`p-4 transition-all ${active ? 'text-primary-500 scale-110 drop-shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-600 dark:hover:text-white/40'}`}>
       {icon}
     </button>
   );
@@ -211,30 +227,30 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
       <div className="bg-primary-500 -mt-4 lg:-mt-8 -mx-4 lg:-mx-8 p-6 lg:p-10 pb-16 relative overflow-hidden shadow-2xl">
         <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-secondary-900 p-1 flex items-center justify-center">
-               <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-secondary-900 font-black text-xl lg:text-2xl shadow-inner">
+            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-white/30 p-1 flex items-center justify-center shadow-inner">
+               <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-[#061426] font-black text-xl lg:text-2xl shadow-sm">
                  {role?.uid?.substring(0, 1).toUpperCase() || 'P'}
                </div>
             </div>
-            <div>
-              <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-60">Welcome!</p>
-              <h2 className="text-xl lg:text-2xl font-black tracking-tight">{user.displayName || 'Pasajero Ruta-Go'}</h2>
+            <div className="text-white">
+              <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-80">Welcome!</p>
+              <h2 className="text-xl lg:text-2xl font-black tracking-tight uppercase italic">{role?.name || 'Pasajero Ruta-Go'}</h2>
             </div>
           </div>
-          <div className="px-4 py-1.5 bg-secondary-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+          <div className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl border border-white/10">
              Pasajero Activo
           </div>
         </div>
 
         {/* 🌑 STATS CARD (Android Style) */}
         <div className="max-w-4xl mx-auto mt-8">
-          <div className="card-navy rounded-[2.5rem] p-6 lg:p-8 space-y-8">
+          <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8">
             <div className="grid grid-cols-3 gap-4">
               <SummaryMetric label="Confirmadas" value={stats.confirmedReservations} icon={<CheckCircle2 size={16} className="text-orange-500 mb-1"/>} />
               <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />
               <SummaryMetric label="Total" value={stats.totalUserReservations} icon={<CheckCircle2 size={16} className="text-green-500 mb-1"/>} />
             </div>
-            <div className="pt-6 border-t border-white/5 flex items-center justify-between text-white/40 cursor-pointer hover:text-white/60 transition-colors">
+            <div className="pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-slate-400 dark:text-white/40 cursor-pointer hover:text-slate-600 dark:hover:text-white/60 transition-colors">
                <span className="text-[10px] font-bold uppercase tracking-widest">Significado de cada contador</span>
                <ChevronDown size={14} />
             </div>
@@ -248,14 +264,14 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
         <div className="space-y-6">
           <div className="flex items-center gap-3 px-2">
             <Clock className="text-primary-500" size={24} />
-            <h3 className="text-lg lg:text-xl font-black uppercase tracking-tight text-white">Horarios disponibles</h3>
+            <h3 className="text-lg lg:text-xl font-black uppercase tracking-tight text-[#061426] dark:text-white italic">Horarios disponibles</h3>
           </div>
 
-          <div className="flex bg-[#061929] p-1 rounded-2xl border border-white/5">
+          <div className="flex bg-white dark:bg-[#061929] p-1 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm transition-colors duration-300">
             <button
               onClick={() => setActiveRoute('toLaPlata')}
               className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${
-                activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-xl' : 'text-white/40 hover:text-white'
+                activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white'
               }`}
             >
               NATAGÁ -> LA PLATA
@@ -263,7 +279,7 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
             <button
               onClick={() => setActiveRoute('toNataga')}
               className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${
-                activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-xl' : 'text-white/40 hover:text-white'
+                activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white'
               }`}
             >
               LA PLATA -> NATAGÁ
@@ -273,11 +289,11 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
 
         <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
 
-        {/* CARTA DE ESTADO POR RUTA (Como en la foto) */}
+        {/* CARTA DE ESTADO POR RUTA */}
         <div className="space-y-6">
             <div className="flex items-center gap-3 px-2">
                <Activity className="text-primary-500" size={18} />
-               <h3 className="text-sm font-black text-white/40 uppercase tracking-widest">Estado por ruta</h3>
+               <h3 className="text-sm font-black text-slate-400 dark:text-white/40 uppercase tracking-widest">Estado por ruta</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
               <RouteStatCard
@@ -295,13 +311,13 @@ function PassengerOverview({ stats, routeStats, schedules, drivers, role, user, 
             </div>
          </div>
 
-        <div className="p-8 bg-[#061929] rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row items-center gap-6 opacity-60 mx-2">
-          <div className="w-16 h-16 bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 shrink-0">
+        <div className="p-8 bg-white dark:bg-[#061929] rounded-[2.5rem] border border-slate-100 dark:border-white/5 flex flex-col md:flex-row items-center gap-6 shadow-sm mx-2 group">
+          <div className="w-16 h-16 bg-blue-500/10 dark:bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 shrink-0 group-hover:scale-110 transition-transform">
              <Info size={32} />
           </div>
           <div className="text-center md:text-left space-y-1">
-             <h4 className="text-lg font-black text-white uppercase leading-none">Reserva Web en desarrollo</h4>
-             <p className="text-white/40 font-medium text-sm italic">Estamos trabajando para habilitar el motor de reservas en iPhone muy pronto.</p>
+             <h4 className="text-lg font-black text-[#061426] dark:text-white uppercase leading-none italic">Reserva Web en desarrollo</h4>
+             <p className="text-slate-500 dark:text-white/40 font-medium text-sm">Estamos trabajando para habilitar el motor de reservas en iPhone muy pronto.</p>
           </div>
         </div>
       </div>
@@ -327,25 +343,25 @@ function DriverOverview({ stats, routeStats, schedules, drivers, reservations = 
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
       <div className="bg-primary-500 -mt-4 lg:-mt-8 -mx-4 lg:-mx-8 p-6 lg:p-10 pb-16 relative overflow-hidden shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10 text-secondary-900">
+        <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10 text-white">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-secondary-900 p-1">
-               <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center font-black text-xl lg:text-2xl shadow-inner">
+            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-white/30 p-1 shadow-inner">
+               <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center font-black text-xl lg:text-2xl text-[#061426]">
                  {myName.substring(0, 1)}
                </div>
             </div>
             <div>
-              <h2 className="text-2xl lg:text-3xl font-black tracking-tight">{myName}</h2>
-              <p className="text-secondary-900/60 font-bold text-sm uppercase tracking-wider">Placa: {myPlate}</p>
+              <h2 className="text-2xl lg:text-3xl font-black tracking-tight uppercase italic">{myName}</h2>
+              <p className="text-white/80 font-bold text-sm uppercase tracking-wider">Placa: {myPlate}</p>
             </div>
           </div>
-          <div className="px-4 py-1.5 bg-secondary-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+          <div className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl border border-white/10">
              Conductor Activo
           </div>
         </div>
 
         <div className="max-w-4xl mx-auto mt-8">
-          <div className="card-navy rounded-[2.5rem] p-6 lg:p-8">
+          <div className="card-base rounded-[2.5rem] p-6 lg:p-8">
             <div className="flex items-center justify-between mb-6">
                <h4 className="text-[10px] lg:text-xs font-black text-primary-500 uppercase tracking-[0.2em]">Resumen del día</h4>
                <Activity size={16} className="text-primary-500" />
@@ -353,15 +369,15 @@ function DriverOverview({ stats, routeStats, schedules, drivers, reservations = 
             <div className="grid grid-cols-3 gap-4 text-center">
               <div className="space-y-1">
                 <span className="text-xl lg:text-2xl font-black text-green-500">{stats?.todayReservations || 0}</span>
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Reservas</p>
+                <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Reservas</p>
               </div>
-              <div className="space-y-1 border-x border-white/5">
+              <div className="space-y-1 border-x border-slate-100 dark:border-white/5">
                 <span className="text-xl lg:text-2xl font-black text-primary-500">{currentDriverData.asientosLibres || 13}</span>
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Libres</p>
+                <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Libres</p>
               </div>
               <div className="space-y-1">
                 <span className="text-xl lg:text-2xl font-black text-amber-500">{formatCurrency(stats?.totalRevenue || 0)}</span>
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Ingresos</p>
+                <p className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase tracking-widest">Ingresos</p>
               </div>
             </div>
           </div>
@@ -371,23 +387,23 @@ function DriverOverview({ stats, routeStats, schedules, drivers, reservations = 
       <div className="max-w-4xl mx-auto space-y-12 pb-10">
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
-             <div className="flex items-center gap-3 text-white">
+             <div className="flex items-center gap-3 text-[#061426] dark:text-white">
                 <CheckCircle2 className="text-primary-500" size={18} />
-                <h3 className="text-lg font-black uppercase tracking-tight leading-none">Confirmar Reservas</h3>
+                <h3 className="text-lg font-black uppercase tracking-tight leading-none italic">Confirmar Reservas</h3>
              </div>
              <span className="bg-primary-500 text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg shadow-primary-500/20">{pendingReservations.length}</span>
           </div>
           {pendingReservations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
               {pendingReservations.map(res => (
-                <div key={res.id} className="card-navy p-6 rounded-[2rem] flex items-center justify-between group">
+                <div key={res.id} className="card-base p-6 rounded-[2rem] flex items-center justify-between group">
                   <div className="flex items-center gap-4 text-left">
-                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 group-hover:text-primary-500 transition-colors">
+                    <div className="w-12 h-12 bg-slate-50 dark:bg-white/5 rounded-2xl flex items-center justify-center text-slate-400 dark:text-white/20 group-hover:text-primary-500 transition-colors">
                       <Ticket size={24} />
                     </div>
                     <div>
-                      <p className="text-sm font-black text-white">Asiento #{res.asientoReservado}</p>
-                      <p className="text-[10px] font-bold text-white/40 uppercase">Pasajero: {res.nombreUsuario || 'User'}</p>
+                      <p className="text-sm font-black text-[#061426] dark:text-white">Asiento #{res.asientoReservado}</p>
+                      <p className="text-[10px] font-bold text-slate-400 dark:text-white/40 uppercase">Pasajero: {res.nombreUsuario || 'User'}</p>
                     </div>
                   </div>
                   <button className="px-6 py-2.5 bg-green-500 text-white text-[10px] font-black uppercase rounded-xl shadow-lg shadow-green-500/20 active:scale-95 transition-all">
@@ -397,16 +413,16 @@ function DriverOverview({ stats, routeStats, schedules, drivers, reservations = 
               ))}
             </div>
           ) : (
-            <div className="card-navy p-12 rounded-[2.5rem] flex items-center justify-center text-center mx-2 opacity-50">
-               <p className="text-white/40 text-xs font-bold uppercase italic tracking-widest">Sin reservas activas</p>
+            <div className="card-base p-12 rounded-[2.5rem] flex items-center justify-center text-center mx-2 opacity-60">
+               <p className="text-slate-400 dark:text-white/40 text-xs font-bold uppercase italic tracking-widest">Sin reservas activas</p>
             </div>
           )}
         </div>
 
         <div className="space-y-6">
-           <div className="flex items-center gap-3 px-2 text-white">
+           <div className="flex items-center gap-3 px-2 text-[#061426] dark:text-white">
               <Calendar className="text-primary-500" size={18} />
-              <h3 className="text-lg font-black uppercase tracking-tight">Mi Itinerario</h3>
+              <h3 className="text-lg font-black uppercase tracking-tight italic">Mi Itinerario</h3>
            </div>
            <ScheduleTable schedules={mySchedules} drivers={drivers} role={role} onManage={onManage} />
         </div>
@@ -420,7 +436,7 @@ function SummaryMetric({ label, value, icon, color }) {
     <div className="flex flex-col items-center text-center space-y-1">
       {icon}
       <span className={`text-xl lg:text-2xl font-black ${color}`}>{value}</span>
-      <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{label}</span>
+      <span className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest">{label}</span>
     </div>
   );
 }
@@ -434,17 +450,17 @@ function Overview({ stats, routeStats, role }) {
       <div className={`grid grid-cols-1 md:grid-cols-2 ${isAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-3'} gap-6`}>
         {isAdmin && (
           <>
-            <StatCard label="Usuarios Activos" value={stats.totalUsers} icon={<Users className="text-blue-400" />} />
-            <StatCard label="Dueños de Flota" value={stats.totalOwners} icon={<Users className="text-amber-400" />} />
+            <StatCard label="Usuarios Activos" value={stats.totalUsers} icon={<Users className="text-blue-500" />} />
+            <StatCard label="Dueños de Flota" value={stats.totalOwners} icon={<Users className="text-amber-500" />} />
           </>
         )}
-        <StatCard label="En Turno" value={stats.activeDrivers} icon={<Bus className="text-green-400" />} />
-        <StatCard label="Reservas Hoy" value={stats.todayReservations} icon={<Calendar className="text-purple-400" />} />
-        <StatCard label="Ingresos" value={formatCurrency(stats.totalRevenue)} icon={<Activity className="text-primary-400" />} />
+        <StatCard label="En Turno" value={stats.activeDrivers} icon={<Bus className="text-green-500" />} />
+        <StatCard label="Reservas Hoy" value={stats.todayReservations} icon={<Calendar className="text-purple-500" />} />
+        <StatCard label="Ingresos" value={formatCurrency(stats.totalRevenue)} icon={<Activity className="text-primary-500" />} />
       </div>
 
       <div className="space-y-6">
-        <h3 className="font-black text-xl uppercase tracking-tighter ml-2">Estado por ruta</h3>
+        <h3 className="font-black text-xl uppercase tracking-tighter ml-2 text-[#061426] dark:text-white italic">Estado por ruta</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <RouteStatCard name="Nátaga → La Plata" reservations={routeStats.toLaPlata.reservations} available={routeStats.toLaPlata.seats} color="border-orange-500" />
           <RouteStatCard name="La Plata → Nátaga" reservations={routeStats.toNataga.reservations} available={routeStats.toNataga.seats} color="border-secondary-400" />
@@ -456,17 +472,17 @@ function Overview({ stats, routeStats, role }) {
 
 function RouteStatCard({ name, reservations, available, color }) {
   return (
-    <div className={`card-navy p-6 rounded-[2.5rem] border-l-4 ${color} space-y-6`}>
-      <h4 className="text-[10px] font-black uppercase text-white/40 tracking-widest">{name}</h4>
+    <div className={`card-base p-6 rounded-[2.5rem] border-l-4 ${color} space-y-6 group hover:scale-[1.02] transition-transform`}>
+      <h4 className="text-[10px] font-black uppercase text-slate-400 dark:text-white/40 tracking-widest">{name}</h4>
       <div className="flex items-center justify-around">
         <div className="text-center">
-          <span className="text-2xl font-black text-white">{reservations}</span>
-          <p className="text-[9px] font-bold text-white/20 uppercase">Reservas</p>
+          <span className="text-2xl font-black text-[#061426] dark:text-white">{reservations}</span>
+          <p className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase">Reservas</p>
         </div>
-        <div className="w-px h-8 bg-white/5"></div>
+        <div className="w-px h-8 bg-slate-100 dark:bg-white/5"></div>
         <div className="text-center">
           <span className="text-2xl font-black text-green-500">{available}</span>
-          <p className="text-[9px] font-bold text-white/20 uppercase">Libres</p>
+          <p className="text-[9px] font-bold text-slate-400 dark:text-white/20 uppercase">Libres</p>
         </div>
       </div>
     </div>
@@ -481,16 +497,16 @@ function UserDirectory({ users = [] }) {
   const deletionPending = users.filter(u => u.solicitudBorrado === true);
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-12 pb-20 px-2">
       <div className="space-y-6">
-        <h3 className="text-xl font-black uppercase tracking-tighter ml-2">Pasajeros Activos ({activeUsers.length})</h3>
+        <h3 className="text-xl font-black uppercase tracking-tighter ml-2 text-[#061426] dark:text-white italic">Pasajeros Activos ({activeUsers.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {activeUsers.map(u => <UserCard key={u.id} user={u} />)}
         </div>
       </div>
       {deletionPending.length > 0 && (
         <div className="space-y-6">
-          <h3 className="text-xl font-black uppercase tracking-tighter text-red-500 ml-2">Solicitudes de Borrado ({deletionPending.length})</h3>
+          <h3 className="text-xl font-black uppercase tracking-tighter text-red-500 ml-2 italic">Solicitudes de Borrado ({deletionPending.length})</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {deletionPending.map(u => <UserCard key={u.id} user={u} />)}
           </div>
@@ -505,18 +521,18 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
   const inactive = drivers.filter(d => d.status !== 'active' || !d.horariosAsignados?.length);
 
   return (
-    <div className="space-y-10 pb-20">
-      <div className="flex items-center justify-between bg-[#061929] p-6 rounded-[2.5rem] border border-white/5">
-        <h3 className="text-xl font-black uppercase tracking-tighter">Gestión de Operadores</h3>
-        <button onClick={onAddDriver} className="px-6 py-4 bg-primary-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-primary-500/20">Registrar Conductor</button>
+    <div className="space-y-10 pb-20 px-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between card-base p-6 rounded-[2.5rem] gap-4">
+        <h3 className="text-xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Gestión de Operadores</h3>
+        <button onClick={onAddDriver} className="px-6 py-4 bg-primary-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg shadow-primary-500/20 active:scale-95 transition-all">Registrar Conductor</button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         <div className="space-y-6">
-          <h4 className="font-black uppercase text-xs text-green-500 ml-2">En Ruta ({active.length})</h4>
+          <h4 className="font-black uppercase text-xs text-green-500 ml-2 tracking-widest">En Ruta ({active.length})</h4>
           {active.map(d => <DriverCard key={d.id} driver={d} onEdit={onEditDriver} />)}
         </div>
         <div className="space-y-6">
-          <h4 className="font-black uppercase text-xs text-white/20 ml-2">Fuera de Servicio ({inactive.length})</h4>
+          <h4 className="font-black uppercase text-xs text-slate-400 dark:text-white/20 ml-2 tracking-widest">Fuera de Servicio ({inactive.length})</h4>
           {inactive.map(d => <DriverCard key={d.id} driver={d} onEdit={onEditDriver} />)}
         </div>
       </div>
@@ -527,30 +543,30 @@ function DriverDirectory({ drivers, onEditDriver, onAddDriver }) {
 function ProfileDirectory({ user, role }) {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div className="card-navy p-10 rounded-[3rem] flex flex-col md:flex-row items-center gap-10">
-        <div className="w-32 h-32 bg-slate-100 rounded-[3rem] flex items-center justify-center text-secondary-900 font-black text-5xl shadow-2xl border-4 border-white/10">
+      <div className="card-base p-10 rounded-[3rem] flex flex-col md:flex-row items-center gap-10">
+        <div className="w-32 h-32 bg-slate-100 dark:bg-white/10 rounded-[3rem] flex items-center justify-center text-[#061426] dark:text-white font-black text-5xl shadow-2xl border-4 border-white/10">
           {user.email?.substring(0, 1).toUpperCase()}
         </div>
         <div className="text-center md:text-left space-y-4">
-          <h2 className="text-4xl font-black tracking-tight">{user.displayName || 'Usuario Ruta-Go'}</h2>
+          <h2 className="text-4xl font-black tracking-tight text-[#061426] dark:text-white uppercase italic">{user.displayName || 'Usuario Ruta-Go'}</h2>
           <div className="flex flex-wrap justify-center md:justify-start gap-4">
-             <span className="px-6 py-2 bg-white/5 text-white/60 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-white/5"><Mail size={14} /> {user.email}</span>
-             <span className="px-6 py-2 bg-primary-500/10 text-primary-500 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-primary-500/20">Rango: {role?.type}</span>
+             <span className="px-6 py-2 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-white/60 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-100 dark:border-white/5 shadow-sm"><Mail size={14} /> {user.email}</span>
+             <span className="px-6 py-2 bg-primary-500/10 text-primary-500 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border border-primary-500/20 shadow-sm">Rango: {role?.type}</span>
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="card-navy p-8 rounded-[2.5rem] space-y-6">
-           <h3 className="font-black uppercase text-xs tracking-widest flex items-center gap-3"><Settings className="text-primary-500" size={18} /> Seguridad</h3>
-           <button className="w-full text-left p-6 bg-white/5 hover:bg-white/10 rounded-[2rem] transition-all flex items-center justify-between group">
-              <div><p className="text-sm font-black">Cambiar Contraseña</p><p className="text-[10px] text-white/40">Actualiza tus credenciales</p></div>
-              <ChevronRight size={18} className="text-white/20 group-hover:text-primary-500" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2 md:px-0">
+        <div className="card-base p-8 rounded-[2.5rem] space-y-6">
+           <h3 className="font-black uppercase text-xs tracking-widest flex items-center gap-3 text-[#061426] dark:text-white"><Settings className="text-primary-500" size={18} /> Seguridad</h3>
+           <button className="w-full text-left p-6 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-[2rem] transition-all flex items-center justify-between group shadow-inner">
+              <div><p className="text-sm font-black text-[#061426] dark:text-white">Cambiar Contraseña</p><p className="text-[10px] text-slate-400 dark:text-white/40 uppercase font-bold tracking-tighter">Actualiza tus credenciales</p></div>
+              <ChevronRight size={18} className="text-slate-300 dark:text-white/20 group-hover:text-primary-500" />
            </button>
         </div>
-        <div className="bg-red-500/5 p-8 rounded-[2.5rem] border border-red-500/10 space-y-6 text-center md:text-left">
-           <h3 className="font-black text-red-500 uppercase text-xs tracking-widest">Borrar Cuenta</h3>
-           <p className="text-[11px] text-red-500/40 font-medium">Todos tus datos entrarán en periodo de gracia de 30 días.</p>
-           <button className="w-full py-5 bg-red-500/10 border-2 border-red-500/20 text-red-500 font-black rounded-[2rem] text-[10px] uppercase hover:bg-red-500 hover:text-white transition-all">Eliminar permanentemente</button>
+        <div className="bg-red-50 dark:bg-red-500/5 p-8 rounded-[2.5rem] border border-red-100 dark:border-red-500/10 space-y-6 text-center md:text-left">
+           <h3 className="font-black text-red-600 dark:text-red-500 uppercase text-xs tracking-widest">Borrar Cuenta</h3>
+           <p className="text-[11px] text-red-700/60 dark:text-red-500/40 font-medium">Todos tus datos entrarán en periodo de gracia de 30 días.</p>
+           <button className="w-full py-5 bg-red-100 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 font-black rounded-[2rem] text-[10px] uppercase hover:bg-red-600 dark:hover:bg-red-500 hover:text-white transition-all shadow-sm">Eliminar permanentemente</button>
         </div>
       </div>
     </div>
@@ -561,32 +577,32 @@ function HistoryDirectory({ reservations, role }) {
   const list = reservations.sort((a, b) => (b.reservationDate || 0) - (a.reservationDate || 0));
   return (
     <div className="space-y-10 pb-20 px-2">
-      <div className="flex items-center justify-between border-b border-white/5 pb-6">
-        <h3 className="text-2xl font-black uppercase tracking-tighter">Historial de Reservas</h3>
-        <span className="px-4 py-1.5 bg-white/5 text-white/40 rounded-full text-[10px] font-black uppercase">{list.length} Registros</span>
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-6">
+        <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Historial de Reservas</h3>
+        <span className="px-4 py-1.5 bg-white dark:bg-white/5 text-slate-400 dark:text-white/40 rounded-full text-[10px] font-black uppercase shadow-sm border border-slate-100 dark:border-none">{list.length} Registros</span>
       </div>
       {list.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map(res => (
-            <div key={res.id} className="card-navy p-8 rounded-[2.5rem] hover:ring-2 ring-primary-500/30 transition-all group relative overflow-hidden">
+            <div key={res.id} className="card-base p-8 rounded-[2.5rem] hover:ring-2 ring-primary-500/30 group relative overflow-hidden">
                <div className="flex items-center justify-between mb-8">
-                  <div className="p-4 bg-white/5 rounded-2xl text-white/20 group-hover:text-primary-500 transition-colors"><Ticket size={28} /></div>
-                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${ (res.estadoReserva || res.reservationStatus) === 'Confirmada' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500' }`}>
+                  <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl text-slate-300 dark:text-white/20 group-hover:text-primary-500 transition-colors shadow-inner"><Ticket size={28} /></div>
+                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${ (res.estadoReserva || res.reservationStatus) === 'Confirmada' ? 'badge-success' : 'badge-error' }`}>
                     {res.estadoReserva || res.reservationStatus}
                   </span>
                </div>
                <div className="space-y-6">
-                  <div><p className="text-[10px] text-white/20 font-black uppercase tracking-widest mb-1">Ruta</p><p className="text-lg font-black">{res.origen || 'La Plata'} ➔ {res.destino || 'Nátaga'}</p></div>
+                  <div><p className="text-[10px] text-slate-400 dark:text-white/20 font-black uppercase tracking-widest mb-1">Ruta</p><p className="text-lg font-black text-[#061426] dark:text-white italic truncate">{res.origen || 'La Plata'} ➔ {res.destino || 'Nátaga'}</p></div>
                   <div className="grid grid-cols-2">
-                     <div><p className="text-[10px] text-white/20 font-black uppercase tracking-widest mb-1">Asiento</p><p className="text-xl font-black">#{res.asientoReservado}</p></div>
-                     <div className="text-right"><p className="text-[10px] text-white/20 font-black uppercase tracking-widest mb-1">Fecha</p><p className="text-sm font-black">{res.travelDate ? new Date(res.travelDate).toLocaleDateString() : '--/--/--'}</p></div>
+                     <div><p className="text-[10px] text-slate-400 dark:text-white/20 font-black uppercase tracking-widest mb-1">Asiento</p><p className="text-xl font-black text-[#061426] dark:text-white">#{res.asientoReservado}</p></div>
+                     <div className="text-right"><p className="text-[10px] text-slate-400 dark:text-white/20 font-black uppercase tracking-widest mb-1">Fecha</p><p className="text-sm font-black text-[#061426] dark:text-white">{res.travelDate ? new Date(res.travelDate).toLocaleDateString() : '--/--/--'}</p></div>
                   </div>
                </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="h-96 flex flex-col items-center justify-center text-white/10 italic"><History size={64} className="mb-4 opacity-50" /><p>No hay actividad registrada</p></div>
+        <div className="h-96 flex flex-col items-center justify-center text-slate-300 dark:text-white/10 italic"><History size={64} className="mb-4 opacity-50" /><p>No hay actividad registrada</p></div>
       )}
     </div>
   );
@@ -600,17 +616,19 @@ function ScheduleDirectory({ schedules, drivers, role, onManage }) {
 
   return (
     <div className="space-y-10 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 px-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 dark:border-white/5 pb-8 px-2">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500"><Clock size={28} /></div>
-          <h3 className="text-2xl font-black uppercase tracking-tighter">Planilla de Despachos</h3>
+          <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500 shadow-sm"><Clock size={28} /></div>
+          <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Planilla de Despachos</h3>
         </div>
-        <div className="flex bg-[#061929] p-1 rounded-2xl border border-white/5">
-          <button onClick={() => setActiveRoute('toLaPlata')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-2xl' : 'text-white/40'}`}>Nátaga ➔ LP</button>
-          <button onClick={() => setActiveRoute('toNataga')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-2xl' : 'text-white/40'}`}>LP ➔ Nátaga</button>
+        <div className="flex bg-white dark:bg-[#061929] p-1 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm transition-colors">
+          <button onClick={() => setActiveRoute('toLaPlata')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toLaPlata' ? 'bg-primary-500 text-white shadow-2xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600'}`}>Nátaga ➔ LP</button>
+          <button onClick={() => setActiveRoute('toNataga')} className={`px-8 py-4 rounded-xl text-[10px] font-black uppercase transition-all ${activeRoute === 'toNataga' ? 'bg-primary-500 text-white shadow-2xl' : 'text-slate-400 dark:text-white/40 hover:text-slate-600'}`}>LP ➔ Nátaga</button>
         </div>
       </div>
-      <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
+      <div className="px-2">
+        <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} />
+      </div>
     </div>
   );
 }

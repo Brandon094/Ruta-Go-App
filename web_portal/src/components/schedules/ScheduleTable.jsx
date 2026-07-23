@@ -30,7 +30,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage }) {
   const nextTripId = getNextTripId();
 
   return (
-    <div className="space-y-4 px-2">
+    <div className="space-y-4">
       {schedules.length > 0 ? (
         schedules.map((schedule) => (
           <ScheduleCard
@@ -43,9 +43,9 @@ export function ScheduleTable({ schedules, drivers, role, onManage }) {
           />
         ))
       ) : (
-        <div className="py-20 text-center space-y-4 opacity-20">
-          <Clock size={48} className="mx-auto" />
-          <p className="font-black uppercase tracking-widest text-xs">Sin horarios disponibles</p>
+        <div className="py-20 text-center space-y-4 opacity-30">
+          <Clock size={48} className="mx-auto text-slate-400" />
+          <p className="font-black uppercase tracking-widest text-xs text-slate-500 dark:text-white">Sin horarios disponibles</p>
         </div>
       )}
     </div>
@@ -62,7 +62,7 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
   const isExternal = role?.type === 'OWNER' && !drivers.some(d => d.id === schedule.conductorId);
 
   return (
-    <div className={`card-navy rounded-[2.5rem] p-5 md:p-6 transition-all duration-500 group relative overflow-hidden ${isNext ? 'ring-2 ring-primary-500/50' : ''}`}>
+    <div className={`card-base rounded-[2.5rem] p-5 md:p-6 transition-all duration-500 group relative overflow-hidden ${isNext ? 'ring-2 ring-primary-500 shadow-orange-500/10' : ''}`}>
 
       {/* Badge Siguiente */}
       {isNext && (
@@ -77,23 +77,27 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
 
         {/* 🕒 Círculo de Tiempo */}
         <div className="relative flex-shrink-0">
-           <div className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-colors duration-500 ${isNext ? 'border-primary-500 shadow-[0_0_15px_rgba(255,109,0,0.3)]' : 'border-primary-500/30'}`}>
-              <span className="text-lg font-black text-white leading-none">{timeStr}</span>
+           <div className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-colors duration-500 shadow-inner ${
+             isNext
+              ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10'
+              : 'border-slate-100 dark:border-white/5 bg-white dark:bg-white/5'
+           }`}>
+              <span className={`text-lg font-black leading-none ${isNext ? 'text-primary-600 dark:text-primary-500' : 'text-slate-700 dark:text-white'}`}>{timeStr}</span>
               <span className="text-[10px] font-black text-primary-500 uppercase mt-1">{ampm}</span>
            </div>
         </div>
 
         {/* ℹ️ Info Central */}
         <div className="flex-1 min-w-0 space-y-2">
-          <h4 className="text-sm md:text-base font-black text-white tracking-tight truncate uppercase">
+          <h4 className="text-sm md:text-base font-black text-[#061426] dark:text-white tracking-tight truncate uppercase italic">
             {schedule.ruta}
           </h4>
 
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-navy-light">
+            <div className="flex items-center gap-2">
                <Bus size={14} className="text-primary-500" />
-               <span className="text-[11px] font-bold uppercase tracking-tight">
-                 {isFull ? 'Agotado' : `${available} disponibles`}
+               <span className={`text-[11px] font-bold uppercase tracking-tight ${isFull ? 'text-red-500' : 'text-slate-500 dark:text-[#B5C5CD]'}`}>
+                 {isFull ? 'Vehículo Lleno' : `${available} disponibles`}
                </span>
             </div>
 
@@ -104,14 +108,14 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
           </div>
 
           <div className="flex items-center gap-3 pt-1">
-             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isFull ? 'bg-red-500/20 text-red-500' : 'bg-green-500/10 text-green-500 border border-green-500/20'}`}>
-               {isFull ? 'Lleno' : 'Disponible'}
+             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${isFull ? 'badge-error' : 'badge-success'}`}>
+               {isFull ? 'Completado' : 'Disponible'}
              </span>
              {!(role?.type === 'OWNER' && isExternal) && driver && (
-              <div className="flex items-center gap-2 text-white/30 italic">
+              <div className="flex items-center gap-2 text-slate-400 dark:text-white/30 italic">
                  <User size={12} />
-                 <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[80px]">
-                   {isMe ? 'Tú' : driver.nombre}
+                 <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[100px]">
+                   {isMe ? 'Tú manejas' : driver.nombre}
                  </span>
               </div>
             )}
@@ -123,14 +127,14 @@ function ScheduleCard({ schedule, drivers, role, onManage, isNext }) {
            {isMe && onManage ? (
              <button
                onClick={() => onManage(schedule)}
-               className="w-14 h-14 bg-primary-500 text-white rounded-full shadow-2xl shadow-primary-500/40 hover:bg-orange-600 transition-all transform active:scale-90 flex items-center justify-center group/btn"
+               className="w-14 h-14 bg-primary-500 text-white rounded-full shadow-2xl shadow-primary-500/40 hover:bg-primary-600 transition-all transform active:scale-90 flex items-center justify-center group/btn"
              >
                <Plus size={28} className="group-hover/btn:rotate-90 transition-transform" />
              </button>
            ) : role?.type === 'PASSENGER' ? (
              <button
                onClick={() => onManage && onManage(schedule)}
-               className="flex items-center gap-2 px-6 py-3 bg-[#061929] text-white border border-white/10 rounded-2xl shadow-xl hover:bg-black transition-all active:scale-95 font-black text-[10px] uppercase tracking-widest"
+               className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-secondary-800 text-[#061426] dark:text-white border border-[#061426] dark:border-white/10 rounded-2xl shadow-xl hover:bg-primary-500 hover:text-white dark:hover:bg-black transition-all active:scale-95 font-black text-[10px] uppercase tracking-widest"
              >
                Reservar <ChevronRight size={14} />
              </button>
