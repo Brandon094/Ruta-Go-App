@@ -1,36 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Clock, Trash2, AlertCircle, Loader2, User, Hash, Shield } from 'lucide-react';
+import { X, Save, Clock, Trash2, AlertCircle, Loader2, User, Hash, Shield, Briefcase } from 'lucide-react';
 import { driverService } from '../../services/driverService';
 import { Input } from '../ui/Input';
+import { ref, get, update } from "firebase/database";
+import { db } from '../../firebase';
 
 /**
  * 🛠️ Component: EditDriverModal
  *
  * Interfaz de gestión avanzada para administradores.
  */
-export function EditDriverModal({ driver, onClose, onRefresh }) {
+export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [], users = [] }) {
   const [loading, setLoading] = useState(false);
   const [allSchedules, setAllSchedules] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState(driver?.horariosAsignados || []);
   const [formData, setFormData] = useState({
     nombre: driver?.nombre || '',
     placaVehiculo: driver?.placaVehiculo || '',
-    status: driver?.status || 'active'
+    status: driver?.status || 'active',
+    ownerId: ''
   });
+
+  const isAdmin = role?.type === 'ADMIN';
+
+  // Obtener perfiles de dueños aprobados para el selector
+  const approvedOwners = owners
+    .filter(o => o.status === true)
+    .map(o => ({
+      id: o.id,
+      nombre: users.find(u => u.id === o.id)?.nombre || 'Socio sin nombre'
+    }));
 
   useEffect(() => {
     let isMounted = true;
-    const fetchSchedules = async () => {
+    const fetchData = async () => {
       try {
-        const data = await driverService.getAllSchedules();
-        if (isMounted) setAllSchedules(data);
+        // 1. Cargar horarios
+        const schedules = await driverService.getAllSchedules();
+        if (isMounted) setAllSchedules(schedules);
+
+        // 2. Cargar dueño actual del vehículo
+        const vehicleId = driver.vehiculoId || driver.placaVehiculo;
+        if (vehicleId) {
+          const vSnap = await get(ref(db, `vehiculos/${vehicleId}`));
+          if (vSnap.exists() && isMounted) {
+            setFormData(prev => ({ ...prev, ownerId: vSnap.val().ownerId || '' }));
+          }
+        }
       } catch (err) {
-        console.error("Error cargando horarios:", err);
+        console.error("Error cargando datos de edición:", err);
       }
     };
-    fetchSchedules();
+    fetchData();
     return () => { isMounted = false; };
-  }, []);
+  }, [driver]);
 
   if (!driver) return null;
 
@@ -44,10 +67,23 @@ export function EditDriverModal({ driver, onClose, onRefresh }) {
     e.preventDefault();
     setLoading(true);
     try {
+      // 1. Actualizar conductor
       await driverService.updateDriver(driver.id, {
-        ...formData,
+        nombre: formData.nombre,
+        placaVehiculo: formData.placaVehiculo,
+        vehiculoId: formData.placaVehiculo,
+        status: formData.status,
         horariosAsignados: selectedSchedules
       });
+
+      // 2. Si es ADMIN, actualizar dueño del vehículo
+      if (isAdmin && formData.ownerId) {
+        const vehicleId = driver.vehiculoId || driver.placaVehiculo;
+        await update(ref(db, `vehiculos/${vehicleId}`), {
+          ownerId: formData.ownerId
+        });
+      }
+
       if (onRefresh) onRefresh();
       onClose();
     } catch (error) {
@@ -124,6 +160,27 @@ export function EditDriverModal({ driver, onClose, onRefresh }) {
                   </select>
                 </div>
               </div>
+
+              {isAdmin && (
+                <div className="space-y-1.5 group">
+                  <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">Asignar Dueño (Root)</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
+                      <Briefcase size={18} />
+                    </div>
+                    <select
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all text-sm italic"
+                      value={formData.ownerId}
+                      onChange={(e) => setFormData({...formData, ownerId: e.target.value})}
+                    >
+                      <option value="">Seleccionar Socio...</option>
+                      {approvedOwners.map(owner => (
+                        <option key={owner.id} value={owner.id} className="bg-white dark:bg-secondary-800">{owner.nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-5">

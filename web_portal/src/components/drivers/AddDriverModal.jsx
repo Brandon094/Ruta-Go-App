@@ -8,7 +8,7 @@ import { Input } from '../ui/Input';
  *
  * Permite registrar un nuevo conductor buscando su perfil previo en la base de usuarios.
  */
-export function AddDriverModal({ onClose, users, currentUser, role }) {
+export function AddDriverModal({ onClose, users, owners, currentUser, role }) {
   const [loading, setLoading] = useState(false);
   const [foundUser, setFoundUser] = useState(null);
 
@@ -20,6 +20,16 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
     capacidad: 13,
     ownerId: role?.type === 'OWNER' ? currentUser.uid : ''
   });
+
+  const isAdmin = role?.type === 'ADMIN';
+
+  // Obtener perfiles de dueños aprobados para el selector
+  const approvedOwners = owners
+    .filter(o => o.status === true)
+    .map(o => ({
+      id: o.id,
+      nombre: users.find(u => u.id === o.id)?.nombre || 'Socio sin nombre'
+    }));
 
   // Efecto de búsqueda en tiempo real
   useEffect(() => {
@@ -154,8 +164,26 @@ export function AddDriverModal({ onClose, users, currentUser, role }) {
               <Input label="Modelo" icon={<Bus size={18} />} placeholder="Ej: Nissan Frontier" value={formData.modelo} onChange={(val) => setFormData({...formData, modelo: val})} required />
               <Input label="Capacidad" icon={<Settings size={18} />} type="number" value={formData.capacidad} onChange={(val) => setFormData({...formData, capacidad: val})} required />
 
-              {role?.type === 'ADMIN' && (
-                 <Input label="ID del Dueño (Opcional)" icon={<User size={18} />} placeholder="UID del dueño" value={formData.ownerId} onChange={(val) => setFormData({...formData, ownerId: val})} />
+              {isAdmin && (
+                 <div className="space-y-1.5 group">
+                   <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">Asignar Dueño de Flota</label>
+                   <div className="relative">
+                     <div className="absolute left-5 top-1/2 -translate-y-1/2 text-orange-500 group-focus-within:scale-110 transition-transform pointer-events-none flex items-center justify-center">
+                       <User size={18} />
+                     </div>
+                     <select
+                       className="block w-full pl-14 pr-6 py-5 rounded-2xl font-bold border transition-all shadow-inner outline-none bg-slate-50 dark:bg-[#0A1F30] text-slate-800 dark:text-white border-slate-100 dark:border-white/5 focus:ring-2 ring-orange-500/20 focus:border-orange-500 appearance-none text-sm"
+                       value={formData.ownerId}
+                       onChange={(e) => setFormData({...formData, ownerId: e.target.value})}
+                       required
+                     >
+                       <option value="">Seleccionar Socio...</option>
+                       {approvedOwners.map(owner => (
+                         <option key={owner.id} value={owner.id} className="bg-white dark:bg-[#0A1F30]">{owner.nombre}</option>
+                       ))}
+                     </select>
+                   </div>
+                 </div>
               )}
             </div>
           </div>

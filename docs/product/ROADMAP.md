@@ -23,24 +23,36 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [x] **👑 Go Business Dashboard**: Módulo para dueños con aislamiento de datos, monitor de flota e ingresos en tiempo real.
 *   [x] **⚖️ Cumplimiento Legal Web**: Integración de Términos, Privacidad y Derecho al Olvido en el portal.
 *   [x] **🚀 Activación Instantánea**: Flujo de registro automatizado para socios y administradores.
+*   [x] **💎 Web Refactor & UI Mirror (v1.5.1)**:
+    *   Arquitectura Singleton (`FirebaseManager`) y modularización de hooks.
+    *   Estrategia de navegación dual (Mobile Mirror para Operativos / Sidebar para Gestión).
+    *   Sincronización de capacidad real y auto-scroll inteligente.
+    *   Módulo independiente de Gestión de Socios para Admin Root.
 
 ---
 
-## 🎯 Fase 3: Fidelización y Monetización Premium (Prioridad Actual)
-*Objetivo: Generación de ingresos fuertes mediante el modelo de suscripción y fidelidad.*
+## 🎯 Fase 3: Operación Web Total y Monetización (Prioridad Actual)
+*Objetivo: Alcanzar paridad de funciones con la App móvil y comenzar la captura de valor.*
 
-1.  **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles (Plata/Oro/Diamante) y redención de puntos por viajes.
-2.  **📉 SaaS Contable Premium para Dueños (Suscripción)**:
-    *   **Cálculo Neto Automatizado**: Ingreso - (Comisión Conductor + Gasto Operativo).
-    *   **Módulo de Egresos Detallado**: Control de combustible, mantenimiento y repuestos.
-    *   **Analítica Avanzada**: Gráficas de rentabilidad mensual y comparativas de rendimiento.
-3.  **🔔 Alertas Legales Inteligentes**: Notificaciones Push para SOAT, Tecno y Seguros con cuenta regresiva en el Dashboard.
-4.  **💳 Pasarela de Pagos Integrada**: Integración con PSE, Nequi y Daviplata para pagos electrónicos de pasajes.
-5.  **♿ Accesibilidad 360**: Modo de alto contraste y fuentes optimizadas para toda la suite.
+### 🛠️ 1. Motor de Reservas & Notificaciones
+*   [ ] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone.
+*   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web.
+
+### 👑 2. Gobernanza Root Pro (Control Maestro)
+*   [ ] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
+*   [ ] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
+*   [ ] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
+
+### 🎫 3. Experiencia de Usuario "Premium"
+*   [ ] **📱 Suite de Viaje en Historial**:
+    *   Visualización de **Tiquete Digital** (diseño espejo de la App).
+    *   Módulo de **Chat en vivo** para coordinar con el conductor.
+    *   Sistema de **Calificación de Viaje** (1-5 estrellas).
+*   [ ] **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles y redención de puntos.
 
 ---
 
-## 📦 Fase 4: Diversificación y Logística (Largo Plazo)
+## 📉 Fase 4: SaaS Contable y Diversificación (Largo Plazo)
 *Objetivo: Solución integral de movilidad regional y control definitivo del flujo de paquetería local.*
 
 1.  **🚚 Módulo de Encomiendas "Ruta-Go Cargo"**:

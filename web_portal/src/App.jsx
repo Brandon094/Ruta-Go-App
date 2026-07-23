@@ -192,7 +192,7 @@ function App() {
           ) : activeTab === 'drivers' ? (
             <DriverDirectory drivers={drivers} onEditDriver={(driver) => setEditingDriver(driver)} onAddDriver={() => setIsAddingDriver(true)} />
           ) : activeTab === 'users' ? (
-            <UserDirectory users={usersList} />
+            <UserDirectory users={usersList} role={role} />
           ) : activeTab === 'schedules' ? (
             <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
           ) : activeTab === 'manual' ? (
@@ -211,8 +211,8 @@ function App() {
         )}
       </main>
 
-      {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} />}
-      {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} currentUser={user} role={role} />}
+      {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} role={role} owners={owners} users={usersList} />}
+      {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} currentUser={user} role={role} />}
       {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} />}
     </div>
   );
