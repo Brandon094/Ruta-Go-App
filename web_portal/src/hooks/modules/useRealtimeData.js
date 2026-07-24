@@ -13,6 +13,7 @@ export const useRealtimeData = (user, role) => {
     owners: [],
     vehicles: [],
     schedules: [],
+    availability: {},
     reservations: [],
     prices: {},
     loading: true
@@ -77,6 +78,14 @@ export const useRealtimeData = (user, role) => {
       }
     });
     unsubs.push(hSub);
+
+    // --- 💺 DISPONIBILIDAD (Vital para actualización de cupos en tiempo real) ---
+    const dispSub = onValue(firebaseManager.getRef('disponibilidadAsientos'), (snap) => {
+      if (snap.exists() && isMounted) {
+        setRaw(prev => ({ ...prev, availability: snap.val() }));
+      }
+    });
+    unsubs.push(dispSub);
 
     // --- 💰 PRECIOS ---
     const pSub = onValue(firebaseManager.getRef('precios'), (snap) => {
@@ -166,8 +175,10 @@ export const useRealtimeData = (user, role) => {
       const vehicle = raw.vehicles.find(v => v.id === vId || v.placa === vId);
       const capacity = vehicle?.capacidad || 13;
 
-      const dbTotal = s.totalAsientos || 0;
-      const avail = (dbTotal > 0) ? (s.asientosDisponibles ?? s.asientosLibres ?? capacity) : capacity;
+      // Unir datos de disponibilidad en tiempo real
+      const dInfo = raw.availability[s.id] || {};
+      const dbTotal = dInfo.totalAsientos || 0;
+      const avail = (dbTotal > 0) ? (dInfo.asientosDisponibles ?? capacity) : capacity;
       const total = dbTotal > 0 ? dbTotal : capacity;
       const resCount = Math.max(0, total - avail);
 
