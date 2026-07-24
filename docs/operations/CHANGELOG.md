@@ -14,16 +14,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Centro de Ayuda Enriquecido**: Guía del pasajero expandida con descripciones detalladas sobre itinerarios, puntos de fidelidad y Web App en iPhone.
 - **Ecosistema Firebase Singleton**: Implementación de la clase `FirebaseManager` para centralizar Auth, DB y Storage, garantizando una única instancia global espejo de la App Android.
 - **Módulo de Gestión de Socios**: Nueva interfaz dedicada para que el Administrador Root gestione aprobaciones y estados de los dueños de flota de forma independiente.
+- **Módulo de Flota Maestro**: Nueva interfaz de gestión de vehículos (`VehicleDirectory`) que permite registrar, editar y supervisar activos del holding de forma independiente a los conductores.
 - **Acceso Híbrido a Reservas**: Los Administradores y Dueños ahora pueden realizar reservas de viaje directamente desde su Sidebar sin salir de la interfaz de gestión.
 - **Librería de Átomos (UI Core)**: Creación del componente `Button.jsx` para estandarizar todas las acciones del portal bajo principios de Atomic Design.
 - **Selector de Dueños Pro**: Implementación de listas desplegables para asignar propietarios a conductores, eliminando la entrada manual de UIDs y reduciendo errores operativos.
 - **Panel de Moderación de Pasajeros**: Suite de herramientas para que el Administrador Root pueda **Banear, Inactivar o Borrar** cuentas de pasajeros directamente desde la web con diálogos de confirmación.
 
 ### Cambiado
+- **Desacoplamiento Vehículo-Conductor**: Refactorización profunda de la lógica de asignación. Ahora se pueden vincular conductores a vehículos existentes o registrar nuevos en un solo flujo inteligente.
 - **Navegación "Mobile Mirror"**: Los roles de Pasajero y Conductor ahora tienen una interfaz 100% despejada sin Sidebar, navegando exclusivamente mediante la barra inferior (Bottom Nav) para una experiencia idéntica a la App móvil.
 - **Navegación Administrativa Pura**: Los roles de Admin y Owner ahora utilizan exclusivamente el Sidebar, eliminando el Bottom Nav para evitar confusiones y optimizar el espacio de gestión.
 - **Header Inteligente**: Se eliminó el botón de menú para roles operativos, dejando el Header limpio y enfocado en la identidad y el perfil.
 - **Historial "Search-First"**: Reestructuración del header en el historial con barra de búsqueda permanente en la parte superior y chips de filtro debajo, optimizando el flujo de consulta.
+- **UI Enriquecida de Activos**: La tarjeta de vehículo (`VehicleCard`) ahora resuelve y muestra el nombre real del conductor asignado y detalles técnicos completos (Marca, Color, Capacidad).
 - **Arquitectura de Sincronización Modular**: El hook maestro `useRealtimeStats` ha sido desacoplado en motores especializados: `useRoleResolver` (Identidad) y `useRealtimeData` (Operación).
 - **Identidad Dinámica Prioritaria**: Optimización del flujo de carga para obtener nombres reales desde el nodo `/usuarios` antes de renderizar Dashboards administrativos.
 - **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`, `Button`) para eliminar redundancia y facilitar el mantenimiento.

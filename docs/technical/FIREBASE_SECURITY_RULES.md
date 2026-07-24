@@ -25,9 +25,10 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 *   **Verificación**: El portal web consulta este nodo para renderizar el Dashboard de Negocios o denegar el acceso.
 
 ### 🚗 Control de Activos (/vehiculos)
-*   **Propiedad Blindada**: La escritura en un vehículo está permitida solo si:
-    1. El `ownerId` del vehículo coincide con el `auth.uid` del solicitante.
-    2. El usuario es un Admin Root.
+*   **Propiedad Blindada**: La escritura en un vehículo está permitida bajo una jerarquía triple:
+    1. El **Dueño** (`ownerId`) puede gestionar su activo desde la web.
+    2. El **Conductor** (`driverId` / `conductorId`) puede actualizar datos técnicos desde la App móvil.
+    3. El **Admin Root** tiene control total.
 *   **Indexación**: Nodo indexado por `driverId` y `ownerId` para consultas eficientes.
 
 ### 🕒 Gestión de Horarios (/horarios)
