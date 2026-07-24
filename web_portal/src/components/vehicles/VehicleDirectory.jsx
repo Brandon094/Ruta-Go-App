@@ -4,7 +4,7 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { VehicleCard } from './VehicleCard';
 
-export function VehicleDirectory({ vehicles = [], onAdd, onEdit, onDelete, role }) {
+export function VehicleDirectory({ vehicles = [], drivers = [], onAdd, onEdit, onDelete, role }) {
   const [searchTerm, setSearchTerm] = useState('');
   const isAdmin = role?.type === 'ADMIN';
   const ownerId = role?.uid;
@@ -51,6 +51,7 @@ export function VehicleDirectory({ vehicles = [], onAdd, onEdit, onDelete, role 
             <VehicleCard
               key={v.id || v.placa}
               vehicle={v}
+              drivers={drivers}
               onEdit={onEdit}
               onDelete={onDelete}
               isAdmin={isAdmin}

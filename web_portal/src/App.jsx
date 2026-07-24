@@ -186,6 +186,7 @@ function App() {
           ) : activeTab === 'vehicles' ? (
             <VehicleDirectory
               vehicles={vehicles}
+              drivers={drivers}
               onAdd={() => setIsAddingVehicle(true)}
               onEdit={(v) => setEditingVehicle(v)}
               onDelete={(placa) => {
