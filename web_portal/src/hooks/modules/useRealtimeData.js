@@ -14,8 +14,9 @@ export const useRealtimeData = (user, role) => {
     vehicles: [],
     schedules: [],
     availability: {},
-    reservations: [],
     prices: {},
+    driverStats: {},
+    reservations: [],
     loading: true
   });
 
@@ -24,6 +25,7 @@ export const useRealtimeData = (user, role) => {
 
     let isMounted = true;
     const unsubs = [];
+    const today = new Date().toISOString().split('T')[0];
 
     // --- 👥 USUARIOS ---
     if (role.type === 'ADMIN' || role.type === 'OWNER') {
@@ -52,6 +54,16 @@ export const useRealtimeData = (user, role) => {
       }
     });
     unsubs.push(driversSub);
+
+    // --- 📊 ESTADÍSTICAS OPERATIVAS (Para el money del conductor) ---
+    if (role.type === 'DRIVER') {
+      const statsSub = onValue(firebaseManager.getRef(`estadisticas/${user.uid}/${today}`), (snap) => {
+        if (snap.exists() && isMounted) {
+          setRaw(prev => ({ ...prev, driverStats: snap.val() }));
+        }
+      });
+      unsubs.push(statsSub);
+    }
 
     // --- 🚗 VEHÍCULOS ---
     const vSub = onValue(firebaseManager.getRef('vehiculos'), (snap) => {
@@ -137,7 +149,7 @@ export const useRealtimeData = (user, role) => {
 
     // 3. Filtrar Reservas
     const filteredReservations = raw.reservations.filter(res => {
-      const resPlate = res.vehiculoId || res.vehiculoPlaca;
+      const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId;
       const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
       const resScheduleId = res.scheduleId || res.idHorario || res.horarioId;
       const isDriverMatch = userType === 'DRIVER' && (
@@ -151,14 +163,23 @@ export const useRealtimeData = (user, role) => {
 
     // 4. Calcular Estadísticas
     let totalRev = 0, confirmed = 0, canceled = 0, totalUserRes = 0;
+
+    // Si es conductor, priorizamos el nodo oficial de estadísticas del día
+    if (userType === 'DRIVER') {
+      totalRev = raw.driverStats?.ingresosDiarios || 0;
+    }
+
     filteredReservations.forEach(res => {
       const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-      const isOwned = userType === 'ADMIN' || ownedPlates.includes(res.vehiculoId || res.vehiculoPlaca);
+      const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId;
+      const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
       const isMyPassengerRes = userType === 'PASSENGER' && res.usuarioId === user.uid;
 
-      if (isOwned && (status === "confirmada" || status === "completada")) {
+      // Si es Admin/Owner, sumamos de las reservas filtradas
+      if ((userType === 'ADMIN' || userType === 'OWNER') && isOwned && (status === "confirmada" || status === "completada")) {
         totalRev += Number(res.precio || res.price || 0);
       }
+
       if (isMyPassengerRes) {
         totalUserRes++;
         if (status === "confirmada" || status === "completada") confirmed++;
