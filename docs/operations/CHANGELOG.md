@@ -28,6 +28,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Gestión Transaccional de Reservas**: Los conductores ahora pueden confirmar o rechazar reservas directamente desde la web, con sincronización automática de ingresos y liberación atómica de asientos.
 - **Estadísticas Financieras en Vivo**: Integración del motor de ingresos para conductores que lee directamente del nodo `/estadisticas/` diario.
 - **Motor de Reservas Web (v1.6.0)**: Implementación completa de la creación de reservas para pasajeros desde el portal web, con payload idéntico a la App nativa y bloqueo atómico de asientos.
+- **Mapeo Híbrido de Asientos (v1.6.2)**: Nuevo motor de gestión de inventario que diferencia entre reservas de la App (Protegidas) y Ventas Locales. Incluye lógica de blindaje para evitar que los conductores sobrescriban reservas digitales.
 
 ### Cambiado
 - **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.

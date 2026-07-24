@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   X, Loader2, CheckCircle2, UserPlus, Info, Bus, Ticket, User,
-  Armchair, RotateCw, AlertTriangle
+  Armchair, RotateCw, AlertTriangle, Lock
 } from 'lucide-react';
 import { ref, onValue, runTransaction, set, push, get, serverTimestamp, increment } from "firebase/database";
 import { db } from '../../firebase';
@@ -63,7 +63,12 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
   // --- 🧠 Lógica de Clasificación de Asientos ---
   const seatStates = useMemo(() => {
     const states = {};
-    const occupiedIds = Object.keys(availability.asientosOcupados || {}).filter(k => availability.asientosOcupados[k] === true);
+    const occupiedData = availability.asientosOcupados || {};
+
+    // Convertir si es array o manejar como objeto
+    const occupiedIds = Array.isArray(occupiedData)
+      ? occupiedData.map((val, idx) => val === true ? idx.toString() : null).filter(Boolean)
+      : Object.keys(occupiedData).filter(k => occupiedData[k] === true);
 
     occupiedIds.forEach(id => {
       const res = reservations.find(r => r.reservedSeat.toString() === id.toString());
@@ -76,13 +81,27 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
     return states;
   }, [availability.asientosOcupados, reservations]);
 
+  // --- 🖱️ Orquestador de Clicks ---
+  const handleSeatClick = (seatId) => {
+    if (updating) return;
+
+    if (isPassenger) {
+      if (seatStates[seatId]) return; // Proteccion: Bloquear click si ya esta ocupado
+      setSelectedSeat(seatId);
+    } else {
+      handlePhysicalToggle(seatId);
+    }
+  };
+  handleSeatClick.isManagementAction = isManagement;
+
   // --- 🛒 Venta Física (Bloqueo/Liberación) ---
   const handlePhysicalToggle = async (seatId) => {
     if (updating || isPassenger) return;
     const currentState = seatStates[seatId];
 
+    // 🛡️ BLINDAJE: Si el asiento es de la APP, el conductor NO puede tocarlo.
     if (currentState === 'APP') {
-      alert("⚠️ Este asiento está reservado por la App. No puede modificarse manualmente.");
+      alert("⚠️ Este asiento tiene una reserva activa de la App. Para liberarlo, debes rechazar o cancelar la reserva en el historial.");
       return;
     }
 
@@ -96,18 +115,25 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
     try {
       await runTransaction(dispRef, (current) => {
         if (!current) return current;
+
+        // Asegurar que asientosOcupados sea tratado correctamente (Array u Objeto)
         if (!current.asientosOcupados) current.asientosOcupados = {};
 
-        const isCurrentlyLocal = current.asientosOcupados[seatId] === true;
-        current.asientosOcupados[seatId] = !isCurrentlyLocal;
-        current.asientosDisponibles = isCurrentlyLocal
-          ? (current.asientosDisponibles || 0) + 1
-          : Math.max(0, (current.asientosDisponibles || 0) - 1);
+        const isCurrentlyOccupied = current.asientosOcupados[seatId] === true;
+
+        // Solo procedemos si el estado en la DB coincide con lo que el conductor intenta hacer
+        // Esto evita errores si un pasajero reservó en ese milisegundo
+        current.asientosOcupados[seatId] = (action === 'bloquear');
+
+        const currentDisp = current.asientosDisponibles || 0;
+        current.asientosDisponibles = (action === 'bloquear')
+          ? Math.max(0, currentDisp - 1)
+          : currentDisp + 1;
 
         return current;
       });
 
-      // Si bloqueamos, registramos en estadísticas del conductor (Si el rol lo permite)
+      // Si bloqueamos, registramos en estadísticas del conductor
       if (action === 'bloquear' && role.type === 'DRIVER') {
         const statsRef = ref(db, `estadisticas/${role.uid}/${today}`);
         await runTransaction(statsRef, (s) => {
@@ -302,11 +328,11 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
                       <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-[#061426] shadow-lg shadow-amber-500/20">
                          <User size={32} />
                       </div>
-                      <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} onClick={() => isPassenger ? setSelectedSeat("1") : handlePhysicalToggle("1")} />
-                      <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} onClick={() => isPassenger ? setSelectedSeat("2") : handlePhysicalToggle("2")} />
-                      <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} onClick={() => isPassenger ? setSelectedSeat("3") : handlePhysicalToggle("3")} />
-                      <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} onClick={() => isPassenger ? setSelectedSeat("4") : handlePhysicalToggle("4")} />
-                      <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} onClick={() => isPassenger ? setSelectedSeat("5") : handlePhysicalToggle("5")} />
+                      <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} isManagement={isManagement} onClick={() => handleSeatClick("1")} />
+                      <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} isManagement={isManagement} onClick={() => handleSeatClick("2")} />
+                      <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} isManagement={isManagement} onClick={() => handleSeatClick("3")} />
+                      <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} isManagement={isManagement} onClick={() => handleSeatClick("4")} />
+                      <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} isManagement={isManagement} onClick={() => handleSeatClick("5")} />
                    </div>
 
                    <div className="w-24 h-px bg-white/5 mx-auto" />
@@ -315,17 +341,17 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
 
                    {/* Zona Trasera Layout */}
                    <div className="grid grid-cols-5 gap-4 max-w-sm mx-auto">
-                      <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} onClick={() => isPassenger ? setSelectedSeat("6") : handlePhysicalToggle("6")} />
-                      <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} onClick={() => isPassenger ? setSelectedSeat("7") : handlePhysicalToggle("7")} />
+                      <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} isManagement={isManagement} onClick={() => handleSeatClick("6")} />
+                      <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} isManagement={isManagement} onClick={() => handleSeatClick("7")} />
                       <div className="col-span-1" /> {/* Pasillo */}
-                      <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} onClick={() => isPassenger ? setSelectedSeat("10") : handlePhysicalToggle("10")} />
-                      <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} onClick={() => isPassenger ? setSelectedSeat("11") : handlePhysicalToggle("11")} />
+                      <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} isManagement={isManagement} onClick={() => handleSeatClick("10")} />
+                      <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} isManagement={isManagement} onClick={() => handleSeatClick("11")} />
 
-                      <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} onClick={() => isPassenger ? setSelectedSeat("8") : handlePhysicalToggle("8")} />
-                      <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} onClick={() => isPassenger ? setSelectedSeat("9") : handlePhysicalToggle("9")} />
+                      <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} isManagement={isManagement} onClick={() => handleSeatClick("8")} />
+                      <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} isManagement={isManagement} onClick={() => handleSeatClick("9")} />
                       <div className="col-span-1" /> {/* Pasillo */}
-                      <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} onClick={() => isPassenger ? setSelectedSeat("12") : handlePhysicalToggle("12")} />
-                      <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} onClick={() => isPassenger ? setSelectedSeat("13") : handlePhysicalToggle("13")} />
+                      <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} isManagement={isManagement} onClick={() => handleSeatClick("12")} />
+                      <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} isManagement={isManagement} onClick={() => handleSeatClick("13")} />
                    </div>
                  </div>
                )}
@@ -352,12 +378,16 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
 }
 
 /** ⚛️ Molecule: Seat */
-function Seat({ seatId, state, selected, onClick }) {
-  const base = "w-16 h-16 rounded-2xl flex items-center justify-center font-black text-lg transition-all transform active:scale-90 relative overflow-hidden";
+function Seat({ seatId, state, selected, onClick, isManagement }) {
+  const isApp = state === 'APP';
+  const isLocal = state === 'LOCAL';
+  const isOccupied = isApp || isLocal;
+
+  const base = "w-16 h-16 rounded-2xl flex items-center justify-center font-black text-lg transition-all transform active:scale-95 relative overflow-hidden";
 
   const styles = {
     'AVAILABLE': "bg-[#061426] border-2 border-white/10 text-slate-500 hover:border-primary-500/50",
-    'APP': "bg-red-500 text-white shadow-lg shadow-red-500/20 cursor-not-allowed",
+    'APP': `bg-red-500 text-white shadow-lg shadow-red-500/20 ${!isManagement ? 'cursor-not-allowed' : 'cursor-help'}`,
     'LOCAL': "bg-primary-500 text-[#061426] shadow-lg shadow-primary-500/20",
     'SELECTED': "bg-green-500 text-white shadow-lg shadow-green-500/20 ring-4 ring-green-500/30 scale-105"
   };
@@ -365,9 +395,17 @@ function Seat({ seatId, state, selected, onClick }) {
   const currentState = selected ? 'SELECTED' : (state || 'AVAILABLE');
 
   return (
-    <button onClick={onClick} className={`${base} ${styles[currentState]}`}>
+    <button
+      onClick={onClick}
+      className={`${base} ${styles[currentState]}`}
+      title={isApp ? "Reserva protegida por App" : isLocal ? "Venta Física Local" : "Asiento Disponible"}
+    >
       <span className="relative z-10">{seatId}</span>
-      <Armchair size={40} className="absolute inset-0 m-auto opacity-10 scale-150 rotate-12" />
+      {isApp && isManagement ? (
+        <Lock size={12} className="absolute top-2 right-2 text-white/60" />
+      ) : (
+        <Armchair size={40} className="absolute inset-0 m-auto opacity-10 scale-150 rotate-12" />
+      )}
     </button>
   );
 }
