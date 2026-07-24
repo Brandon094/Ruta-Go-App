@@ -23,6 +23,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Automatización de Capacidad**: Sincronización atómica que inicializa automáticamente la disponibilidad de asientos (13/13) basándose en la capacidad real del vehículo al asignar un conductor a un horario.
 - **Doble Vínculo en Horarios**: Los turnos ahora almacenan tanto `conductorId` como `vehiculoId` para una resolución de datos más rápida y robusta.
 - **Módulo de Gestión de Tarifas**: Nueva interfaz exclusiva para el Administrador Root que permite actualizar el precio de los pasajes por ruta en tiempo real.
+- **Búsqueda Operativa Expandida**: Los Dueños de Flota ahora tienen acceso a la lista de usuarios para facilitar la vinculación de conductores mediante búsqueda por email.
 
 ### Cambiado
 - **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.
