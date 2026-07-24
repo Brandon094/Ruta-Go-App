@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Clock, Trash2, AlertCircle, Loader2, User, Hash, Shield, Briefcase } from 'lucide-react';
+import { X, Save, Clock, Trash2, AlertCircle, Loader2, User, Hash, Shield, Briefcase, Bus } from 'lucide-react';
 import { driverService } from '../../services/driverService';
 import { Input } from '../ui/Input';
 import { ref, get, update } from "firebase/database";
@@ -10,7 +10,7 @@ import { db } from '../../firebase';
  *
  * Interfaz de gestión avanzada para administradores.
  */
-export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [], users = [] }) {
+export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [], users = [], vehicles = [] }) {
   const [loading, setLoading] = useState(false);
   const [allSchedules, setAllSchedules] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState(driver?.horariosAsignados || []);
@@ -23,13 +23,18 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
 
   const isAdmin = role?.type === 'ADMIN';
 
-  // Obtener perfiles de dueños aprobados para el selector
+  // Obtener perfiles de dueños aprobados
   const approvedOwners = owners
     .filter(o => o.status === true)
     .map(o => ({
       id: o.id,
       nombre: users.find(u => u.id === o.id)?.nombre || 'Socio sin nombre'
     }));
+
+  // Obtener vehículos del dueño seleccionado
+  const myVehicles = formData.ownerId
+    ? vehicles.filter(v => v.ownerId === formData.ownerId)
+    : (isAdmin ? [] : vehicles.filter(v => v.ownerId === role?.uid));
 
   useEffect(() => {
     let isMounted = true;
@@ -67,19 +72,18 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
     e.preventDefault();
     setLoading(true);
     try {
-      // 1. Actualizar conductor
+      // 1. Actualizar conductor y vínculos
       await driverService.updateDriver(driver.id, {
         nombre: formData.nombre,
         placaVehiculo: formData.placaVehiculo,
         vehiculoId: formData.placaVehiculo,
         status: formData.status,
         horariosAsignados: selectedSchedules
-      });
+      }, driver.vehiculoId || driver.placaVehiculo);
 
-      // 2. Si es ADMIN, actualizar dueño del vehículo
+      // 2. Si es ADMIN y cambió el dueño, actualizar en el nodo vehículo
       if (isAdmin && formData.ownerId) {
-        const vehicleId = driver.vehiculoId || driver.placaVehiculo;
-        await update(ref(db, `vehiculos/${vehicleId}`), {
+        await update(ref(db, `vehiculos/${formData.placaVehiculo}`), {
           ownerId: formData.ownerId
         });
       }
@@ -136,12 +140,27 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
                 value={formData.nombre}
                 onChange={(val) => setFormData({...formData, nombre: val})}
               />
-              <Input
-                label="Placa Asignada"
-                icon={<Hash size={18} />}
-                value={formData.placaVehiculo}
-                onChange={(val) => setFormData({...formData, placaVehiculo: val.toUpperCase()})}
-              />
+
+              <div className="space-y-1.5 group">
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1">Vehículo Asignado</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
+                    <Bus size={18} />
+                  </div>
+                  <select
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all text-sm italic"
+                    value={formData.placaVehiculo}
+                    onChange={(e) => setFormData({...formData, placaVehiculo: e.target.value})}
+                  >
+                    <option value="">Seleccionar Placa...</option>
+                    {myVehicles.map(v => (
+                      <option key={v.id || v.placa} value={v.placa || v.id} className="bg-white dark:bg-secondary-800">
+                        {v.placa || v.id} - {v.modelo}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
               <div className="space-y-1.5 group">
                 <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">Estado</label>

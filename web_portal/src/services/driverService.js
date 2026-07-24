@@ -8,15 +8,32 @@ import { db } from "../firebase";
  */
 export const driverService = {
   /**
-   * Actualiza la información de un conductor, incluyendo sus horarios.
+   * Actualiza la información de un conductor y gestiona el vínculo con el vehículo.
    */
-  updateDriver: async (driverId, data) => {
-    const driverRef = ref(db, `conductores/${driverId}`);
+  updateDriver: async (driverId, data, oldVehicleId = null) => {
+    const updates = {};
+
+    // 1. Datos básicos del conductor
+    updates[`conductores/${driverId}`] = data;
+
+    // 2. Gestión de Vínculo de Vehículo
+    if (data.vehiculoId) {
+      // Si el vehículo cambió, limpiar el anterior
+      if (oldVehicleId && oldVehicleId !== data.vehiculoId) {
+        updates[`vehiculos/${oldVehicleId}/conductorId`] = null;
+        updates[`vehiculos/${oldVehicleId}/driverId`] = null;
+      }
+
+      // Vincular al nuevo vehículo (Soporte dual de keys conductorId/driverId para compatibilidad)
+      updates[`vehiculos/${data.vehiculoId}/conductorId`] = driverId;
+      updates[`vehiculos/${data.vehiculoId}/driverId`] = driverId;
+    }
+
     try {
-      await update(driverRef, data);
+      await update(ref(db), updates);
       return { success: true };
     } catch (error) {
-      console.error("Error actualizando conductor:", error);
+      console.error("Error actualizando conductor y vínculo:", error);
       throw error;
     }
   },

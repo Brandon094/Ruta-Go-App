@@ -23,6 +23,7 @@ import { OwnerOverview } from './components/dashboard/overviews/OwnerOverview';
 import { UserDirectory } from './components/users/UserDirectory';
 import { DriverDirectory } from './components/drivers/DriverDirectory';
 import { OwnerDirectory } from './components/owners/OwnerDirectory';
+import { VehicleDirectory } from './components/vehicles/VehicleDirectory';
 import { DriverItinerary } from './components/itinerary/DriverItinerary';
 import { HistoryDirectory } from './components/history/HistoryDirectory';
 import { ScheduleDirectory } from './components/schedules/ScheduleDirectory';
@@ -31,6 +32,7 @@ import { ProfileDirectory } from './components/profile/ProfileDirectory';
 // Modals
 import { EditDriverModal } from './components/drivers/EditDriverModal';
 import { AddDriverModal } from './components/drivers/AddDriverModal';
+import { VehicleModal } from './components/vehicles/VehicleModal';
 import { SeatManagementModal } from './components/schedules/SeatManagementModal';
 
 // Hooks
@@ -48,6 +50,8 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingDriver, setEditingDriver] = useState(null);
   const [isAddingDriver, setIsAddingDriver] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
+  const [isAddingVehicle, setIsAddingVehicle] = useState(false);
   const [managingSchedule, setManagingSchedule] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
@@ -128,6 +132,7 @@ function App() {
             activeTab === 'history' ? 'Historial de Reservas' :
             activeTab === 'profile' ? 'Mi Perfil' :
             activeTab === 'owners' ? 'Gestión de Socios' :
+            activeTab === 'vehicles' ? 'Mi Flota' :
             activeTab === 'passenger_view' ? 'Centro de Reservas' :
             activeTab === 'itinerary' ? 'Mi Itinerario' :
             activeTab === 'drivers' ? 'Conductores' :
@@ -178,6 +183,18 @@ function App() {
             <ProfileDirectory user={user} role={role} />
           ) : activeTab === 'owners' ? (
             <OwnerDirectory owners={owners} users={usersList} />
+          ) : activeTab === 'vehicles' ? (
+            <VehicleDirectory
+              vehicles={vehicles}
+              onAdd={() => setIsAddingVehicle(true)}
+              onEdit={(v) => setEditingVehicle(v)}
+              onDelete={(placa) => {
+                if(window.confirm('¿Seguro de eliminar este vehículo?')) {
+                  import('./services/vehicleService').then(m => m.vehicleService.deleteVehicle(placa));
+                }
+              }}
+              role={role}
+            />
           ) : activeTab === 'passenger_view' ? (
             <PassengerOverview
               stats={stats}
@@ -211,8 +228,10 @@ function App() {
         )}
       </main>
 
-      {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} role={role} owners={owners} users={usersList} />}
-      {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} currentUser={user} role={role} />}
+      {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} role={role} owners={owners} users={usersList} vehicles={vehicles} />}
+      {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} vehicles={vehicles} currentUser={user} role={role} />}
+      {isAddingVehicle && <VehicleModal isOpen={true} onClose={() => setIsAddingVehicle(false)} role={role} />}
+      {editingVehicle && <VehicleModal isOpen={true} onClose={() => setEditingVehicle(null)} vehicle={editingVehicle} role={role} />}
       {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} />}
     </div>
   );
