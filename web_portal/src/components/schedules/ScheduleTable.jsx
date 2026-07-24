@@ -119,7 +119,7 @@ function ScheduleCard({ schedule, drivers = [], role, onManage, isNext, hasPasse
       {/* Badge Siguiente */}
       {isNext && (
         <div className="absolute top-0 right-0">
-          <div className="bg-primary-500 text-white text-[10px] font-black uppercase px-6 py-1.5 rounded-bl-3xl shadow-lg animate-pulse tracking-widest">
+          <div className="bg-primary-500 text-white text-[10px] font-black uppercase px-6 py-1.5 rounded-bl-3xl rounded-tr-[2.5rem] shadow-lg animate-pulse tracking-widest">
             Siguiente
           </div>
         </div>
