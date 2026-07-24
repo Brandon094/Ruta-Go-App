@@ -5,15 +5,17 @@ import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Button } from '../../ui/Button';
 import { MirrorHeader } from '../MirrorHeader';
 
-export function PassengerOverview({ stats, schedules, drivers, role, onManage, vehicles = [] }) {
+export function PassengerOverview({ stats, schedules = [], drivers = [], role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
 
-  const natagaToLaPlata = schedules.filter(s =>
+  const safeSchedules = Array.isArray(schedules) ? schedules : [];
+
+  const natagaToLaPlata = safeSchedules.filter(s =>
     s.ruta.toLowerCase().includes('nátaga -> la plata') ||
     (s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().indexOf('nátaga') < s.ruta.toLowerCase().indexOf('plata'))
   );
 
-  const laPlataToNataga = schedules.filter(s =>
+  const laPlataToNataga = safeSchedules.filter(s =>
     s.ruta.toLowerCase().includes('la plata -> nátaga') ||
     (s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().indexOf('plata') < s.ruta.toLowerCase().indexOf('nátaga'))
   );

@@ -126,17 +126,25 @@ export function HistoryDirectory({ reservations, role, drivers = [], onNavigate 
               ))}
             </div>
           ) : (
-            <div className="h-96 flex flex-col items-center justify-center text-center p-8 bg-white dark:bg-[#061426] rounded-[3rem] border border-slate-100 dark:border-white/5 shadow-xl transition-all duration-300">
-               <div className="w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-300 dark:text-white/10 mb-6">
+            <div className="h-[50vh] flex flex-col items-center justify-center text-center p-8 bg-white dark:bg-[#061426] rounded-[3rem] border border-slate-100 dark:border-white/5 shadow-xl transition-all duration-300">
+               <div className="w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center text-slate-300 dark:text-white/10 mb-6 animate-pulse">
                   <History size={48} className="opacity-50" />
                </div>
-               <h4 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tight mb-2">No hay actividad registrada</h4>
-               <p className="text-slate-400 dark:text-white/40 text-sm font-medium max-w-xs mb-8">Parece que aún no has realizado ninguna reserva. ¡Empieza a viajar con Ruta-Go hoy mismo!</p>
+               <div className="space-y-2 max-w-sm">
+                 <h4 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tight">
+                   {role?.type === 'DRIVER' ? 'Sin despachos registrados' : 'No hay actividad registrada'}
+                 </h4>
+                 <p className="text-slate-400 dark:text-white/40 text-sm font-medium">
+                   {role?.type === 'DRIVER'
+                     ? 'Hoy no has tenido movimientos en tu historial. Tus pasajeros confirmados aparecerán aquí.'
+                     : 'Parece que aún no has realizado ninguna reserva. ¡Empieza a viajar con Ruta-Go hoy mismo!'}
+                 </p>
+               </div>
 
                {role?.type === 'PASSENGER' && (
                  <button
                   onClick={onNavigate}
-                  className="flex items-center gap-3 px-8 py-4 bg-primary-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary-500/30 hover:bg-primary-600 transition-all active:scale-95 group"
+                  className="mt-8 flex items-center gap-3 px-8 py-4 bg-primary-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary-500/30 hover:bg-primary-600 transition-all active:scale-95 group"
                  >
                    Ver horarios disponibles
                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />

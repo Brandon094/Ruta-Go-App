@@ -17,6 +17,7 @@ export const useRealtimeData = (user, role) => {
     prices: {},
     driverStats: {},
     reservations: [],
+    allDrivers: [], // Añadido para evitar undefined en lookups
     loading: true
   });
 

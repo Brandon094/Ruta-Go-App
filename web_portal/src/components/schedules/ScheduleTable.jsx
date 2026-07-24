@@ -88,9 +88,10 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   );
 }
 
-function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, vehicles = [], innerRef, hideActions = false }) {
+function ScheduleCard({ schedule, drivers = [], role, onManage, isNext, hasPassed, vehicles = [], innerRef, hideActions = false }) {
   const [timeStr, ampm] = schedule.hora.split(' ');
-  const driver = drivers.find(d => d.id === schedule.conductorId);
+  const safeDrivers = Array.isArray(drivers) ? drivers : [];
+  const driver = safeDrivers.find(d => d.id === schedule.conductorId);
 
   // Buscar vehículo: Priorizar el del horario, fallback al vehículo asignado al conductor
   const vehicleId = schedule.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;

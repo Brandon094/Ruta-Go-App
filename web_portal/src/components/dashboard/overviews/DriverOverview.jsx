@@ -15,16 +15,21 @@ import { SummaryMetric } from '../SummaryMetric';
  * UI Espejo 1:1 de la App Móvil para conductores (v1.5.1)
  * Enfoque: Deep Navy & Orange Theme
  */
-export function DriverOverview({ stats, schedules, drivers, reservations = [], role, onManage, vehicles = [] }) {
+export function DriverOverview({ stats, schedules = [], drivers = [], reservations = [], role, onManage, vehicles = [] }) {
   const [actionLoading, setActionLoading] = useState(null);
 
-  const currentDriverData = drivers.find(d => d.id === role.uid) || {};
-  const myName = currentDriverData.nombre || 'Cargando...';
+  // --- 🛡️ GUARDS ULTRA-RESISTENTES (v1.6.3) ---
+  const safeDrivers = Array.isArray(drivers) ? drivers : [];
+  const safeSchedules = Array.isArray(schedules) ? schedules : [];
+  const safeReservations = Array.isArray(reservations) ? reservations : [];
+
+  const currentDriverData = safeDrivers.find(d => d.id === role?.uid) || {};
+  const myName = currentDriverData.nombre || role?.name || 'Conductor';
   const myPlate = currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
 
-  const mySchedules = schedules.filter(s => s.conductorId === role.uid);
+  const mySchedules = safeSchedules.filter(s => s.conductorId === role?.uid);
 
-  const pendingReservations = reservations.filter(r => {
+  const pendingReservations = safeReservations.filter(r => {
     const status = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
     return status === 'pendiente' || status === 'por confirmar';
   });
@@ -125,8 +130,11 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
               ))}
             </div>
           ) : (
-            <div className="bg-[#0A1F30] p-12 rounded-[2rem] border border-dashed border-white/5 text-center opacity-40">
-               <p className="text-white text-xs font-bold uppercase tracking-widest italic">Sin reservas pendientes</p>
+            <div className="bg-[#0A1F30]/50 p-12 rounded-[2rem] border border-dashed border-white/5 text-center group hover:bg-[#0A1F30] transition-all duration-500">
+               <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Ticket size={32} className="text-slate-600 italic" />
+               </div>
+               <p className="text-white text-[10px] font-black uppercase tracking-[0.2em] italic opacity-40">Todo al día. No tienes solicitudes pendientes.</p>
             </div>
           )}
         </div>
