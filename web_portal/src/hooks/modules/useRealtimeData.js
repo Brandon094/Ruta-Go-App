@@ -157,14 +157,19 @@ export const useRealtimeData = (user, role) => {
 
           list.forEach(s => {
             const ruta = s.ruta.toLowerCase();
+            const driver = prev.drivers.find(d => d.id === s.conductorId);
 
-            // Buscar capacidad real en la lista de vehículos que ya tenemos en el estado previo
-            const vehicle = prev.vehicles.find(v => v.id === s.vehiculoId || v.placa === s.vehiculoId);
+            // Buscar capacidad real: Priorizar horario, fallback al vehículo del conductor
+            const vId = s.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
+            const vehicle = prev.vehicles.find(v => v.id === vId || v.placa === vId);
             const capacity = vehicle?.capacidad || 13;
 
-            const avail = s.asientosDisponibles !== undefined ? s.asientosDisponibles :
-                         (s.asientosLibres !== undefined ? s.asientosLibres : capacity);
-            const total = s.totalAsientos || capacity;
+            const dbTotal = s.totalAsientos || 0;
+            const avail = (dbTotal > 0)
+              ? (s.asientosDisponibles !== undefined ? s.asientosDisponibles : s.asientosLibres)
+              : capacity;
+
+            const total = dbTotal > 0 ? dbTotal : capacity;
             const resCount = Math.max(0, total - avail);
 
             const isMine = userType === 'DRIVER' && s.conductorId === user.uid;

@@ -89,18 +89,21 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
 
 function ScheduleCard({ schedule, drivers, role, onManage, isNext, hasPassed, vehicles = [], innerRef, hideActions = false }) {
   const [timeStr, ampm] = schedule.hora.split(' ');
+  const driver = drivers.find(d => d.id === schedule.conductorId);
 
-  // Buscar vehículo para obtener capacidad real
-  const vehicle = vehicles.find(v => v.id === schedule.vehiculoId || v.placa === schedule.vehiculoId);
+  // Buscar vehículo: Priorizar el del horario, fallback al vehículo asignado al conductor
+  const vehicleId = schedule.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
+  const vehicle = vehicles.find(v => v.id === vehicleId || v.placa === vehicleId);
   const totalSeats = vehicle?.capacidad || 13;
 
-  // Lógica Dinámica: Priorizar campos de disponibilidad, fallback a capacidad total
-  const available = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles :
-                   (schedule.asientosLibres !== undefined ? schedule.asientosLibres : totalSeats);
+  // Lógica Dinámica: Priorizar campos de disponibilidad
+  // Si en la DB totalAsientos es 0, tratamos como si no estuviera inicializado para usar el fallback
+  const dbTotal = schedule.totalAsientos || 0;
+  const dbAvailable = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles : schedule.asientosLibres;
 
-  const isFull = available === 0 && (schedule.asientosDisponibles !== undefined);
+  const available = (dbTotal > 0) ? dbAvailable : totalSeats;
+  const isFull = (dbTotal > 0) && dbAvailable === 0;
 
-  const driver = drivers.find(d => d.id === schedule.conductorId);
   const isMe = schedule.conductorId === role?.uid;
   const isExternal = role?.type === 'OWNER' && !drivers.some(d => d.id === schedule.conductorId);
 
