@@ -6,7 +6,7 @@ import { Badge } from '../ui/Badge';
  * 🎫 Component: ReservationHistoryCard
  * UI Espejo 1:1 de la App Nativa para el historial (v1.7.4 Mirror)
  */
-export function ReservationHistoryCard({ res, role }) {
+export function ReservationHistoryCard({ res, role, onViewTicket }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
@@ -83,7 +83,10 @@ export function ReservationHistoryCard({ res, role }) {
 
       {/* Action Buttons Grid */}
       <div className={`grid ${isConfirmed ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
-         <button className="flex items-center justify-center gap-3 py-4 bg-transparent border-2 border-primary-500 text-primary-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-500 hover:text-[#061426] transition-all shadow-lg active:scale-95">
+         <button
+           onClick={onViewTicket}
+           className="flex items-center justify-center gap-3 py-4 bg-transparent border-2 border-primary-500 text-primary-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-500 hover:text-[#061426] transition-all shadow-lg active:scale-95"
+         >
             <Ticket size={18} />
             Tiquete
          </button>

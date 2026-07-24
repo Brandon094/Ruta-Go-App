@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Search, History, ArrowRight } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
+import { TicketModal } from './TicketModal';
 import { Input } from '../ui/Input';
 
 export function HistoryDirectory({ reservations, role, onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
   const filteredList = reservations
     .filter(res => {
@@ -108,7 +110,12 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
           {filteredList.length > 0 ? (
             <div className="space-y-6">
               {filteredList.map(res => (
-                <ReservationHistoryCard key={res.id} res={res} role={role} />
+                <ReservationHistoryCard
+                  key={res.id}
+                  res={res}
+                  role={role}
+                  onViewTicket={() => setSelectedTicket(res)}
+                />
               ))}
             </div>
           ) : (
@@ -132,6 +139,13 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
           )}
         </div>
       </div>
+
+      {selectedTicket && (
+        <TicketModal
+          reservation={selectedTicket}
+          onClose={() => setSelectedTicket(null)}
+        />
+      )}
     </div>
   );
 }
