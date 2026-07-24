@@ -1,15 +1,51 @@
-import React from 'react';
-import { Activity, CheckCircle2, Ticket, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { Activity, CheckCircle2, Ticket, Calendar, XCircle, Loader2 } from 'lucide-react';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
+import { reservationService } from '../../../services/reservationService';
 
 export function DriverOverview({ stats, schedules, drivers, reservations = [], role, onManage, vehicles = [] }) {
+  const [actionLoading, setActionLoading] = useState(null); // id de la reserva en proceso
+
   const currentDriverData = drivers.find(d => d.id === role.uid) || {};
   const myName = currentDriverData.nombre || 'Cargando...';
   const myPlate = currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
   const mySchedules = schedules.filter(s => s.conductorId === role.uid);
-  const pendingReservations = reservations.filter(r => (r.estadoReserva === 'Pendiente' || r.reservationStatus === 'Pendiente' || r.estadoReserva === 'Por confirmar' || r.reservationStatus === 'Por confirmar'));
+
+  const pendingReservations = reservations.filter(r => {
+    const status = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
+    return status === 'pendiente' || status === 'por confirmar';
+  });
+
+  const handleConfirm = async (res) => {
+    setActionLoading(res.id);
+    try {
+      const price = res.precio || res.price || 12000;
+      await reservationService.confirmReservation(res.id, role.uid, price);
+    } catch (error) {
+      alert("Error al confirmar: " + error.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancel = async (res) => {
+    if (!window.confirm("¿Estás seguro de cancelar esta reserva? El asiento se liberará.")) return;
+
+    setActionLoading(res.id);
+    try {
+      const scheduleId = res.scheduleId || res.idHorario || res.horarioId;
+      const seatNumber = res.puestoReservado !== undefined ? res.puestoReservado :
+                        (res.reservedSeat !== undefined ? res.reservedSeat : res.asientoReservado);
+
+      await reservationService.cancelReservation(res.id, scheduleId, seatNumber);
+    } catch (error) {
+      alert("Error al cancelar: " + error.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
@@ -86,7 +122,28 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
                       </p>
                     </div>
                   </div>
-                  <Button variant="success" size="sm">Confirmar</Button>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                      onClick={() => handleCancel(res)}
+                      disabled={!!actionLoading}
+                    >
+                      <XCircle size={18} />
+                    </Button>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => handleConfirm(res)}
+                      isLoading={actionLoading === res.id}
+                      disabled={!!actionLoading && actionLoading !== res.id}
+                      icon={CheckCircle2}
+                    >
+                      Confirmar
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
