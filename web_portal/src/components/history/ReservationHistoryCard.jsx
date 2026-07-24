@@ -1,12 +1,14 @@
 import React from 'react';
 import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare, Star } from 'lucide-react';
 import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
+import { HistoryRow } from './HistoryRow';
 
 /**
- * 🎫 Component: ReservationHistoryCard
- * UI Espejo 1:1 de la App Nativa para el historial (v1.7.4 Mirror)
+ * 🎫 Organism: ReservationHistoryCard
+ * UI Espejo 1:1 de la App Nativa para el historial (v1.8.0 Atomic)
  */
-export function ReservationHistoryCard({ res, role, onViewTicket }) {
+export function ReservationHistoryCard({ res, role, onViewTicket, onRate }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
@@ -45,28 +47,16 @@ export function ReservationHistoryCard({ res, role, onViewTicket }) {
          </Badge>
       </div>
 
-      {/* Info Body */}
+      {/* Info Body (Using Molecules) */}
       <div className="space-y-4">
-         {/* Name Row */}
-         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-left">
-               <div className="p-2.5 bg-primary-500/10 rounded-xl text-primary-500">
-                  <User size={20} />
-               </div>
-               <span className="text-sm font-black text-white uppercase italic">{personName}</span>
-            </div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{personPhone}</span>
-         </div>
+         <HistoryRow icon={User} rightContent={personPhone}>
+            {personName}
+         </HistoryRow>
 
-         {/* Route Row */}
-         <div className="flex items-center gap-4 text-left">
-            <div className="p-2.5 bg-primary-500/10 rounded-xl text-primary-500">
-               <MapPin size={20} />
-            </div>
-            <span className="text-sm font-black text-white uppercase italic">{origin} ➔ {destination}</span>
-         </div>
+         <HistoryRow icon={MapPin}>
+            {origin} ➔ {destination}
+         </HistoryRow>
 
-         {/* Seat & Price Row */}
          <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-4 text-left">
                <div className="p-2.5 bg-primary-500/10 rounded-xl text-primary-500">
@@ -81,32 +71,41 @@ export function ReservationHistoryCard({ res, role, onViewTicket }) {
          </div>
       </div>
 
-      {/* Action Buttons Grid */}
+      {/* Action Buttons Grid (Using Atoms) */}
       <div className={`grid ${isConfirmed ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
-         <button
+         <Button
+           variant="ghost"
+           size="full"
+           className="!border-2 !border-primary-500 !text-primary-500 !rounded-2xl !py-4 hover:!bg-primary-500 hover:!text-[#061426]"
+           icon={Ticket}
            onClick={onViewTicket}
-           className="flex items-center justify-center gap-3 py-4 bg-transparent border-2 border-primary-500 text-primary-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-500 hover:text-[#061426] transition-all shadow-lg active:scale-95"
          >
-            <Ticket size={18} />
             Tiquete
-         </button>
+         </Button>
 
          {isConfirmed && (
-           <button className="flex items-center justify-center gap-3 py-4 bg-primary-500 text-[#061426] rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-              <MessageSquare size={18} />
+           <Button
+             variant="primary"
+             size="full"
+             className="!rounded-2xl !py-4"
+             icon={MessageSquare}
+             onClick={() => alert("Chat en desarrollo")}
+           >
               Chat
-           </button>
+           </Button>
          )}
       </div>
 
       {/* Calificar Button (Only for Confirmed + Passenger + Not Rated) */}
       {isConfirmed && isPassenger && !isRated && (
-        <button
-          onClick={() => alert("Módulo de Calificación en desarrollo")}
-          className="w-full py-5 bg-primary-500 text-[#061426] rounded-[1.8rem] text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary-500/40 hover:bg-primary-600 transition-all active:scale-95"
+        <Button
+          variant="primary"
+          size="full"
+          className="!rounded-[1.8rem] !py-5 tracking-[0.2em] shadow-2xl shadow-primary-500/40"
+          onClick={onRate}
         >
            Calificar Viaje
-        </button>
+        </Button>
       )}
 
       {/* Rated Info (Optional: if already rated, show stars) */}

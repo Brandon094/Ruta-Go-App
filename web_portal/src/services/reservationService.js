@@ -121,5 +121,46 @@ export const reservationService = {
       console.error("Error cancelando reserva:", error);
       throw error;
     }
+  },
+
+  /**
+   * Registra una nueva calificación para un viaje finalizado (Mirror RatingManager.java).
+   */
+  rateReservation: async (reservation, stars, comment) => {
+    if (!reservation?.driverId) throw new Error("Datos de reserva inválidos para calificar.");
+
+    const driverId = reservation.driverId;
+    const ratingRef = push(ref(db, `calificaciones_conductores/${driverId}`));
+
+    const ratingData = {
+      id: ratingRef.key,
+      userId: reservation.userId,
+      userName: reservation.name || "Usuario Web",
+      driverId: driverId,
+      reservationId: reservation.idReservation || reservation.id,
+      routeName: reservation.ruta || `${reservation.origin} ➔ ${reservation.destination}`,
+      rating: stars,
+      comment: comment,
+      timestamp: serverTimestamp()
+    };
+
+    const updates = {};
+    // 1. Guardar en el nodo de reputación del conductor
+    updates[`calificaciones_conductores/${driverId}/${ratingRef.key}`] = ratingData;
+
+    // 2. Marcar reserva como calificada (Dual keys para paridad)
+    const resPath = `reservas/${reservation.idReservation || reservation.id}`;
+    updates[`${resPath}/rated`] = true;
+    updates[`${resPath}/calificada`] = true;
+    updates[`${resPath}/rating`] = stars;
+    updates[`${resPath}/calificacion`] = stars;
+
+    try {
+      await update(ref(db), updates);
+      return { success: true };
+    } catch (error) {
+      console.error("Error calificando viaje:", error);
+      throw error;
+    }
   }
 };

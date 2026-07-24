@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Search, History, ArrowRight } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
 import { TicketModal } from './TicketModal';
+import { RatingModal } from './RatingModal';
 import { Input } from '../ui/Input';
 
 export function HistoryDirectory({ reservations, role, onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [ratingTarget, setRatingTarget] = useState(null);
 
   const filteredList = reservations
     .filter(res => {
@@ -115,6 +117,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
                   res={res}
                   role={role}
                   onViewTicket={() => setSelectedTicket(res)}
+                  onRate={() => setRatingTarget(res)}
                 />
               ))}
             </div>
@@ -144,6 +147,13 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
         <TicketModal
           reservation={selectedTicket}
           onClose={() => setSelectedTicket(null)}
+        />
+      )}
+
+      {ratingTarget && (
+        <RatingModal
+          reservation={ratingTarget}
+          onClose={() => setRatingTarget(null)}
         />
       )}
     </div>
