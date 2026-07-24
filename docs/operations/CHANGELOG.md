@@ -24,6 +24,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Doble Vínculo en Horarios**: Los turnos ahora almacenan tanto `conductorId` como `vehiculoId` para una resolución de datos más rápida y robusta.
 - **Módulo de Gestión de Tarifas**: Nueva interfaz exclusiva para el Administrador Root que permite actualizar el precio de los pasajes por ruta en tiempo real.
 - **Búsqueda Operativa Expandida**: Los Dueños de Flota ahora tienen acceso a la lista de usuarios para facilitar la vinculación de conductores mediante búsqueda por email.
+- **Dashboard Conductor Pro (Mirror)**: Implementación de la interfaz espejo 1:1 de la App nativa en la web, incluyendo cabecera naranja corporativa y logo en TopBar.
+- **Gestión Transaccional de Reservas**: Los conductores ahora pueden confirmar o rechazar reservas directamente desde la web, con sincronización automática de ingresos y liberación atómica de asientos.
+- **Estadísticas Financieras en Vivo**: Integración del motor de ingresos para conductores que lee directamente del nodo `/estadisticas/` diario.
 
 ### Cambiado
 - **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.

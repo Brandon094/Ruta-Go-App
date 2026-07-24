@@ -23,7 +23,11 @@ El sistema opera sobre un núcleo de Firebase, distribuyendo la carga según la 
 El portal implementa un flujo de datos unidireccional y reactivo:
 1.  **Capa de Autenticación**: Validación de roles (Admin/Owner) contra nodos maestros de RTDB.
 2.  **Hook de Estado Realtime**: `useRealtimeStats` centraliza los listeners y realiza el filtrado de datos por propiedad (`ownerId`).
-3.  **Capa de Servicios**: `driverService` abstrae la complejidad de la vinculación usuario-conductor-vehículo.
+3.  **Capa de Servicios**: Suite de lógica de negocio modularizada:
+    *   `driverService.js`: Vinculación usuario-conductor y automatización de capacidad.
+    *   `vehicleService.js`: Gestión independiente de activos de flota.
+    *   `reservationService.js`: Transacciones de reserva, confirmaciones y liberación de cupos.
+    *   `pricingService.js`: Control dinámico de tarifas por ruta para administradores.
 
 ---
 
