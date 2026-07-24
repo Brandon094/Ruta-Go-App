@@ -42,12 +42,20 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [x] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
 *   [x] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
 *   [x] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
+*   [ ] **📈 Analítica Extendida**: Implementación de gráficas históricas de ingresos y ocupación (no solo diaria).
+*   [ ] **📜 Registro de Auditoría**: Bitácora de cambios realizados por administradores para trazabilidad operativa.
+*   [ ] **📦 Exportación de Reportes**: Generación de PDFs/Excel de despachos y contabilidad para dueños y admins.
 
 ### 🎫 3. Experiencia de Usuario "Premium" (Mirror 1:1)
 *   [x] **📱 Suite de Viaje en Historial**:
     *   [x] Visualización de **Tiquete Digital** (diseño espejo de la App).
     *   [x] Módulo de **Chat en vivo** para coordinar con el conductor.
     *   [x] Sistema de **Calificación de Viaje** (1-5 estrellas).
+*   [x] **✨ Micro-interacciones & Utils (Startup Grade)**: 
+    *   [x] Implementación de `FormatUtils` y `AnimationUtils` (conteo animado de moneda, abreviaciones K/M).
+    *   [x] **Bus Departure Animation**: El botón de reserva se transforma en bus y "arranca" cuando el viaje ha pasado.
+    *   [x] **Seat Pop Animation**: Entrada escalonada y animada del mapa de asientos.
+    *   [x] **Card Entry Effects**: Animaciones de aparición para tarjetas de historial y dashboards.
 *   [ ] **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles y redención de puntos.
 
 ---

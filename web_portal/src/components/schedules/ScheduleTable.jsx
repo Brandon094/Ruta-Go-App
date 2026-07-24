@@ -113,7 +113,7 @@ function ScheduleCard({ schedule, drivers = [], role, onManage, isNext, hasPasse
   return (
     <div
       ref={innerRef}
-      className={`card-base rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 group relative overflow-hidden ${isNext ? 'ring-2 ring-primary-500 shadow-orange-500/10' : ''} ${hasPassed ? 'opacity-40 grayscale pointer-events-none' : ''}`}
+      className={`card-base rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 group relative ${isNext ? 'ring-2 ring-primary-500 shadow-orange-500/10' : ''} ${hasPassed ? 'opacity-40 grayscale' : ''}`}
     >
 
       {/* Badge Siguiente */}
@@ -191,12 +191,18 @@ function ScheduleCard({ schedule, drivers = [], role, onManage, isNext, hasPasse
                  disabled={hasPassed || (isFull && !isMe && !isManagement)}
                  onClick={() => !hasPassed && onManage(schedule)}
                  className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
-                   hasPassed || (isFull && !isMe && !isManagement)
-                   ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
-                   : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
+                   hasPassed
+                    ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
+                    : (isFull && !isMe && !isManagement)
+                      ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
+                      : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
                  }`}
                >
-                 <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
+                 {hasPassed ? (
+                   <Bus size={32} />
+                 ) : (
+                   <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
+                 )}
                </button>
              ) : (
                <button

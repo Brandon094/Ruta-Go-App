@@ -314,8 +314,15 @@ function Seat({ seatId, state, selected, isPassenger, onClick }) {
     styles = "bg-green-500 shadow-lg shadow-green-500/20 ring-4 ring-green-500/20 scale-105";
   }
 
+  // Animación de entrada escalonada (Mirror playSeatPopAnimation)
+  const delay = parseInt(seatId) * 30;
+
   return (
-    <button onClick={onClick} className={`w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all transform active:scale-95 overflow-hidden ${styles}`}>
+    <button
+      onClick={onClick}
+      style={{ animationDelay: `${delay}ms` }}
+      className={`w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all transform active:scale-95 overflow-hidden animate-pop ${styles}`}
+    >
       <span className="relative z-10">{content}</span>
       <span className={`absolute bottom-1 right-2 text-[8px] font-black ${selected || (isLocal && !isPassenger) ? 'text-white/50' : 'text-slate-700'}`}>{seatId}</span>
     </button>

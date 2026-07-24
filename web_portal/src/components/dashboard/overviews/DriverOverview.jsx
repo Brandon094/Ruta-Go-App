@@ -97,7 +97,7 @@ export function DriverOverview({ stats, schedules = [], drivers = [], reservatio
               <SummaryMetric label="Libres" value={stats?.totalFreeSeats || 11} color="text-primary-400" />
             </div>
             <div>
-              <SummaryMetric label="Ingresos" value={formatCurrency(stats?.totalRevenue || 0)} color="text-amber-400" />
+              <SummaryMetric label="Ingresos" value={stats?.totalRevenue || 0} color="text-amber-400" isCurrency={true} />
             </div>
           </div>
         </div>

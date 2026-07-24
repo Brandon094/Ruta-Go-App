@@ -9,8 +9,6 @@ import { FeatureCard } from '../FeatureCard';
  * Vista analítica maestra para el Administrador Root.
  */
 export function AdminOverview({ stats }) {
-  const formatCurrency = (value) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
-
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
@@ -29,7 +27,7 @@ export function AdminOverview({ stats }) {
           <SummaryMetric label="En Ruta" value={stats.activeDrivers} icon={<Bus size={18} className="text-green-500 mb-1"/>} color="text-[#061426] dark:text-white" />
           <SummaryMetric label="Reservas" value={stats.todayReservations} icon={<Calendar size={18} className="text-purple-500 mb-1"/>} color="text-[#061426] dark:text-white" />
           <div className="col-span-2 md:col-span-1 border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5 pt-4 md:pt-0 md:pl-4 lg:pl-8">
-            <SummaryMetric label="Ingresos Totales" value={formatCurrency(stats.totalRevenue)} icon={<Activity size={18} className="text-primary-500 mb-1"/>} color="text-green-600 dark:text-green-400" />
+            <SummaryMetric label="Ingresos Totales" value={stats.totalRevenue} icon={<Activity size={18} className="text-primary-500 mb-1"/>} color="text-green-600 dark:text-green-400" isCurrency={true} />
           </div>
         </div>
       </ExecutiveHeader>

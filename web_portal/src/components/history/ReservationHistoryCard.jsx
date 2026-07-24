@@ -3,10 +3,11 @@ import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare, Star } from 
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { IconRow } from '../ui/IconRow';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 🎫 Organism: ReservationHistoryCard
- * UI Espejo 1:1 de la App Nativa para el historial (v1.6.1 Atomic & DRY)
+ * UI Espejo 1:1 de la App Nativa para el historial (v1.6.5 Atomic & DRY)
  */
 export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, onRate, onChat }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
@@ -32,21 +33,16 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
   const personPhone = isPassenger ? (driverData?.telefono || res.phoneC || "---") : (res.phone || res.telefono || "---");
   const price = res.price || res.precio || 12000;
 
-  const formatDate = (d) => {
-    if (!d) return '-- --- ---- - --:--';
-    const dateObj = new Date(d);
-    return dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) + ' - ' +
-           dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
-  };
-
   return (
-    <div className="bg-[#0A1F30] rounded-[2.5rem] p-6 lg:p-8 space-y-6 border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-300 group">
+    <div className="bg-[#0A1F30] rounded-[2.5rem] p-6 lg:p-8 space-y-6 border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-300 group animate-pop">
 
       {/* Header Row: Date & Badge */}
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-3 text-primary-500">
             <Clock size={18} />
-            <span className="text-xs font-black uppercase tracking-widest">{formatDate(date)}</span>
+            <span className="text-xs font-black uppercase tracking-widest">
+              {date ? new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) + ' - ' + new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-- --- ---- - --:--'}
+            </span>
          </div>
          <Badge variant={isConfirmed ? 'success' : isCanceled ? 'error' : 'warning'} className="!rounded-xl px-4 py-1.5 lowercase first-letter:uppercase">
            {res.estadoReserva || res.reservationStatus || 'Pendiente'}
@@ -72,7 +68,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
             </div>
             <div className="flex items-center gap-2 text-primary-500 font-black">
                <Tag size={16} />
-               <span className="text-lg tracking-tighter">$ {new Intl.NumberFormat('es-CO').format(price)} COP</span>
+               <span className="text-lg tracking-tighter">{FormatUtils.formatPrice(price)}</span>
             </div>
          </div>
       </div>
