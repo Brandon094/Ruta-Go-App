@@ -38,14 +38,15 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
 
   // Auto-scroll al viaje siguiente
   useEffect(() => {
-    if (nextTripRef.current) {
-      setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (nextTripRef.current) {
         nextTripRef.current.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         });
-      }, 500);
-    }
+      }
+    }, 500);
+    return () => clearTimeout(timer);
   }, [nextTripId]);
 
   return (

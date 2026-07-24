@@ -5,6 +5,7 @@ import {
   ChevronRight, PhoneCall
 } from 'lucide-react';
 import { Button } from '../../ui/Button';
+import { Badge } from '../../ui/Badge';
 import { reservationService } from '../../../services/reservationService';
 import { MirrorHeader } from '../MirrorHeader';
 import { SummaryMetric } from '../SummaryMetric';
