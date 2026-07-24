@@ -4,6 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.5] - 2026-07-24 (Operational Integrity & Dual History Flow)
+### Añadido
+- **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.
+- **Feedback Contextual Inteligente**: Implementación de mensajes de estado vacío diferenciados para el historial personal (*"No hay actividad registrada"*) y el monitor de negocio (*"Sin despachos registrados"*).
+- **Redirección Proactiva para Jefes**: Los administradores y dueños ahora ven un botón de acción en su historial personal vacío que los lleva directamente al flujo de reserva (Venta Asistida).
+
+### Cambiado
+- **Arquitectura de Datos Personalizada**: Refactorización del hook `useRealtimeData.js` para generar flujos de información independientes para `personalReservations` y `businessReservations`, garantizando la privacidad y limpieza de las estadísticas de perfil.
+- **Doble Entrada al Chat**: Habilitado el acceso a la mensajería instantánea tanto desde el Historial Personal como desde el Monitor de Despachos.
+
+### Corregido
+- **Bug de Identidad en Historial**: Solucionado el problema donde los nombres de conductores/pasajeros no se resolvían correctamente en la lista. Ahora el sistema realiza un lookup en tiempo real sobre la base de datos maestra.
+
 ## [1.6.2] - 2026-07-24 (Security Rules & Platform Parity Fix)
 ### Añadido
 - **Blindaje Cross-Platform**: Actualización profunda de las Reglas de Seguridad de Firebase para soportar de forma nativa los nodos de `/chats/` y `/calificaciones_conductores/`.
