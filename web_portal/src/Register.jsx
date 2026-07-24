@@ -45,7 +45,7 @@ export default function Register({ onBack, initialMode = 'owner' }) {
 
       if (mode === 'owner') {
         const ownerRef = ref(db, `dueños/${user.uid}`);
-        await set(ownerRef, "pendiente");
+        await set(ownerRef, true);
       }
 
       setSuccess(true);
@@ -70,20 +70,14 @@ export default function Register({ onBack, initialMode = 'owner' }) {
           </div>
           <div className="space-y-4">
             <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight uppercase italic">
-              {mode === 'owner' ? '¡Solicitud Recibida!' : '¡Bienvenido!'}
+              ¡Bienvenido!
             </h2>
             <p className="text-slate-500 dark:text-white/60 font-medium leading-relaxed">
               Hola <span className="text-primary-500 font-bold">{name}</span>, tu cuenta ha sido creada exitosamente.
             </p>
-            {mode === 'owner' ? (
-              <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5 text-xs font-bold text-slate-400 dark:text-white/40 uppercase tracking-wider">
-                Nuestro equipo administrativo activará tu dashboard en breve.
-              </div>
-            ) : (
-              <div className="p-4 bg-primary-50 dark:bg-primary-500/10 rounded-2xl border border-primary-100 dark:border-primary-500/20 text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">
-                Ya puedes iniciar sesión y reservar tu primer viaje.
-              </div>
-            )}
+            <div className="p-4 bg-primary-50 dark:bg-primary-500/10 rounded-2xl border border-primary-100 dark:border-primary-500/20 text-xs font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider">
+              Ya puedes iniciar sesión y explorar el portal.
+            </div>
           </div>
           <Button
             onClick={onBack}
@@ -256,7 +250,7 @@ export default function Register({ onBack, initialMode = 'owner' }) {
               size="full"
               className="py-5 text-sm"
             >
-              {mode === 'owner' ? "Enviar Solicitud de Socio" : "Crear mi Cuenta de Pasajero"}
+              {mode === 'owner' ? "Crear Cuenta de Socio" : "Crear Cuenta de Pasajero"}
             </Button>
           </form>
 
