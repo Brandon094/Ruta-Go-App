@@ -75,7 +75,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, prices, routeStats, vehicles } = useRealtimeStats(user);
+  const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -131,7 +131,8 @@ function App() {
                role.type === 'OWNER' ? 'Dashboard Dueño' :
                role.type === 'DRIVER' ? 'Panel de Conductor' :
                'Centro de Reservas') :
-            activeTab === 'history' ? 'Historial de Reservas' :
+            activeTab === 'history' ? 'Mi Historial Personal' :
+            activeTab === 'business_history' ? 'Monitor de Despachos' :
             activeTab === 'profile' ? 'Mi Perfil' :
             activeTab === 'owners' ? 'Gestión de Socios' :
             activeTab === 'vehicles' ? 'Mi Flota' :
@@ -181,7 +182,9 @@ function App() {
               <AdminOverview stats={stats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
             )
           ) : activeTab === 'history' ? (
-            <HistoryDirectory reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab('overview')} />
+            <HistoryDirectory type="personal" reservations={personalReservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab(isManagement ? 'passenger_view' : 'overview')} />
+          ) : activeTab === 'business_history' ? (
+            <HistoryDirectory type="business" reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab('overview')} />
           ) : activeTab === 'profile' ? (
             <ProfileDirectory user={user} role={role} />
           ) : activeTab === 'owners' ? (

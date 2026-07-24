@@ -148,8 +148,13 @@ export const useRealtimeData = (user, role) => {
     const filteredVehicles = userType === 'ADMIN' ? raw.vehicles :
                             raw.vehicles.filter(v => v.ownerId === user.uid);
 
-    // 3. Filtrar Reservas
-    const filteredReservations = raw.reservations.filter(res => {
+    // 3. Filtrar Reservas (Personal vs Negocio)
+    const personalReservations = raw.reservations.filter(res => {
+      const resUserId = res.userId || res.usuarioId || res.idUsuario;
+      return resUserId === user.uid;
+    });
+
+    const businessReservations = raw.reservations.filter(res => {
       const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId;
       const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
       const resScheduleId = res.scheduleId || res.idHorario || res.horarioId;
@@ -158,9 +163,7 @@ export const useRealtimeData = (user, role) => {
         resDriverId === user.uid ||
         (resScheduleId && myScheduleIds.includes(resScheduleId))
       );
-      const resUserId = res.userId || res.usuarioId || res.idUsuario;
-      const isMyPassengerRes = userType === 'PASSENGER' && (resUserId === user.uid);
-      return isOwned || isDriverMatch || isMyPassengerRes;
+      return isOwned || isDriverMatch;
     });
 
     // 4. Calcular Estadísticas
@@ -171,23 +174,22 @@ export const useRealtimeData = (user, role) => {
       totalRev = raw.driverStats?.ingresosDiarios || 0;
     }
 
-    filteredReservations.forEach(res => {
+    // Estadísticas Personales (Historial del Usuario)
+    personalReservations.forEach(res => {
+      const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
+      totalUserRes++;
+      if (status === "confirmada" || status === "completada" || status === "confirmado") confirmed++;
+      else if (status === "cancelada") canceled++;
+    });
+
+    // Estadísticas de Negocio (Ingresos Admin/Owner)
+    businessReservations.forEach(res => {
       const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
       const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId || res.plate;
       const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
 
-      const resUserId = res.userId || res.usuarioId || res.idUsuario;
-      const isMyPassengerRes = userType === 'PASSENGER' && (resUserId === user.uid);
-
-      // Si es Admin/Owner, sumamos de las reservas filtradas
       if ((userType === 'ADMIN' || userType === 'OWNER') && isOwned && (status === "confirmada" || status === "completada")) {
         totalRev += Number(res.precio || res.price || 0);
-      }
-
-      if (isMyPassengerRes) {
-        totalUserRes++;
-        if (status === "confirmada" || status === "completada" || status === "confirmado") confirmed++;
-        else if (status === "cancelada") canceled++;
       }
     });
 
@@ -231,7 +233,8 @@ export const useRealtimeData = (user, role) => {
       schedules: enrichedSchedules,
       drivers: filteredDrivers, // Lista filtrada para gestión (Directorios)
       vehicles: filteredVehicles,
-      reservations: filteredReservations,
+      reservations: businessReservations, // Para Monitor de Despachos
+      personalReservations: personalReservations, // Para Historial Personal
       stats: {
         totalUsers: raw.users.filter(u => !u.solicitudBorrado).length,
         activeDrivers: filteredDrivers.filter(d => d.status === 'active').length,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle, Briefcase, Car, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle, Briefcase, Car, Settings, Ticket } from 'lucide-react';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 
@@ -22,11 +22,12 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
     },
     {
       title: "Gestión Operativa",
-      hidden: !isManagement,
+      hidden: !isManagement && role?.type !== 'DRIVER',
       items: [
         { id: 'owners', label: 'Socios', icon: <Briefcase size={20} />, roles: ['ADMIN'] },
         { id: 'vehicles', label: 'Vehículos', icon: <Car size={20} />, roles: ['ADMIN', 'OWNER'] },
         { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
+        { id: 'business_history', label: 'Despachos', icon: <Ticket size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER'] },
         { id: 'users', label: 'Pasajeros', icon: <Users size={20} />, roles: ['ADMIN'] },
         { id: 'pricing', label: 'Precios', icon: <Settings size={20} />, roles: ['ADMIN'] },
         { id: 'schedules', label: 'Planilla', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },

@@ -21,6 +21,7 @@ export const useRealtimeStats = (user) => {
     vehicles,
     schedules,
     reservations,
+    personalReservations,
     prices,
     stats,
     routeStats
@@ -41,6 +42,7 @@ export const useRealtimeStats = (user) => {
     owners,
     schedules,
     reservations,
+    personalReservations,
     prices,
     routeStats,
     vehicles

@@ -6,12 +6,14 @@ import { RatingModal } from './RatingModal';
 import { ChatModal } from './ChatModal';
 import { Input } from '../ui/Input';
 
-export function HistoryDirectory({ reservations, role, drivers = [], onNavigate }) {
+export function HistoryDirectory({ type = 'personal', reservations, role, drivers = [], onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [ratingTarget, setRatingTarget] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
+
+  const isBusiness = type === 'business';
 
   const filteredList = reservations
     .filter(res => {
@@ -108,7 +110,7 @@ export function HistoryDirectory({ reservations, role, drivers = [], onNavigate 
 
         <div className="space-y-6">
           <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase italic tracking-tight px-2 transition-colors">
-            Historial de Viajes ({filteredList.length})
+            {isBusiness ? 'Monitor de Despachos' : 'Historial de Viajes'} ({filteredList.length})
           </h4>
 
           {filteredList.length > 0 ? (
@@ -132,16 +134,16 @@ export function HistoryDirectory({ reservations, role, drivers = [], onNavigate 
                </div>
                <div className="space-y-2 max-w-sm">
                  <h4 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tight">
-                   {role?.type === 'DRIVER' ? 'Sin despachos registrados' : 'No hay actividad registrada'}
+                   {isBusiness ? 'Sin despachos registrados' : 'No hay actividad registrada'}
                  </h4>
                  <p className="text-slate-400 dark:text-white/40 text-sm font-medium">
-                   {role?.type === 'DRIVER'
-                     ? 'Hoy no has tenido movimientos en tu historial. Tus pasajeros confirmados aparecerán aquí.'
-                     : 'Parece que aún no has realizado ninguna reserva. ¡Empieza a viajar con Ruta-Go hoy mismo!'}
+                   {isBusiness
+                     ? 'Aún no hay movimientos en la planilla de despachos. Las reservas confirmadas aparecerán aquí.'
+                     : 'Parece que aún no has realizado ninguna reserva personal. ¡Empieza a viajar con Ruta-Go hoy mismo!'}
                  </p>
                </div>
 
-               {role?.type === 'PASSENGER' && (
+               {!isBusiness && (
                  <button
                   onClick={onNavigate}
                   className="mt-8 flex items-center gap-3 px-8 py-4 bg-primary-500 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary-500/30 hover:bg-primary-600 transition-all active:scale-95 group"
