@@ -4,9 +4,10 @@ import {
   Phone, MapPin, Clock, Armchair, RotateCw, Plus,
   ChevronRight, PhoneCall
 } from 'lucide-react';
-import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { reservationService } from '../../../services/reservationService';
+import { MirrorHeader } from '../MirrorHeader';
+import { SummaryMetric } from '../SummaryMetric';
 
 /**
  * 👨‍✈️ Component: DriverOverview
@@ -67,52 +68,34 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
   return (
     <div className="min-h-screen bg-[#061426] -m-4 lg:-m-8 p-0 space-y-0 animate-in fade-in duration-700 pb-32">
 
-      {/* 🟠 TOP HEADER & PROFILE (Android Style) */}
-      <div className="bg-primary-500 p-6 lg:p-10 pt-8 pb-20 relative overflow-hidden shadow-2xl">
-
-        <div className="flex items-center justify-between relative z-10 max-w-4xl mx-auto">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 bg-yellow-400 rounded-full border-2 border-white/30 flex items-center justify-center shadow-inner overflow-hidden">
-               <div className="w-full h-full bg-yellow-400 flex items-center justify-center">
-                 <img src="/assets/default_avatar.png" alt="avatar" className="w-12 h-12 opacity-80"
-                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                 <span className="hidden font-black text-3xl text-[#061426]">{myName.substring(0, 1)}</span>
-               </div>
-            </div>
-            <div className="text-white">
-              <h2 className="text-2xl font-black tracking-tight uppercase leading-none mb-1">{myName}</h2>
-              <p className="text-white/80 font-bold text-xs">Placa: {myPlate}</p>
-            </div>
+      {/* 📱 ORGANISMO: MirrorHeader (DRY) */}
+      <MirrorHeader
+        avatarText={myName.substring(0, 1)}
+        avatarBgColor="bg-yellow-400"
+        title={myName}
+        subtitle={`Placa: ${myPlate}`}
+        badgeText="Conductor Activo"
+        badgeVariant="dark"
+      >
+        {/* 🌑 Molécula: Resumen del día (Inyectada) */}
+        <div className="bg-[#061426] rounded-[1.5rem] p-6 shadow-2xl border border-white/5">
+          <div className="flex items-center justify-between mb-6">
+             <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest">Resumen del día</h4>
+             <RotateCw size={14} className="text-primary-500 cursor-pointer" />
           </div>
-          <Badge variant="dark" className="!bg-[#061426]/30 !text-white/90 !border-white/10 backdrop-blur-md py-1 px-4 !rounded-2xl lowercase lowercase-first">
-             Conductor Activo
-          </Badge>
-        </div>
-
-        {/* 🌑 RESUMEN DEL DÍA CARD (Inyectada en el header) */}
-        <div className="max-w-4xl mx-auto mt-10">
-          <div className="bg-[#061426] rounded-[1.5rem] p-6 shadow-2xl border border-white/5">
-            <div className="flex items-center justify-between mb-6">
-               <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest">Resumen del día</h4>
-               <RotateCw size={14} className="text-primary-500 cursor-pointer" />
+          <div className="grid grid-cols-3 gap-2">
+            <div className="border-r border-white/5">
+              <SummaryMetric label="Reservas" value={stats?.todayReservations || 0} color="text-green-400" />
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center border-r border-white/5">
-                <p className="text-2xl font-black text-green-400 leading-none mb-1">{stats?.todayReservations || 0}</p>
-                <p className="text-[9px] font-bold text-slate-500 uppercase">Reservas</p>
-              </div>
-              <div className="text-center border-r border-white/5">
-                <p className="text-2xl font-black text-primary-500 leading-none mb-1">{stats?.totalFreeSeats || 11}</p>
-                <p className="text-[9px] font-bold text-slate-500 uppercase">Libres</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xl font-black text-amber-400 leading-none mb-1">{formatCurrency(stats?.totalRevenue || 0)}</p>
-                <p className="text-[9px] font-bold text-slate-500 uppercase">Ingresos</p>
-              </div>
+            <div className="border-r border-white/5">
+              <SummaryMetric label="Libres" value={stats?.totalFreeSeats || 11} color="text-primary-400" />
+            </div>
+            <div>
+              <SummaryMetric label="Ingresos" value={formatCurrency(stats?.totalRevenue || 0)} color="text-amber-400" />
             </div>
           </div>
         </div>
-      </div>
+      </MirrorHeader>
 
       <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-10">
 

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { CheckCircle2, XCircle, ChevronDown, Clock, Activity, Info } from 'lucide-react';
 import { SummaryMetric } from '../SummaryMetric';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
-import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
+import { MirrorHeader } from '../MirrorHeader';
 
 export function PassengerOverview({ stats, schedules, drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
@@ -23,36 +23,23 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage, v
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-      {/* 🟠 HEADER NARANJA */}
-      <div className="bg-primary-500 -mt-4 lg:-mt-8 -mx-4 lg:-mx-8 p-6 lg:p-10 pb-16 relative overflow-hidden shadow-2xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-white/30 p-1 flex items-center justify-center shadow-inner">
-               <div className="w-full h-full bg-slate-200 rounded-full flex items-center justify-center text-[#061426] font-black text-xl lg:text-2xl shadow-sm">
-                 {role?.uid?.substring(0, 1).toUpperCase() || 'P'}
-               </div>
-            </div>
-            <div className="text-white">
-              <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-80 italic">¡Bienvenido de nuevo!</p>
-              <h2 className="text-xl lg:text-2xl font-black tracking-tight uppercase italic">{role?.name || 'Pasajero Ruta-Go'}</h2>
-            </div>
-          </div>
-          <Badge variant="info" className="!bg-white/20 !text-white !border-white/10 backdrop-blur-md shadow-xl">
-             Pasajero Activo
-          </Badge>
-        </div>
-
-        {/* 🌑 STATS CARD (Android Style) */}
-        <div className="max-w-4xl mx-auto mt-8">
-          <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8 bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
-            <div className="grid grid-cols-3 gap-4">
-              <SummaryMetric label="Confirmadas" value={stats.confirmedReservations} icon={<CheckCircle2 size={16} className="text-orange-500 mb-1"/>} />
-              <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />
-              <SummaryMetric label="Total" value={stats.totalUserReservations} icon={<CheckCircle2 size={16} className="text-green-500 mb-1"/>} />
-            </div>
+      {/* 📱 ORGANISMO: MirrorHeader (DRY) */}
+      <MirrorHeader
+        avatarText={role?.uid?.substring(0, 1).toUpperCase() || 'P'}
+        title={role?.name || 'Pasajero Ruta-Go'}
+        subtitle="¡Bienvenido de nuevo!"
+        badgeText="Pasajero Activo"
+        badgeVariant="info"
+      >
+        {/* 🌑 Molécula: Stats Card (Mirror Android) */}
+        <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8 bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
+          <div className="grid grid-cols-3 gap-4">
+            <SummaryMetric label="Confirmadas" value={stats.confirmedReservations} icon={<CheckCircle2 size={16} className="text-orange-500 mb-1"/>} />
+            <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />
+            <SummaryMetric label="Total" value={stats.totalUserReservations} icon={<CheckCircle2 size={16} className="text-green-500 mb-1"/>} />
           </div>
         </div>
-      </div>
+      </MirrorHeader>
 
       <div className="max-w-4xl mx-auto pt-4 space-y-12 pb-20">
 
