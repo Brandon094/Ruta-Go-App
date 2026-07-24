@@ -50,15 +50,12 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 
 ### ⭐ Reputación y Feedback (/calificaciones_conductores)
 *   **Transparencia**: Lectura pública para usuarios autenticados para fomentar la confianza en el ecosistema.
-*   **Integridad de Reseña**: La escritura es atómica y no permite ediciones (`!data.exists()`). Solo el pasajero titular de la reserva puede generar la calificación.
+*   **Integridad de Reseña**: La escritura es atómica y no permite ediciones (`!data.exists()`). Soporta validación dual de identidad (`userId` / `usuarioId`). Solo el pasajero titular de la reserva puede generar la calificación.
 
----
-
-## 📊 3. Protección Financiera (/estadisticas)
+### 📊 Protección Financiera (/estadisticas)
 Nodo de máxima sensibilidad. El acceso de lectura está filtrado lógicamente:
-*   **Conductores**: Solo ven su estadística personal.
-*   **Dueños**: Ven el agregado de sus vehículos mediante la validación de propiedad en el servidor.
-*   **Admin Root**: Visión global del Holding.
+*   **Conductores**: Solo ven su estadística personal diaria.
+*   **Dueños / Admins**: Acceso administrativo total sobre los nodos de su flota para contabilidad en tiempo real.
 
 ---
 **ChopCode Solutions - Ingeniería de Seguridad 2026**

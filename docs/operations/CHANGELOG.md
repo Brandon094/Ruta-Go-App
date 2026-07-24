@@ -4,7 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.6.5] - 2026-07-24 (Operational Integrity & Full Web Parity)
+## [1.6.6] - 2026-07-24 (Visual Polish & Startup Grade UX)
+### Añadido
+- **Utils Espejo (Format & Animation)**: Implementación de `FormatUtils.js` y `AnimationUtils.js` portando la lógica de Android para unificar moneda COP (abreviaciones K/M), fechas largas y efectos visuales.
+- **Micro-interacciones Premium**:
+    - **Bus Departure Animation**: El botón de reserva se transforma en icono de bus y ejecuta una animación de salida cuando el horario ha expirado.
+    - **Seat Pop Animation**: Entrada escalonada de los asientos en el mapa para una carga más fluida y orgánica.
+    - **Counter Animation**: Los valores monetarios y contadores en los Dashboards ahora realizan un conteo progresivo al cargar.
+- **Consolidación de Identidad**: Ajuste estético final en badges (esquinas redondeadas v2) para una integración perfecta con las tarjetas del sistema.
+
+### Cambiado
+- **Refactor de Gobernanza (DRY)**: Centralización de cabeceras ejecutivas y operativas mediante organismos reutilizables, reduciendo la duplicidad de estilos en un 40%.
+
+## [1.6.5] - 2026-07-24 (Operational Integrity & Dual History Flow)
 ### Añadido
 - **Paridad Total con App Nativa**: Consolidación de todas las funciones operativas de Pasajero y Conductor en la web.
 - **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.

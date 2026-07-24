@@ -1,6 +1,6 @@
 # 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.6.0), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.6.6), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
@@ -14,6 +14,8 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
     *   **Molecules**: `SummaryMetric`, `IconRow`. Combinaciones de átomos con lógica visual.
     *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`. Piezas complejas de UI que orquestan la experiencia del usuario.
+*   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.
+*   **Capa de Utilidades**: `FormatUtils.js` y `AnimationUtils.js` para asegurar la paridad de comportamiento con Android (conteo de dinero, formatos moneda COP).
 *   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
 *   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
