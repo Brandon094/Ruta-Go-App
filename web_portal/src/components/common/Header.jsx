@@ -29,9 +29,12 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
           </button>
         )}
 
-        <h2 className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight truncate max-w-[200px] md:max-w-none uppercase italic">
-          {isLoading ? 'Verificando...' : title}
-        </h2>
+        <div className="flex items-center gap-3">
+          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-8 h-8 object-contain" />
+          <h2 className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight truncate max-w-[200px] md:max-w-none uppercase italic">
+            {isLoading ? 'Verificando...' : title}
+          </h2>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 md:gap-6">

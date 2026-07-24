@@ -67,10 +67,6 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
 
       {/* 🟠 TOP HEADER & PROFILE (Android Style) */}
       <div className="bg-primary-500 p-6 lg:p-10 pt-8 pb-20 relative overflow-hidden shadow-2xl">
-        {/* Logo superior */}
-        <div className="flex justify-start mb-8 max-w-4xl mx-auto">
-           <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-10 h-10 object-contain invert brightness-0" />
-        </div>
 
         <div className="flex items-center justify-between relative z-10 max-w-4xl mx-auto">
           <div className="flex items-center gap-5">
