@@ -37,11 +37,11 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 *   **Auto-asignación**: Se mantiene la capacidad de los conductores de auto-asignarse a turnos libres.
 
 ### 💺 Motor de Disponibilidad (/disponibilidadAsientos)
-*   **Inicialización Operativa**: Los Dueños y el Admin pueden escribir en este nodo para inicializar la capacidad de los buses (ej: 13/13) al realizar asignaciones.
-*   **Interactividad**: Los pasajeros mantienen el permiso de escritura atómica para marcar asientos como ocupados durante el flujo de reserva.
+*   **Inicialización y Operación**: Los Dueños, el Admin y los **Pasajeros** tienen permiso de escritura (`.write: "auth != null"`) para permitir transacciones de reserva y bloqueos manuales.
+*   **Blindaje de Infraestructura**: Solo el Admin Root o el Dueño/Conductor asignado pueden modificar el campo `totalAsientos` (capacidad técnica del vehículo), protegiendo al sistema de alteraciones fraudulentas.
 
 ### 🎫 Reservas y Privacidad (/reservas)
-*   **Aislamiento de Ocupación**: En el portal web, un Dueño solo ve la ocupación detallada de sus propios vehículos. Para vehículos de terceros, la información se anonimiza.
+*   **Paridad de Identidad**: El sistema soporta los campos `userId` y `usuarioId` de forma intercambiable para garantizar la visibilidad del historial entre la App Android y el Portal Web.
 *   **Validación Cruzada**: El acceso a una reserva requiere que el `auth.uid` sea del Pasajero, el Conductor asignado, el Dueño del bus o el Admin.
 
 ---

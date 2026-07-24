@@ -30,9 +30,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Motor de Reservas Web (v1.6.0)**: Implementación completa de la creación de reservas para pasajeros desde el portal web, con payload idéntico a la App nativa y bloqueo atómico de asientos.
 - **Mapeo Híbrido de Asientos (v1.6.2)**: Nuevo motor de gestión de inventario que diferencia entre reservas de la App (Protegidas) y Ventas Locales. Incluye lógica de blindaje para evitar que los conductores sobrescriban reservas digitales.
 - **Robust Mirror Mode (v1.6.7)**: Refactorización profunda de la UI de asientos para lograr una paridad visual 1:1 con Android tanto para pasajeros (elección libre) como para conductores (gestión operativa), con instrucciones dinámicas y estados de sincronización en vivo.
+- **Sincronización Transaccional de Ingresos**: Los bloqueos de asientos por venta física ahora se registran automáticamente como ingresos en las estadísticas diarias del conductor, unificando la contabilidad física y digital.
 
 ### Cambiado
-- **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.
+- **Refuerzo de Seguridad v1.6.7**: Actualización de reglas de Firebase para permitir que los Pasajeros (App Nativa) y Conductores (Portal Web) convivan en el nodo de disponibilidad sin conflictos de permisos, blindando únicamente los campos de infraestructura (`totalAsientos`).
+- **Normalización de Identidad de Reserva**: Unificación lógica de los campos `userId` y `usuarioId` en el motor de datos para asegurar la visibilidad del historial sin importar la plataforma de origen.
 - **Desacoplamiento Vehículo-Conductor**: Refactorización profunda de la lógica de asignación. Ahora se pueden vincular conductores a vehículos existentes o registrar nuevos en un solo flujo inteligente.
 - **Navegación "Mobile Mirror"**: Los roles de Pasajero y Conductor ahora tienen una interfaz 100% despejada sin Sidebar, navegando exclusivamente mediante la barra inferior (Bottom Nav) para una experiencia idéntica a la App móvil.
 - **Navegación Administrativa Pura**: Los roles de Admin y Owner ahora utilizan exclusivamente el Sidebar, eliminando el Bottom Nav para evitar confusiones y optimizar el espacio de gestión.

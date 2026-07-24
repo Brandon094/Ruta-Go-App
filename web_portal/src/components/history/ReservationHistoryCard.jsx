@@ -4,11 +4,14 @@ import { Badge } from '../ui/Badge';
 
 export function ReservationHistoryCard({ res }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-  const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada';
+  const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const seat = res.puestoReservado !== undefined ? res.puestoReservado : (res.reservedSeat !== undefined ? res.reservedSeat : res.asientoReservado);
   const date = res.fechaReserva || res.reservationDate || res.travelDate;
-  const origin = res.origen || res.origin || 'La Plata';
-  const destination = res.destino || res.destination || 'Nátaga';
+
+  // Mapeo robusto de ruta (Soporte para campo 'ruta' único o par origen/destino)
+  const origin = res.origen || res.origin || res.ruta?.split('➔')[0]?.trim() || res.ruta?.split('->')[0]?.trim() || '---';
+  const destination = res.destino || res.destination || res.ruta?.split('➔')[1]?.trim() || res.ruta?.split('->')[1]?.trim() || '---';
+
   const passengerName = res.name || res.nombre || res.nombreUsuario || 'Pasajero Ruta-Go';
   const passengerPhone = res.phone || res.telefono || '---';
   const price = res.price || res.precio || 12000;

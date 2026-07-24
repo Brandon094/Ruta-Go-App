@@ -10,8 +10,9 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
   const filteredList = reservations
     .filter(res => {
       const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-      if (filter === 'Confirmados' && !(status === 'confirmada' || status === 'confirmado' || status === 'completada')) return false;
-      if (filter === 'Cancelados' && status !== 'cancelada') return false;
+      const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
+      if (filter === 'Confirmados' && !isConfirmed) return false;
+      if (filter === 'Cancelados' && status !== 'cancelada' && status !== 'canceled') return false;
 
       if (filter === 'Este Mes') {
         const date = res.fechaReserva || res.reservationDate || res.travelDate;
@@ -24,8 +25,8 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
         const name = (res.name || res.nombre || res.nombreUsuario || "").toLowerCase();
-        const route = (res.origen || res.origin || "").toLowerCase() + (res.destino || res.destination || "").toLowerCase();
-        const plate = (res.vehicleId || res.vehiculoId || "").toLowerCase();
+        const route = (res.origen || res.origin || res.ruta || "").toLowerCase() + (res.destino || res.destination || "").toLowerCase();
+        const plate = (res.vehicleId || res.vehiculoId || res.plate || "").toLowerCase();
         return name.includes(search) || route.includes(search) || plate.includes(search);
       }
       return true;
@@ -35,9 +36,12 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
   const stats = {
     confirmed: reservations.filter(r => {
       const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
-      return s === 'confirmada' || s === 'confirmado' || s === 'completada';
+      return s === 'confirmada' || s === 'confirmado' || s === 'completada' || s === 'confirmed';
     }).length,
-    canceled: reservations.filter(r => (r.estadoReserva || r.reservationStatus || "").toLowerCase() === 'cancelada').length,
+    canceled: reservations.filter(r => {
+      const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
+      return s === 'cancelada' || s === 'canceled';
+    }).length,
     total: reservations.length
   };
 

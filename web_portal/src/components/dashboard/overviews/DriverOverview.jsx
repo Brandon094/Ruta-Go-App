@@ -31,7 +31,9 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
     setActionLoading(res.id);
     try {
       const price = res.price || res.precio || 12000;
-      await reservationService.confirmReservation(res.id, role.uid, price);
+      // Usar el driverId de la reserva, no el del usuario logueado (importante si confirma un Admin)
+      const targetDriverId = res.driverId || res.conductorId || role.uid;
+      await reservationService.confirmReservation(res.id, targetDriverId, price);
     } catch (error) {
       alert("Error al confirmar: " + error.message);
     } finally {

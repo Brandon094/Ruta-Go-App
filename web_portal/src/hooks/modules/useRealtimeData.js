@@ -152,12 +152,13 @@ export const useRealtimeData = (user, role) => {
       const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId;
       const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
       const resScheduleId = res.scheduleId || res.idHorario || res.horarioId;
+      const resDriverId = res.driverId || res.conductorId;
       const isDriverMatch = userType === 'DRIVER' && (
-        res.conductorId === user.uid ||
-        res.driverId === user.uid ||
+        resDriverId === user.uid ||
         (resScheduleId && myScheduleIds.includes(resScheduleId))
       );
-      const isMyPassengerRes = userType === 'PASSENGER' && res.usuarioId === user.uid;
+      const resUserId = res.userId || res.usuarioId || res.idUsuario;
+      const isMyPassengerRes = userType === 'PASSENGER' && (resUserId === user.uid);
       return isOwned || isDriverMatch || isMyPassengerRes;
     });
 
@@ -171,9 +172,11 @@ export const useRealtimeData = (user, role) => {
 
     filteredReservations.forEach(res => {
       const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-      const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId;
+      const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId || res.plate;
       const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
-      const isMyPassengerRes = userType === 'PASSENGER' && res.usuarioId === user.uid;
+
+      const resUserId = res.userId || res.usuarioId || res.idUsuario;
+      const isMyPassengerRes = userType === 'PASSENGER' && (resUserId === user.uid);
 
       // Si es Admin/Owner, sumamos de las reservas filtradas
       if ((userType === 'ADMIN' || userType === 'OWNER') && isOwned && (status === "confirmada" || status === "completada")) {
@@ -182,7 +185,7 @@ export const useRealtimeData = (user, role) => {
 
       if (isMyPassengerRes) {
         totalUserRes++;
-        if (status === "confirmada" || status === "completada") confirmed++;
+        if (status === "confirmada" || status === "completada" || status === "confirmado") confirmed++;
         else if (status === "cancelada") canceled++;
       }
     });
