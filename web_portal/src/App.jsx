@@ -237,7 +237,7 @@ function App() {
       {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} vehicles={vehicles} currentUser={user} role={role} />}
       {isAddingVehicle && <VehicleModal isOpen={true} onClose={() => setIsAddingVehicle(false)} role={role} />}
       {editingVehicle && <VehicleModal isOpen={true} onClose={() => setEditingVehicle(null)} vehicle={editingVehicle} role={role} />}
-      {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} />}
+      {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} drivers={drivers} vehicles={vehicles} />}
     </div>
   );
 }

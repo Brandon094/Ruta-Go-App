@@ -7,12 +7,13 @@ import { ref, onValue, runTransaction, set, push, get, serverTimestamp, incremen
 import { db } from '../../firebase';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { reservationService } from '../../services/reservationService';
 
 /**
  * 💺 Componente: SeatManagementModal
  * UI Espejo de la App Móvil para gestión de asientos (v1.5.1)
  */
-export function SeatManagementModal({ schedule, onClose, role }) {
+export function SeatManagementModal({ schedule, onClose, role, drivers = [], vehicles = [] }) {
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState({ asientosOcupados: {}, totalAsientos: 13, asientosDisponibles: 13 });
   const [reservations, setReservations] = useState([]);
@@ -124,44 +125,43 @@ export function SeatManagementModal({ schedule, onClose, role }) {
     }
   };
 
-  // --- 🎫 Reserva Pasajero ---
+  // --- 🎫 Reserva Pasajero (Motor de Reservas Web v1.6.0) ---
   const handlePassengerReserve = async () => {
     if (!selectedSeat || updating) return;
     setUpdating(true);
 
-    const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
     try {
-      const result = await runTransaction(dispRef, (current) => {
-        if (current && current.asientosOcupados?.[selectedSeat]) return; // Ya se ocupó
-        if (current) {
-          if (!current.asientosOcupados) current.asientosOcupados = {};
-          current.asientosOcupados[selectedSeat] = true;
-          current.asientosDisponibles = Math.max(0, (current.asientosDisponibles || 0) - 1);
-        }
-        return current;
-      });
+      // 1. Obtener metadatos del conductor y vehículo para el payload completo
+      const driver = drivers.find(d => d.id === schedule.conductorId) || {};
+      const vehicle = vehicles.find(v => v.id === schedule.vehiculoId || v.placa === schedule.vehiculoId) || {};
+      const parts = schedule.ruta.split(/ -> | ➔ /);
 
-      if (result.committed) {
-        const resRef = push(ref(db, 'reservas'));
-        const parts = schedule.ruta.split(/ -> | ➔ /);
-        await set(resRef, {
-          idReservation: resRef.key,
-          userId: role.uid,
-          scheduleId: schedule.id,
-          driverId: schedule.conductorId || "",
-          vehicleId: schedule.vehiculoId || "",
-          reservedSeat: parseInt(selectedSeat),
-          reservationStatus: 'Por confirmar',
-          origin: parts[0] || "Nátaga",
-          destination: parts[1] || "La Plata",
-          departureTime: schedule.hora,
-          price: routePrice,
-          reservationDate: Date.now(),
-          name: role?.name || "Pasajero Web",
-          phone: role?.phone || ""
-        });
-        setSuccessReservation(true);
-      }
+      const reservationData = {
+        userId: role.uid,
+        scheduleId: schedule.id,
+        driverId: schedule.conductorId || "",
+        driver: driver.nombre || "Conductor Ruta-Go",
+        phoneC: driver.telefono || "---",
+        vehicleId: schedule.vehiculoId || "",
+        plate: vehicle.placa || schedule.vehiculoId || "",
+        model: vehicle.modelo || "Vehículo",
+        reservedSeat: parseInt(selectedSeat),
+        reservationStatus: 'Por confirmar',
+        origin: parts[0] || "Nátaga",
+        destination: parts[1] || "La Plata",
+        departureTime: schedule.hora,
+        estimatedTime: "60 min", // Valor estándar del sistema
+        price: routePrice,
+        paymentMethod: 'efectivo',
+        reservationDate: Date.now(),
+        name: role?.name || "Pasajero Web",
+        phone: role?.phone || "---",
+        email: role?.email || ""
+      };
+
+      // 2. Ejecutar a través del servicio con bloqueo atómico
+      await reservationService.createReservation(reservationData, schedule.id, selectedSeat);
+      setSuccessReservation(true);
     } catch (err) {
       alert("Error en reserva: " + err.message);
     } finally {

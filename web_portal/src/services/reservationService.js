@@ -7,6 +7,30 @@ import { db } from "../firebase";
  */
 export const reservationService = {
   /**
+   * Crea una nueva reserva oficial en la base de datos (Motor de Reservas Web v1.6.0).
+   */
+  createReservation: async (reservationData, scheduleId, seatNumber) => {
+    const updates = {};
+    const resRef = push(ref(db, 'reservas'));
+    const finalData = { ...reservationData, idReservation: resRef.key };
+
+    // 1. Registro del tiquete
+    updates[`reservas/${resRef.key}`] = finalData;
+
+    // 2. Bloqueo físico del asiento
+    updates[`disponibilidadAsientos/${scheduleId}/asientosOcupados/${seatNumber}`] = true;
+    updates[`disponibilidadAsientos/${scheduleId}/asientosDisponibles`] = increment(-1);
+
+    try {
+      await update(ref(db), updates);
+      return { success: true, id: resRef.key };
+    } catch (error) {
+      console.error("Error creando reserva:", error);
+      throw error;
+    }
+  },
+
+  /**
    * Confirma una reserva y actualiza las estadísticas del conductor.
    */
   confirmReservation: async (reservationId, driverId, price) => {

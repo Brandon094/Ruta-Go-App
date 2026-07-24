@@ -27,6 +27,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Dashboard Conductor Pro (Mirror)**: Implementación de la interfaz espejo 1:1 de la App nativa en la web, incluyendo cabecera naranja corporativa y logo en TopBar.
 - **Gestión Transaccional de Reservas**: Los conductores ahora pueden confirmar o rechazar reservas directamente desde la web, con sincronización automática de ingresos y liberación atómica de asientos.
 - **Estadísticas Financieras en Vivo**: Integración del motor de ingresos para conductores que lee directamente del nodo `/estadisticas/` diario.
+- **Motor de Reservas Web (v1.6.0)**: Implementación completa de la creación de reservas para pasajeros desde el portal web, con payload idéntico a la App nativa y bloqueo atómico de asientos.
 
 ### Cambiado
 - **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.

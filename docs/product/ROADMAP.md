@@ -35,7 +35,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *Objetivo: Alcanzar paridad de funciones con la App móvil y comenzar la captura de valor.*
 
 ### 🛠️ 1. Motor de Reservas & Notificaciones
-*   [ ] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone.
+*   [x] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone (Payload 1:1 con Android).
 *   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web.
 
 ### 👑 2. Gobernanza Root Pro (Control Maestro)
