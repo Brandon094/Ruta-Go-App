@@ -8,7 +8,7 @@ import { IconRow } from '../ui/IconRow';
  * 🎫 Organism: ReservationHistoryCard
  * UI Espejo 1:1 de la App Nativa para el historial (v1.6.0 Atomic & DRY)
  */
-export function ReservationHistoryCard({ res, role, onViewTicket, onRate }) {
+export function ReservationHistoryCard({ res, role, onViewTicket, onRate, onChat }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
@@ -89,7 +89,7 @@ export function ReservationHistoryCard({ res, role, onViewTicket, onRate }) {
              size="full"
              className="!rounded-2xl !py-4"
              icon={MessageSquare}
-             onClick={() => alert("Chat en desarrollo")}
+             onClick={onChat}
            >
               Chat
            </Button>

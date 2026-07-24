@@ -7,9 +7,9 @@ import { IconRow } from '../ui/IconRow';
 
 /**
  * 🎟️ Component: TicketModal
- * UI Espejo 1:1 de la App Nativa para el tiquete digital (v1.6.0 Mirror & DRY)
+ * UI Espejo 1:1 de la App Nativa para el tiquete digital (v1.6.1 Mirror & DRY)
  */
-export function TicketModal({ reservation, onClose }) {
+export function TicketModal({ reservation, role, onClose, onChat }) {
   if (!reservation) return null;
 
   const status = (reservation.estadoReserva || reservation.reservationStatus || "").toLowerCase();
@@ -118,19 +118,21 @@ export function TicketModal({ reservation, onClose }) {
 
         {/* ACTIONS FOOTER (Screenshot Mirror) */}
         <div className="grid grid-cols-5 gap-3">
-           <Button
-              variant="primary"
-              size="md"
-              className="col-span-2 !bg-[#0A1F30] border border-white/10 hover:!bg-white/5 !rounded-2xl"
-              icon={MessageSquare}
-              onClick={() => alert("Chat en desarrollo")}
-           >
-              Chat
-           </Button>
+           {isConfirmed && (
+             <Button
+                variant="primary"
+                size="md"
+                className="col-span-2 !bg-[#0A1F30] border border-white/10 hover:!bg-white/5 !rounded-2xl"
+                icon={MessageSquare}
+                onClick={onChat}
+             >
+                Chat
+             </Button>
+           )}
            <Button
               variant="ghost"
               size="md"
-              className="col-span-3 !bg-white/5 hover:!bg-white/10 text-white !rounded-2xl border border-white/5"
+              className={`${isConfirmed ? 'col-span-3' : 'col-span-5'} !bg-white/5 hover:!bg-white/10 text-white !rounded-2xl border border-white/5`}
               icon={Share2}
               onClick={() => alert("Compartir en desarrollo")}
            >

@@ -3,6 +3,7 @@ import { Search, History, ArrowRight } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
 import { TicketModal } from './TicketModal';
 import { RatingModal } from './RatingModal';
+import { ChatModal } from './ChatModal';
 import { Input } from '../ui/Input';
 
 export function HistoryDirectory({ reservations, role, onNavigate }) {
@@ -10,6 +11,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [ratingTarget, setRatingTarget] = useState(null);
+  const [activeChat, setActiveChat] = useState(null);
 
   const filteredList = reservations
     .filter(res => {
@@ -118,6 +120,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
                   role={role}
                   onViewTicket={() => setSelectedTicket(res)}
                   onRate={() => setRatingTarget(res)}
+                  onChat={() => setActiveChat(res)}
                 />
               ))}
             </div>
@@ -146,7 +149,12 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
       {selectedTicket && (
         <TicketModal
           reservation={selectedTicket}
+          role={role}
           onClose={() => setSelectedTicket(null)}
+          onChat={() => {
+            setSelectedTicket(null);
+            setActiveChat(selectedTicket);
+          }}
         />
       )}
 
@@ -154,6 +162,14 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
         <RatingModal
           reservation={ratingTarget}
           onClose={() => setRatingTarget(null)}
+        />
+      )}
+
+      {activeChat && (
+        <ChatModal
+          reservation={activeChat}
+          role={role}
+          onClose={() => setActiveChat(null)}
         />
       )}
     </div>
