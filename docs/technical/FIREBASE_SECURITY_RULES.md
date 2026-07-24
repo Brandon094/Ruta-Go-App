@@ -33,7 +33,12 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 
 ### 🕒 Gestión de Horarios (/horarios)
 *   **Visibilidad**: Lectura pública para permitir la consulta de rutas.
-*   **Asignación**: Un conductor o dueño solo puede escribir en el campo `conductorId` si el turno está vacío o si ya les pertenece.
+*   **Asignación Inteligente**: El Admin Root y los **Dueños** tienen permiso de escritura para asignar conductores y vincular vehículos a turnos específicos.
+*   **Auto-asignación**: Se mantiene la capacidad de los conductores de auto-asignarse a turnos libres.
+
+### 💺 Motor de Disponibilidad (/disponibilidadAsientos)
+*   **Inicialización Operativa**: Los Dueños y el Admin pueden escribir en este nodo para inicializar la capacidad de los buses (ej: 13/13) al realizar asignaciones.
+*   **Interactividad**: Los pasajeros mantienen el permiso de escritura atómica para marcar asientos como ocupados durante el flujo de reserva.
 
 ### 🎫 Reservas y Privacidad (/reservas)
 *   **Aislamiento de Ocupación**: En el portal web, un Dueño solo ve la ocupación detallada de sus propios vehículos. Para vehículos de terceros, la información se anonimiza.

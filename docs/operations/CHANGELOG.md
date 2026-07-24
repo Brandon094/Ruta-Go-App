@@ -20,7 +20,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Selector de Dueños Pro**: Implementación de listas desplegables para asignar propietarios a conductores, eliminando la entrada manual de UIDs y reduciendo errores operativos.
 - **Panel de Moderación de Pasajeros**: Suite de herramientas para que el Administrador Root pueda **Banear, Inactivar o Borrar** cuentas de pasajeros directamente desde la web con diálogos de confirmación.
 
+- **Automatización de Capacidad**: Sincronización atómica que inicializa automáticamente la disponibilidad de asientos (13/13) basándose en la capacidad real del vehículo al asignar un conductor a un horario.
+- **Doble Vínculo en Horarios**: Los turnos ahora almacenan tanto `conductorId` como `vehiculoId` para una resolución de datos más rápida y robusta.
+
 ### Cambiado
+- **Refuerzo de Seguridad v1.5.1**: Actualización de reglas de Firebase para permitir que los Dueños gestionen íntegramente la capacidad de sus viajes y la asignación de operadores sin errores de permisos.
 - **Desacoplamiento Vehículo-Conductor**: Refactorización profunda de la lógica de asignación. Ahora se pueden vincular conductores a vehículos existentes o registrar nuevos en un solo flujo inteligente.
 - **Navegación "Mobile Mirror"**: Los roles de Pasajero y Conductor ahora tienen una interfaz 100% despejada sin Sidebar, navegando exclusivamente mediante la barra inferior (Bottom Nav) para una experiencia idéntica a la App móvil.
 - **Navegación Administrativa Pura**: Los roles de Admin y Owner ahora utilizan exclusivamente el Sidebar, eliminando el Bottom Nav para evitar confusiones y optimizar el espacio de gestión.

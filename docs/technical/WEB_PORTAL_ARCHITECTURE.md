@@ -11,7 +11,7 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
 *   **Estructura**: Arquitectura modular basada en componentes desacoplados y centralización de UI-Atoms.
-*   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores.
+*   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
 *   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
 *   **Despliegue**: [Firebase Hosting](https://firebase.google.com/products/hosting).
