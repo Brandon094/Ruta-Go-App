@@ -9,6 +9,7 @@ import { db } from "../firebase";
 export const driverService = {
   /**
    * Actualiza la información de un conductor y gestiona el vínculo con el vehículo.
+   * También sincroniza la capacidad de asientos en los horarios asignados.
    */
   updateDriver: async (driverId, data, oldVehicleId = null) => {
     const updates = {};
@@ -27,13 +28,33 @@ export const driverService = {
       // Vincular al nuevo vehículo (Soporte dual de keys conductorId/driverId para compatibilidad)
       updates[`vehiculos/${data.vehiculoId}/conductorId`] = driverId;
       updates[`vehiculos/${data.vehiculoId}/driverId`] = driverId;
+
+      // 3. ⚡ SINCRONIZACIÓN DE CAPACIDAD EN TIEMPO REAL ⚡
+      // Buscamos los datos técnicos del vehículo para obtener su capacidad
+      const vehicleSnap = await get(ref(db, `vehiculos/${data.vehiculoId}`));
+      if (vehicleSnap.exists()) {
+        const capacity = parseInt(vehicleSnap.val().capacidad) || 13;
+
+        // Actualizamos cada horario asignado al conductor con la capacidad del bus
+        if (data.horariosAsignados && data.horariosAsignados.length > 0) {
+          data.horariosAsignados.forEach(hId => {
+            // Ponemos el ID del conductor y del vehículo en el horario
+            updates[`horarios/${hId}/conductorId`] = driverId;
+            updates[`horarios/${hId}/vehiculoId`] = data.vehiculoId;
+
+            // Reiniciamos la disponibilidad de asientos basándonos en el bus (13/13)
+            updates[`disponibilidadAsientos/${hId}/totalAsientos`] = capacity;
+            updates[`disponibilidadAsientos/${hId}/asientosDisponibles`] = capacity;
+          });
+        }
+      }
     }
 
     try {
       await update(ref(db), updates);
       return { success: true };
     } catch (error) {
-      console.error("Error actualizando conductor y vínculo:", error);
+      console.error("Error actualizando conductor y capacidad:", error);
       throw error;
     }
   },
@@ -85,6 +106,17 @@ export const driverService = {
       conductorId: driverData.id,
       estado: 'activo'
     };
+
+    // 3. ⚡ SINCRONIZACIÓN DE CAPACIDAD INICIAL ⚡
+    const capacity = parseInt(vehicleData.capacidad) || 13;
+    if (driverData.horariosAsignados && driverData.horariosAsignados.length > 0) {
+      driverData.horariosAsignados.forEach(hId => {
+        updates[`horarios/${hId}/conductorId`] = driverData.id;
+        updates[`horarios/${hId}/vehiculoId`] = vehicleData.placa;
+        updates[`disponibilidadAsientos/${hId}/totalAsientos`] = capacity;
+        updates[`disponibilidadAsientos/${hId}/asientosDisponibles`] = capacity;
+      });
+    }
 
     try {
       await update(ref(db), updates);
