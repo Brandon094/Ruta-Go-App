@@ -108,7 +108,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
           {filteredList.length > 0 ? (
             <div className="space-y-6">
               {filteredList.map(res => (
-                <ReservationHistoryCard key={res.id} res={res} />
+                <ReservationHistoryCard key={res.id} res={res} role={role} />
               ))}
             </div>
           ) : (
