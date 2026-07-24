@@ -1,4 +1,4 @@
-import { ref, update, get, serverTimestamp, increment, push } from "firebase/database";
+import { ref, update, get, serverTimestamp, increment, push, runTransaction } from "firebase/database";
 import { db } from "../firebase";
 
 /**
@@ -10,31 +10,36 @@ export const reservationService = {
    * Crea una nueva reserva oficial en la base de datos (Motor de Reservas Web v1.6.0).
    */
   createReservation: async (reservationData, scheduleId, seatNumber) => {
-    const resRef = push(ref(db, 'reservas'));
-    const finalData = { ...reservationData, idReservation: resRef.key };
-
-    const updates = {};
-    updates[`reservas/${resRef.key}`] = finalData;
-
     try {
+      const resRef = push(ref(db, 'reservas'));
+      const finalData = { ...reservationData, idReservation: resRef.key };
+
+      const updates = {};
+      updates[`reservas/${resRef.key}`] = finalData;
+
       // 1. Registro del tiquete
       await update(ref(db), updates);
 
-      // 2. Bloqueo físico del asiento con transacción para mantener integridad del contador
+      // 2. Bloqueo físico del asiento con transacción auto-sanadora
       const dispRef = ref(db, `disponibilidadAsientos/${scheduleId}`);
       await runTransaction(dispRef, (current) => {
         if (!current) return current;
         if (!current.asientosOcupados) current.asientosOcupados = {};
 
         const idx = parseInt(seatNumber);
+
+        // Marcar asiento como ocupado
         if (Array.isArray(current.asientosOcupados)) {
           current.asientosOcupados[idx] = true;
         } else {
           current.asientosOcupados[seatNumber] = true;
         }
 
-        const disp = current.asientosDisponibles || 0;
-        current.asientosDisponibles = Math.max(0, disp - 1);
+        // RECALCULAR DISPONIBLES (Auto-sanación de contador)
+        const total = current.totalAsientos || 13;
+        const occupiedCount = Object.values(current.asientosOcupados).filter(v => v === true).length;
+        current.asientosDisponibles = Math.max(0, total - occupiedCount);
+
         return current;
       });
 
@@ -72,7 +77,7 @@ export const reservationService = {
   },
 
   /**
-   * Cancela una reserva y libera el asiento automáticamente (Fix: Sync de contador).
+   * Cancela una reserva y libera el asiento automáticamente (Fix: Sincronización Total).
    */
   cancelReservation: async (reservationId, scheduleId, seatNumber) => {
     const updates = {};
@@ -86,7 +91,7 @@ export const reservationService = {
       // 1. Marcar cancelación en el tiquete
       await update(ref(db), updates);
 
-      // 2. Liberación atómica del asiento
+      // 2. Liberación atómica del asiento con re-conteo
       if (scheduleId && seatNumber !== undefined) {
         const dispRef = ref(db, `disponibilidadAsientos/${scheduleId}`);
         await runTransaction(dispRef, (current) => {
@@ -94,19 +99,18 @@ export const reservationService = {
           if (!current.asientosOcupados) return current;
 
           const idx = parseInt(seatNumber);
-          const isOccupied = Array.isArray(current.asientosOcupados)
-            ? current.asientosOcupados[idx] === true
-            : current.asientosOcupados[seatNumber] === true;
 
-          // Solo liberar si realmente estaba ocupado para evitar conteos falsos
-          if (isOccupied) {
-            if (Array.isArray(current.asientosOcupados)) {
-              current.asientosOcupados[idx] = false;
-            } else {
-              current.asientosOcupados[seatNumber] = false;
-            }
-            current.asientosDisponibles = (current.asientosDisponibles || 0) + 1;
+          // Liberar el asiento
+          if (Array.isArray(current.asientosOcupados)) {
+            current.asientosOcupados[idx] = false;
+          } else {
+            current.asientosOcupados[seatNumber] = false;
           }
+
+          // RECALCULAR DISPONIBLES (Garantiza integridad del dashboard)
+          const total = current.totalAsientos || 13;
+          const occupiedCount = Object.values(current.asientosOcupados).filter(v => v === true).length;
+          current.asientosDisponibles = Math.max(0, total - occupiedCount);
 
           return current;
         });
