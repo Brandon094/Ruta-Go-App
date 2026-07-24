@@ -24,6 +24,7 @@ import { UserDirectory } from './components/users/UserDirectory';
 import { DriverDirectory } from './components/drivers/DriverDirectory';
 import { OwnerDirectory } from './components/owners/OwnerDirectory';
 import { VehicleDirectory } from './components/vehicles/VehicleDirectory';
+import { PricingDirectory } from './components/pricing/PricingDirectory';
 import { DriverItinerary } from './components/itinerary/DriverItinerary';
 import { HistoryDirectory } from './components/history/HistoryDirectory';
 import { ScheduleDirectory } from './components/schedules/ScheduleDirectory';
@@ -74,7 +75,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, users: usersList, owners, schedules, reservations, routeStats, vehicles } = useRealtimeStats(user);
+  const { role, stats, drivers, users: usersList, owners, schedules, reservations, prices, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -133,6 +134,7 @@ function App() {
             activeTab === 'profile' ? 'Mi Perfil' :
             activeTab === 'owners' ? 'Gestión de Socios' :
             activeTab === 'vehicles' ? 'Mi Flota' :
+            activeTab === 'pricing' ? 'Configuración de Tarifas' :
             activeTab === 'passenger_view' ? 'Centro de Reservas' :
             activeTab === 'itinerary' ? 'Mi Itinerario' :
             activeTab === 'drivers' ? 'Conductores' :
@@ -196,6 +198,8 @@ function App() {
               }}
               role={role}
             />
+          ) : activeTab === 'pricing' ? (
+            <PricingDirectory prices={prices || {}} />
           ) : activeTab === 'passenger_view' ? (
             <PassengerOverview
               stats={stats}

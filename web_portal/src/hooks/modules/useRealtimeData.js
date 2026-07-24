@@ -15,6 +15,7 @@ export const useRealtimeData = (user, role) => {
     vehicles: [],
     schedules: [],
     reservations: [],
+    prices: {},
     stats: {
       totalUsers: 0,
       activeDrivers: 0,
@@ -41,8 +42,8 @@ export const useRealtimeData = (user, role) => {
     const userType = role.type;
     const ownedPlates = role.ownedPlates || [];
 
-    // --- 👥 USUARIOS (Solo ADMIN) ---
-    if (userType === 'ADMIN') {
+    // --- 👥 USUARIOS (ADMIN y DUEÑOS para búsqueda operativa) ---
+    if (userType === 'ADMIN' || userType === 'OWNER') {
       const uSub = onValue(firebaseManager.getRef('usuarios'), (snap) => {
         if (snap.exists() && isMounted) {
           const list = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val }));
@@ -195,6 +196,14 @@ export const useRealtimeData = (user, role) => {
       }
     });
     unsubs.push(hSub);
+
+    // --- 💰 PRECIOS ---
+    const pSub = onValue(firebaseManager.getRef('precios'), (snap) => {
+      if (snap.exists() && isMounted) {
+        setData(prev => ({ ...prev, prices: snap.val() }));
+      }
+    });
+    unsubs.push(pSub);
 
     return () => { isMounted = false; unsubs.forEach(unsub => unsub()); };
   }, [user, role.loading, role.type, role.ownedPlates]);

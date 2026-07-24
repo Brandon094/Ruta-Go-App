@@ -20,6 +20,7 @@ export const useRealtimeStats = (user) => {
     vehicles,
     schedules,
     reservations,
+    prices,
     stats,
     routeStats
   } = useRealtimeData(user, role);
@@ -38,6 +39,7 @@ export const useRealtimeStats = (user) => {
     owners,
     schedules,
     reservations,
+    prices,
     routeStats,
     vehicles
   };

@@ -48,7 +48,7 @@ La inteligencia del portal reside en la escucha selectiva de nodos de Firebase R
 *   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado, gestiona el fallback de capacidad de vehículos y sincroniza los datos del perfil actual desde `/usuarios`.
 *   **`driverService.js`**: Capa de servicios para operaciones atómicas.
 *   **Gestión de Perfil Unificada**: Lógica de escritura centralizada en el nodo `/usuarios` para garantizar el cumplimiento de las reglas de seguridad de Firebase en todos los roles (Admin/Owner/Driver/Passenger).
-*   **Gobernanza Pro**: Motores de moderación de usuarios (Ban/Inactivar) y lógica de vinculación de activos mediante selectores de dueños aprobados.
+*   **Gobernanza Pro**: Motores de moderación de usuarios (Ban/Inactivar), lógica de vinculación de activos mediante selectores de dueños aprobados y **Gestión de Tarifas Centralizada** para el Admin Root.
 *   **Gestión de Operadores**: Interfaz dividida en "Operando Hoy" y "Fuera de Servicio" para una rápida toma de decisiones.
 *   **UI Mirror (Planilla)**: Motor de renderizado dinámico con soporte para **Auto-Scroll** al próximo despacho y visualización de cupos reales.
 

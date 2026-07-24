@@ -24,6 +24,7 @@ Este documento detalla los requisitos funcionales y no funcionales de la suite t
 *   **RF-W01 (Gestión de Identidad):** Los administradores pueden moderar pasajeros (Ban/Inactivar/Borrar) y los dueños vincular conductores mediante búsqueda por Email.
 *   **RF-W02 (Responsive Design):** Interfaz adaptativa que garantiza funcionalidad 100% en dispositivos móviles y PC, con navegación especializada por rol.
 *   **RF-W04 (Vinculación Root):** El Administrador Root puede asignar conductores a dueños de flota específicos mediante un selector de socios aprobados.
+*   **RF-W05 (Gestión de Precios):** El Administrador Root puede modificar los precios de los pasajes por ruta, sincronizando el cambio con la App móvil y el motor de reservas.
 *   **RF-W03 (Planilla Privada):** En la visualización de horarios, los datos de ocupación de buses de terceros deben permanecer ocultos para dueños externos.
 
 ---
