@@ -52,14 +52,21 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## 📉 Fase 4: SaaS Contable y Diversificación (Largo Plazo)
-*Objetivo: Solución integral de movilidad regional y control definitivo del flujo de paquetería local.*
+## 📉 Fase 4: Diversificación y Expansión Regional (Largo Plazo)
+*Objetivo: Solución integral de movilidad departamental y control definitivo del flujo de paquetería local.*
 
-1.  **🚚 Módulo de Encomiendas "Ruta-Go Cargo"**:
+### 🗺️ 1. Rutas Dinámicas & Multi-Municipio
+*   [ ] **📍 Gestión de Localidades**: Módulo para que el Admin Root añada nuevos municipios al ecosistema (Paicol, Tesalia, Neiva, etc.).
+*   [ ] **⚙️ Creador de Itinerarios CRUD**: Interfaz para generar nuevos turnos y rutas bajo demanda sin modificar el código base.
+*   [ ] **🔍 Buscador Universal de Viajes**: Reemplazo de pestañas fijas por selectores de Origen/Destino en el Dashboard de pasajeros.
+
+### 🚚 2. Logística & Servicios Extra
+1.  **📦 Módulo de Encomiendas "Ruta-Go Cargo"**:
     *   Registro rápido de paquetes físicos por parte del conductor.
     *   Buscador de estado de guía para pasajeros con chat directo.
 2.  **🛡️ Seguro de Viaje Digital**: Micro-seguros por trayecto integrados en la reserva.
-3.  **🤖 IA de Predicción de Demanda**: Sugerencias de turnos extra basadas en datos históricos de Nátaga y La Plata.
+3.  **📊 SaaS Contable Premium para Dueños**: Control de egresos (mantenimiento, gasolina) y cálculo de utilidad neta automatizado.
+4.  **🤖 IA de Predicción de Demanda**: Sugerencias de turnos extra basadas en datos históricos regionales.
 
 ---
 **ChopCode Solutions - 2026**
