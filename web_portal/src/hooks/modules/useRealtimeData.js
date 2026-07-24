@@ -91,7 +91,27 @@ export const useRealtimeData = (user, role) => {
 
   // --- 🧠 Lógica de Filtrado y Derivación (Memoized) ---
   return useMemo(() => {
-    if (role.loading || raw.loading) return { ...raw, stats: { loading: true }, routeStats: {} };
+    const defaultStats = {
+      totalUsers: 0,
+      activeDrivers: 0,
+      totalVehicles: 0,
+      totalOwners: 0,
+      todayReservations: 0,
+      totalRevenue: 0,
+      confirmedReservations: 0,
+      canceledReservations: 0,
+      totalUserReservations: 0,
+      loading: true
+    };
+
+    const defaultRouteStats = {
+      toLaPlata: { reservations: 0, seats: 0 },
+      toNataga: { reservations: 0, seats: 0 }
+    };
+
+    if (!user || role.loading || raw.loading) {
+      return { ...raw, stats: defaultStats, routeStats: defaultRouteStats };
+    }
 
     const userType = role.type;
     const ownedPlates = role.ownedPlates || [];
@@ -172,6 +192,7 @@ export const useRealtimeData = (user, role) => {
         totalVehicles: filteredVehicles.length,
         totalOwners: raw.owners.length,
         todayReservations: totalResHoy,
+        totalFreeSeats: lpSeats + ntSeats,
         totalRevenue: totalRev,
         confirmedReservations: confirmed,
         canceledReservations: canceled,
@@ -183,5 +204,5 @@ export const useRealtimeData = (user, role) => {
         toNataga: { reservations: ntRes, seats: ntSeats }
       }
     };
-  }, [raw, role, user.uid]);
+  }, [raw, role, user?.uid]);
 };
