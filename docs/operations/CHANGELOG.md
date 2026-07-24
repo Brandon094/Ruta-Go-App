@@ -4,6 +4,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.2] - 2026-07-24 (Security Rules & Platform Parity Fix)
+### Añadido
+- **Blindaje Cross-Platform**: Actualización profunda de las Reglas de Seguridad de Firebase para soportar de forma nativa los nodos de `/chats/` y `/calificaciones_conductores/`.
+- **Soporte Híbrido de Identidad**: Implementación de lógica dual en reglas de seguridad para reconocer tanto `userId` (Web/Android) como `usuarioId` (Legacy/Android), resolviendo problemas de acceso al chat.
+- **Identidad de Conductor Unificada**: Soporte para llaves `driverId` y `conductorId` en las reglas de validación de chat y reservas.
+
+### Cambiado
+- **UI de Lanzamiento**: Eliminación definitiva de los banners de "Reserva Web en desarrollo", marcando la salida de fase Beta para el motor de reservas en iPhone.
+- **Refactor de Historial Pro**: Optimización de la tarjeta de historial para resolver nombres de conductores en tiempo real, incluso si los datos en la reserva son parciales.
+
+### Corregido
+- **Uncaught TypeError (find)**: Solucionado error crítico en `DriverOverview` que ocurría al intentar acceder a la lista de conductores antes de finalizar la carga de Firebase.
+- **Null-Check Atómico**: Implementación de guardas `Array.isArray` y optional chaining en todos los Dashboards para prevenir fallos por datos asíncronos.
+- **Tag PWA Deprecated**: Actualización del meta-tag `mobile-web-app-capable` en `index.html` para cumplimiento de estándares modernos.
+
 ## [1.6.1] - 2026-07-24 (Instant Messaging & Social Sync)
 ### Añadido
 - **Chat en Tiempo Real**: Implementación del motor de mensajería asíncrona vinculado a reservas. Los pasajeros y conductores ahora pueden coordinar detalles del viaje directamente desde el portal web.

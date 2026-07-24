@@ -44,6 +44,14 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 *   **Paridad de Identidad**: El sistema soporta los campos `userId` y `usuarioId` de forma intercambiable para garantizar la visibilidad del historial entre la App Android y el Portal Web.
 *   **Validación Cruzada**: El acceso a una reserva requiere que el `auth.uid` sea del Pasajero, el Conductor asignado, el Dueño del bus o el Admin.
 
+### 💬 Mensajería Instantánea (/chats)
+*   **Privacidad Contextual**: El acceso de lectura y escritura está restringido a los participantes directos de la reserva (`userId`/`usuarioId` o `driverId`/`conductorId`).
+*   **Mediación**: El Admin Root y los Dueños de la flota asignada tienen permisos de lectura para soporte y mediación logística.
+
+### ⭐ Reputación y Feedback (/calificaciones_conductores)
+*   **Transparencia**: Lectura pública para usuarios autenticados para fomentar la confianza en el ecosistema.
+*   **Integridad de Reseña**: La escritura es atómica y no permite ediciones (`!data.exists()`). Solo el pasajero titular de la reserva puede generar la calificación.
+
 ---
 
 ## 📊 3. Protección Financiera (/estadisticas)
