@@ -4,11 +4,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.6.5] - 2026-07-24 (Operational Integrity & Dual History Flow)
+## [1.6.5] - 2026-07-24 (Operational Integrity & Full Web Parity)
 ### Añadido
+- **Paridad Total con App Nativa**: Consolidación de todas las funciones operativas de Pasajero y Conductor en la web.
 - **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.
 - **Feedback Contextual Inteligente**: Implementación de mensajes de estado vacío diferenciados para el historial personal (*"No hay actividad registrada"*) y el monitor de negocio (*"Sin despachos registrados"*).
 - **Redirección Proactiva para Jefes**: Los administradores y dueños ahora ven un botón de acción en su historial personal vacío que los lleva directamente al flujo de reserva (Venta Asistida).
+- **Atomic Architecture Foundation**: Migración de todos los diálogos y botones a un sistema de diseño atómico (`Modal.jsx`, `Button.jsx`, `IconRow.jsx`).
 
 ### Cambiado
 - **Arquitectura de Datos Personalizada**: Refactorización del hook `useRealtimeData.js` para generar flujos de información independientes para `personalReservations` y `businessReservations`, garantizando la privacidad y limpieza de las estadísticas de perfil.
@@ -16,6 +18,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ### Corregido
 - **Bug de Identidad en Historial**: Solucionado el problema donde los nombres de conductores/pasajeros no se resolvían correctamente en la lista. Ahora el sistema realiza un lookup en tiempo real sobre la base de datos maestra.
+- **Robustez de Carga**: Implementación de guards para evitar errores de renderizado cuando los datos de Firebase aún no han sido recibidos.
 
 ## [1.6.2] - 2026-07-24 (Security Rules & Platform Parity Fix)
 ### Añadido

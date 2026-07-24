@@ -35,6 +35,7 @@ La puerta de entrada (`LandingPage.jsx`) está diseñada como un embudo de conve
 El portal implementa un sistema de **Control de Acceso Basado en Roles** con una UX diferenciada por perfil:
 
 ### 📱 Experiencia Operativa (Passenger & Driver)
+*   **Paridad Total**: El portal web ahora ofrece el 100% de las funcionalidades críticas de la App nativa (Android), incluyendo Reservas, Tiquetes, Chat y Calificaciones.
 *   **Interfaz Mobile-First**: Eliminación total del Sidebar para maximizar el foco en la tarea.
 *   **Navegación**: Exclusiva mediante **Bottom Nav** (Home, Historial, Perfil), replicando la ergonomía de la App nativa.
 
