@@ -1,302 +1,341 @@
-import React, { useState, useEffect } from 'react';
-import { X, Loader2, CheckCircle2, UserPlus, Info, Bus, Ticket, User } from 'lucide-react';
-import { ref, onValue, runTransaction, set, push } from "firebase/database";
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  X, Loader2, CheckCircle2, UserPlus, Info, Bus, Ticket, User,
+  Armchair, SteeringWheel, RotateCw, AlertTriangle
+} from 'lucide-react';
+import { ref, onValue, runTransaction, set, push, get, serverTimestamp, increment } from "firebase/database";
 import { db } from '../../firebase';
+import { Badge } from '../ui/Badge';
+import { Button } from '../ui/Button';
 
 /**
  * 💺 Componente: SeatManagementModal
- * Soporta dos modos:
- * 1. DRIVER/ADMIN: Gestión total (Venta física, liberación).
- * 2. PASSENGER: Selección y creación de reserva oficial.
+ * UI Espejo de la App Móvil para gestión de asientos (v1.5.1)
  */
 export function SeatManagementModal({ schedule, onClose, role }) {
   const [loading, setLoading] = useState(true);
-  const [seats, setSeats] = useState({});
+  const [availability, setAvailability] = useState({ asientosOcupados: {}, totalAsientos: 13, asientosDisponibles: 13 });
+  const [reservations, setReservations] = useState([]);
   const [updating, setUpdating] = useState(false);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [successReservation, setSuccessReservation] = useState(false);
+  const [routePrice, setRoutePrice] = useState(12000);
 
   const isPassenger = role?.type === 'PASSENGER';
+  const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER' || role?.type === 'DRIVER';
 
   useEffect(() => {
     if (!schedule?.id) return;
 
-    const seatRef = ref(db, `disponibilidadAsientos/${schedule.id}/asientosOcupados`);
-    const unsub = onValue(seatRef, (snap) => {
-      if (snap.exists()) setSeats(snap.val());
-      else setSeats({});
+    // 1. Escuchar Disponibilidad Técnica
+    const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
+    const unsubDisp = onValue(dispRef, (snap) => {
+      if (snap.exists()) setAvailability(snap.val());
       setLoading(false);
     });
 
-    return () => unsub();
+    // 2. Escuchar Reservas (Para diferenciar App de Local)
+    const resRef = ref(db, `reservas`);
+    const unsubRes = onValue(resRef, (snap) => {
+      if (snap.exists()) {
+        const list = Object.values(snap.val()).filter(r => r.scheduleId === schedule.id && r.reservationStatus !== 'Cancelada');
+        setReservations(list);
+      }
+    });
+
+    // 3. Obtener Precio de la Ruta
+    const fetchPrice = async () => {
+      const parts = schedule.ruta.toLowerCase().split(/ -> | ➔ /);
+      if (parts.length === 2) {
+        const pSnap = await get(ref(db, `precios/${parts[0].trim()}/${parts[1].trim()}`));
+        if (pSnap.exists()) setRoutePrice(pSnap.val());
+      }
+    };
+    fetchPrice();
+
+    return () => {
+      unsubDisp();
+      unsubRes();
+    };
   }, [schedule]);
 
-  // --- LÓGICA DE CONDUCTOR (Venta Física) ---
-  const togglePhysicalSeat = async (seatId) => {
-    if (updating) return;
-    setUpdating(true);
+  // --- 🧠 Lógica de Clasificación de Asientos ---
+  const seatStates = useMemo(() => {
+    const states = {};
+    const occupiedIds = Object.keys(availability.asientosOcupados || {}).filter(k => availability.asientosOcupados[k] === true);
 
-    const isOccupied = seats[seatId] === true;
-    const seatStatusRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
+    occupiedIds.forEach(id => {
+      const res = reservations.find(r => r.reservedSeat.toString() === id.toString());
+      if (res) {
+        states[id] = 'APP'; // Ocupado por aplicación
+      } else {
+        states[id] = 'LOCAL'; // Venta física (bloqueado por conductor)
+      }
+    });
+    return states;
+  }, [availability.asientosOcupados, reservations]);
+
+  // --- 🛒 Venta Física (Bloqueo/Liberación) ---
+  const handlePhysicalToggle = async (seatId) => {
+    if (updating || isPassenger) return;
+    const currentState = seatStates[seatId];
+
+    if (currentState === 'APP') {
+      alert("⚠️ Este asiento está reservado por la App. No puede modificarse manualmente.");
+      return;
+    }
+
+    const action = currentState === 'LOCAL' ? 'liberar' : 'bloquear';
+    if (!window.confirm(`¿Deseas ${action} el asiento #${seatId} para venta física?`)) return;
+
+    setUpdating(true);
+    const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
+    const today = new Date().toISOString().split('T')[0];
 
     try {
-      await runTransaction(seatStatusRef, (currentData) => {
-        if (currentData) {
-          if (!currentData.asientosOcupados) currentData.asientosOcupados = {};
-          const newStatus = !isOccupied;
-          currentData.asientosOcupados[seatId] = newStatus;
-          const currentAvailable = currentData.asientosDisponibles || 0;
-          currentData.asientosDisponibles = newStatus
-            ? Math.max(0, currentAvailable - 1)
-            : currentAvailable + 1;
-        }
-        return currentData;
+      await runTransaction(dispRef, (current) => {
+        if (!current) return current;
+        if (!current.asientosOcupados) current.asientosOcupados = {};
+
+        const isCurrentlyLocal = current.asientosOcupados[seatId] === true;
+        current.asientosOcupados[seatId] = !isCurrentlyLocal;
+        current.asientosDisponibles = isCurrentlyLocal
+          ? (current.asientosDisponibles || 0) + 1
+          : Math.max(0, (current.asientosDisponibles || 0) - 1);
+
+        return current;
       });
+
+      // Si bloqueamos, registramos en estadísticas del conductor (Si el rol lo permite)
+      if (action === 'bloquear' && role.type === 'DRIVER') {
+        const statsRef = ref(db, `estadisticas/${role.uid}/${today}`);
+        await runTransaction(statsRef, (s) => {
+          if (!s) s = { ingresosDiarios: 0, reservasConfirmadas: 0, ultimaActualizacion: Date.now() };
+          s.ingresosDiarios = (s.ingresosDiarios || 0) + routePrice;
+          s.reservasConfirmadas = (s.reservasConfirmadas || 0) + 1;
+          s.ultimaActualizacion = serverTimestamp();
+          return s;
+        });
+      }
     } catch (err) {
-      console.error("Error toggling seat:", err);
+      console.error("Error en venta física:", err);
     } finally {
       setUpdating(false);
     }
   };
 
-  // --- LÓGICA DE PASAJERO (Reserva Oficial) ---
-  const handlePassengerReservation = async () => {
+  // --- 🎫 Reserva Pasajero ---
+  const handlePassengerReserve = async () => {
     if (!selectedSeat || updating) return;
     setUpdating(true);
 
-    const seatStatusRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
-
+    const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
     try {
-      const result = await runTransaction(seatStatusRef, (currentData) => {
-        if (currentData) {
-          if (!currentData.asientosOcupados) currentData.asientosOcupados = {};
-
-          // Doble verificación: ¿Alguien lo ganó mientras yo pensaba?
-          if (currentData.asientosOcupados[selectedSeat]) return; // Abortar
-
-          // Marcar ocupado
-          currentData.asientosOcupados[selectedSeat] = true;
-          currentData.asientosDisponibles = Math.max(0, (currentData.asientosDisponibles || 0) - 1);
+      const result = await runTransaction(dispRef, (current) => {
+        if (current && current.asientosOcupados?.[selectedSeat]) return; // Ya se ocupó
+        if (current) {
+          if (!current.asientosOcupados) current.asientosOcupados = {};
+          current.asientosOcupados[selectedSeat] = true;
+          current.asientosDisponibles = Math.max(0, (current.asientosDisponibles || 0) - 1);
         }
-        return currentData;
+        return current;
       });
 
       if (result.committed) {
-        // Crear el registro oficial en /reservas
         const resRef = push(ref(db, 'reservas'));
-        const now = Date.now();
-        const routeParts = schedule.ruta.split(/ -> | ➔ /);
-
-        const reservationData = {
-          // IDs
+        const parts = schedule.ruta.split(/ -> | ➔ /);
+        await set(resRef, {
           idReservation: resRef.key,
-          idReserva: resRef.key,
           userId: role.uid,
-          usuarioId: role.uid,
           scheduleId: schedule.id,
-          horarioId: schedule.id,
           driverId: schedule.conductorId || "",
-          conductorId: schedule.conductorId || "",
           vehicleId: schedule.vehiculoId || "",
-          vehiculoId: schedule.vehiculoId || "",
-
-          // Información de Viaje
           reservedSeat: parseInt(selectedSeat),
-          puestoReservado: parseInt(selectedSeat),
-          reservationStatus: 'Confirmada',
-          estadoReserva: 'Confirmada',
-          origin: routeParts[0] || "Nátaga",
-          origen: routeParts[0] || "Nátaga",
-          destination: routeParts[1] || "La Plata",
-          destino: routeParts[1] || "La Plata",
+          reservationStatus: 'Por confirmar',
+          origin: parts[0] || "Nátaga",
+          destination: parts[1] || "La Plata",
           departureTime: schedule.hora,
-          horaSalida: schedule.hora,
-          routeName: schedule.ruta,
-
-          // Auditoría y Precios
-          price: 12000,
-          precio: 12000,
-          reservationDate: now,
-          fechaReserva: now,
-          travelDate: now, // En v1.5 se usa como fecha de ejecución
-
-          // Usuario
+          price: routePrice,
+          reservationDate: Date.now(),
           name: role?.name || "Pasajero Web",
-          nombre: role?.name || "Pasajero Web",
-          email: role?.email || ""
-        };
-
-        await set(resRef, reservationData);
+          phone: role?.phone || ""
+        });
         setSuccessReservation(true);
       }
     } catch (err) {
-      console.error("Error en reserva pasajero:", err);
+      alert("Error en reserva: " + err.message);
     } finally {
       setUpdating(false);
     }
   };
-
-  const seatGrid = Array.from({ length: 16 }, (_, i) => (i + 1).toString());
 
   if (successReservation) {
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-secondary-900/90 backdrop-blur-xl" />
-        <div className="relative max-w-sm w-full bg-white rounded-[3rem] p-10 text-center space-y-8 animate-in zoom-in-95 duration-500">
-           <div className="w-20 h-20 bg-green-100 rounded-3xl flex items-center justify-center text-green-600 mx-auto animate-bounce">
-              <CheckCircle2 size={40} />
+        <div className="absolute inset-0 bg-[#061426]/95 backdrop-blur-xl" />
+        <div className="relative max-w-sm w-full bg-[#0A1F30] rounded-[3rem] p-10 text-center space-y-8 animate-in zoom-in-95 duration-500 border border-white/5 shadow-2xl">
+           <div className="w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center text-white mx-auto animate-bounce shadow-lg shadow-primary-500/20">
+              <CheckCircle2 size={48} />
            </div>
-           <div className="space-y-2">
-              <h2 className="text-2xl font-black text-slate-800 tracking-tight">¡Reserva Exitosa!</h2>
-              <p className="text-slate-500 text-sm font-medium">Tu asiento #{selectedSeat} ha sido bloqueado. Presenta tu tiquete digital al abordar.</p>
+           <div className="space-y-3">
+              <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic">¡Reserva Enviada!</h2>
+              <p className="text-slate-400 text-sm font-medium leading-relaxed">Tu solicitud para el asiento <span className="text-primary-500 font-black">#{selectedSeat}</span> está en manos del conductor. Te notificaremos al confirmar.</p>
            </div>
-           <button onClick={onClose} className="w-full py-4 bg-secondary-900 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest text-xs">
-              Ver mis viajes
-           </button>
+           <Button onClick={onClose} variant="primary" size="full" className="rounded-2xl">Entendido</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-10">
-      <div className="absolute inset-0 bg-secondary-900/80 backdrop-blur-md" onClick={onClose} />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-10 overflow-hidden">
+      <div className="absolute inset-0 bg-[#061426]/90 backdrop-blur-md" onClick={onClose} />
 
-      <div className="relative w-full max-w-2xl bg-white dark:bg-[#061929] rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border dark:border-white/5">
+      <div className="relative w-full max-w-4xl bg-[#061426] rounded-[2.5rem] shadow-2xl flex flex-col max-h-[95vh] border border-white/5 animate-in slide-in-from-bottom-4 duration-500">
 
-        {/* Header */}
-        <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between shrink-0 bg-slate-50/50 dark:bg-white/5">
+        {/* Header (Android Style) */}
+        <div className="bg-primary-500 p-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg ${isPassenger ? 'bg-blue-600 shadow-blue-500/20' : 'bg-primary-500 shadow-primary-500/20'}`}>
+            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white shadow-inner">
                {isPassenger ? <Ticket size={24} /> : <Bus size={24} />}
             </div>
-            <div>
-              <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                {isPassenger ? 'Selecciona tu Asiento' : 'Venta Física de Pasajes'}
+            <div className="text-white">
+              <h3 className="text-xl font-black uppercase tracking-tight italic">
+                {isPassenger ? 'Selecciona tu Asiento' : 'Gestión de Inventario'}
               </h3>
-              <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest">{schedule.hora} • {schedule.ruta}</p>
+              <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest">{schedule.ruta} • {schedule.hora}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-3 text-slate-400 dark:text-white/20 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-all">
-            <X size={24} />
-          </button>
+          <button onClick={onClose} className="p-2 text-white/60 hover:text-white transition-colors"><X size={28} /></button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-6 lg:p-10 flex flex-col md:flex-row gap-10">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {/* Bus Layout */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                 <h4 className="text-xs font-black text-slate-400 dark:text-white/40 uppercase tracking-widest">Esquema del Bus</h4>
-                 <div className="flex gap-4">
-                    <Legend item="Libre" color="bg-green-100 dark:bg-green-500/20 border-green-200 dark:border-green-500/30" />
-                    <Legend item="Ocupado" color="bg-orange-500 border-orange-600" />
+          {/* BUS LAYOUT (Android Mirror) */}
+          <div className="flex-1 space-y-8">
+            <div className="bg-[#0A1F30] rounded-[3rem] p-10 border border-white/5 shadow-inner">
+               <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-10">Cabina del Vehículo</p>
+
+               {loading ? (
+                 <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-primary-500" size={40} /></div>
+               ) : (
+                 <div className="space-y-12">
+                   {/* Cabina: [Driver] [1] [2] / [3] [4] [5] */}
+                   <div className="grid grid-cols-3 gap-6 max-w-xs mx-auto">
+                      <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-[#061426] shadow-lg shadow-amber-500/10">
+                         <SteeringWheel size={32} />
+                      </div>
+                      <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} onClick={() => isPassenger ? setSelectedSeat("1") : handlePhysicalToggle("1")} />
+                      <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} onClick={() => isPassenger ? setSelectedSeat("2") : handlePhysicalToggle("2")} />
+                      <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} onClick={() => isPassenger ? setSelectedSeat("3") : handlePhysicalToggle("3")} />
+                      <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} onClick={() => isPassenger ? setSelectedSeat("4") : handlePhysicalToggle("4")} />
+                      <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} onClick={() => isPassenger ? setSelectedSeat("5") : handlePhysicalToggle("5")} />
+                   </div>
+
+                   <div className="w-24 h-px bg-white/5 mx-auto" />
+
+                   <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Zona de Pasajeros</p>
+
+                   {/* Zona Trasera Layout */}
+                   <div className="grid grid-cols-5 gap-4 max-w-sm mx-auto">
+                      <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} onClick={() => isPassenger ? setSelectedSeat("6") : handlePhysicalToggle("6")} />
+                      <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} onClick={() => isPassenger ? setSelectedSeat("7") : handlePhysicalToggle("7")} />
+                      <div className="col-span-1" /> {/* Pasillo */}
+                      <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} onClick={() => isPassenger ? setSelectedSeat("10") : handlePhysicalToggle("10")} />
+                      <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} onClick={() => isPassenger ? setSelectedSeat("11") : handlePhysicalToggle("11")} />
+
+                      <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} onClick={() => isPassenger ? setSelectedSeat("8") : handlePhysicalToggle("8")} />
+                      <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} onClick={() => isPassenger ? setSelectedSeat("9") : handlePhysicalToggle("9")} />
+                      <div className="col-span-1" /> {/* Pasillo */}
+                      <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} onClick={() => isPassenger ? setSelectedSeat("12") : handlePhysicalToggle("12")} />
+                      <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} onClick={() => isPassenger ? setSelectedSeat("13") : handlePhysicalToggle("13")} />
+                   </div>
                  </div>
-              </div>
+               )}
+            </div>
 
-              <div className="bg-slate-50 dark:bg-black/20 rounded-[2.5rem] p-8 border border-slate-100 dark:border-white/5 relative">
-                {loading ? (
-                  <div className="h-64 flex items-center justify-center">
-                    <Loader2 className="animate-spin text-primary-500" size={32} />
+            {/* LEYENDA */}
+            <div className="flex justify-center gap-6 bg-[#0A1F30] py-4 rounded-2xl border border-white/5">
+               <Legend label="Libre" color="bg-[#061426] border-white/10" />
+               <Legend label="App" color="bg-red-500" />
+               <Legend label="Local" color="bg-primary-500" />
+               {isPassenger && <Legend label="Tuyo" color="bg-green-500" />}
+            </div>
+          </div>
+
+          {/* SIDE PANEL: INFO & ACCIONES */}
+          <div className="w-full md:w-80 space-y-6">
+             <div className="bg-[#0A1F30] p-8 rounded-[2rem] border border-white/5 space-y-6">
+                <div className="flex items-center gap-3">
+                   <Info className="text-primary-500" size={20} />
+                   <h4 className="text-sm font-black text-white uppercase italic tracking-tight">Estado del Despacho</h4>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                   <div className="bg-[#061426] p-4 rounded-2xl text-center">
+                      <p className="text-[9px] font-bold text-slate-500 uppercase mb-1">Disponibles</p>
+                      <span className="text-2xl font-black text-white">{availability.asientosDisponibles}</span>
+                   </div>
+                   <div className="bg-[#061426] p-4 rounded-2xl text-center">
+                      <p className="text-[9px] font-bold text-slate-500 uppercase mb-1">Capacidad</p>
+                      <span className="text-2xl font-black text-slate-400">{availability.totalAsientos || 13}</span>
+                   </div>
+                </div>
+
+                {isPassenger ? (
+                  <div className="space-y-6 pt-4 border-t border-white/5">
+                    {selectedSeat ? (
+                      <>
+                        <div className="text-center">
+                           <p className="text-[10px] font-black text-primary-500 uppercase tracking-widest mb-2">Asiento Seleccionado</p>
+                           <span className="text-5xl font-black text-white">#{selectedSeat}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-white bg-[#061426] p-4 rounded-2xl">
+                           <span className="text-xs font-bold opacity-60 uppercase">Valor:</span>
+                           <span className="text-lg font-black text-primary-500">${routePrice.toLocaleString()}</span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="full"
+                          onClick={handlePassengerReserve}
+                          isLoading={updating}
+                          className="!bg-primary-500 !text-[#061426] !py-6"
+                        >
+                          Confirmar Reserva
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="text-center py-6 opacity-30 italic text-slate-400 text-xs">
+                        Toca un asiento libre para continuar con tu reserva.
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-4 gap-4">
-                    {/* Volante */}
-                    <div className="col-start-4 bg-slate-200/50 dark:bg-white/5 rounded-xl h-10 flex items-center justify-center text-slate-400 dark:text-white/20 mb-4">
-                       <div className="w-6 h-6 rounded-full border-4 border-slate-300 dark:border-white/10"></div>
-                    </div>
-
-                    {seatGrid.map(id => {
-                      const isOccupied = seats[id] === true;
-                      const isSelected = selectedSeat === id;
-
-                      return (
-                        <button
-                          key={id}
-                          disabled={updating || (isPassenger && isOccupied)}
-                          onClick={() => isPassenger ? setSelectedSeat(id) : togglePhysicalSeat(id)}
-                          className={`
-                            h-12 rounded-xl border-b-4 font-black text-sm transition-all transform active:scale-90
-                            ${isOccupied
-                              ? 'bg-primary-500 border-orange-700 text-white shadow-lg'
-                              : isSelected
-                                ? 'bg-blue-600 border-blue-800 text-white shadow-xl scale-105'
-                                : 'bg-white dark:bg-[#061426] border-slate-200 dark:border-white/10 text-slate-400 dark:text-white/20 hover:border-green-400 dark:hover:border-green-500 hover:text-green-500 dark:hover:text-green-400'}
-                          `}
-                        >
-                          {id}
-                        </button>
-                      );
-                    })}
+                  <div className="space-y-4 pt-4 border-t border-white/5">
+                     <p className="text-xs font-bold text-slate-400 leading-relaxed">
+                        Toca un asiento para marcarlo como <span className="text-primary-500">Venta Local</span> o para liberarlo si ya fue vendido físicamente.
+                     </p>
+                     <div className="p-4 bg-primary-500/5 rounded-2xl border border-primary-500/10 flex items-start gap-3">
+                        <AlertTriangle className="text-primary-500 shrink-0" size={14} />
+                        <p className="text-[10px] text-primary-400 font-bold uppercase">Los asientos de la App están protegidos.</p>
+                     </div>
                   </div>
                 )}
-              </div>
-            </div>
+             </div>
 
-            {/* Instruction / Confirmation */}
-            <div className="space-y-6">
-              {isPassenger ? (
-                <div className="bg-slate-50 dark:bg-white/5 rounded-[2.5rem] p-8 space-y-6 border dark:border-white/5">
-                  <div className="flex items-center gap-3">
-                     <User className="text-primary-500" size={20} />
-                     <h4 className="font-black uppercase text-sm tracking-tight text-slate-800 dark:text-white">Tu Selección</h4>
-                  </div>
-
-                  {selectedSeat ? (
-                    <div className="space-y-6">
-                      <div className="p-6 bg-white dark:bg-secondary-900 rounded-2xl border border-slate-200 dark:border-white/5 text-center shadow-sm">
-                         <p className="text-[10px] text-slate-400 dark:text-white/40 uppercase font-black tracking-widest">Asiento Seleccionado</p>
-                         <p className="text-5xl font-black text-slate-800 dark:text-white mt-2">#{selectedSeat}</p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                         <span className="text-xs font-bold text-slate-400 dark:text-white/40 uppercase">Valor Pasaje:</span>
-                         <span className="text-lg font-black text-primary-500">$ 12.000</span>
-                      </div>
-                      <button
-                        onClick={handlePassengerReservation}
-                        disabled={updating}
-                        className="w-full py-5 btn-primary rounded-2xl shadow-2xl flex items-center justify-center gap-3 uppercase text-xs tracking-widest"
-                      >
-                        {updating ? <Loader2 className="animate-spin" /> : "Confirmar Reserva"}
-                      </button>
-                    </div>
-                  ) : (
-                    <p className="text-slate-400 dark:text-white/30 text-xs italic text-center py-10">Toca un asiento disponible para continuar.</p>
-                  )}
+             <div className="p-6 bg-[#0A1F30] rounded-2xl border border-white/5 flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sincronización</span>
+                <div className="flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                   <span className="text-[10px] font-bold text-green-500 uppercase">En Vivo</span>
                 </div>
-              ) : (
-                <div className="bg-secondary-900 rounded-[2.5rem] p-8 text-white space-y-4 border border-white/5">
-                  <div className="flex items-center gap-3">
-                     <UserPlus className="text-primary-500" size={20} />
-                     <h4 className="font-black uppercase text-sm tracking-tight">Venta Manual</h4>
-                  </div>
-                  <ul className="space-y-3">
-                    <ListItem text="Toca para vender o liberar cupos." />
-                    <ListItem text="Sincronización instantánea con la App." />
-                  </ul>
-                </div>
-              )}
-
-              <div className="p-6 bg-blue-50 dark:bg-blue-500/10 rounded-[2rem] border border-blue-100 dark:border-blue-500/20 flex items-start gap-4">
-                <Info className="text-blue-500 shrink-0" size={20} />
-                <p className="text-[11px] text-blue-800 dark:text-blue-200 font-medium leading-relaxed">
-                  {isPassenger
-                    ? "Al confirmar, tu reserva será visible para el conductor y se generará tu tiquete digital."
-                    : "Asegúrate de recibir el pago antes de marcar el asiento como vendido."}
-                </p>
-              </div>
-            </div>
+             </div>
           </div>
         </div>
 
-        {/* Footer for non-passengers */}
         {!isPassenger && (
-          <div className="p-8 border-t border-slate-100 dark:border-white/5 flex justify-end shrink-0 bg-slate-50/50 dark:bg-white/5">
-            <button onClick={onClose} className="px-10 py-4 bg-secondary-900 text-white font-black rounded-2xl shadow-xl uppercase tracking-widest text-xs hover:bg-black transition-all">
-              Finalizar Gestión
-            </button>
+          <div className="p-6 border-t border-white/5 flex justify-end">
+             <Button onClick={onClose} variant="ghost" className="text-slate-400">Cerrar Gestión</Button>
           </div>
         )}
       </div>
@@ -304,20 +343,33 @@ export function SeatManagementModal({ schedule, onClose, role }) {
   );
 }
 
-function Legend({ item, color }) {
+/** ⚛️ Molecule: Seat */
+function Seat({ seatId, state, selected, onClick }) {
+  const base = "w-16 h-16 rounded-2xl flex items-center justify-center font-black text-lg transition-all transform active:scale-90 relative overflow-hidden";
+
+  const styles = {
+    'AVAILABLE': "bg-[#061426] border-2 border-white/10 text-slate-500 hover:border-primary-500/50",
+    'APP': "bg-red-500 text-white shadow-lg shadow-red-500/20 cursor-not-allowed",
+    'LOCAL': "bg-primary-500 text-[#061426] shadow-lg shadow-primary-500/20",
+    'SELECTED': "bg-green-500 text-white shadow-lg shadow-green-500/20 ring-4 ring-green-500/30 scale-105"
+  };
+
+  const currentState = selected ? 'SELECTED' : (state || 'AVAILABLE');
+
   return (
-    <div className="flex items-center gap-2">
-      <div className={`w-3 h-3 rounded ${color} border`}></div>
-      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{item}</span>
-    </div>
+    <button onClick={onClick} className={`${base} ${styles[currentState]}`}>
+      <span className="relative z-10">{seatId}</span>
+      <Armchair size={40} className="absolute inset-0 m-auto opacity-10 scale-150 rotate-12" />
+    </button>
   );
 }
 
-function ListItem({ text }) {
+/** ⚛️ Atom: Legend Item */
+function Legend({ label, color }) {
   return (
-    <li className="flex gap-3 text-xs text-white/60 leading-relaxed font-medium">
-      <CheckCircle2 className="text-primary-500 shrink-0" size={14} />
-      {text}
-    </li>
+    <div className="flex items-center gap-2">
+      <div className={`w-3 h-3 rounded-full ${color} border border-white/10`} />
+      <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">{label}</span>
+    </div>
   );
 }
