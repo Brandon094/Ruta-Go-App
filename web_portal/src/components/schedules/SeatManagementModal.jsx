@@ -12,9 +12,9 @@ import { reservationService } from '../../services/reservationService';
 
 /**
  * 💺 Componente: SeatManagementModal
- * UI Espejo 1:1 de la App Móvil (v1.6.7 Robust Mirror)
+ * UI Espejo 1:1 de la App Móvil (v1.7.0 Power Owner)
  */
-export function SeatManagementModal({ schedule, onClose, role, drivers = [], vehicles = [] }) {
+export function SeatManagementModal({ schedule, onClose, role, drivers = [], vehicles = [], activeTab }) {
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState({ asientosOcupados: {}, totalAsientos: 13, asientosDisponibles: 13 });
   const [reservations, setReservations] = useState([]);
@@ -24,7 +24,9 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
   const [routePrice, setRoutePrice] = useState(12000);
   const [detailsExpanded, setDetailsExpanded] = useState(true);
 
-  const isPassenger = role?.type === 'PASSENGER';
+  // Inteligencia de Rol: Si estoy en 'passenger_view', actúo como pasajero aunque sea Admin/Dueño
+  const isPassengerFlow = role?.type === 'PASSENGER' || activeTab === 'passenger_view';
+  const isPassenger = isPassengerFlow;
 
   useEffect(() => {
     if (!schedule?.id) return;
@@ -111,12 +113,12 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
         if (!current.asientosOcupados) current.asientosOcupados = {};
 
         const idx = parseInt(seatId);
-        const isOccupied = Array.isArray(current.asientosOcupados)
+        const isCurrentlyOccupied = Array.isArray(current.asientosOcupados)
           ? current.asientosOcupados[idx] === true
           : current.asientosOcupados[seatId] === true;
 
-        if (action === 'bloquear' && isOccupied) return;
-        if (action === 'liberar' && !isOccupied) return;
+        if (action === 'bloquear' && isCurrentlyOccupied) return;
+        if (action === 'liberar' && !isCurrentlyOccupied) return;
 
         if (Array.isArray(current.asientosOcupados)) {
           current.asientosOcupados[idx] = (action === 'bloquear');
@@ -125,7 +127,10 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
         }
 
         const disp = current.asientosDisponibles || 0;
-        current.asientosDisponibles = (action === 'bloquear') ? Math.max(0, disp - 1) : disp + 1;
+        const total = current.totalAsientos || 13;
+        current.asientosDisponibles = (action === 'bloquear')
+          ? Math.max(0, disp - 1)
+          : Math.min(total, disp + 1);
         return current;
       });
 

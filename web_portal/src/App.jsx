@@ -108,10 +108,11 @@ function App() {
   }
 
   const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
+  const isLoaded = !role?.loading;
 
   return (
     <div className="flex h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white antialiased font-sans overflow-hidden transition-colors duration-300">
-      {isManagement && (
+      {isLoaded && isManagement && (
         <Sidebar
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
@@ -223,7 +224,7 @@ function App() {
         </div>
 
         {/* Bottom Nav Simulation - Espejo de App Móvil */}
-        {!isManagement && (
+        {isLoaded && !isManagement && (
           <div className="h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
              <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
              <BottomNavItem icon={<HistoryIcon size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
@@ -237,7 +238,16 @@ function App() {
       {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} vehicles={vehicles} currentUser={user} role={role} />}
       {isAddingVehicle && <VehicleModal isOpen={true} onClose={() => setIsAddingVehicle(false)} role={role} />}
       {editingVehicle && <VehicleModal isOpen={true} onClose={() => setEditingVehicle(null)} vehicle={editingVehicle} role={role} />}
-      {managingSchedule && <SeatManagementModal schedule={managingSchedule} onClose={() => setManagingSchedule(null)} role={role} drivers={drivers} vehicles={vehicles} />}
+      {managingSchedule && (
+        <SeatManagementModal
+          schedule={managingSchedule}
+          onClose={() => setManagingSchedule(null)}
+          role={role}
+          drivers={drivers}
+          vehicles={vehicles}
+          activeTab={activeTab} // <-- PASAMOS EL CONTEXTO
+        />
+      )}
     </div>
   );
 }
