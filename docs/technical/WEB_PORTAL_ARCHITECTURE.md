@@ -1,6 +1,6 @@
 # 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.5.0), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.6.0), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
@@ -10,7 +10,10 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
-*   **Estructura**: Arquitectura modular basada en componentes desacoplados y centralización de UI-Atoms.
+*   **Estructura Atómica**:
+    *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
+    *   **Molecules**: `SummaryMetric`, `IconRow`. Combinaciones de átomos con lógica visual.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ScheduleTable`, `SeatManagementModal`. Piezas complejas de UI que orquestan la experiencia del usuario.
 *   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
 *   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).

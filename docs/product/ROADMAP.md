@@ -44,10 +44,10 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [x] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
 
 ### 🎫 3. Experiencia de Usuario "Premium"
-*   [ ] **📱 Suite de Viaje en Historial**:
-    *   Visualización de **Tiquete Digital** (diseño espejo de la App).
-    *   Módulo de **Chat en vivo** para coordinar con el conductor.
-    *   Sistema de **Calificación de Viaje** (1-5 estrellas).
+*   [x] **📱 Suite de Viaje en Historial**:
+    *   [x] Visualización de **Tiquete Digital** (diseño espejo de la App).
+    *   [ ] Módulo de **Chat en vivo** para coordinar con el conductor.
+    *   [x] Sistema de **Calificación de Viaje** (1-5 estrellas).
 *   [ ] **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles y redención de puntos.
 
 ---

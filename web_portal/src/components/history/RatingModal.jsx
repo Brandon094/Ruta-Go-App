@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Star, X, Loader2, Send } from 'lucide-react';
+import { Star, Loader2, Send } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { reservationService } from '../../services/reservationService';
 
 /**
  * ⭐ Organism: RatingModal
  * UI Espejo del diálogo 'dialog_calificar_viaje.xml' de Android.
+ * v1.6.0 Atomic & DRY
  */
 export function RatingModal({ reservation, onClose }) {
   const [rating, setRating] = useState(0);
@@ -31,18 +33,8 @@ export function RatingModal({ reservation, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 animate-in fade-in duration-300">
-      <div className="absolute inset-0 bg-[#061426]/95 backdrop-blur-xl" onClick={onClose} />
-
-      <div className="relative max-w-sm w-full bg-[#0A1F30] rounded-[3rem] p-8 text-center space-y-8 animate-in zoom-in-95 duration-300 border border-white/5 shadow-2xl">
-
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 p-2 text-slate-500 hover:text-white transition-colors"
-        >
-          <X size={20} />
-        </button>
-
+    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-sm">
+      <div className="p-8 text-center space-y-8">
         <div className="space-y-2">
           <h2 className="text-2xl font-black text-white uppercase italic tracking-tight">¿Cómo fue tu viaje?</h2>
           <p className="text-slate-400 text-sm font-medium">Califica a tu conductor <span className="text-primary-500 font-bold">{reservation.driver || "Conductor"}</span></p>
@@ -99,6 +91,6 @@ export function RatingModal({ reservation, onClose }) {
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

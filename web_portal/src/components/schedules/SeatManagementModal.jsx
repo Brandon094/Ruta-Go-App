@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  X, Loader2, CheckCircle2, Info, Bus, Ticket, User,
+  Loader2, CheckCircle2, Info, Bus, Ticket, User,
   Armchair, RotateCw, AlertTriangle, Lock, ChevronDown, ChevronUp,
-  MapPin, Clock, XCircle, UserCheck, Milestone
+  MapPin, Clock, XCircle, UserCheck, Milestone, X, MessageSquare, Send
 } from 'lucide-react';
 import { ref, onValue, runTransaction, get, serverTimestamp, increment } from "firebase/database";
 import { db } from '../../firebase';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { reservationService } from '../../services/reservationService';
 
 /**
- * 💺 Componente: SeatManagementModal
- * UI Espejo 1:1 de la App Móvil (v1.7.2 Robust Mirror)
+ * 💺 Component: SeatManagementModal
+ * UI Espejo 1:1 de la App Móvil (v1.7.3 Robust Mirror & DRY)
  */
 export function SeatManagementModal({ schedule, onClose, role, drivers = [], vehicles = [], activeTab }) {
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,8 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
 
   // Inteligencia de Rol: Modo Pasajero si soy Pasajero O si estoy en la pestaña de reservas
   const isPassengerMode = role?.type === 'PASSENGER' || activeTab === 'passenger_view';
+
+  // ... (useEffect and other logic remains the same)
 
   useEffect(() => {
     if (!schedule?.id) return;
@@ -159,9 +162,8 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
 
   if (successReservation) {
     return (
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-[#061426]/95 backdrop-blur-xl" />
-        <div className="relative max-w-sm w-full bg-[#0A1F30] rounded-[3rem] p-10 text-center space-y-8 animate-in zoom-in-95 duration-500 border border-white/5 shadow-2xl">
+      <Modal isOpen={true} onClose={onClose} maxWidth="max-w-sm">
+        <div className="p-10 text-center space-y-8">
            <div className="w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center text-white mx-auto animate-bounce shadow-lg shadow-primary-500/20">
               <CheckCircle2 size={48} />
            </div>
@@ -171,14 +173,19 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
            </div>
            <Button onClick={onClose} variant="primary" size="full" className="rounded-2xl">Entendido</Button>
         </div>
-      </div>
+      </Modal>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#061426] overflow-hidden lg:p-10">
-      <div className="relative w-full max-w-2xl h-full lg:h-auto lg:max-h-[95vh] bg-[#061426] flex flex-col animate-in slide-in-from-bottom-4 duration-500 shadow-2xl">
-
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="max-w-2xl"
+      showClose={false}
+      className="!bg-[#061426] h-full lg:h-auto"
+    >
+      <div className="flex flex-col h-full">
         {/* Header */}
         <div className="bg-primary-500 p-6 flex items-center justify-between shrink-0 shadow-lg">
           <div className="flex items-center gap-6">
@@ -269,7 +276,7 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
           </div>
         )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

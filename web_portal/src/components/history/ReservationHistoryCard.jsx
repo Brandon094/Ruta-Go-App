@@ -2,11 +2,11 @@ import React from 'react';
 import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare, Star } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { HistoryRow } from './HistoryRow';
+import { IconRow } from '../ui/IconRow';
 
 /**
  * 🎫 Organism: ReservationHistoryCard
- * UI Espejo 1:1 de la App Nativa para el historial (v1.8.0 Atomic)
+ * UI Espejo 1:1 de la App Nativa para el historial (v1.6.0 Atomic & DRY)
  */
 export function ReservationHistoryCard({ res, role, onViewTicket, onRate }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
@@ -49,13 +49,13 @@ export function ReservationHistoryCard({ res, role, onViewTicket, onRate }) {
 
       {/* Info Body (Using Molecules) */}
       <div className="space-y-4">
-         <HistoryRow icon={User} rightContent={personPhone}>
-            {personName}
-         </HistoryRow>
+         <IconRow icon={User} rightContent={personPhone}>
+            <span className="text-sm font-black text-white uppercase italic">{personName}</span>
+         </IconRow>
 
-         <HistoryRow icon={MapPin}>
-            {origin} ➔ {destination}
-         </HistoryRow>
+         <IconRow icon={MapPin}>
+            <span className="text-sm font-black text-white uppercase italic">{origin} ➔ {destination}</span>
+         </IconRow>
 
          <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-4 text-left">

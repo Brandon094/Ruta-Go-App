@@ -4,6 +4,26 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.0] - 2026-07-24 (Full Web Parity & Atomic Architecture)
+### Añadido
+- **Tiquete Digital Mirror**: Implementación 1:1 de la interfaz de tiquete de Android para la web, incluyendo cabecera naranja corporativa, divisor punteado (efecto papel) e información detallada de viaje.
+- **Sistema de Calificación (Rating)**: Motor de reputación espejo de la App nativa. Los pasajeros ahora pueden calificar conductores (1-5 estrellas) con comentarios, sincronizando automáticamente el nodo de reputación y marcando la reserva como calificada.
+- **Atomic Design System v2**:
+    - **Átomo `Modal.jsx`**: Centralización de toda la lógica de diálogos y overlays con animaciones estandarizadas.
+    - **Átomo `Button.jsx`**: Unificación de todas las acciones del sistema bajo un único estándar visual y de comportamiento.
+    - **Molécula `IconRow.jsx`**: Estandarización de filas de información con iconos, utilizada en tiquetes, historial y gestión.
+    - **Organismo `MirrorHeader.jsx`**: Cabecera naranja compartida para Pasajeros y Conductores (DRY).
+    - **Organismo `ExecutiveHeader.jsx`**: Cabecera ejecutiva (Navy/White) compartida para Admin Root y Dueños (DRY).
+- **Superpoderes del Socio (Multi-Role)**: Los Dueños ahora pueden realizar reservas oficiales desde su Dashboard administrativo, habilitando la venta asistida sin perder su sesión de gestión.
+- **Dashboard Corporativo Melo**: Rediseño total de la vista de Socio siguiendo el patrón estético de alta calidad del Admin Root.
+- **Self-Healing Seat Counter**: Refactorización de las transacciones de reserva para recalcular automáticamente los asientos disponibles basándose en el estado real del mapa, eliminando errores de desincronización de contadores.
+
+### Corregido
+- **Null-Check Scroll**: Corrección de error crítico al intentar realizar auto-scroll en la planilla antes del montaje del componente.
+- **Missing Imports**: Solucionados errores de `Badge is not defined` en el Dashboard del conductor.
+- **Sincronización Transaccional**: Blindaje de las funciones `createReservation` y `cancelReservation` mediante el uso de transacciones atómicas de Firebase.
+- **Normalización de Identidad**: Soporte dual para `userId`/`usuarioId` y `puestoReservado`/`reservedSeat` para garantizar visibilidad total entre plataformas.
+
 ## [1.5.1] - 2026-07-23 (Web Refactor & UI Mirror Edition)
 ### Añadido
 - **Auto-Scroll Inteligente**: La planilla web ahora se desplaza automáticamente hacia el próximo viaje disponible al cargar o cambiar de ruta, igualando la comodidad de la App móvil.
