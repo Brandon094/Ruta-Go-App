@@ -52,7 +52,21 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## 📉 Fase 4: Diversificación y Expansión Regional (Largo Plazo)
+## 📱 Fase 4: Modernización Android Nativa (Evolución Técnica)
+*Objetivo: Migrar la App Android a una arquitectura DRY y Atomic Design para paridad total con la Web.*
+
+### 🏗️ 1. Refactor de Arquitectura (DRY)
+*   [ ] **🧩 Unificación de Motores**: Consolidar la lógica de negocios (precios, reservas, bloqueos) en una capa de servicios compartida entre los flujos de Pasajero y Conductor.
+*   [ ] **⚛️ Atomic Design en XML**: Creación de una biblioteca de estilos y componentes reutilizables (Atoms/Molecules) para reducir la duplicidad de layouts.
+*   [ ] **🎮 Lógica de Interfaz Dinámica**: Reemplazar Activities separadas por layouts inteligentes que adapten sus funciones según el rol del usuario (Mobile Mirror Logic).
+
+### 🚀 2. Transición a Jetpack Compose
+*   [ ] **🎨 UI Declarativa**: Migración gradual de vistas XML a Jetpack Compose para lograr una estructura de código "hermana" de React.
+*   [ ] **🔄 Sincronización de Componentes**: Garantizar que el Mapa de Asientos y los Dashboards sean visualmente idénticos en Web y Android mediante el uso de componentes de UI unificados.
+
+---
+
+## 📉 Fase 5: Diversificación y Expansión Regional (Largo Plazo)
 *Objetivo: Solución integral de movilidad departamental y control definitivo del flujo de paquetería local.*
 
 ### 🗺️ 1. Rutas Dinámicas & Multi-Municipio

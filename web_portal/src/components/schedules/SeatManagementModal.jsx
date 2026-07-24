@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   X, Loader2, CheckCircle2, UserPlus, Info, Bus, Ticket, User,
-  Armchair, SteeringWheel, RotateCw, AlertTriangle
+  Armchair, RotateCw, AlertTriangle
 } from 'lucide-react';
 import { ref, onValue, runTransaction, set, push, get, serverTimestamp, increment } from "firebase/database";
 import { db } from '../../firebase';
@@ -211,60 +211,8 @@ export function SeatManagementModal({ schedule, onClose, role }) {
 
         <div className="flex-1 overflow-y-auto p-6 lg:p-10 flex flex-col md:flex-row gap-10">
 
-          {/* BUS LAYOUT (Android Mirror) */}
-          <div className="flex-1 space-y-8">
-            <div className="bg-[#0A1F30] rounded-[3rem] p-10 border border-white/5 shadow-inner">
-               <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-10">Cabina del Vehículo</p>
-
-               {loading ? (
-                 <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-primary-500" size={40} /></div>
-               ) : (
-                 <div className="space-y-12">
-                   {/* Cabina: [Driver] [1] [2] / [3] [4] [5] */}
-                   <div className="grid grid-cols-3 gap-6 max-w-xs mx-auto">
-                      <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-[#061426] shadow-lg shadow-amber-500/10">
-                         <SteeringWheel size={32} />
-                      </div>
-                      <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} onClick={() => isPassenger ? setSelectedSeat("1") : handlePhysicalToggle("1")} />
-                      <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} onClick={() => isPassenger ? setSelectedSeat("2") : handlePhysicalToggle("2")} />
-                      <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} onClick={() => isPassenger ? setSelectedSeat("3") : handlePhysicalToggle("3")} />
-                      <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} onClick={() => isPassenger ? setSelectedSeat("4") : handlePhysicalToggle("4")} />
-                      <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} onClick={() => isPassenger ? setSelectedSeat("5") : handlePhysicalToggle("5")} />
-                   </div>
-
-                   <div className="w-24 h-px bg-white/5 mx-auto" />
-
-                   <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Zona de Pasajeros</p>
-
-                   {/* Zona Trasera Layout */}
-                   <div className="grid grid-cols-5 gap-4 max-w-sm mx-auto">
-                      <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} onClick={() => isPassenger ? setSelectedSeat("6") : handlePhysicalToggle("6")} />
-                      <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} onClick={() => isPassenger ? setSelectedSeat("7") : handlePhysicalToggle("7")} />
-                      <div className="col-span-1" /> {/* Pasillo */}
-                      <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} onClick={() => isPassenger ? setSelectedSeat("10") : handlePhysicalToggle("10")} />
-                      <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} onClick={() => isPassenger ? setSelectedSeat("11") : handlePhysicalToggle("11")} />
-
-                      <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} onClick={() => isPassenger ? setSelectedSeat("8") : handlePhysicalToggle("8")} />
-                      <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} onClick={() => isPassenger ? setSelectedSeat("9") : handlePhysicalToggle("9")} />
-                      <div className="col-span-1" /> {/* Pasillo */}
-                      <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} onClick={() => isPassenger ? setSelectedSeat("12") : handlePhysicalToggle("12")} />
-                      <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} onClick={() => isPassenger ? setSelectedSeat("13") : handlePhysicalToggle("13")} />
-                   </div>
-                 </div>
-               )}
-            </div>
-
-            {/* LEYENDA */}
-            <div className="flex justify-center gap-6 bg-[#0A1F30] py-4 rounded-2xl border border-white/5">
-               <Legend label="Libre" color="bg-[#061426] border-white/10" />
-               <Legend label="App" color="bg-red-500" />
-               <Legend label="Local" color="bg-primary-500" />
-               {isPassenger && <Legend label="Tuyo" color="bg-green-500" />}
-            </div>
-          </div>
-
-          {/* SIDE PANEL: INFO & ACCIONES */}
-          <div className="w-full md:w-80 space-y-6">
+          {/* SIDE PANEL: INFO & ACCIONES (Primero en móvil y a la izquierda en desktop) */}
+          <div className="w-full md:w-80 space-y-6 order-1 md:order-1">
              <div className="bg-[#0A1F30] p-8 rounded-[2rem] border border-white/5 space-y-6">
                 <div className="flex items-center gap-3">
                    <Info className="text-primary-500" size={20} />
@@ -272,11 +220,11 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                   <div className="bg-[#061426] p-4 rounded-2xl text-center">
+                   <div className="bg-[#061426] p-4 rounded-2xl text-center shadow-inner">
                       <p className="text-[9px] font-bold text-slate-500 uppercase mb-1">Disponibles</p>
                       <span className="text-2xl font-black text-white">{availability.asientosDisponibles}</span>
                    </div>
-                   <div className="bg-[#061426] p-4 rounded-2xl text-center">
+                   <div className="bg-[#061426] p-4 rounded-2xl text-center shadow-inner">
                       <p className="text-[9px] font-bold text-slate-500 uppercase mb-1">Capacidad</p>
                       <span className="text-2xl font-black text-slate-400">{availability.totalAsientos || 13}</span>
                    </div>
@@ -323,13 +271,73 @@ export function SeatManagementModal({ schedule, onClose, role }) {
                 )}
              </div>
 
-             <div className="p-6 bg-[#0A1F30] rounded-2xl border border-white/5 flex items-center justify-between">
+             <div className="p-6 bg-[#0A1F30] rounded-2xl border border-white/5 flex items-center justify-between shadow-lg">
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sincronización</span>
                 <div className="flex items-center gap-2">
                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                    <span className="text-[10px] font-bold text-green-500 uppercase">En Vivo</span>
                 </div>
              </div>
+          </div>
+
+          {/* BUS LAYOUT (Android Mirror) */}
+          <div className="flex-1 space-y-8 order-2 md:order-2">
+            <div className="bg-[#0A1F30] rounded-[3rem] p-10 border border-white/5 shadow-2xl relative overflow-hidden">
+               {/* Sutil gradiente de fondo para dar profundidad a la cabina */}
+               <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+               <div className="text-center mb-10 relative z-10 space-y-1">
+                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Cabina del Vehículo</p>
+                 <p className="text-[11px] font-black text-primary-500 uppercase tracking-tight animate-pulse italic">
+                   {isPassenger ? '👉 Selecciona tu asiento' : '👉 Gestionar Venta Física'}
+                 </p>
+               </div>
+
+               {loading ? (
+                 <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-primary-500" size={40} /></div>
+               ) : (
+                 <div className="space-y-12 relative z-10">
+                   {/* Cabina: [Driver] [1] [2] / [3] [4] [5] */}
+                   <div className="grid grid-cols-3 gap-6 max-w-xs mx-auto">
+                      <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center text-[#061426] shadow-lg shadow-amber-500/20">
+                         <User size={32} />
+                      </div>
+                      <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} onClick={() => isPassenger ? setSelectedSeat("1") : handlePhysicalToggle("1")} />
+                      <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} onClick={() => isPassenger ? setSelectedSeat("2") : handlePhysicalToggle("2")} />
+                      <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} onClick={() => isPassenger ? setSelectedSeat("3") : handlePhysicalToggle("3")} />
+                      <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} onClick={() => isPassenger ? setSelectedSeat("4") : handlePhysicalToggle("4")} />
+                      <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} onClick={() => isPassenger ? setSelectedSeat("5") : handlePhysicalToggle("5")} />
+                   </div>
+
+                   <div className="w-24 h-px bg-white/5 mx-auto" />
+
+                   <p className="text-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Zona de Pasajeros</p>
+
+                   {/* Zona Trasera Layout */}
+                   <div className="grid grid-cols-5 gap-4 max-w-sm mx-auto">
+                      <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} onClick={() => isPassenger ? setSelectedSeat("6") : handlePhysicalToggle("6")} />
+                      <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} onClick={() => isPassenger ? setSelectedSeat("7") : handlePhysicalToggle("7")} />
+                      <div className="col-span-1" /> {/* Pasillo */}
+                      <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} onClick={() => isPassenger ? setSelectedSeat("10") : handlePhysicalToggle("10")} />
+                      <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} onClick={() => isPassenger ? setSelectedSeat("11") : handlePhysicalToggle("11")} />
+
+                      <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} onClick={() => isPassenger ? setSelectedSeat("8") : handlePhysicalToggle("8")} />
+                      <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} onClick={() => isPassenger ? setSelectedSeat("9") : handlePhysicalToggle("9")} />
+                      <div className="col-span-1" /> {/* Pasillo */}
+                      <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} onClick={() => isPassenger ? setSelectedSeat("12") : handlePhysicalToggle("12")} />
+                      <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} onClick={() => isPassenger ? setSelectedSeat("13") : handlePhysicalToggle("13")} />
+                   </div>
+                 </div>
+               )}
+            </div>
+
+            {/* LEYENDA */}
+            <div className="flex justify-center gap-6 bg-[#0A1F30] py-6 rounded-[2rem] border border-white/5 shadow-xl">
+               <Legend label="Libre" color="bg-[#061426] border-white/10" />
+               <Legend label="App" color="bg-red-500" />
+               <Legend label="Local" color="bg-primary-500" />
+               {isPassenger && <Legend label="Tuyo" color="bg-green-500" />}
+            </div>
           </div>
         </div>
 

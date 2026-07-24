@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
   Activity, CheckCircle2, Ticket, Calendar, XCircle, Loader2,
-  Phone, MapPin, Clock, Armchair, RotateCw, Plus, Milestone,
-  ChevronRight, PhoneCall, MapPinned
+  Phone, MapPin, Clock, Armchair, RotateCw, Plus,
+  ChevronRight, PhoneCall
 } from 'lucide-react';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
@@ -118,7 +118,7 @@ export function DriverOverview({ stats, schedules, drivers, reservations = [], r
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
              <div className="flex items-center gap-3 text-white">
-                <Milestone className="text-primary-500" size={18} />
+                <MapPin className="text-primary-500" size={18} />
                 <h3 className="text-lg font-black uppercase tracking-tight">Confirmar Reservas</h3>
              </div>
              <span className="bg-primary-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black">
@@ -206,7 +206,7 @@ function PendingReservationCard({ res, onConfirm, onCancel, loading }) {
            <span className="text-sm font-bold text-slate-300">{phone}</span>
         </div>
         <div className="flex items-center gap-3">
-           <MapPinned size={14} className="text-primary-500" />
+           <MapPin size={14} className="text-primary-500" />
            <span className="text-sm font-black text-white italic">{route}</span>
         </div>
         <div className="flex items-center justify-between">

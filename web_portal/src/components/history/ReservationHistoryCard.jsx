@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, User, Milestone, Armchair, Tag, Ticket, MessageSquare } from 'lucide-react';
+import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 export function ReservationHistoryCard({ res }) {
@@ -50,7 +50,7 @@ export function ReservationHistoryCard({ res }) {
          {/* Route */}
          <div className="flex items-center gap-4">
             <div className="p-2.5 bg-primary-500/5 dark:bg-orange-500/10 rounded-xl text-orange-500 transition-colors">
-               <Milestone size={20} />
+               <MapPin size={20} />
             </div>
             <span className="text-sm font-black text-slate-800 dark:text-white uppercase italic transition-colors">{origin} ➔ {destination}</span>
          </div>
