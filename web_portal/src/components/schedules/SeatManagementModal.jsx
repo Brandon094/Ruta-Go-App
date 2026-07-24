@@ -215,7 +215,7 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
                     <InfoLine icon={MapPin} title={schedule.ruta} sub="Ruta Directa - Tiempo est.: 60 min" />
                     <InfoLine icon={Clock} title={schedule.hora} sub={`Hoy - 24 de julio del 2026`} />
                     <InfoLine icon={Bus} title={`Placa: ${vehicle.placa || '---'} - ${vehicle.modelo || 'Vehículo'}`} sub={`Capacidad: ${availability.totalAsientos || 13} personas | Disponibles: ${availability.asientosDisponibles}`} />
-                    <InfoLine icon={UserCheck} title="Conductor" sub={driver.nombre || 'Liye Daza'} />
+                    <InfoLine icon={UserCheck} title="Conductor" sub={driver.nombre || 'Sin asignar'} />
                   </div>
                 </>
              ) : (

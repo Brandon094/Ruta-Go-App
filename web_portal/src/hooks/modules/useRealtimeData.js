@@ -226,8 +226,9 @@ export const useRealtimeData = (user, role) => {
 
     return {
       ...raw,
+      allDrivers: raw.drivers, // Lista completa para lookups (Tiquetes, Tablas)
       schedules: enrichedSchedules,
-      drivers: filteredDrivers,
+      drivers: filteredDrivers, // Lista filtrada para gestión (Directorios)
       vehicles: filteredVehicles,
       reservations: filteredReservations,
       stats: {

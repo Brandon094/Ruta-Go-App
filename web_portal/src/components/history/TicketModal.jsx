@@ -9,8 +9,13 @@ import { IconRow } from '../ui/IconRow';
  * 🎟️ Component: TicketModal
  * UI Espejo 1:1 de la App Nativa para el tiquete digital (v1.6.1 Mirror & DRY)
  */
-export function TicketModal({ reservation, role, onClose, onChat }) {
+export function TicketModal({ reservation, role, drivers = [], onClose, onChat }) {
   if (!reservation) return null;
+
+  // --- 🧠 Resolución de Nombres (Fix: Datos faltantes) ---
+  const driverData = drivers.find(d => d.id === reservation.driverId || d.id === reservation.conductorId);
+  const resolvedDriverName = driverData?.nombre || reservation.driver || 'Conductor';
+  const resolvedPassengerName = reservation.name || reservation.nombre || 'Pasajero';
 
   const status = (reservation.estadoReserva || reservation.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
@@ -87,19 +92,19 @@ export function TicketModal({ reservation, role, onClose, onChat }) {
 
               <div className="h-px bg-slate-100" />
 
-              {/* Detailed Info */}
-              <div className="space-y-3 text-left">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Información del Viaje</p>
-                 <IconRow icon={User} variant="ghost" className="text-slate-600">
-                    <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Pasajero:</span> {reservation.name || '---'}</p>
-                 </IconRow>
-                 <IconRow icon={Info} variant="ghost" className="text-slate-600">
-                    <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Conductor:</span> {reservation.driver || '---'}</p>
-                 </IconRow>
-                 <IconRow icon={Bus} variant="ghost" className="text-slate-600">
-                    <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Vehículo:</span> {`${reservation.plate || reservation.vehicleId || '---'} (${reservation.model || reservation.vehicleModel || 'N/A'})`}</p>
-                 </IconRow>
-              </div>
+                {/* Detailed Info */}
+                <div className="space-y-3 text-left">
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Información del Viaje</p>
+                   <IconRow icon={User} variant="ghost" className="text-slate-600">
+                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Pasajero:</span> {resolvedPassengerName}</p>
+                   </IconRow>
+                   <IconRow icon={Info} variant="ghost" className="text-slate-600">
+                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Conductor:</span> {resolvedDriverName}</p>
+                   </IconRow>
+                   <IconRow icon={Bus} variant="ghost" className="text-slate-600">
+                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Vehículo:</span> {`${reservation.plate || reservation.vehicleId || '---'} (${reservation.model || reservation.vehicleModel || 'N/A'})`}</p>
+                   </IconRow>
+                </div>
            </div>
 
            {/* DOTTED DIVIDER */}

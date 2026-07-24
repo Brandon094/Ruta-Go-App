@@ -46,7 +46,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 ### 🎫 3. Experiencia de Usuario "Premium"
 *   [x] **📱 Suite de Viaje en Historial**:
     *   [x] Visualización de **Tiquete Digital** (diseño espejo de la App).
-    *   [ ] Módulo de **Chat en vivo** para coordinar con el conductor.
+    *   [x] Módulo de **Chat en vivo** para coordinar con el conductor.
     *   [x] Sistema de **Calificación de Viaje** (1-5 estrellas).
 *   [ ] **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles y redención de puntos.
 

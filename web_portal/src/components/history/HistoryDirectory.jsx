@@ -6,7 +6,7 @@ import { RatingModal } from './RatingModal';
 import { ChatModal } from './ChatModal';
 import { Input } from '../ui/Input';
 
-export function HistoryDirectory({ reservations, role, onNavigate }) {
+export function HistoryDirectory({ reservations, role, drivers = [], onNavigate }) {
   const [filter, setFilter] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -118,6 +118,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
                   key={res.id}
                   res={res}
                   role={role}
+                  drivers={drivers}
                   onViewTicket={() => setSelectedTicket(res)}
                   onRate={() => setRatingTarget(res)}
                   onChat={() => setActiveChat(res)}
@@ -150,6 +151,7 @@ export function HistoryDirectory({ reservations, role, onNavigate }) {
         <TicketModal
           reservation={selectedTicket}
           role={role}
+          drivers={drivers} // <-- PASAMOS LA LISTA PARA LOOKUP
           onClose={() => setSelectedTicket(null)}
           onChat={() => {
             setSelectedTicket(null);

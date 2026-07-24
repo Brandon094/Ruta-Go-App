@@ -4,6 +4,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.1] - 2026-07-24 (Instant Messaging & Social Sync)
+### Añadido
+- **Chat en Tiempo Real**: Implementación del motor de mensajería asíncrona vinculado a reservas. Los pasajeros y conductores ahora pueden coordinar detalles del viaje directamente desde el portal web.
+- **`chatService.js`**: Nuevo servicio especializado para la persistencia de mensajes y escucha reactiva en el nodo `/chats/`.
+- **`ChatModal.jsx`**: Interfaz de chat optimizada para móviles con burbujas de mensaje direccionales (Mirror Android), auto-scroll y estados de envío.
+- **Acceso Multi-punto al Chat**: Integración del acceso a la conversación tanto desde la tarjeta del historial como desde el detalle del tiquete digital.
+
+### Cambiado
+- **Refactor de Modales**: Migración del `TicketModal` y `RatingModal` al uso del átomo centralizado `Modal.jsx`, mejorando la consistencia de las animaciones y el backdrop.
+- **Estandarización de Filas**: Implementación de la molécula `IconRow.jsx` en toda la suite de historial para unificar el diseño de la información con iconos.
+
 ## [1.6.0] - 2026-07-24 (Full Web Parity & Atomic Architecture)
 ### Añadido
 - **Tiquete Digital Mirror**: Implementación 1:1 de la interfaz de tiquete de Android para la web, incluyendo cabecera naranja corporativa, divisor punteado (efecto papel) e información detallada de viaje.

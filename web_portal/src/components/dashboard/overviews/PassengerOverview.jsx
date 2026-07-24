@@ -71,18 +71,6 @@ export function PassengerOverview({ stats, schedules, drivers, role, onManage, v
         </div>
 
         <ScheduleTable schedules={currentSchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
-
-        {role?.type === 'PASSENGER' && (
-          <div className="p-8 bg-white dark:bg-[#061929] rounded-[2.5rem] border border-slate-100 dark:border-white/5 flex flex-col md:flex-row items-center gap-6 shadow-sm mx-2 group">
-            <div className="w-16 h-16 bg-blue-500/10 dark:bg-blue-500/20 rounded-3xl flex items-center justify-center text-blue-500 shrink-0 group-hover:scale-110 transition-transform">
-               <Info size={32} />
-            </div>
-            <div className="text-center md:text-left space-y-1">
-               <h4 className="text-lg font-black text-[#061426] dark:text-white uppercase leading-none italic">Reserva Web en desarrollo</h4>
-               <p className="text-slate-500 dark:text-white/40 font-medium text-sm">Estamos trabajando para habilitar el motor de reservas en iPhone muy pronto.</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -75,7 +75,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, users: usersList, owners, schedules, reservations, prices, routeStats, vehicles } = useRealtimeStats(user);
+  const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, prices, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
     return (
@@ -158,7 +158,7 @@ function App() {
                 stats={stats}
                 routeStats={routeStats}
                 schedules={schedules}
-                drivers={drivers}
+                drivers={allDrivers} // lookup full list
                 role={role}
                 user={user}
                 onManage={(s) => setManagingSchedule(s)}
@@ -169,7 +169,7 @@ function App() {
                 stats={stats}
                 routeStats={routeStats}
                 schedules={schedules}
-                drivers={drivers}
+                drivers={allDrivers} // lookup full list
                 reservations={reservations}
                 role={role}
                 onManage={(s) => setManagingSchedule(s)}
@@ -178,10 +178,10 @@ function App() {
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
             ) : (
-              <AdminOverview stats={stats} role={role} users={usersList} drivers={drivers} owners={owners} />
+              <AdminOverview stats={stats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
             )
           ) : activeTab === 'history' ? (
-            <HistoryDirectory reservations={reservations} role={role} onNavigate={() => setActiveTab('overview')} />
+            <HistoryDirectory reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab('overview')} />
           ) : activeTab === 'profile' ? (
             <ProfileDirectory user={user} role={role} />
           ) : activeTab === 'owners' ? (
@@ -189,7 +189,7 @@ function App() {
           ) : activeTab === 'vehicles' ? (
             <VehicleDirectory
               vehicles={vehicles}
-              drivers={drivers}
+              drivers={allDrivers}
               onAdd={() => setIsAddingVehicle(true)}
               onEdit={(v) => setEditingVehicle(v)}
               onDelete={(placa) => {
@@ -206,7 +206,7 @@ function App() {
               stats={stats}
               routeStats={routeStats}
               schedules={schedules}
-              drivers={drivers}
+              drivers={allDrivers}
               role={role}
               user={user}
               onManage={(s) => setManagingSchedule(s)}
@@ -217,7 +217,7 @@ function App() {
           ) : activeTab === 'users' ? (
             <UserDirectory users={usersList} role={role} />
           ) : activeTab === 'schedules' ? (
-            <ScheduleDirectory schedules={schedules} drivers={drivers} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
+            <ScheduleDirectory schedules={schedules} drivers={allDrivers} role={role} onManage={(s) => setManagingSchedule(s)} vehicles={vehicles} />
           ) : activeTab === 'manual' ? (
             <UserManual role={role} isTab={true} />
           ) : null}
@@ -243,7 +243,7 @@ function App() {
           schedule={managingSchedule}
           onClose={() => setManagingSchedule(null)}
           role={role}
-          drivers={drivers}
+          drivers={allDrivers} // lookup full list
           vehicles={vehicles}
           activeTab={activeTab} // <-- PASAMOS EL CONTEXTO
         />

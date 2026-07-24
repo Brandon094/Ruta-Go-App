@@ -6,9 +6,9 @@ import { IconRow } from '../ui/IconRow';
 
 /**
  * 🎫 Organism: ReservationHistoryCard
- * UI Espejo 1:1 de la App Nativa para el historial (v1.6.0 Atomic & DRY)
+ * UI Espejo 1:1 de la App Nativa para el historial (v1.6.1 Atomic & DRY)
  */
-export function ReservationHistoryCard({ res, role, onViewTicket, onRate, onChat }) {
+export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, onRate, onChat }) {
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
@@ -22,8 +22,14 @@ export function ReservationHistoryCard({ res, role, onViewTicket, onRate, onChat
   const destination = res.destino || res.destination || res.ruta?.split('➔')[1]?.trim() || res.ruta?.split('->')[1]?.trim() || '---';
 
   const isPassenger = role?.type === 'PASSENGER';
-  const personName = isPassenger ? (res.driver || "Conductor") : (res.name || res.nombre || "Pasajero");
-  const personPhone = isPassenger ? (res.phoneC || "---") : (res.phone || res.telefono || "---");
+
+  // --- 🧠 Resolución Dinámica de Identidad (Fix Historial) ---
+  const driverData = drivers.find(d => d.id === res.driverId || d.id === res.conductorId);
+  const resolvedDriverName = driverData?.nombre || res.driver || "Conductor";
+  const resolvedPassengerName = res.name || res.nombre || res.nombreUsuario || "Pasajero";
+
+  const personName = isPassenger ? resolvedDriverName : resolvedPassengerName;
+  const personPhone = isPassenger ? (driverData?.telefono || res.phoneC || "---") : (res.phone || res.telefono || "---");
   const price = res.price || res.precio || 12000;
 
   const formatDate = (d) => {

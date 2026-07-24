@@ -13,7 +13,7 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Estructura Atómica**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
     *   **Molecules**: `SummaryMetric`, `IconRow`. Combinaciones de átomos con lógica visual.
-    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ScheduleTable`, `SeatManagementModal`. Piezas complejas de UI que orquestan la experiencia del usuario.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`. Piezas complejas de UI que orquestan la experiencia del usuario.
 *   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
 *   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
 *   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
@@ -49,7 +49,7 @@ El portal implementa un sistema de **Control de Acceso Basado en Roles** con una
 La inteligencia del portal reside en la escucha selectiva de nodos de Firebase RTDB:
 
 *   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado, gestiona el fallback de capacidad de vehículos y sincroniza los datos del perfil actual desde `/usuarios`.
-*   **`driverService.js`**: Capa de servicios para operaciones atómicas.
+*   **`driverService.js` / `chatService.js`**: Capa de servicios para operaciones atómicas y mensajería.
 *   **Gestión de Perfil Unificada**: Lógica de escritura centralizada en el nodo `/usuarios` para garantizar el cumplimiento de las reglas de seguridad de Firebase en todos los roles (Admin/Owner/Driver/Passenger).
 *   **Gobernanza Pro**: Motores de moderación de usuarios (Ban/Inactivar), lógica de vinculación de activos mediante selectores de dueños aprobados y **Gestión de Tarifas Centralizada** para el Admin Root.
 *   **Visión de Expansión**: Infraestructura preparada para la transición de rutas estáticas a un modelo dinámico multi-municipio (Paicol, Tesalia, Neiva), permitiendo la creación de nuevos trayectos desde el panel administrativo.
