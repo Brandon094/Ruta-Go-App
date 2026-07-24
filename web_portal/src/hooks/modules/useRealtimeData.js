@@ -187,9 +187,10 @@ export const useRealtimeData = (user, role) => {
       }
     });
 
-    // 5. Estadísticas de Rutas y Horarios
+    // 5. Estadísticas de Rutas y Horarios con Mezcla de Datos
     let lpRes = 0, lpSeats = 0, ntRes = 0, ntSeats = 0, totalResHoy = 0;
-    raw.schedules.forEach(s => {
+
+    const enrichedSchedules = raw.schedules.map(s => {
       const ruta = s.ruta.toLowerCase();
       const driver = raw.drivers.find(d => d.id === s.conductorId);
       const vId = s.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
@@ -211,10 +212,18 @@ export const useRealtimeData = (user, role) => {
         else if (ruta.includes("nátaga") || ruta.includes("nataga")) { ntRes += resCount; ntSeats += avail; }
         totalResHoy += resCount;
       }
+
+      return {
+        ...s,
+        asientosDisponibles: avail,
+        totalAsientos: total,
+        reservasCount: resCount
+      };
     });
 
     return {
       ...raw,
+      schedules: enrichedSchedules,
       drivers: filteredDrivers,
       vehicles: filteredVehicles,
       reservations: filteredReservations,

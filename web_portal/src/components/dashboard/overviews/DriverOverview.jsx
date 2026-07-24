@@ -242,23 +242,15 @@ function PendingReservationCard({ res, onConfirm, onCancel, loading }) {
 }
 
 /** ⚛️ Molecule: RouteStatusCard */
-function RouteStatusCard({ schedule, reservations, onManage, vehicles, drivers }) {
-  const driver = drivers.find(d => d.id === schedule.conductorId);
-  const vehicleId = schedule.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
-  const vehicle = vehicles.find(v => v.id === vehicleId || v.placa === vehicleId);
-  const totalSeats = vehicle?.capacidad || 13;
-  const libres = schedule.asientosDisponibles ?? schedule.asientosLibres ?? totalSeats;
-
-  // Reservas confirmadas para este turno
-  const resCount = reservations.filter(r =>
-    (r.scheduleId === schedule.id || r.horarioId === schedule.id) &&
-    (r.reservationStatus?.toLowerCase() === 'confirmada' || r.estadoReserva?.toLowerCase() === 'confirmada')
-  ).length;
+function RouteStatusCard({ schedule, onManage }) {
+  // Las reservas y libres ya vienen calculados del motor de datos central
+  const resCount = schedule.reservasCount || 0;
+  const libres = schedule.asientosDisponibles;
 
   return (
     <div
       onClick={onManage}
-      className="bg-[#0A1F30]/50 p-5 rounded-[1.2rem] border border-white/5 cursor-pointer hover:bg-[#0A1F30] transition-all"
+      className="bg-[#0A1F30]/50 p-5 rounded-[1.2rem] border border-white/5 cursor-pointer hover:bg-[#0A1F30] transition-all shadow-lg hover:ring-1 ring-primary-500/30 group"
     >
       <p className="text-[10px] font-black text-primary-500 uppercase mb-4">
         {schedule.ruta} ({schedule.hora})
@@ -266,9 +258,9 @@ function RouteStatusCard({ schedule, reservations, onManage, vehicles, drivers }
 
       <div className="flex items-center justify-start gap-10">
         <div className="flex flex-col items-center">
-           <div className="flex items-center gap-2 text-slate-400 mb-1">
+           <div className="flex items-center gap-2 text-slate-400 mb-1 group-hover:text-white transition-colors">
               <Activity size={14} />
-              <span className="text-lg font-black text-white">{resCount}</span>
+              <span className="text-lg font-black">{resCount}</span>
            </div>
            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Reservas</span>
         </div>
@@ -276,7 +268,7 @@ function RouteStatusCard({ schedule, reservations, onManage, vehicles, drivers }
         <div className="flex flex-col items-center">
            <div className="flex items-center gap-2 text-green-500 mb-1">
               <Armchair size={14} />
-              <span className="text-lg font-black text-green-500">{libres}</span>
+              <span className="text-lg font-black">{libres}</span>
            </div>
            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Libres</span>
         </div>
