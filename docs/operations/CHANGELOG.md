@@ -12,6 +12,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.8.0] - 2026-07-24 (Pricing Module Optimization & Atomic Refactor)
+### Añadido
+- **Molécula `PricingCard.jsx`**: Extracción y estandarización de la tarjeta de edición de tarifas, facilitando la gestión de precios por ruta con un diseño atómico.
+- **Sincronización DRY en Precios**: Integración de `FormatUtils.formatPrice` en el módulo de tarifas para asegurar la consistencia del formato de moneda COP en todo el ecosistema.
+- **Jerarquía Visual en Tarifas**: Implementación de `InfoTip` para mensajes informativos sobre futuras expansiones de rutas.
+
+### Cambiado
+- **Refactor de PricingDirectory**: Limpieza profunda de código eliminando lógica de formateo local y simplificando el renderizado mediante el uso de la nueva molécula `PricingCard`.
+
 ## [1.7.9] - 2026-07-24 (Comprehensive Directory Optimization)
 ### Añadido
 - **Pasajeros Expansibles (Audit Final)**: Implementación de diseño expansible en `UserCard.jsx`. La lista de pasajeros es ahora mucho más compacta, ocultando información de contacto, puntos de fidelidad y acciones de moderación (Ban/Inactivar/Borrar) bajo demanda.

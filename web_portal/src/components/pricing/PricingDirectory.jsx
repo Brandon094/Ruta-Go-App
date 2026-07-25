@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Settings, Save, MapPin, Tag, ArrowLeftRight } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import { Settings, Tag, MapPin } from 'lucide-react';
 import { DirectoryHeader } from '../common/DirectoryHeader';
+import { InfoTip } from '../InfoTip';
+import { PricingCard } from './PricingCard';
 import { pricingService } from '../../services/pricingService';
 
 /**
@@ -54,12 +54,6 @@ export function PricingDirectory({ prices = {} }) {
     }
   };
 
-  const formatCurrency = (val) => new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0
-  }).format(val);
-
   return (
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
@@ -77,73 +71,31 @@ export function PricingDirectory({ prices = {} }) {
           const isChanged = editedPrices[key] !== undefined && Number(editedPrices[key]) !== route.price;
 
           return (
-            <div key={idx} className="card-base p-8 rounded-[2.5rem] bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none shadow-xl group transition-all hover:ring-2 ring-primary-500/20">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-5">
-                  <div className="text-left">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Origen</p>
-                    <span className="text-base font-black text-slate-800 dark:text-white uppercase italic">{route.origin}</span>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-primary-500 group-hover:rotate-180 transition-transform duration-700">
-                    <ArrowLeftRight size={18} />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Destino</p>
-                    <span className="text-base font-black text-slate-800 dark:text-white uppercase italic">{route.dest}</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500">
-                  <Tag size={20} />
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <Input
-                  label="Precio del Pasaje (COP)"
-                  type="number"
-                  icon={Tag}
-                  value={currentVal}
-                  onChange={(val) => handleChange(route.origin, route.dest, val)}
-                  placeholder="Ej: 12000"
-                />
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex flex-col">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Tarifa Actual</p>
-                    <span className="text-sm font-black text-primary-500">{formatCurrency(route.price)}</span>
-                  </div>
-                  <Button
-                    variant="primary"
-                    size="md"
-                    icon={Save}
-                    disabled={!isChanged || loading}
-                    isLoading={loading}
-                    onClick={() => handleSave(route.origin, route.dest)}
-                  >
-                    Guardar
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <PricingCard
+              key={idx}
+              origin={route.origin}
+              dest={route.dest}
+              price={route.price}
+              currentVal={currentVal}
+              isChanged={isChanged}
+              loading={loading}
+              onPriceChange={(val) => handleChange(route.origin, route.dest, val)}
+              onSave={() => handleSave(route.origin, route.dest)}
+            />
           );
         }) : (
           <div className="md:col-span-2 py-20 text-center opacity-30 border-2 border-dashed border-slate-200 dark:border-white/5 rounded-[3rem]">
             <Tag size={48} className="mx-auto text-slate-400 mb-4" />
-            <p className="font-black uppercase tracking-widest text-xs">No hay rutas configuradas</p>
+            <p className="font-black uppercase tracking-widest text-xs text-[#061426] dark:text-white">No hay rutas configuradas</p>
           </div>
         )}
 
-        {/* Card Informativa - Futuras Rutas */}
-        <div className="md:col-span-2 p-8 bg-slate-50 dark:bg-[#061929] rounded-[2.5rem] border border-dashed border-slate-200 dark:border-white/10 flex flex-col md:flex-row items-center gap-6 opacity-70 group hover:opacity-100 transition-opacity">
-          <div className="w-16 h-16 bg-blue-500/10 rounded-3xl flex items-center justify-center text-blue-500 shrink-0 group-hover:scale-110 transition-transform">
-            <MapPin size={32} />
-          </div>
-          <div className="text-center md:text-left space-y-1">
-            <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase leading-none italic">Nuevas Rutas en camino</h4>
-            <p className="text-slate-500 dark:text-white/40 font-medium text-sm">
-              Estamos trabajando en la infraestructura para permitirte añadir cabeceras municipales y rutas dinámicas al holding muy pronto.
-            </p>
-          </div>
+        {/* ⚛️ Molecule: InfoTip (Atomic Refactor) */}
+        <div className="md:col-span-2">
+          <InfoTip
+            title="Nuevas Rutas en camino"
+            message="Estamos trabajando en la infraestructura para permitirte añadir cabeceras municipales y rutas dinámicas al holding muy pronto."
+          />
         </div>
       </div>
     </div>
