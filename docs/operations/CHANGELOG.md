@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.7] - 2026-07-24 (Critical Backend Fix & Logic Refactor)
+### Añadido
+- **Sistema de Escalafón Fijo**: Implementación de la propiedad `posicionEscalafon` en perfiles de conductores para garantizar una rotación de turnos determinista.
+- **Transaccionalidad en Rotación**: Refactor de la Cloud Function `automatedRotation` para eliminar la dependencia de ordenamientos dinámicos por ID, eliminando errores de asignación al integrar nuevos operadores.
+
+### Cambiado
+- **Lógica de Asignación**: Migración del bucle de rotación para usar índices estáticos de negocio en lugar de índices de matriz dinámicos, blindando el sistema contra colisiones de agenda.
+
 ## [1.6.6] - 2026-07-24 (Visual Polish & Startup Grade UX)
 ### Añadido
 - **Utils Espejo (Format & Animation)**: Implementación de `FormatUtils.js` y `AnimationUtils.js` portando la lógica de Android para unificar moneda COP (abreviaciones K/M), fechas largas y efectos visuales.

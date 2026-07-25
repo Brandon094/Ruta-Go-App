@@ -70,7 +70,13 @@ exports.automatedRotation = onSchedule({
             if (data.nombre && data.nombre.toLowerCase().includes("brayan")) {
                 brayanId = uid;
             } else {
-                conductoresParaRotar.push({ id: uid, nombre: data.nombre, token: token, vehiculoId: data.vehiculoId });
+                conductoresParaRotar.push({
+                    id: uid,
+                    nombre: data.nombre,
+                    token: token,
+                    vehiculoId: data.vehiculoId,
+                    posicionEscalafon: data.posicionEscalafon
+                });
             }
         });
 
@@ -79,9 +85,6 @@ exports.automatedRotation = onSchedule({
             const uData = uSnap.val();
             if (uData.rol === "usuario" && uData.tokenFCM) tokensPasajeros.push(uData.tokenFCM);
         });
-
-        // Ordenamiento determinista para asegurar consistencia en el escalafón
-        conductoresParaRotar.sort((a, b) => a.id.localeCompare(b.id));
 
         const updates = {};
         const horariosAsignadosSet = new Set();
@@ -101,8 +104,12 @@ exports.automatedRotation = onSchedule({
         }
 
         // 3. ALGORITMO DE ESCALAFÓN Y RESET DE CAPACIDAD DINÁMICO
-        conductoresParaRotar.forEach((c, index) => {
-            const shiftIndex = (index + dayCounter) % ROTATING_SHIFTS.length;
+        conductoresParaRotar.forEach((c) => {
+            // Leemos el número de escalafón fijo asignado en la web (por defecto 0)
+            const posicionFija = c.posicionEscalafon || 0;
+
+            // Reemplazamos el 'index' por 'posicionFija' en la fórmula matemática
+            const shiftIndex = (posicionFija + dayCounter) % ROTATING_SHIFTS.length;
             const misHorarios = ROTATING_SHIFTS[shiftIndex];
             const esDescanso = misHorarios.length === 0;
 
