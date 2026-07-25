@@ -22,47 +22,35 @@ El sistema utiliza un modelo de **Identidad Única (SSO)** basado en Firebase Au
 
 ---
 
-## 📦 3. Desglose de Motores y Módulos Core
+## 🛠️ 3. Ecosistema de Documentación Modular
 
-| Módulo | Responsabilidad Técnica | Aplicación |
-|:---|:---|:---|
-| **Auth Engine (SSO)** | Gestión de identidad unificada y segregación de roles (RBAC). | Suite Go |
-| **Seat Engine** | Gestión transaccional de inventario móvil y reservas atómicas. | RutaGo |
-| **Loyalty Engine** | Sistema de gamificación (Puntos Go) y niveles de estatus. | RutaGo |
-| **Ruta-Go Portal** | Landing Page comercial, Business Dashboard y Motor de Reservas Web con soporte de Tema Dual (React/Firebase). | Suite Go |
-| **Offline Sync Engine** | Sincronización local-nube vía Isar/Firestore. | AgroGo |
-| **Auction Engine** | Motor de subastas ciegas para logística pesada. | CargoGo |
+### 🏛️ Núcleo del Holding (Core & Shared)
+Documentación aplicable a todas las plataformas del ecosistema.
+*   [**Master Plan Ecosistema**](./core/product/ECOSYSTEM_MASTER_PLAN.md): Visión estratégica.
+*   [**Identidad Visual (Branding)**](./core/product/BRANDING.md): Guía de estilo unificada.
+*   [**Reglas de Seguridad NoSQL**](./core/technical/FIREBASE_SECURITY_RULES.md): Blindaje de base de datos.
+*   [**Diccionario de Datos**](./core/technical/DICCIONARIO_DATOS.md): Estructura de la RTDB.
+*   [**Flujos Lógicos**](./core/technical/LOGICAL_FLOWS.md): Procesos de reserva y rotación.
+*   [**Manual de Gestión de Datos**](./core/legal/DATA_MANAGEMENT_MANUAL.md): Habeas Data y borrado.
 
----
+### 📱 Android Nativo (Mobile)
+Especificaciones exclusivas de la App desarrollada en Java/Kotlin.
+*   [**Arquitectura de Módulos**](./mobile/ARCHITECTURE_MODULES.md): Clean Architecture.
+*   [**Guía de Modelos**](./mobile/MODELS_DEEP_DIVE.md): Estructura de POJOs.
+*   [**Capa de Servicios**](./mobile/SERVICES_DEEP_DIVE.md): Interacción con APIs y DB.
+*   [**Capa UI & ViewModels**](./mobile/VIEWMODELS_DEEP_DIVE.md): Lógica de presentación.
+*   [**Integración Push (FCM)**](./mobile/FCM_INTEGRATION_GUIDE.md): Notificaciones nativas.
+*   [**Arquitectura de Dueños**](./mobile/OWNER_ARCHITECTURE.md): Gestión de flota móvil.
 
-## 🛠️ 4. Ecosistema de Documentación (Nivel Senior)
+### 🖥️ Portal Web (React/Vite)
+Arquitectura del portal de gestión y landing page.
+*   [**Arquitectura Web (Atomic)**](./web/WEB_PORTAL_ARCHITECTURE.md): Componentes y Singletons.
+*   [**Hub de Control Web**](./web/GO_WEB_HUB.md): Manual operativo del portal.
+*   [**Despliegue y Hosting**](./web/DEPLOYMENT.md): Guía de producción en Firebase.
 
-### 📗 Dominio Técnico (Engineering)
-*   [**Arquitectura Web Portal**](./technical/WEB_PORTAL_ARCHITECTURE.md): Diseño del stack React, roles y despliegue cloud.
-*   [**Arquitectura Detallada**](./technical/ARCHITECTURE_MODULES.md): Estructura híbrida RTDB/Firestore y flujos cloud.
-*   [**Mapeo de Flujos Lógicos**](./technical/LOGICAL_FLOWS.md): Secuencias técnicas de reservas y rotación.
-*   [**Inmersión en Modelos**](./technical/MODELS_DEEP_DIVE.md): Jerarquía de clases POJO y mapeo de datos.
-*   [**Guías de Desarrollo**](./technical/DEVELOPER_GUIDELINES.md): Estándares de código, Git semántico y Clean Code.
-*   [**Reglas de Seguridad**](./technical/FIREBASE_SECURITY_RULES.md): Gobernanza de datos NoSQL y blindaje por roles.
-
-### 📘 Dominio de Producto (Business)
-*   [**Master Plan Ecosistema**](./product/ECOSYSTEM_MASTER_PLAN.md): Visión estratégica de ChopCode Solutions.
-*   [**Identidad Visual**](./product/BRANDING.md): Guía de estilo, colores Naranja/Navy y logotipos.
-*   [**Hoja de Ruta (Roadmap)**](./product/ROADMAP.md): Fases de expansión, monetización y SaaS.
-*   [**Plan de Marketing**](./product/MARKETING_PLAN.md): Estrategia de crecimiento, Puntos Go y Estatus Estrella.
-*   [**Manual de Usuario**](./product/USER_MANUAL.md): Guía práctica para pasajeros y conductores.
-
-### ⚖️ Legal y Cumplimiento
-*   [**Manual de Gestión de Datos**](./legal/DATA_MANAGEMENT_MANUAL.md): Protocolos de borrado y Habeas Data.
-*   [**Políticas de Privacidad**](../web_portal/src/Privacy.jsx): Tratamiento de datos bajo la Ley 1581.
-*   [**Términos y Condiciones**](../web_portal/src/Terms.jsx): Reglas de operación de la plataforma.
-
----
-
-## 🛡️ 5. Seguridad y Gobernanza de Datos
-*   **Aislamiento Comercial**: Los dueños solo acceden a la telemetría de sus activos asignados.
-*   **Hosting**: Despliegue seguro en **Firebase Hosting** con certificación SSL automática.
-*   **Privacidad**: Cumplimiento estricto con **Habeas Data** y flujo de "Derecho al Olvido".
+### ⚙️ Operaciones y Gestión
+*   [**Historial de Cambios (Changelog)**](./core/operations/CHANGELOG.md): Registro de versiones.
+*   [**Agente Orquestador**](./core/agents/ORCHESTRATOR.md): Gobernanza de la sesión.
 
 ---
 **© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural**

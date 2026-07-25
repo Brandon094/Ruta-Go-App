@@ -26,7 +26,7 @@ Para operar con eficacia, todos los agentes deben consultar y sincronizar con la
 
 1.  **Visión de Negocio**: [Master Plan](../product/ECOSYSTEM_MASTER_PLAN.md) y [Roadmap](../product/ROADMAP.md).
 2.  **Leyes del Sistema**: [Especificación de Requisitos](../product/REQUISITOS.md) y [Manual de Marca](../product/BRANDING.md).
-3.  **Arquitectura Web**: [Portal Business](../technical/WEB_PORTAL_ARCHITECTURE.md).
+3.  **Arquitectura Web**: [Portal Business](../../web/WEB_PORTAL_ARCHITECTURE.md).
 4.  **Código**: [Guías de Desarrollo](../technical/DEVELOPER_GUIDELINES.md) y [Diccionario de Datos](../technical/DICCIONARIO_DATOS.md).
 5.  **Estado Actual**: [Historial de Cambios](../operations/CHANGELOG.md).
 
