@@ -1,6 +1,6 @@
-# 🎨 Guía de Componentes e Identidad Visual (UI/UX) v1.5.0
+# 🎨 Guía de Componentes e Identidad Visual (UI/UX) v1.9.9.5
 
-Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en el ecosistema Ruta-Go, unificando los estándares de **Material Design 3 (Android)** y **Glassmorphism (Web)**.
+Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en el ecosistema Ruta-Go, unificando los estándares de **Material Design 3 (Android)** y **Atomic Design (Web)**.
 
 ---
 
@@ -15,36 +15,35 @@ Este documento detalla el catálogo de componentes de interfaz y el sistema de d
 ---
 
 ## 📱 2. Componentes Móviles (Material 3)
-### Cards de Operación:
-*   **Estilo**: Elevación de 4dp, esquinas redondeadas de 24dp.
-*   **Animación**: Efecto "Overshoot" (Rebote) en la carga de listas.
-### Motor de Asientos:
-*   **Interactividad**: Feedback táctil y visual al seleccionar puestos. Sincronización en tiempo real con RTDB.
+*   **Contenedores**: Elevación de 4dp, esquinas redondeadas de 24dp a 32dp.
+*   **Inmersión**: Soporte Edge-to-Edge integral (Android 15 Ready).
+*   **Interactividad**: Feedback hápitico y visual (Ripple Effect) en cada acción.
 
 ---
 
-## 🖥️ 3. Componentes Web (Glassmorphism & Tailwind)
-### Estética Business:
-*   **Filtros**: Uso de `backdrop-blur-md` para efectos de transparencia en Navbars y Modales.
-*   **Bordes**: `rounded-[3rem]` para tarjetas de Dashboard, transmitiendo modernidad corporativa.
-### Tablas Dinámicas:
-*   **Planilla**: Visualización compacta con scroll horizontal protegido y estados de ocupación anonimizados.
+## 🖥️ 3. Sistema Atómico Web (React + Tailwind)
+El portal web se rige bajo una jerarquía de diseño atómico para garantizar la reutilización total del código:
+
+### ⚛️ Átomos (Core UI)
+*   `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`.
+*   Propiedades: Estilos de borde `rounded-2xl`, sombras dinámicas y tipografía `font-black` para títulos.
+
+### 🧪 Moléculas (Compuestos)
+*   `StatsCard`: Contenedor con métrica e icono.
+*   `RouteProgressCard`: Barra de progreso animada con porcentaje de ocupación.
+*   `ContactInfo`: Bloque estandarizado de Email/WhatsApp.
+*   `SplashScreen`: Experiencia de carga brandeada.
+
+### 🧬 Organismos (Vistas)
+*   `Sidebar`, `Header` (TopBar), `ScheduleTable`, `AuthLayout`.
+*   Comportamiento: Orquestan la lógica de navegación y seguridad (RBAC).
 
 ---
 
-## 🔘 4. Botonería y Call to Action (CTA)
-### Botón Primario:
-*   **Android**: `MaterialButton` con escala 0.95x al presionar.
-*   **Web**: Botón Tailwind con sombra `shadow-primary-500/40` y efecto `hover:bg-orange-600`.
-### Botón de Socio:
-*   **Web**: Estilo Navy (`bg-secondary-900`) con tipografía Bold para denotar autoridad empresarial.
-
----
-
-## ✨ 5. Estándares de Experiencia (UX)
-*   **Edge-to-Edge**: Pantalla total en Android 15.
-*   **Responsive Pro**: Adaptación automática de Grid (3 col) a Slider (1 col) en la web.
-*   **Shimmer Loaders**: Cargas progresivas en ambas plataformas para evitar el parpadeo de datos.
+## ✨ 4. Estándares de Experiencia (UX)
+*   **Transiciones Suaves**: Uso de `useTransition` para evitar saltos bruscos entre vistas.
+*   **Carga Diferida**: Implementación de `Suspense` y `lazy` para cargar componentes solo bajo demanda.
+*   **Accesibilidad AA**: Nombres accesibles (ARIA) y contrastes optimizados según auditoría Lighthouse.
 
 ---
 **ChopCode Solutions - Dirección de Arte y UI/UX 2026**

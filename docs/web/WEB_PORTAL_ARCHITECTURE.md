@@ -1,99 +1,63 @@
-# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
+# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go v1.9.9.5
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.9.9.5), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal**, la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
 ## 🏗️ 1. Stack Tecnológico (Modern SPA)
-La plataforma utiliza una arquitectura de **Single Page Application** optimizada para rendimiento y SEO:
+La plataforma utiliza una arquitectura de **Single Page Application** de alto rendimiento:
 
-*   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
-*   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
-*   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
-*   **Estructura Atómica (Auditada v1.9.9.5)**:
-    *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`. Componentes básicos e indivisibles.
-    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`, `RoleBenefit`, `SolutionCard`, `RouteBadge`, `SplashScreen`.
-    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`, `HistoryHeader`, `ProfileHeader`, `AuthLayout`, `RegisterSuccess`.
-*   **Optimización de Carga**: Implementación de **React Lazy & Suspense** para Code Splitting masivo y **useTransition** para una navegación fluida sin bloqueos de UI.
-*   **Gobernanza DRY**: El 100% del ecosistema web (Gestión, Onboarding y Soporte) ha sido auditado para eliminar lógica duplicada y componentes redundantes.
-*   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.
-*   **Capa de Utilidades**: `FormatUtils.js` y `AnimationUtils.js` para asegurar la paridad de comportamiento con Android (conteo de dinero, formatos moneda COP).
-*   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
-*   **Reactividad**: Custom Hooks especializados (`useRoleResolver`, `useRealtimeData`) coordinados por un orquestador central.
-*   **Iconografía**: [Lucide React](https://lucide.dev/) (Consistencia con App móvil).
-*   **Despliegue**: [Firebase Hosting](https://firebase.google.com/products/hosting).
+*   **Core**: React 18 + Vite (Build Engine).
+*   **Diseño**: Tailwind CSS 3 bajo metodología de **Atomic Design**.
+*   **Infraestructura**: Patrón **Singleton** mediante `FirebaseManager`.
+*   **Estructura Atómica**:
+    *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`.
+    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `ContactInfo`, `StatsCard`, `RouteProgressCard`, `SplashScreen`.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `ScheduleTable`, `Sidebar`, `DirectoryHeader`, `AuthLayout`.
+*   **Optimización**: 
+    *   **Code Splitting**: Uso de `React.lazy` y `Suspense` para carga modular.
+    *   **Fluid UI**: Uso de `useTransition` para eliminar parpadeos en cambios de estado pesados.
+*   **Utilidades**: `FormatUtils.js` y `AnimationUtils.js` sincronizados 1:1 con la lógica de Android.
 
 ---
 
-## 🌎 2. Frontera Pública: Landing Page
-La puerta de entrada (`LandingPage.jsx`) está diseñada como un embudo de conversión para los tres actores del sistema:
+## 🌎 2. Estrategia de Conversión y UX
+El portal se divide en dos grandes áreas funcionales:
 
-1.  **Pasajeros**: Propuesta de valor basada en **Puntos Go** y reservas sin incertidumbre. Link directo a Play Store.
-2.  **Conductores**: Enfoque en **Estatus Estrella** y rentabilidad. Link directo a Play Store.
-3.  **Dueños de Flota**: Acceso administrativo para control de activos. Link directo al Portal de Socios.
-    *   *UX Adaptativa*: Grid de 3 columnas en Desktop / Slider animado automático en Mobile.
+### A. Landing Page (Pública)
+Diseñada como embudo de conversión con secciones para Pasajeros, Conductores y Socios. Puntuación Lighthouse > 95.
 
----
-
-## 🔐 3. Motor de Roles y Estrategia de Navegación (RBAC)
-El portal implementa un sistema de **Control de Acceso Basado en Roles** con una UX diferenciada por perfil:
-
-### 📱 Experiencia Operativa (Passenger & Driver)
-*   **Paridad Total**: El portal web ahora ofrece el 100% de las funcionalidades críticas de la App nativa (Android), incluyendo Reservas, Tiquetes, Chat y Calificaciones.
-*   **Interfaz Mobile-First**: Eliminación total del Sidebar para maximizar el foco en la tarea.
-*   **Navegación**: Exclusiva mediante **Bottom Nav** (Home, Historial, Perfil), replicando la ergonomía de la App nativa.
-
-### 👑 Gestión Administrativa (Admin Root & Owner)
-*   **Navegación**: Exclusiva mediante **Administrative Sidebar**. Sin barra inferior para evitar redundancias.
-*   **Acceso Híbrido**: Capacidad de realizar reservas de usuario desde el menú lateral sin perder la sesión administrativa.
-*   **Visibilidad Root**: Gestión total de Socios, Conductores y Pasajeros.
+### B. Aplicación de Gestión (Privada)
+Basada en **RBAC (Role Based Access Control)**:
+*   **Pasajero/Conductor**: Interfaz "Mobile Mirror" con **Bottom Nav** y funciones operativas completas (Reservas, Chat, Tiquetes).
+*   **Dueño/Admin**: Interfaz "Dashboard Pro" con **Sidebar** colapsable y herramientas de analítica avanzada.
 
 ---
 
-## 🛰️ 4. Sincronización y Módulos
-La inteligencia del portal reside en la escucha selectiva de nodos de Firebase RTDB:
+## ⚙️ 3. Inteligencia de Datos y Sincronización
+El portal no solo consume datos, los procesa para la toma de decisiones:
 
-*   **`useRealtimeStats.js`**: Orquestador de suscripciones (`onValue`). Realiza el filtrado lógico de datos según el rol del usuario autenticado, gestiona el fallback de capacidad de vehículos y sincroniza los datos del perfil actual desde `/usuarios`.
-*   **`driverService.js` / `chatService.js`**: Capa de servicios para operaciones atómicas y mensajería.
-*   **Gestión de Perfil Unificada**: Lógica de escritura centralizada en el nodo `/usuarios` para garantizar el cumplimiento de las reglas de seguridad de Firebase en todos los roles (Admin/Owner/Driver/Passenger).
-*   **Gobernanza Pro**: Motores de moderación de usuarios (Ban/Inactivar), lógica de vinculación de activos mediante selectores de dueños aprobados y **Gestión de Tarifas Centralizada** para el Admin Root.
-*   **Visión de Expansión**: Infraestructura preparada para la transición de rutas estáticas a un modelo dinámico multi-municipio (Paicol, Tesalia, Neiva), permitiendo la creación de nuevos trayectos desde el panel administrativo.
-*   **Gestión de Operadores**: Interfaz dividida en "Operando Hoy" y "Fuera de Servicio" para una rápida toma de decisiones.
-*   **UI Mirror (Planilla)**: Motor de renderizado dinámico con soporte para **Auto-Scroll** al próximo despacho y visualización de cupos reales.
+*   **Motor Analítico 360°**: Calcula la ocupación y los ingresos sumando reservas digitales y bloqueos manuales (ventas en calle).
+*   **Detección de Trayecto**: Algoritmo que clasifica la información basándose en el destino final (`-> Destino`).
+*   **Gestión de Flota**: Vínculo dinámico entre `ownerId`, `driverId` y `vehicleId` con reglas de seguridad que garantizan el aislamiento comercial.
+*   **Asignación Inteligente**: Soporte para grupos de horarios (Turno 8 Triple) y reseteo automático de capacidad.
 
 ---
 
-## ⚖️ 5. Cumplimiento Legal
-Módulos integrados para transparencia y cumplimiento de normativas de Google Play:
-*   **`Terms.jsx`**: Contrato unificado para el ecosistema, incluyendo cláusulas de confidencialidad para dueños.
-*   **`Privacy.jsx`**: Política de tratamiento de datos personales (**Ley 1581 de 2012**).
-*   **Derecho al Olvido**: Implementación visual y lógica para el flujo de eliminación de cuentas.
-
----
-
-## 📂 6. Estructura de Proyecto
+## 📂 4. Estructura del Proyecto
 ```text
 web_portal/
-├── public/assets/      # Logos oficiales (Naranja/Navy)
+├── public/             # Activos estáticos y Logos
 ├── src/
-│   ├── components/     # UI Atómica
-│   │   ├── ui/         # Átomos: Input.jsx, Badge.jsx, Button.jsx (DRY Core)
-│   │   ├── dashboard/  # Overviews analíticos por Rol
-│   │   ├── owners/     # Gestión de Socios (Solo Admin)
-│   │   ├── history/    # Historial de Reservas
-│   │   ├── profile/    # Perfil y Gestión de Vehículos
-│   │   └── common/     # Sidebar, Header
-│   ├── hooks/          # Motores de Sincronización
-│   │   ├── modules/    # useRoleResolver.js, useRealtimeData.js
-│   │   └── useRealtimeStats.js # Orquestador
-│   ├── services/       # Firebase Data Services
-│   ├── firebase.js     # Singleton: FirebaseManager
-│   ├── App.jsx         # Orquestador (Refactorizado v1.5.1)
-│   ├── LandingPage.jsx # Ficha Pública
-│   ├── Login.jsx       # Gateway de Acceso
-│   └── Register.jsx    # Registro con Guía de Beneficios
+│   ├── components/     # Componentes Atómicos (Atoms, Molecules, Organisms)
+│   ├── hooks/          # Reactividad y Lógica de Negocio (useRealtimeData)
+│   ├── services/       # Servicios de Datos (Singleton)
+│   ├── utils/          # Formateadores y Animaciones
+│   ├── firebase.js     # Configuración y Manager
+│   ├── App.jsx         # Orquestador Principal v1.9.9.5
+│   └── ...             # Vistas principales (Landing, Login, Register)
 └── index.html          # Punto de entrada
 ```
 
 ---
-**ChopCode Solutions - Inteligencia de Gestión 2026**
+**ChopCode Solutions - Web Engineering 2026**

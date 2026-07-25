@@ -13,8 +13,9 @@
 
 ## 🔗 Biblioteca de Control
 1.  **Historial**: [CHANGELOG.md](../operations/CHANGELOG.md).
-2.  **Legal**: [Portal Web (Privacy/Terms)](../product/GO_WEB_HUB.md).
-3.  **Negocio**: [Marketing y Crecimiento](../product/MARKETING_PLAN.md).
+2.  **Legal**: [DATA_MANAGEMENT_MANUAL.md](../legal/DATA_MANAGEMENT_MANUAL.md).
+3.  **Manual Web**: [GO_WEB_HUB.md](../../web/GO_WEB_HUB.md).
+4.  **Negocio**: [Marketing y Crecimiento](../product/MARKETING_PLAN.md).
 
 ---
 **ChopCode Solutions - Documentation & Legal**

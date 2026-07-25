@@ -4,650 +4,85 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Transition Engine)
-*Esta versión erradica los glitches visuales durante la carga de módulos mediante el uso de transiciones de React 18, garantizando que el usuario siempre vea una interfaz coherente y con la identidad de la marca.*
+## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Documentation Master Sync)
+*Esta versión erradica los glitches visuales durante la carga de módulos y consolida la excelencia técnica mediante una auditoría masiva de documentación.*
 
 ### Añadido
-- **Motor de Transiciones React 18**: Implementación del hook `useTransition` para gestionar cambios de estado pesados. Esto permite que la interfaz sea responsiva incluso durante procesos de carga de módulos o datos.
-- **Navegación Blindada**: Creación de helpers `navigateTo` y `changeTab` que envuelven las actualizaciones de estado en bloques de transición, eliminando parpadeos y estados inconsistentes.
+- **Sincronización Total de Documentación**: Auditoría y actualización de más de 40 archivos MD en las carpetas Core, Mobile y Web para reflejar la arquitectura v1.9.9.5.
+- **README Maestro High Fidelity**: Refactorización del archivo principal del proyecto con enlaces corregidos y visión estratégica actualizada.
+- **Motor de Transiciones React 18**: Implementación del hook `useTransition` para gestionar cambios de estado pesados en la web.
+- **Navegación Blindada**: Helpers `navigateTo` y `changeTab` para eliminando parpadeos y estados inconsistentes.
 
 ### Corregido
-- **Eliminación definitiva de Glitches de Dashboard**: Gracias al motor de transiciones y la sincronización con el `SplashScreen`, el sistema ya no muestra Dashboards de otros roles durante el cambio de sesión o navegación rápida. La vista actual se mantiene hasta que la nueva está lista "detrás de cámaras".
+- **Eliminación definitiva de Glitches de Dashboard**: Sincronización con el `SplashScreen` para evitar mostrar Dashboards incorrectos durante la resolución de roles.
 
 ## [1.9.9.4] - 2026-07-24 (Accessibility AA & Image Format Optimization)
-*Segunda gran intervención de accesibilidad para alcanzar los estándares W3C AA, optimizando contrastes y adaptando la experiencia táctil para usuarios con cualquier dispositivo móvil.*
-
 ### Añadido
-- **Accesibilidad Nivel AA (Segunda Intervención)**:
-    - Incremento masivo de ratios de contraste en textos secundarios en toda la Landing Page y componentes de dashboard.
-    - Ampliación de objetivos táctiles para el slider de soluciones en móviles (objetivo mínimo de 48px).
-- **Optimización de Entrega de Imágenes**:
-    - Migración forzada a formato **WebP** para activos remotos de Unsplash para mejorar el ahorro de red.
-    - Refinamiento de opacidades en el modo oscuro para cumplir con las pautas de legibilidad de la W3C.
-
-### Cambiado
-- **Refactor de Estilo**: Estandarización de `text-white/60` como base para descripciones en modo oscuro, eliminando el uso de `white/40` que generaba advertencias de contraste.
+- **Accesibilidad Nivel AA (Segunda Intervención)**: Incremento de ratios de contraste y ampliación de objetivos táctiles (48px).
+- **Optimización WebP**: Migración forzada a formato WebP para activos remotos.
 
 ## [1.9.9.3] - 2026-07-24 (Lighthouse Audit & Core Optimization)
-*Optimización profunda basada en auditorías de Google Lighthouse para asegurar que el portal sea rápido, accesible y esté técnicamente impecable para el SEO.*
-
 ### Añadido
-- **Accesibilidad Nivel AA**:
-    - Implementación de `aria-label` en todos los botones de navegación (Bottom Nav, Navbar, Modales) para soporte de lectores de pantalla.
-    - Mejora de contraste en textos secundarios en toda la Landing Page y tarjetas de soluciones.
-    - Definición de hitos semánticos con la etiqueta `<main>` para una mejor estructura de documento.
-- **Optimización de Activos (LCP/FCP)**:
-    - Redimensionamiento de imágenes hero de Unsplash (de 2069px a 800px) para reducir la carga de red en un 70%.
-    - Adición de atributos `width` y `height` para evitar saltos de layout (CLS).
-    - Ampliación de objetivos táctiles (botones y puntos de control) para cumplimiento de estándares de usabilidad móvil.
-
-### Cambiado
-- **Refactor DRY en UI**: Estandarización de tamaños de fuente mínimos en botones operativos (`text-xs` como base) para evitar fatiga visual.
+- **Lighthouse Score > 90**: Implementación de `aria-label`, etiquetas semánticas `<main>` y redimensionamiento de imágenes hero.
 
 ## [1.9.9.2] - 2026-07-24 (Advanced Performance & Code Splitting)
-*Implementación de arquitectura de carga diferida para que la Landing Page vuele, descargando el resto de la aplicación solo cuando el usuario realmente la necesita.*
-
 ### Añadido
-- **Implementación de React Lazy & Suspense**: Refactorización profunda de la arquitectura de carga. Ahora el portal web utiliza "Code Splitting" para cargar únicamente los módulos necesarios según la navegación del usuario.
-- **Optimización de Landing Page**: La página principal ahora carga instantáneamente al no tener que descargar todo el bundle administrativo.
-- **Lazy Loading de Imágenes**: Adición del atributo `loading="lazy"` en activos pesados de la landing para mejorar el LCP (Largest Contentful Paint).
-
-### Cambiado
-- **Estrategia de Carga**: Integración del `SplashScreen` como fallback universal de Suspense, garantizando una transición fluida y brandeada mientras se descargan los módulos del dashboard.
+- **React Lazy & Suspense**: Arquitectura de carga diferida para que la Landing Page vuele, descargando módulos administrativos bajo demanda.
 
 ## [1.9.9] - 2026-07-24 (Identity Resolution & SplashScreen Premium)
-*Creación de una experiencia de carga de alta fidelidad que resuelve la identidad del usuario con elegancia antes de conceder acceso a los paneles de gestión.*
-
 ### Añadido
-- **Molécula `SplashScreen.jsx`**: Nueva pantalla de carga con el branding oficial de Ruta-Go. Implementa animaciones orbitales y efectos de iluminación para una experiencia de usuario de alta fidelidad.
-- **Gestión de Carga de Identidad**: Implementación de guardas en el orquestador principal (`App.jsx`) para cubrir el periodo de resolución de roles de Firebase.
-
-### Corregido
-- **Bug de Dashboards Fantasma**: Eliminado el glitch visual donde se mostraba brevemente el dashboard de un rol incorrecto durante el cambio de sesión o inicio de aplicación. Ahora el sistema espera la resolución total de la identidad antes de renderizar la interfaz de gestión.
+- **Molécula `SplashScreen.jsx`**: Experiencia de carga de alta fidelidad con animaciones orbitales y resolución de identidad blindada.
 
 ## [1.9.8] - 2026-07-24 (Driver UX Upgrade & Atomic Consistency)
-*Unificación total de la experiencia analítica del conductor, permitiéndole visualizar su ocupación con el mismo nivel de detalle y diseño que los dueños de flota.*
-
 ### Añadido
-- **Upgrade del Dashboard de Conductor**: Unificación visual del estado de rutas. Ahora el conductor visualiza su ocupación con el mismo motor de barras de progreso y porcentajes que los dueños, logrando una paridad 1:1 en la calidad de datos.
-- **Refactor Atómico `RouteProgressCard.jsx`**: Evolución de la molécula para soportar interacción (`onClick`) y metadatos temporales (`time`), eliminando la necesidad de componentes duplicados.
-
-### Cambiado
-- **Limpieza DRY**: Eliminación definitiva de `RouteStatusCard.jsx`. Toda la suite de gestión ahora utiliza el estándar de barras de progreso para métricas de ocupación.
+- **Upgrade del Dashboard de Conductor**: Paridad 1:1 con la analítica de dueños usando el componente `RouteProgressCard.jsx`.
 
 ## [1.9.7] - 2026-07-24 (Rotation Algorithm Precision & Grouping Fix)
-*Alineación milimétrica entre la interfaz web y el algoritmo de rotación de la nube para asegurar que los turnos especiales se gestionen correctamente.*
-
 ### Corregido
-- **Sincronización de Horarios (Portal-Cloud)**: Refactorización total de la lógica de agrupamiento en los modales de conductores. Ahora la interfaz refleja con precisión la estructura de las Cloud Functions:
-    - **Turno 8 (Triple Especial)**: Se agrupan `h008`, `h018` y `h010` en un solo botón, respetando el ciclo de trabajo del conductor.
-    - **Turno 9 (Entrada)**: Se independiza `h009` como trayecto único.
-    - **Turnos 1-7**: Mantienen su estructura de parejas estándar.
-- **UX de Asignación**: Mejora en la visualización de los grupos de horarios para evitar confusiones operativas.
-
-## [1.9.6] - 2026-07-24 (UI Gran Turismo & Multi-Column Layout)
-*Rediseño de la carrocería visual para aprovechar el espacio en pantallas grandes, implementando un layout de dos columnas que permite una gestión operativa mucho más rápida y profesional.*
+- **Sincronización de Horarios Especiales**: Refactorización de grupos lógicos para Turno 8 (Triple Especial) y Turno 9.
 
 ## [1.8.7] - 2026-07-24 (Critical Analytics Fix & Route Intelligence)
-*Corrección vital en el motor de analítica para separar correctamente los trayectos de ida y vuelta, asegurando que los dueños vean datos precisos de su operación en tiempo real.*
-
 ### Corregido
-- **Bug de Ocupación Global**: Reparada la lógica de agrupación en el motor de analítica (`useRealtimeData.js`) que causaba colisiones entre trayectos. Anteriormente, ambas rutas se sumaban erróneamente a "La Plata" porque ambas contenían el nombre de la ciudad. Ahora el sistema identifica la dirección mediante el destino explícito, separando correctamente las métricas de "Nátaga -> La Plata" y "La Plata -> Nátaga".
-- **Sincronización de Contadores Root**: Restaurada la visibilidad de datos para el trayecto de regreso en el Panel Maestro.
-
-## [1.8.6] - 2026-07-24 (Final Branding Fix & Auth Layout)
-*Consolidación de la identidad visual de la marca en todos los puntos de contacto y unificación de la arquitectura de autenticación para una experiencia de usuario sin fisuras.*
+- **Fix de Ocupación Global**: Separación lógica de trayectos de ida y vuelta basada en el destino explícito en `useRealtimeData.js`.
 
 ## [1.8.3] - 2026-07-24 (Atomic Sidebar & Collapsible UX)
-*Optimización del espacio de trabajo mediante un sidebar inteligente y colapsable, permitiendo a los administradores navegar por el holding de forma organizada y minimalista.*
-
 ### Añadido
-- **Molécula `SidebarSection.jsx`**: Implementación de secciones colapsables para la barra lateral administrativa, permitiendo una navegación mucho más limpia y organizada.
-- **Refactor Atómico del Sidebar**: Reestructuración completa del `Sidebar.jsx` siguiendo principios de diseño atómico para mejorar la mantenibilidad y consistencia visual.
-- **Auditoría Global de Gestión**: Finalización del barrido DRY y Atomic Design en el 100% de la App de Gestión. Se eliminaron archivos heredados (`StatCard.jsx`, `RouteProgress.jsx`) y se estandarizaron todas las tarjetas y encabezados.
-
-### Cambiado
-- **UX de Navegación**: Optimización del espacio vertical en el panel de gestión mediante el uso de contenedores expandibles/colapsables con animaciones suaves.
-- **Identidad Visual**: Ajuste de iconos y tipografías en el sidebar para una integración 1:1 con el resto de la suite premium.
+- **Sidebar Inteligente**: Secciones colapsables y auditoría global DRY en el 100% de la App de Gestión.
 
 ## [1.8.2] - 2026-07-24 (Explicit User Manuals & Atomic Help Center)
-*Evolución del centro de ayuda hacia un lenguaje más humano y sencillo, asegurando que desde la abuelita hasta el conductor más veterano puedan usar la plataforma sin complicaciones.*
-
 ### Añadido
-- **Refactor Atómico del Centro de Ayuda**: Creación de los componentes `ManualSection.jsx` (Organismo) y `ManualStep.jsx` (Molécula) para estandarizar las guías de usuario.
-- **Contenido Explícito para Todos los Roles**: Reescritura completa de los manuales para Pasajeros, Conductores, Socios y Root con instrucciones paso a paso mucho más detalladas y fáciles de entender para personas con poca destreza tecnológica.
-- **Guía de Puntos Go**: Explicación detallada del sistema de fidelización para incentivar el uso de la plataforma.
-
-### Cambiado
-- **UX de Soporte**: Mejora en la legibilidad y jerarquía visual del manual, utilizando iconos descriptivos y un lenguaje más humano y menos técnico.
-- **Acceso Proactivo a Ayuda**: Integración del botón 'Centro de Ayuda' directamente en el perfil de Pasajeros y Conductores en la web, facilitando el soporte sin depender de barras laterales.
+- **Manuales 360°**: Reescritura de guías para Pasajeros, Conductores y Socios con lenguaje humano y descriptivo.
 
 ## [1.8.1] - 2026-07-24 (Fix: Identidad MirrorHeader)
-*Restauración de la calidez de marca en la experiencia móvil web, devolviendo el nombre y el estatus al usuario en cada pantalla.*
-
 ### Añadido
-- **Fix de Identidad en MirrorHeader**: Restauración de nombres, bienvenida y visibilidad de estado para Pasajeros y Conductores en la cabecera naranja.
-- **Badge de Estado**: El distintivo ("Pasajero Activo" / "Conductor Activo") ahora es visible en todos los tamaños de pantalla.
+- **Badge de Estado**: Restauración de nombres y estatus ("Pasajero Activo") en la cabecera móvil.
 
 ## [1.8.0] - 2026-07-24 (Pricing Module Optimization & Atomic Refactor)
-*Profesionalización del módulo de tarifas con un diseño limpio y utilidades de formato que aseguran coherencia financiera en todo el holding.*
-
 ### Añadido
-- **Molécula `PricingCard.jsx`**: Extracción y estandarización de la tarjeta de edición de tarifas, facilitando la gestión de precios por ruta con un diseño atómico.
-- **Sincronización DRY en Precios**: Integración de `FormatUtils.formatPrice` en el módulo de tarifas para asegurar la consistencia del formato de moneda COP en todo el ecosistema.
-- **Jerarquía Visual en Tarifas**: Implementación de `InfoTip` para mensajes informativos sobre futuras expansiones de rutas.
-
-### Cambiado
-- **Refactor de PricingDirectory**: Limpieza profunda de código eliminando lógica de formateo local y simplificando el renderizado mediante el uso de la nueva molécula `PricingCard`.
-
-## [1.7.9] - 2026-07-24 (Comprehensive Directory Optimization)
-*Refinamiento de los directorios de usuarios para lograr una interfaz compacta que revela la información solo cuando se necesita, optimizando la gestión de grandes listas.*
-
-### Añadido
-- **Pasajeros Expansibles (Audit Final)**: Implementación de diseño expansible en `UserCard.jsx`. La lista de pasajeros es ahora mucho más compacta, ocultando información de contacto, puntos de fidelidad y acciones de moderación (Ban/Inactivar/Borrar) bajo demanda.
-- **Sincronización DRY en Usuarios**: Integración definitiva de la molécula `ContactInfo.jsx` en el flujo de gestión de pasajeros.
-
-### Cambiado
-- **Estandarización de Interacciones Administrativas**: Unificación de comportamientos de clic, iconos de estado (Chevron) y animaciones de entrada en todos los directorios del portal (Socios, Vehículos, Conductores y Pasajeros).
-
-## [1.7.8] - 2026-07-24 (UI Minimalism & TopBar Priority)
-*Limpieza visual masiva para eliminar ruidos innecesarios y poner el foco en lo que importa: los datos y la navegación global.*
-
-### Añadido
-- **Jerarquía Visual Optimizada**: Eliminación de títulos redundantes en los encabezados internos (`DirectoryHeader`, `ExecutiveHeader`, `MirrorHeader`) para priorizar la **Header TopBar** global. Esto reduce la contaminación visual y mejora el foco en los datos.
-- **Rediseño de DirectoryHeader**: Transformación del componente en una barra de acciones minimalista que mantiene solo el subtítulo contextual y las herramientas de búsqueda/acción.
-
-### Cambiado
-- **Refactor de Cabeceras Administrativas**: Simplificación de `ExecutiveHeader` y `MirrorHeader`, removiendo nombres de usuario y títulos de vista duplicados, delegando esa responsabilidad al orquestador de la TopBar.
-
-## [1.7.7] - 2026-07-24 (Administrative Identity & Global UX Consolidation)
-*Unificación del lenguaje visual operativo, tratando el historial de despachos con el mismo rigor y estilo que la gestión de activos del holding.*
-
-### Añadido
-- **Unificación de Monitor de Despachos**: Refactorización del encabezado del historial operativo para usar `DirectoryHeader`. Ahora los despachos tienen el mismo "look & feel" que la gestión de vehículos y conductores, distanciándose del estilo de historial personal del pasajero.
-- **Búsqueda Global en Planilla y Tarifas**: Implementación de barras de búsqueda reactivas en las pestañas de 'Planilla Maestra' y 'Gestión de Tarifas' mediante la integración del organismo `DirectoryHeader`.
-
-### Cambiado
-- **Estandarización de Directorios Administrativos**: Finalización del barrido DRY en todas las pestañas de nivel Root y Owner. Todo el sistema administrativo ahora usa componentes unificados para la navegación y el filtrado.
-- **UX en Planilla**: Reposicionamiento del selector de rutas para una mejor jerarquía visual tras la adición del encabezado de directorio.
-
-## [1.7.6] - 2026-07-24 (Advanced Management UX & Unified History)
-*Evolución del historial hacia un formato inteligente y colapsable, permitiendo navegar por cientos de viajes sin perder el control ni el orden visual.*
-
-### Añadido
-- **Historial Expansible (Pasajero/Despacho)**: Implementación de diseño colapsable en `ReservationHistoryCard`. Las tarjetas ahora muestran solo la información vital (Nombre, Ruta, Fecha) por defecto, y se expanden para revelar detalles de contacto, asientos y acciones (Tiquete/Chat).
-- **Indicadores de Navegación**: Adición de iconos de estado de expansión sincronizados con el resto de la suite de gestión.
-
-### Cambiado
-- **Refactor de Jerarquía Visual**: Optimización del espacio en el historial permitiendo navegar por largas listas de viajes de forma mucho más eficiente.
-- **Consolidación de Identidad Administrativa**: Unificación definitiva de las tarjetas de historial bajo los principios de **Atomic Design** y **DRY**.
+- **Molécula `PricingCard.jsx`**: Profesionalización de la gestión de tarifas con soporte para `FormatUtils`.
 
 ## [1.7.5] - 2026-07-24 (Management Architecture Unification & Directory Refactor)
-*Centralización de los encabezados de gestión para una experiencia de usuario predecible y profesional en todas las pestañas administrativas.*
-
 ### Añadido
-- **Organismo `DirectoryHeader.jsx`**: Centralización del encabezado para todos los directorios administrativos (Socios, Vehículos, Conductores). Implementa búsqueda reactiva y botones de acción unificados.
-- **Auditoría de Flota y Operadores (Fase 4)**: Unificación total de la experiencia de usuario para el Admin Root y los Dueños en las pestañas de gestión.
-
-### Cambiado
-- **Refactor DRY de Directorios**: Migración de `VehicleDirectory`, `OwnerDirectory` y `DriverDirectory` al nuevo estándar de `DirectoryHeader`, eliminando código duplicado en un 50% en estas vistas.
-- **Sincronización Singleton en App.jsx**: Estandarización del uso de `vehicleService` en el orquestador principal, eliminando importaciones dinámicas innecesarias.
-
-## [1.7.4] - 2026-07-24 (UX Refinement & Expandable Interfaces)
-*Introducción de interfaces expansibles en la flota y conductores, logrando que el portal se adapte perfectamente tanto a pantallas de escritorio como a celulares.*
-
-### Añadido
-- **Tarjetas Expansibles (UX Compacta)**: Implementación de lógica de expansión/colapso en `OwnerCard`, `VehicleCard` y `DriverCard`. Las listas ahora son mucho más compactas, permitiendo ver más elementos de un vistazo y expandiendo los detalles y acciones solo bajo demanda.
-- **Indicadores de Estado Visual**: Adición de iconos `ChevronDown`/`ChevronUp` y animaciones de entrada para mejorar la navegación táctil y con mouse.
-
-### Cambiado
-- **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
-
-## [1.7.3] - 2026-07-24 (Administrative Service Layer & Component Cleanup)
-*Consolidación de la capa de servicios Singleton para una comunicación robusta con Firebase y el nacimiento de las primeras moléculas atómicas universales.*
-
-### Añadido
-- **Capa de Servicios de Gestión**: Implementación de `ownerService.js` y `userService.js` para centralizar la lógica de Firebase (Singleton), eliminando llamadas directas a la base de datos desde los componentes.
-- **Molécula `ContactInfo.jsx`**: Nuevo componente para estandarizar la visualización de datos de contacto (Email/Teléfono) en todas las tarjetas del sistema.
-- **Consolidación Admin/Owner**: Implementación de la sección de **Ocupación Global** para el Administrador Root, logrando paridad analítica con el Dashboard del Socio.
-- **Molécula `InfoTip.jsx`**: Nuevo componente atómico para mostrar sugerencias operativas y alertas del sistema de forma estandarizada.
-- **Molécula `RouteProgressCard.jsx`**: Refactorización y generalización de la tarjeta de progreso de ruta (anteriormente exclusiva de Dueños) para uso universal en la suite de gestión.
-
-### Cambiado
-- **Refactor de Directorio de Socios**: Reorganización de componentes moviendo `OwnerCard.jsx` a su directorio correspondiente (`/owners/`) y aplicando principios **DRY** al compartir lógica con el directorio de usuarios.
-- **Auditoría Root v1.7.3**: Finalización de la estandarización de las pestañas de gestión para el Administrador Maestro.
-- **Refactor DRY de Dashboards**: Unificación de layouts, espaciados y componentes entre `AdminOverview` and `OwnerOverview`.
-- **Estandarización de Grillas**: Uso de `MetricGrid` en todas las vistas de gestión para asegurar responsividad 1:1.
-
-## [1.7.1] - 2026-07-24 (Comprehensive UI Audit & Atomic Standardization)
-*La gran auditoría que sentó las bases del sistema de diseño modular, transformando componentes legacy en piezas de Lego reutilizables.*
-
-### Añadido
-- **Auditoría de Arquitectura Atómica (Fases 1-3)**: Implementación de un sistema de diseño estrictamente modular en todo el portal web.
-- **Nuevas Moléculas Core**:
-    - **`StatsCard.jsx`**: Contenedor maestro para métricas con variantes 'solid' y 'glass'.
-    - **`PendingReservationCard.jsx`**: Módulo independiente para la gestión de solicitudes de conductores.
-    - **`RouteStatusCard.jsx`**: Visualización estandarizada de ocupación por trayecto.
-    - **`ProfileCard.jsx`**: Tarjeta modular para datos de identidad y vehículos.
-- **Nuevos Organismos**:
-    - **`HistoryHeader.jsx`**: Orquestador de búsqueda y filtros para el historial.
-    - **`HistorySummary.jsx`**: Resumen analítico de viajes.
-    - **`ProfileHeader.jsx`**: Cabecera de identidad Mirror v1.7.0.
-- **Sincronización DRY (Don't Repeat Yourself)**: Centralización de lógica de filtrado de rutas en `FormatUtils.js`.
-
-### Cambiado
-- **Refactor de Edición de Perfil**: Migración del flujo de edición a un sistema basado en el átomo **`Modal.jsx`**, eliminando vistas manuales y mejorando la consistencia visual.
-- **Unificación Administrativa**: Los modales de conductores y vehículos ahora comparten la misma base atómica, facilitando el mantenimiento y la escalabilidad.
-
-## [1.7.0] - 2026-07-24 (Advanced UX & Counter Intelligence)
-*Mejora de la inteligencia de usuario, replicando funciones críticas de la app nativa como la leyenda de contadores para educar al pasajero.*
-
-### Añadido
-- **Menú de Leyenda de Contadores**: Implementación del menú desplegable en el Dashboard del Pasajero que explica el significado de cada métrica (Confirmadas, Canceladas, Total), replicando fielmente la UX de la App móvil.
-- **Molécula `CounterLegend.jsx`**: Nuevo componente atómico para la gestión de leyendas expandibles en Dashboards.
-
-### Cambiado
-- **Refactor de Tarjeta de Estadísticas**: Optimización del contenedor de métricas en el Dashboard de pasajeros para integrar la leyenda sin comprometer el diseño 'Mirror'.
-
-## [1.6.9] - 2026-07-24 (Operational Excellence & Final Parity)
-### Añadido
-- **Refactor Atómico en Planilla**: Migración de la tabla de horarios a un sistema de Organismos (`ScheduleTable`) y Moléculas (`ScheduleCard`), logrando un código 100% DRY y escalable.
-- **Sincronización 'Regla de las 7 PM'**: Implementación de la lógica de negocio de Android donde, tras las 19:00, el sistema habilita automáticamente los viajes para el día siguiente en la web.
-- **Acceso Administrativo Irrestricto**: Los roles Root y Owner ahora pueden acceder a la gestión de asientos de viajes pasados para auditoría y cierre de cuentas, eliminando el bloqueo por tiempo que aplica a pasajeros.
-- **Fix Estético de Identidad**: Corrección del radio de curvatura en los badges de "Siguiente" para mantener la consistencia con el diseño de tarjetas Android.
-
-### Cambiado
-- **Lógica de Próximo Viaje**: Optimización del motor de búsqueda de despachos para marcar correctamente el hito "Siguiente" incluso después del reset de jornada nocturna.
-
-## [1.6.8] - 2026-07-24 (Dynamic Rotation & Dedicated Roles)
-### Añadido
-- **Identificación de Conductor Fijo por ID**: El algoritmo de rotación ahora identifica al conductor dedicado (anteriormente "Brayan") mediante su UID vinculado al horario `h005`. Esto permite que los dueños cambien al operador del turno privilegiado sin necesidad de modificar el código del servidor.
-
-### Cambiado
-- **Lógica de Exclusión**: Los conductores asignados a turnos fijos son excluidos automáticamente del pool de rotación basándose en el estado actual de la planilla de horarios.
-
-## [1.6.7] - 2026-07-24 (Operational Excellence & Multi-Role Sync)
-### Añadido
-- **Sistema de Escalafón Determinista**: Migración exitosa a la propiedad `posicionEscalafon` para la rotación de turnos, eliminando la desincronización por ordenamiento dinámico en Cloud Functions.
-- **Micro-interacciones Premium**:
-    - **Bus Departure**: Animación del botón de reserva que se transforma en bus y "arranca" al expirar el tiempo.
-    - **Seat Pop**: Entrada animada y escalonada de las sillas en el mapa de selección.
-    - **Money Counter**: Conteo progresivo animado en todas las métricas financieras de los Dashboards.
-- **Separación de Historiales**: Implementación de flujos independientes para "Mi Historial Personal" y "Monitor de Despachos" (Business History).
-- **Feedback Contextual Inteligente**: Mensajes de estado vacío personalizados por rol y tipo de historial.
-
-### Cambiado
-- **Refactor Atómico (DRY)**: Creación de la biblioteca de utilidades `FormatUtils.js` y `AnimationUtils.js` para paridad total de lógica con Android.
-- **Unificación de Identidad**: Soporte total para identidades híbridas (`userId`/`usuarioId`) en Chat, Calificaciones y Reglas de Seguridad.
-
-### Corregido
-- **Seguridad Blindada**: Actualización de reglas de Firebase para soportar de forma nativa los nuevos nodos de Chat y Reputación.
-- **Sincronización de Contadores**: Implementación de lógica auto-sanadora en transacciones de asientos para garantizar que el conteo de libres sea siempre exacto.
-
-## [1.6.6] - 2026-07-24 (Visual Polish & Startup Grade UX)
-### Añadido
-- **Utils Espejo (Format & Animation)**: Implementación de `FormatUtils.js` y `AnimationUtils.js` portando la lógica de Android para unificar moneda COP (abreviaciones K/M), fechas largas y efectos visuales.
-- **Micro-interacciones Premium**:
-    - **Bus Departure Animation**: El botón de reserva se transforma en icono de bus y ejecuta una animación de salida cuando el horario ha expirado.
-    - **Seat Pop Animation**: Entrada escalonada de los asientos en el mapa para una carga más fluida y orgánica.
-    - **Counter Animation**: Los valores monetarios y contadores en los Dashboards ahora realizan un conteo progresivo al cargar.
-- **Consolidación de Identidad**: Ajuste estético final en badges (esquinas redondeadas v2) para una integración perfecta con las tarjetas del sistema.
-
-### Cambiado
-- **Refactor de Gobernanza (DRY)**: Centralización de cabeceras ejecutivas y operativas mediante organismos reutilizables, reduciendo la duplicidad de estilos en un 40%.
-
-## [1.6.5] - 2026-07-24 (Operational Integrity & Dual History Flow)
-### Añadido
-- **Paridad Total con App Nativa**: Consolidación de todas las funciones operativas de Pasajero y Conductor en la web.
-- **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.
-- **Navegación Inteligente para Conductores**: El botón de historial en la barra de navegación inferior ahora redirige automáticamente a "Despachos" para conductores, asegurando el foco en su actividad laboral.
-- **Feedback Contextual Inteligente**: Implementación de mensajes de estado vacío diferenciados para el historial personal (*"No hay actividad registrada"*) y el monitor de negocio (*"Sin despachos registrados"*).
-- **Redirección Proactiva para Jefes**: Los administradores y dueños ahora ven un botón de acción en su historial personal vacío que los lleva directamente al flujo de reserva (Venta Asistida).
-- **Atomic Architecture Foundation**: Migración de todos los diálogos y botones a un sistema de diseño atómico (`Modal.jsx`, `Button.jsx`, `IconRow.jsx`).
-
-### Cambiado
-- **Arquitectura de Datos Personalizada**: Refactorización del hook `useRealtimeData.js` para generar flujos de información independientes para `personalReservations` y `businessReservations`, garantizando la privacidad y limpieza de las estadísticas de perfil.
-- **Doble Entrada al Chat**: Habilitado el acceso a la mensajería instantánea tanto desde el Historial Personal como desde el Monitor de Despachos.
-
-### Corregido
-- **Bug de Identidad en Historial**: Solucionado el problema donde los nombres de conductores/pasajeros no se resolvían correctamente en la lista. Ahora el sistema realiza un lookup en tiempo real sobre la base de datos maestra.
-- **Robustez de Carga**: Implementación de guards para evitar errores de renderizado cuando los datos de Firebase aún no han sido recibidos.
-
-## [1.6.2] - 2026-07-24 (Security Rules & Platform Parity Fix)
-### Añadido
-- **Blindaje Cross-Platform**: Actualización profunda de las Reglas de Seguridad de Firebase para soportar de forma nativa los nodos de `/chats/` y `/calificaciones_conductores/`.
-- **Soporte Híbrido de Identidad**: Implementación de lógica dual en reglas de seguridad para reconocer tanto `userId` (Web/Android) como `usuarioId` (Legacy/Android), resolviendo problemas de acceso al chat.
-- **Identidad de Conductor Unificada**: Soporte para llaves `driverId` y `conductorId` en las reglas de validación de chat y reservas.
-
-### Cambiado
-- **UI de Lanzamiento**: Eliminación definitiva de los banners de "Reserva Web en desarrollo", marcando la salida de fase Beta para el motor de reservas en iPhone.
-- **Refactor de Historial Pro**: Optimización de la tarjeta de historial para resolver nombres de conductores en tiempo real, incluso si los datos en la reserva son parciales.
-
-### Corregido
-- **Uncaught TypeError (find)**: Solucionado error crítico en `DriverOverview` que ocurría al intentar acceder a la lista de conductores antes de finalizar la carga de Firebase.
-- **Null-Check Atómico**: Implementación de guardas `Array.isArray` y optional chaining en todos los Dashboards para prevenir fallos por datos asíncronos.
-- **Tag PWA Deprecated**: Actualización del meta-tag `mobile-web-app-capable` en `index.html` para cumplimiento de estándares modernos.
-
-## [1.6.9] - 2026-07-24 (Operational Excellence & Final Parity)
-*Esta actualización elimina las barreras temporales para el equipo administrativo, permitiendo auditorías de viajes pasados y garantizando la sincronización de la 'Regla de las 7 PM' en el ecosistema web.*
-
-### Añadido
-- **Refactor Atómico en Planilla**: Migración de la tabla de horarios a un sistema de Organismos (`ScheduleTable`) y Moléculas (`ScheduleCard`), logrando un código 100% DRY y escalable.
-- **Sincronización 'Regla de las 7 PM'**: Implementación de la lógica de negocio de Android donde, tras las 19:00, el sistema habilita automáticamente los viajes para el día siguiente en la web.
-- **Acceso Administrativo Irrestricto**: Los roles Root y Owner ahora pueden acceder a la gestión de asientos de viajes pasados para auditoría y cierre de cuentas, eliminando el bloqueo por tiempo que aplica a pasajeros.
-- **Fix Estético de Identidad**: Corrección del radio de curvatura en los badges de "Siguiente" para mantener la consistencia con el diseño de tarjetas Android.
-
-### Cambiado
-- **Lógica de Próximo Viaje**: Optimización del motor de búsqueda de despachos para marcar correctamente el hito "Siguiente" incluso después del reset de jornada nocturna.
-
-## [1.6.8] - 2026-07-24 (Dynamic Rotation & Dedicated Roles)
-*Mejora en la flexibilidad del algoritmo de rotación, permitiendo que los dueños asignen operadores a turnos privilegiados mediante identificación dinámica por ID.*
-
-### Añadido
-- **Identificación de Conductor Fijo por ID**: El algoritmo de rotación ahora identifica al conductor dedicado (anteriormente "Brayan") mediante su UID vinculado al horario `h005`. Esto permite que los dueños cambien al operador del turno privilegiado sin necesidad de modificar el código del servidor.
-
-### Cambiado
-- **Lógica de Exclusión**: Los conductores asignados a turnos fijos son excluidos automáticamente del pool de rotación basándose en el estado actual de la planilla de horarios.
-
-## [1.6.7] - 2026-07-24 (Operational Excellence & Multi-Role Sync)
-*Introducción de micro-interacciones premium y un sistema de escalafón determinista para una rotación de turnos infalible y una experiencia de usuario de alta fidelidad.*
-
-### Añadido
-- **Sistema de Escalafón Determinista**: Migración exitosa a la propiedad `posicionEscalafon` para la rotación de turnos, eliminando la desincronización por ordenamiento dinámico en Cloud Functions.
-- **Micro-interacciones Premium**:
-    - **Bus Departure**: Animación del botón de reserva que se transforma en bus y "arranca" al expirar el tiempo.
-    - **Seat Pop**: Entrada animada y escalonada de las sillas en el mapa de selección.
-    - **Money Counter**: Conteo progresivo animado en todas las métricas financieras de los Dashboards.
-- **Separación de Historiales**: Implementación de flujos independientes para "Mi Historial Personal" y "Monitor de Despachos" (Business History).
-- **Feedback Contextual Inteligente**: Mensajes de estado vacío personalizados por rol y tipo de historial.
-
-### Cambiado
-- **Refactor Atómico (DRY)**: Creación de la biblioteca de utilidades `FormatUtils.js` y `AnimationUtils.js` para paridad total de lógica con Android.
-- **Unificación de Identidad**: Soporte total para identidades híbridas (`userId`/`usuarioId`) en Chat, Calificaciones y Reglas de Seguridad.
-
-### Corregido
-- **Seguridad Blindada**: Actualización de reglas de Firebase para soportar de forma nativa los nuevos nodos de Chat y Reputación.
-- **Sincronización de Contadores**: Implementación de lógica auto-sanadora en transacciones de asientos para garantizar que el conteo de libres sea siempre exacto.
-
-## [1.6.6] - 2026-07-24 (Visual Polish & Startup Grade UX)
-*Refinamiento estético y unificación de la lógica de formato para que el portal web se comporte y se vea exactamente como la aplicación líder en Android.*
-
-### Añadido
-- **Utils Espejo (Format & Animation)**: Implementación de `FormatUtils.js` y `AnimationUtils.js` portando la lógica de Android para unificar moneda COP (abreviaciones K/M), fechas largas y efectos visuales.
-- **Micro-interacciones Premium**:
-    - **Bus Departure Animation**: El botón de reserva se transforma en icono de bus y ejecuta una animación de salida cuando el horario ha expirado.
-    - **Seat Pop Animation**: Entrada escalonada de los asientos en el mapa para una carga más fluida y orgánica.
-    - **Counter Animation**: Los valores monetarios y contadores en los Dashboards ahora realizan un conteo progresivo al cargar.
-- **Consolidación de Identidad**: Ajuste estético final en badges (esquinas redondeadas v2) para una integración perfecta con las tarjetas del sistema.
-
-### Cambiado
-- **Refactor de Gobernanza (DRY)**: Centralización de cabeceras ejecutivas y operativas mediante organismos reutilizables, reduciendo la duplicidad de estilos en un 40%.
-
-## [1.6.5] - 2026-07-24 (Operational Integrity & Dual History Flow)
-*Consolidación del ecosistema web con paridad total de funciones operativas y la introducción del monitor de despachos exclusivo para el equipo administrativo.*
-
-### Añadido
-- **Paridad Total con App Nativa**: Consolidación de todas las funciones operativas de Pasajero y Conductor en la web.
-- **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.
-- **Navegación Inteligente para Conductores**: El botón de historial en la barra de navegación inferior ahora redirige automáticamente a "Despachos" para conductores, asegurando el foco en su actividad laboral.
-- **Feedback Contextual Inteligente**: Implementación de mensajes de estado vacío diferenciados para el historial personal (*"No hay actividad registrada"*) y el monitor de negocio (*"Sin despachos registrados"*).
-- **Redirección Proactiva para Jefes**: Los administradores y dueños ahora ven un botón de acción en su historial personal vacío que los lleva directamente al flujo de reserva (Venta Asistida).
-- **Atomic Architecture Foundation**: Migración de todos los diálogos y botones a un sistema de diseño atómico (`Modal.jsx`, `Button.jsx`, `IconRow.jsx`).
-
-### Cambiado
-- **Arquitectura de Datos Personalizada**: Refactorización del hook `useRealtimeData.js` para generar flujos de información independientes para `personalReservations` y `businessReservations`, garantizando la privacidad y limpieza de las estadísticas de perfil.
-- **Doble Entrada al Chat**: Habilitado el acceso a la mensajería instantánea tanto desde el Historial Personal como desde el Monitor de Despachos.
-
-### Corregido
-- **Bug de Identidad en Historial**: Solucionado el problema donde los nombres de conductores/pasajeros no se resolvían correctamente en la lista. Ahora el sistema realiza un lookup en tiempo real sobre la base de datos maestra.
-- **Robustez de Carga**: Implementación de guards para evitar errores de renderizado cuando los datos de Firebase aún no han sido recibidos.
-
-## [1.6.2] - 2026-07-24 (Security Rules & Platform Parity Fix)
-*Blindaje integral de la base de datos para soportar las nuevas funciones de chat y reputación, asegurando la privacidad de los usuarios en ambas plataformas.*
-
-### Añadido
-- **Blindaje Cross-Platform**: Actualización profunda de las Reglas de Seguridad de Firebase para soportar de forma nativa los nodos de `/chats/` y `/calificaciones_conductores/`.
-- **Soporte Híbrido de Identidad**: Implementación de lógica dual en reglas de seguridad para reconocer tanto `userId` (Web/Android) como `usuarioId` (Legacy/Android), resolviendo problemas de acceso al chat.
-- **Identidad de Conductor Unificada**: Soporte para llaves `driverId` y `conductorId` en las reglas de validación de chat y reservas.
-
-### Cambiado
-- **UI de Lanzamiento**: Eliminación definitiva de los banners de "Reserva Web en desarrollo", marcando la salida de fase Beta para el motor de reservas en iPhone.
-- **Refactor de Historial Pro**: Optimización de la tarjeta de historial para resolver nombres de conductores en tiempo real, incluso si los datos en la reserva son parciales.
-
-### Corregido
-- **Uncaught TypeError (find)**: Solucionado error crítico en `DriverOverview` que ocurría al intentar acceder a la lista de conductores antes de finalizar la carga de Firebase.
-- **Null-Check Atómico**: Implementación de guardas `Array.isArray` y optional chaining en todos los Dashboards para prevenir fallos por datos asíncronos.
-- **Tag PWA Deprecated**: Actualización del meta-tag `mobile-web-app-capable` en `index.html` para cumplimiento de estándares modernos.
-
-## [1.6.1] - 2026-07-24 (Instant Messaging & Social Sync)
-*Lanzamiento del motor de chat en tiempo real para el portal web, permitiendo una coordinación fluida entre pasajeros y conductores durante el viaje.*
-
-### Añadido
-- **Chat en Tiempo Real**: Implementación del motor de mensajería asíncrona vinculado a reservas. Los pasajeros y conductores ahora pueden coordinar detalles del viaje directamente desde el portal web.
-- **`chatService.js`**: Nuevo servicio especializado para la persistencia de mensajes y escucha reactiva en el nodo `/chats/`.
-- **`ChatModal.jsx`**: Interfaz de chat optimizada para móviles con burbujas de mensaje direccionales (Mirror Android), auto-scroll y estados de envío.
-- **Acceso Multi-punto al Chat**: Integración del acceso a la conversación tanto desde la tarjeta del historial como desde el detalle del tiquete digital.
-
-### Cambiado
-- **Refactor de Modales**: Migración del `TicketModal` y `RatingModal` al uso del átomo centralizado `Modal.jsx`, mejorando la consistencia de las animaciones y el backdrop.
-- **Estandarización de Filas**: Implementación de la molécula `IconRow.jsx` en toda la suite de historial para unificar el diseño de la información con iconos.
+- **Organismo `DirectoryHeader.jsx`**: Centralización de búsquedas y acciones en todos los directorios administrativos.
 
 ## [1.6.0] - 2026-07-24 (Full Web Parity & Atomic Architecture)
-*Hito histórico: El portal web alcanza la paridad total con la aplicación nativa, incluyendo tiquete digital, sistema de calificaciones y auto-sanación de inventario.*
-
 ### Añadido
-- **Tiquete Digital Mirror**: Implementación 1:1 de la interfaz de tiquete de Android para la web, incluyendo cabecera naranja corporativa, divisor punteado (efecto papel) e información detallada de viaje.
-- **Sistema de Calificación (Rating)**: Motor de reputación espejo de la App nativa. Los pasajeros ahora pueden calificar conductores (1-5 estrellas) con comentarios, sincronizando automáticamente el nodo de reputación y marcando la reserva como calificada.
-- **Atomic Design System v2**:
-    - **Átomo `Modal.jsx`**: Centralización de toda la lógica de diálogos y overlays con animaciones estandarizadas.
-    - **Átomo `Button.jsx`**: Unificación de todas las acciones del sistema bajo un único estándar visual y de comportamiento.
-    - **Molécula `IconRow.jsx`**: Estandarización de filas de información con iconos, utilizada en tiquetes, historial y gestión.
-    - **Organismo `MirrorHeader.jsx`**: Cabecera naranja compartida para Pasajeros y Conductores (DRY).
-    - **Organismo `ExecutiveHeader.jsx`**: Cabecera ejecutiva (Navy/White) compartida para Admin Root y Dueños (DRY).
-- **Superpoderes del Socio (Multi-Role)**: Los Dueños ahora pueden realizar reservas oficiales desde su Dashboard administrativo, habilitando la venta asistida sin perder su sesión de gestión.
-- **Dashboard Corporativo Melo**: Rediseño total de la vista de Socio siguiendo el patrón estético de alta calidad del Admin Root.
-- **Self-Healing Seat Counter**: Refactorización de las transacciones de reserva para recalcular automáticamente los asientos disponibles basándose en el estado real del mapa, eliminando errores de desincronización de contadores.
-
-### Corregido
-- **Null-Check Scroll**: Corrección de error crítico al intentar realizar auto-scroll en la planilla antes del montaje del componente.
-- **Missing Imports**: Solucionados errores de `Badge is not defined` en el Dashboard del conductor.
-- **Sincronización Transaccional**: Blindaje de las funciones `createReservation` y `cancelReservation` mediante el uso de transacciones atómicas de Firebase.
-- **Normalización de Identidad**: Soporte dual para `userId`/`usuarioId` y `puestoReservado`/`reservedSeat` para garantizar visibilidad total entre plataformas.
-
-## [1.5.1] - 2026-07-23 (Web Refactor & UI Mirror Edition)
-*Refactorización profunda del portal web para igualar la comodidad de la app móvil, introduciendo auto-scroll inteligente y gestión de flota avanzada para el holding.*
-
-### Añadido
-- **Auto-Scroll Inteligente**: La planilla web ahora se desplaza automáticamente hacia el próximo viaje disponible al cargar o cambiar de ruta, igualando la comodidad de la App móvil.
-- **Sincronización de Capacidad Real**: Integración directo con el nodo `/vehiculos/` para mostrar la capacidad y asientos disponibles exactos de cada bus asignado.
-- **Distribución Adaptativa Desktop**: Rediseño de la tarjeta de horarios para aprovechar el ancho de pantallas grandes, distribuyendo la información de forma horizontal sin perder la esencia móvil.
-- **Flujo de Navegación Mejorado**: Botón de redirección al Dashboard desde el historial vacío para incentivar la primera reserva del pasajero.
-- **Caja de Beneficios en Registro**: Nueva sección dinámica que explica las ventajas del perfil (Pasajero o Socio) seleccionado para guiar al usuario.
-- **Centro de Ayuda Enriquecido**: Guía del pasajero expandida con descripciones detalladas sobre itinerarios, puntos de fidelidad y Web App en iPhone.
-- **Ecosistema Firebase Singleton**: Implementación de la clase `FirebaseManager` para centralizar Auth, DB y Storage, garantizando una única instancia global espejo de la App Android.
-- **Módulo de Gestión de Socios**: Nueva interfaz dedicada para que el Administrador Root gestione aprobaciones y estados de los dueños de flota de forma independiente.
-- **Módulo de Flota Maestro**: Nueva interfaz de gestión de vehículos (`VehicleDirectory`) que permite registrar, editar y supervisar activos del holding de forma independiente a los conductores.
-- **Acceso Híbrido a Reservas**: Los Administradores y Dueños ahora pueden realizar reservas de viaje directamente desde su Sidebar sin salir de la interfaz de gestión.
-- **Librería de Átomos (UI Core)**: Creación del componente `Button.jsx` para estandarizar todas las acciones del portal bajo principios de Atomic Design.
-- **Selector de Dueños Pro**: Implementación de listas desplegables para asignar propietarios a conductores, eliminando la entrada manual de UIDs y reduciendo errores operativos.
-- **Panel de Moderación de Pasajeros**: Suite de herramientas para que el Administrador Root pueda **Banear, Inactivar o Borrar** cuentas de pasajeros directamente desde la web con diálogos de confirmación.
-
-- **Automatización de Capacidad**: Sincronización atómica que inicializa automáticamente la disponibilidad de asientos (13/13) basándose en la capacidad real del vehículo al asign un conductor a un horario.
-- **Doble Vínculo en Horarios**: Los turnos ahora almacenan tanto `conductorId` como `vehiculoId` para una resolución de datos más rápida y robusta.
-- **Módulo de Gestión de Tarifas**: Nueva interfaz exclusiva para el Administrador Root que permite actualizar el precio de los pasajes por ruta en tiempo real.
-- **Búsqueda Operativa Expandida**: Los Dueños de Flota ahora tienen acceso a la lista de usuarios para facilitar la vinculación de conductores mediante búsqueda por email.
-- **Dashboard Conductor Pro (Mirror)**: Implementación de la interfaz espejo 1:1 de la App nativa en la web, incluyendo cabecera naranja corporativa y logo en TopBar.
-- **Gestión Transaccional de Reservas**: Los conductores ahora pueden confirmar o rechazar reservas directamente desde la web, con sincronización automática de ingresos y liberación atómica de asientos.
-- **Estadísticas Financieras en Vivo**: Integración del motor de ingresos para conductores que lee directamente del nodo `/estadisticas/` diario.
-- **Motor de Reservas Web (v1.6.0)**: Implementación completa de la creación de reservas para pasajeros desde el portal web, con payload idéntico a la App nativa y bloqueo atómico de asientos.
-- **Mapeo Híbrido de Asientos (v1.6.2)**: Nuevo motor de gestión de inventario que diferencia entre reservas de la App (Protegidas) y Ventas Locales. Incluye lógica de blindaje para evitar que los conductores sobrescriban reservas digitales.
-- **Robust Mirror Mode (v1.6.7)**: Refactorización profunda de la UI de asientos para lograr una paridad visual 1:1 con Android tanto para pasajeros (elección libre) como para conductores (gestión operativa), con instrucciones dinámicas y estados de sincronización en vivo.
-- **Sincronización Transaccional de Ingresos**: Los bloqueos de asientos por venta física ahora se registran automáticamente como ingresos en las estadísticas diarias del conductor, unificando la contabilidad física y digital.
-
-### Cambiado
-- **Refuerzo de Seguridad v1.6.7**: Actualización de reglas de Firebase para permitir que los Pasajeros (App Nativa) y Conductores (Portal Web) convivan en el nodo de disponibilidad sin conflictos de permisos, blindando únicamente los campos de infraestructura (`totalAsientos`).
-- **Normalización de Identidad de Reserva**: Unificación lógica de los campos `userId` y `usuarioId` en el motor de datos para asegurar la visibilidad del historial sin importar la plataforma de origen.
-- **Desacoplamiento Vehículo-Conductor**: Refactorización profunda de la lógica de asignación. Ahora se pueden vincular conductores a vehículos existentes o registrar nuevos en un solo flujo inteligente.
-- **Navegación "Mobile Mirror"**: Los roles de Pasajero y Conductor ahora tienen una interfaz 100% despejada sin Sidebar, navegando exclusivamente mediante la barra inferior (Bottom Nav) para una experiencia idéntica a la App móvil.
-- **Navegación Administrativa Pura**: Los roles de Admin y Owner ahora utilizan exclusivamente el Sidebar, eliminando el Bottom Nav para evitar confusiones y optimizar el espacio de gestión.
-- **Header Inteligente**: Se eliminó el botón de menú para roles operativos, dejando el Header limpio y enfocado en la identidad y el perfil.
-- **Historial "Search-First"**: Reestructuración del header en el historial con barra de búsqueda permanente en la parte superior y chips de filtro debajo, optimizando el flujo de consulta.
-- **UI Enriquecida de Activos**: La tarjeta de vehículo (`VehicleCard`) ahora resuelve y muestra el nombre real del conductor asignado y detalles técnicos completos (Marca, Color, Capacidad).
-- **Arquitectura de Sincronización Modular**: El hook maestro `useRealtimeStats` ha sido desacoplado en motores especializados: `useRoleResolver` (Identidad) y `useRealtimeData` (Operación).
-- **Identidad Dinámica Prioritaria**: Optimización del flujo de carga para obtener nombres reales desde el nodo `/usuarios` antes de renderizar Dashboards administrativos.
-- **Refactorización Atómica (DRY)**: Modularización total de `App.jsx` y creación de componentes atómicos (`Input`, `Badge`, `Button`) para eliminar redundancia y facilitar el mantenimiento.
-- **Reorganización del Panel Maestro**: El Dashboard administrativo ahora es puramente analítico, moviendo la gestión de socios y pasajeros a secciones dedicadas en el Sidebar.
-- **UI Mirror v1.5.1**: Actualización estética de la planilla web para ser un espejo fiel de Android, incluyendo el botón circular "+" y el sistema de badges de estado ("Finalizado", "Completado", "Disponible").
-- **Optimización de Temas**: Eliminación de residuos visuales en el modo claro dentro de las secciones de Perfil e Historial, logrando una adaptabilidad del 100% a las preferencias del usuario.
-- **Congelamiento de Acciones en Historial**: Botones de búsqueda y actualización deshabilitados visualmente para priorizar la visualización de datos en esta fase.
-- **Centralización de Perfil**: La gestión de información personal (Nombre/Teléfono) ahora se realiza exclusivamente en el nodo `/usuarios/` para todos los roles, garantizando el cumplimiento de permisos de Firebase.
-
-### Corregido
-- **Blindaje de Componente Input**: Corrección de error crítico de renderizado de iconos (React objects as children) mediante un motor de renderizado seguro de átomos.
-- **Lógica de Asientos (Fallback)**: Corregido error que mostraba 0 cupos cuando el campo de disponibilidad no existía en el horario; ahora usa la capacidad real del vehículo como base.
-- **Error de Permisos (Profile)**: Corregido error `PERMISSION_DENIED` al intentar editar perfil como Socio o Admin mediante el redireccionamiento de escritura al nodo maestro de usuarios.
-- **Sincronización de Nombres**: Corregido problema donde los perfiles administrativos mostraban nombres genéricos; ahora el sistema consulta los datos reales en tiempo real desde Firebase.
-- **Inconsistencia de Fondos**: Corregidos contenedores con fondos oscuros "hardcoded" que afectaban la legibilidad en el Tema Claro.
-- **Mapeo de Datos Dual**: Unificación de nomenclatura entre `puestoReservado` y `reservedSeat` en la lógica de visualización para asegurar consistencia total con la base de datos de la App móvil.
-
----
+- **Tiquete Digital Mirror**: Implementación 1:1 de la interfaz de tiquete de Android para la web.
+- **Sistema de Calificación (Rating)**: Motor de reputación espejo con sincronización automática de nodos.
+- **Venta Asistida**: Los Dueños ahora pueden realizar reservas desde su Dashboard administrativo.
 
 ## [1.5.0] - 2026-07-22 (Ecosystem & Business Edition)
-*Nacimiento del ecosistema web unificado, introduciendo soporte para iPhone vía PWA y la identidad única (SSO) para todos los roles del holding.*
-
 ### Añadido
-- **Soporte Universal iPhone (PWA)**: Implementación de Web App instalable para usuarios de Apple con soporte para iconos nativos y modo pantalla completa.
-- **Identidad Única (SSO)**: Sistema de login y registro unificado para Pasajeros, Conductores y Socios desde un solo punto de entrada web.
-- **Dashboard de Pasajeros Web**: Los usuarios de iPhone ahora pueden consultar horarios, estados de ocupación y su historial desde Safari.
-- **Gestión de Conductores Web**: Los conductores ahora pueden gestionar sus turnos y realizar ventas físicas desde cualquier dispositivo móvil o PC con sincronización en tiempo real.
-- **Motor de Reservas para Pasajeros**: Habilitada la selección de asientos y creación de reservas oficiales directamente desde la web (Especial para iPhone).
-- **Clonación de UI (Mirroring)**: Rediseño total del portal web para replicar la estética Navy Deep y Naranja de la App de Android, incluyendo el soporte de **Tema Dual (Claro/Oscuro)** sincronizado con las preferencias del usuario.
-- **Centro de Ayuda Contextual**: Implementada nueva sección de Ayuda en el Sidebar que muestra el manual de usuario adaptado al rol logueado (Pasajero, Conductor, Dueño o Admin).
-- **Optimización de Contraste**: Refinamiento del tema claro con fondo `secondary-50` (#E1E8EB) para mejorar la profundidad visual y legibilidad en dispositivos móviles.
-- **SEO & Visibilidad**: Integración de Sitemap, Robots y Meta-tags dinámicos para indexación en Google.
-
-### Cambiado
-- **Refactor de Roles**: El sistema ahora detecta automáticamente el rol (Admin/Owner/Driver/Passenger) tras el login y adapta la interfaz dinámicamente.
-- **Estandarización Regional**: Corregida la ortografía de "Nátaga" en todos los metadatos y etiquetas de la plataforma.
-- **Sincronización de Identidad**: El Dashboard de pasajeros ahora muestra el nombre real del usuario logueado.
-- **Centro de Ayuda Contextual**: Implementada nueva sección de Ayuda en el Sidebar que muestra el manual de usuario adaptado al rol (Pasajero, Conductor, Dueño o Admin).
-- **Consistencia Visual (UI Mirroring)**: Todas las nuevas vistas web (Ayuda, Planilla, Reservas) siguen el patrón estético Navy Deep y Naranja de la App nativa.
-
----
-
-## [1.4.0] - 2026-07-16 (UI & Stability Master Edition)
-*Preparación para el futuro con soporte nativo para Android 15, garantizando que la interfaz sea inmersiva y el teclado no oculte información crítica en el chat.*
-
-### Añadido
-- **Motor WindowUtils**: Nueva utilidad centralizada para la gestión de insets del sistema (Android 15 Ready).
-- **Inmersión Total Edge-to-Edge**: Implementación de interfaz fluida en todas las pantallas de la suite.
-- **Navegación Flotante Blindada**: Rediseño de la barra inferior con arquitectura de alturas fijas para evitar deformaciones en dispositivos con botones físicos.
-- **Gestión Avanzada de Teclado (IME)**: El chat ahora desplaza automáticamente la interfaz y realiza scroll al abrir el teclado.
-
-### Corregido
-- **Contraste de Tiquetes**: Ajuste de paleta de colores en la TopBar del tiquete digital para mejor legibilidad.
-- **Simetría de Interfaz**: Corregida la superposición de elementos con las barras de sistema en formularios de registro y edición de perfil.
-
----
+- **Soporte iPhone (PWA)**: Web App instalable con soporte para iconos nativos.
+- **Identidad Única (SSO)**: Registro y Login unificado para todo el holding.
 
 ## [1.3.0] - 2026-07-13 (Android 15 Optimized Edition - Play Store Release)
-*Lanzamiento oficial en la Play Store con optimizaciones de última generación y una enciclopedia técnica de nivel senior para garantizar la escalabilidad del holding.*
-
 ### Añadido
-- **Soporte Android 15 (SDK 35)**: Cumplimiento total con las nuevas políticas de Google Play.
-- **Experiencia Edge-to-Edge**: Implementación de pantalla de borde a borde para una interfaz moderna y fluida.
-- **Alineación de 16 KB**: Soporte técnico para dispositivos de última generación.
-- **Cumplimiento AD_ID**: Bloqueo explícito del ID de publicidad para máxima privacidad.
-- **Sprint de Documentación Premium**:
-    - JavaDoc completo en todas las capas (Models, ViewModels, Services, Engines, Managers, Utils, UI).
-    - Creación de 10 manuales técnicos "Deep-Dive" de inmersión profunda.
-    - Documentación de Reglas de Seguridad NoSQL y Gobernanza de Datos.
-    - Guía de Integración FCM v1 y motor de Deep Linking.
-    - Mapeo detallado de Flujos Lógicos (Bootstrap, Reservas, Rotación).
-    - Manual de Gestión de Datos y Cumplimiento Legal (Habeas Data).
-
-### Corregido
-- **Deformación de Interfaz**: Implementado soporte integral *Edge-to-Edge* con gestión centralizada de insets vía `WindowUtils`. Corregidos problemas de superposición en TopBars y deformación en la barra de navegación inferior en dispositivos con botones físicos.
-- **Pérdida de `conductorId`**: Corregida la colisión lógica en la Cloud Function `automatedRotation` mediante la implementación de un `Set` de asignaciones, evitando el borrado accidental de turnos válidos.
-- **Fallo de Notificaciones en Release**: Implementadas reglas de ProGuard para proteger las librerías de Google Auth y OkHttp3, asegurando la funcionalidad C2C en AAB/APK firmados.
-- **Error de Compilación Premium**: Implementado el método `getAdvancedStats` en `DriverReservationService` para corregir la colisión de símbolos en el historial del conductor.
-- Error de autenticación Google Login (Error 10 [28444]) mediante forzado de WebClientID.
-- Inconsistencias en el reset de asientos durante la rotación nocturna.
-- Memory leaks potenciales mediante la limpieza de listeners en Managers y Adapters.
-
----
-
-## [1.2.3] - 2026-05-24 (Stable Gold Master)
-*Consolidación de la estabilidad del sistema nativo, introduciendo el motor de rescate de cuentas y automatización de mantenimiento preventivo.*
-
-### Añadido
-- **Tutorial Interactivo Hub**: Sistema de guías paso a paso centralizado para pasajeros y conductores.
-- **Rescate de Cuenta**: Flujo de reactivación automática si el usuario intenta ingresar durante el periodo de gracia de borrado.
-- **Borrado Automatizado (Gracia 30 días)**: Implementación de limpieza mensual programada (Domingos 3:00 AM) mediante Firebase Cloud Functions.
-- **Símbolos de Depuración**: Inclusión de símbolos nativos para mejor análisis de crashes en Play Console.
-
-### Cambiado
-- **Arquitectura de Motores**: Desacoplamiento de lógica pesada en `Seat Engine` y `Reservation Engine`.
-- **Refactor de Managers**: Reorganización jerárquica en `/core` (Sistema) y `/ui` (Interfaz).
-- **Estandarización Técnica**: Unificación de nomenclatura en inglés para Adapters y carpetas del proyecto.
-- **Seguridad de API**: Implementación de restricciones granulares para 9 APIs críticas de Google Cloud y Firebase.
-- **Reactividad Total**: Refactorización de ViewModels para usar listeners permanentes en tiempo real.
-- **Optimización de SDK**: Actualización a targetSdkVersion 35 (Android 15).
-
-### Corregido
-- Bloqueo de UI (Spinner infinito) durante la reactivación de cuentas en el Login.
-- Error de validación de reglas de Firebase al intentar escribir tokens FCM en nodos cruzados.
-- Sincronización de capacidad de asientos al registrar nuevos vehículos.
-
----
-
-## [1.2.2] - 2026-05-24
-*Ajustes técnicos de cumplimiento para la distribución en tiendas oficiales.*
-
-### Cambiado
-- Ajuste de targetSdkVersion a 35 para cumplimiento con políticas de Google Play.
-- Incremento de versionCode para despliegue.
-
----
-
-## [1.2.1] - 2026-05-23
-*Empoderamiento del operador con flujos de registro autónomos y auditoría de integridad de datos.*
-
-### Añadido
-- **Registro Autónomo de Conductores**: Los choferes ahora pueden registrarse, subir su vehículo y elegir horarios sin intervención administrativa.
-- **Sanity Check**: Capa lógica para filtrar conductores inexistentes en la planilla de horarios.
-
-### Corregido
-- Error de "Shimmer Infinito" en el perfil de conductores.
-
----
-
-## [1.2.0] - 2026-05-15
-*Implementación de la infraestructura de seguridad basada en roles para separar el flujo de trabajo de choferes y clientes.*
-
-### Añadido
-- **Segregación de Roles**: División física de los nodos `/usuarios/` y `/conductores/` en Firebase.
-- **Login Inteligente**: Detección automática de rol tras autenticación con Google.
-
----
-
-## [1.1.0] - 2026-03-10
-*Lanzamiento del motor transaccional de asientos y digitalización de la contabilidad de a bordo.*
-
-### Añadido
-- **Mapa de Asientos Interactivo**: Primera versión del motor de selección de puestos para pasajeros.
-- **Venta Física**: Botón de bloqueo de asientos para conductores.
-- **Tarifas Dinámicas**: Gestión de precios desde Firebase Realtime Database.
-
----
+- **Soporte Android 15 (SDK 35)**: Experiencia Edge-to-Edge y cumplimiento de políticas de Google Play.
+- **Sprint de Documentación**: 10 manuales técnicos "Deep-Dive" y JavaDoc integral.
 
 ## [1.0.0] - 2025-05-01
-*Nacimiento de Ruta-Go: La semilla tecnológica para el transporte regional del Huila.*
-
-### Añadido
-- Lanzamiento inicial de la plataforma Ruta-Go.
-- Consulta de horarios y trayectos básicos.
-- Autenticación con correo y contraseña.
+- Lanzamiento inicial del ecosistema Ruta-Go.
 
 ---
 **Chop Code Solutions - Evolucionando el transporte regional.**

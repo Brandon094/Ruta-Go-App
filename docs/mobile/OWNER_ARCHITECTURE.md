@@ -1,53 +1,53 @@
-# 🏗️ Arquitectura del Módulo de Dueños y Aislamiento de Activos (v1.5.0)
+# 🏗️ Arquitectura del Módulo de Dueños y Aislamiento de Activos (v1.9.9.5)
 
 Este documento detalla la implementación del modelo multi-inquilino que permite la gestión escalable de flota, separando la propiedad de los activos de su operación diaria.
 
 ---
 
 ## ✅ 1. Estado de Implementación
-El modelo de Dueños ha sido desplegado exitosamente en la versión **v1.5.0 Ecosystem**. El sistema ha pasado de una relación estática 1:1 a una arquitectura de **Propiedad Dinámica**.
+El modelo de Dueños ha evolucionado hacia una **Inteligencia Analítica 360°**, integrando la operación móvil con la gestión web de forma transparente.
 
 ### Hitos Logrados:
 *   Desacoplamiento total entre Vehículo y Conductor.
-*   Lanzamiento del **Go Business Dashboard** (Web Portal).
-*   Implementación de aislamiento de datos mediante `ownerId`.
+*   Lanzamiento del **Go Business Dashboard** (Web Portal) con soporte para iPhone.
+*   **Contabilidad Integral (v1.9.0)**: Sumatoria automática de ventas por App y ventas físicas.
+*   Aislamiento de datos mediante reglas de seguridad de Firebase basadas en `ownerId`.
 
 ---
 
-## 🛠️ 2. Estructura NoSQL Finalizada
+## 🛠️ 2. Estructura NoSQL y Sincronización
 
 ### 2.1 Nodo Maestro: `/dueños/`
-Controla el acceso administrativo al portal web.
-*   `uid`: `true` (Acceso total al dashboard de sus activos).
-*   `uid`: `"pendiente"` (Registro nuevo esperando habilitación).
+Controla el acceso administrativo al ecosistema.
+*   `uid`: `true` (Habilitado para gestionar activos y ver finanzas).
+*   `uid`: `"pendiente"` (Esperando validación por el Admin Root).
 
-### 2.2 Nodo: `/vehiculos/`
-El activo centraliza las referencias de mando.
-*   `ownerId`: UID del socio propietario (Filtro maestro del dashboard).
-*   `driverId`: UID del conductor vinculado (Filtro para la App móvil).
-*   `capacidad`: Valor técnico que resetea el inventario de asientos cada noche.
+### 2.2 Nodo: `/vehiculos/` (El Activo Central)
+*   `ownerId`: UID del socio propietario (Filtro maestro para reportes).
+*   `driverId`: UID del conductor asignado.
+*   `capacidad`: Define el límite de ventas para el Seat Engine.
 
 ---
 
-## 📈 3. Inteligencia del Dashboard (RBAC)
-El portal web utiliza lógica de filtrado en tiempo real para garantizar la privacidad comercial:
+## 📈 3. Inteligencia Analítica 360° (Refactor v1.9.0)
+El sistema ya no depende únicamente del nodo de reservas para calcular ingresos:
 
-1.  **Resolución de Placas**: El sistema identifica qué vehículos pertenecen al socio mediante el cruce de `ownerId`.
-2.  **Agregación Financiera**: Las estadísticas de ingresos se calculan sumando solo las reservas vinculadas a las placas del socio.
-3.  **Monitor de Operadores**: Visualización de conductores vinculados exclusivamente a su flota.
+1.  **Cálculo por Ocupación**: El Dashboard cruza la capacidad total contra los asientos disponibles en tiempo real.
+2.  **Unificación de Caja**: `Ingresos = (Cupos Vendidos) * Tarifa`. Esto incluye pasajeros que pagan en el bus y los que reservan por la App.
+3.  **Detección de Trayecto**: Clasificación automática por destino (Nátaga vs La Plata) extrayendo el hito final de la cadena de ruta.
 
 ---
 
 ## 🔐 4. Seguridad de Datos
-*   **Aislamiento Comercial**: Un socio no tiene visibilidad sobre los ingresos o la ocupación detallada de la competencia.
-*   **Protección Habeas Data**: El socio tiene acceso a los nombres de los conductores asignados a sus buses, pero no tiene acceso a la base de datos global de pasajeros (`/usuarios/`).
+*   **Aislamiento Comercial**: Los socios solo tienen visibilidad sobre su propia flota. El acceso a `/estadisticas` y `/vehiculos` está restringido por reglas de Firebase.
+*   **Protección de Conductores**: El socio gestiona a sus operadores, pero la identidad digital de los mismos está protegida bajo el estándar SSO del Holding.
 
 ---
 
-## 🚀 5. Próximos Pasos (Fase 3 SaaS)
-1.  **Módulo Contable Premium**: Automatización del cálculo (Ingresos - Egresos - Comisión).
-2.  **Alertas SOAT/Tecno**: Sistema de telemetría legal con cuenta regresiva.
-3.  **Insignia "Vehículo Estrella"**: Algoritmo de reputación basado en puntualidad y calificación de pasajeros.
+## 🚀 5. Próximos Pasos (Fase 4 - Proyectos Especiales)
+1.  **Ruta-Go In-Car (Android Auto)**: Extender el control de la flota al tablero del vehículo.
+2.  **Gestión de Gastos**: Módulo para reportar consumo de combustible y mantenimiento preventivo.
+3.  **Telemetría Legal**: Alertas automáticas de vencimiento de SOAT y tecnomecánica.
 
 ---
-**ChopCode Solutions - Ingeniería de Producto 2026**
+**ChopCode Solutions - Mobile & Business Engineering 2026**

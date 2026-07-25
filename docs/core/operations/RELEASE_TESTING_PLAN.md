@@ -1,65 +1,54 @@
-# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.3.0 Optimized
+# 🏁 Plan de Pruebas de Certificación - Ruta-Go v1.9.9.5 Premium
 
-Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad, reactividad y seguridad de la aplicación, con enfoque en las nuevas capacidades de Android 15 y el estándar de documentación premium.
-
----
-
-## 🏗️ 0. Preparación del Entorno (Clean Start)
-1.  **Limpiar Auth**: Borrar todos los usuarios de prueba en Firebase Console.
-2.  **Limpiar Database**: Eliminar los nodos `reservas`, `chats`, `notificaciones`.
-3.  **Importar Master JSON**: Subir el esquema v1.3.0 sincronizado.
-4.  **Emulador/Dispositivo**: Usar un dispositivo con Android 15 (API 35) para validación visual.
+Este documento detalla el protocolo de pruebas (QA) para validar la estabilidad, reactividad y seguridad de todo el ecosistema (Móvil + Web).
 
 ---
 
-## 🟢 Fase 1: Android 15 y UX Premium
-*Objetivo: Validar el cumplimiento con los estándares modernos de Google.*
+## 🏗️ 0. Preparación del Entorno
+1.  **Limpiar Entorno**: Resetear nodos temporales en RTDB (`reservas`, `chats`).
+2.  **Validación de Build**: Ejecutar `npm run build` y asegurar que no existan advertencias de dependencias.
+3.  **Cross-Platform**: Tener a mano un dispositivo Android 15 y un navegador (Chrome/Safari) para pruebas de PWA.
+
+---
+
+## 🟢 Fase 1: Calidad Web (Lighthouse Audit)
+*Objetivo: Mantener el estándar de excelencia en la plataforma React.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 1.1 | Edge-to-Edge | Abrir cualquier pantalla (ej. Home). | El contenido debe extenderse detrás de la barra de navegación y estado. |
-| 1.2 | Animaciones de Escala | Presionar cualquier botón Material. | Se debe percibir la micro-interacción de escalado (0.95x). |
-| 1.3 | Shimmer Effect | Cargar el Dashboard con latencia de red simulada. | Se deben mostrar esqueletos de carga en lugar de spinners vacíos. |
-| 1.4 | AD_ID Compliance | Revisar logs de inicialización. | No se debe invocar el API de Publicidad (Privacidad Total). |
+| 1.1 | Performance (LCP) | Cargar la Landing Page. | El contenido principal debe ser visible en menos de 2.5s (LCP < 2.5s). |
+| 1.2 | Accesibilidad AA | Navegar con lector de pantalla. | Todos los botones deben tener `aria-label` y el contraste debe ser legible. |
+| 1.3 | Code Splitting | Revisar Network tab en DevTools. | Los módulos del Dashboard no deben descargarse hasta el Login exitoso. |
+| 1.4 | Transiciones Fluida | Cambiar de pestañas rápidamente. | El `SplashScreen` debe aparecer si hay retraso, evitando parpadeos de otro rol. |
 
 ---
 
-## 🔵 Fase 2: Lógica Transaccional (Motores)
-*Objetivo: Validar la robustez del Seat y Reservation Engine.*
+## 🔵 Fase 2: Lógica de Negocio Unificada
+*Objetivo: Validar que el "Cerebro" del sistema responda igual en ambas pistas.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 2.1 | Reserva Atómica | Intentar reservar el mismo asiento desde dos dispositivos a la vez. | Firebase debe abortar una transacción y el app mostrar el error controlado. |
-| 2.2 | Sincronización de Capacidad | Cambiar la capacidad de un vehículo en el nodo `/vehiculos`. | Los horarios vinculados deben actualizar su disponibilidad automáticamente. |
-| 2.3 | Deep Linking FCM | Enviar un mensaje de chat y tocar la notificación. | El app debe abrir directamente la `ChatActivity` con el ID de reserva correcto. |
-| 2.4 | Blindaje C2C (ProGuard) | Probar envío de notificaciones en un AAB/APK firmado (Release). | Las notificaciones deben llegar correctamente (Valida las reglas de ProGuard para Google Auth). |
+| 2.1 | Contabilidad 360° | Realizar una venta física en la web. | El ingreso debe reflejarse en el Dashboard del Dueño y Root automáticamente. |
+| 2.2 | Reservas Espejo | Crear reserva en Android. | Debe ser visible, chateable y calificable en el Portal Web de forma instantánea. |
+| 2.3 | Regla de las 7 PM | Cambiar la hora del sistema a las 19:01. | La web y el app deben habilitar automáticamente los horarios del día siguiente. |
+| 2.4 | Vínculo de Flota | Cambiar el dueño de un bus. | El antiguo dueño debe perder acceso y el nuevo debe ver la data de inmediato. |
 
 ---
 
-## 🟡 Fase 3: Rotación y Mantenimiento Cloud
-*Objetivo: Validar la orquestación serverless.*
+## 🟡 Fase 3: Infraestructura y Seguridad
+*Objetivo: Validar la orquestación serverless y el blindaje.*
 
 | ID | Caso de Prueba | Acción | Resultado Esperado |
 |:---|:---|:---|:---|
-| 3.1 | Automated Rotation | Ejecutar manualmente la función en Firebase Console. | Se deben redistribuir los turnos y resetear asientos. **Verificar que el conductorId persista en los horarios asignados** (Valida el Set de integridad). |
-| 3.2 | Cleanup Grace Period | Marcar cuenta para borrado y esperar (o forzar timestamp). | Tras 30 días, la cuenta debe desaparecer de Auth y DB permanentemente. |
+| 3.1 | Rotación Cíclica | Simular ejecución de Cloud Function. | Los conductores deben rotar según el escalafón (validar Triple Turno 8). |
+| 3.2 | Aislamiento RBAC | Intentar acceder a `/dueños` como pasajero. | Firebase debe denegar la lectura/escritura (PERMISSION_DENIED). |
 
 ---
 
-## 🛡️ Fase 4: Auditoría de Documentación
-*Objetivo: Verificar que el código es legible y mantenible.*
-
-| ID | Caso de Prueba | Acción | Resultado Esperado |
-|:---|:---|:---|:---|
-| 4.1 | JavaDoc Coverage | Revisar clases en `models` y `viewmodels`. | Cada método público debe tener su descripción, parámetros y retornos. |
-| 4.2 | Deep-Dive Sync | Comparar `LOGICAL_FLOWS.md` con el código. | La descripción técnica debe coincidir con la implementación real (ej: runTransaction). |
-
----
-
-## 📝 Notas de Versión (v1.3.0 Stable)
-- **Target SDK**: 35 (Android 15).
-- **Min SDK**: 24 (Android 7.0).
-- **Architecture**: MVVM con Repositorios Desacoplados.
+## 📝 Notas de Certificación
+- **Web Standard**: Lighthouse Score > 90.
+- **Mobile Standard**: Android 15 Edge-to-Edge Compliance.
+- **Sync Latency**: < 500ms en cambios de estado de asientos.
 
 ---
 **Elaborado por: Chop Code Solutions - Ingeniería de Calidad 2026**

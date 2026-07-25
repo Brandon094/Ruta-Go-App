@@ -38,16 +38,20 @@ export default function Privacy({ onBack }) {
             <h3 className="text-lg font-black text-secondary-900 italic border-l-4 border-primary-500 pl-4">3. Eliminación de Datos (Derecho al Olvido)</h3>
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
               <p className="text-slate-600 text-sm leading-relaxed">
-                En cumplimiento con las políticas de Google Play, proporcionamos métodos claros para borrar su cuenta:
+                En cumplimiento con las políticas de Google Play, proporcionamos métodos claros para la eliminación de su cuenta y datos personales:
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-xs font-bold text-slate-500">
                   <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-primary-500 shadow-sm shrink-0">1</span>
-                  Dentro de la App: Perfil &gt; Solicitar borrar cuenta.
+                  Desde la App Móvil: Perfil &gt; Editar Perfil &gt; Eliminar Cuenta.
                 </li>
                 <li className="flex gap-3 text-xs font-bold text-slate-500">
                   <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-primary-500 shadow-sm shrink-0">2</span>
-                  Vía Email: Enviando solicitud a <strong className="text-secondary-900">dazace94@gmail.com</strong>.
+                  Desde el Portal Web: Mi Perfil &gt; Solicitar borrar cuenta.
+                </li>
+                <li className="flex gap-3 text-xs font-bold text-slate-500">
+                  <span className="w-5 h-5 bg-white rounded-full flex items-center justify-center text-primary-500 shadow-sm shrink-0">3</span>
+                  Vía Email: Enviando solicitud desde el correo registrado a <strong className="text-secondary-900">dazace94@gmail.com</strong>.
                 </li>
               </ul>
               <div className="p-4 bg-amber-50 rounded-xl flex items-center gap-3">

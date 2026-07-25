@@ -1,57 +1,48 @@
-# 🗺️ Arquitectura de Sistemas y Módulos Core - Ecosistema Go v1.5.0
+# 📱 Arquitectura de la Aplicación Android - Ruta-Go v1.9.9.5
 
-Este documento detalla la arquitectura de ingeniería de Ruta-Go, diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa**, optimizado para el ecosistema móvil y web.
-
----
-
-## 🏛️ 1. Macro-Arquitectura Híbrida Cloud
-El sistema opera sobre un núcleo de Firebase, distribuyendo la carga según la vertical tecnológica:
-
-### 1.1 Stack por Entorno:
-*   **Android App (Móvil)**: Java 17 + Material 3 + RTDB. Enfoque nativo para máxima fluidez en ruta.
-*   **Web Portal (Business)**: React 18 + Vite + Tailwind CSS. Arquitectura SPA para gestión administrativa y Dashboards de socios.
-*   **Backend Serverless**: Node.js 22 (Cloud Functions) + Firebase Hosting.
-
-### 1.2 Motores de Persistencia:
-*   **Realtime Database (RTDB)**: Latencia ultra-baja necesaria para asientos, chat y telemetría de flota en vivo.
-*   **Cloud Firestore**: Motor para Agro-Go y Cargo-Go (datos estructurados y subastas).
-*   **FCM v1**: Sistema de mensajería push con soporte para identidades dinámicas.
+Este documento detalla la arquitectura de ingeniería de la App nativa de Ruta-Go, diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa (MVVM)**, optimizado para el ecosistema móvil.
 
 ---
 
-## 🏗️ 2. Arquitectura del Portal Web (React)
-El portal implementa un flujo de datos unidireccional y reactivo:
-1.  **Capa de Autenticación**: Validación de roles (Admin/Owner) contra nodos maestros de RTDB.
-2.  **Hook de Estado Realtime**: `useRealtimeStats` centraliza los listeners y realiza el filtrado de datos por propiedad (`ownerId`).
-3.  **Capa de Servicios**: Suite de lógica de negocio modularizada:
-    *   `driverService.js`: Vinculación usuario-conductor y automatización de capacidad.
-    *   `vehicleService.js`: Gestión independiente de activos de flota.
-    *   `reservationService.js`: Transacciones de reserva, confirmaciones y liberación de cupos.
-    *   `pricingService.js`: Control dinámico de tarifas por ruta para administradores.
+## 🏛️ 1. Estructura de Capas (MVVM)
+La aplicación sigue una separación estricta de responsabilidades para garantizar la estabilidad en dispositivos con recursos limitados:
+
+### 1.1 UI Layer (View)
+*   **Tecnología**: XML (Material Design 3) con transición activa hacia **Jetpack Compose**.
+*   **Responsabilidad**: Observar el estado expuesto por los ViewModels y reaccionar a la entrada del usuario.
+*   **Inmersión**: Uso de `WindowUtils` para una experiencia Edge-to-Edge nativa.
+
+### 1.2 Presentation Layer (ViewModel)
+*   **Componentes**: Clases que heredan de `ViewModel` de Android.
+*   **Estado**: Uso de `LiveData` y `StateFlow` para emitir cambios reactivos desde Firebase.
+*   **Ciclo de Vida**: Gestión automática de suscripciones para evitar memory leaks.
+
+### 1.3 Data Layer (Repository & Services)
+*   **Firebase RTDB**: Sincronización bidireccional en tiempo real para asientos y chat.
+*   **Services**: Abstracción de llamadas a la base de datos (ej. `ReservationService`).
+*   **Managers**: Orquestadores de lógica pesada como el motor de notificaciones y la persistencia local.
 
 ---
 
-## 🎫 3. Motores de Negocio Desacoplados
-Ruta-Go separa las "reglas de oro" de la infraestructura técnica:
+## ⚙️ 2. Motores Especializados (Engines)
+Lógica de negocio desacoplada del framework de Android:
 
-*   **Aislamiento Comercial (Multi-inquilino)**: El sistema garantiza que un Socio solo visualice la información financiera y operativa de sus activos vinculados, manteniendo la privacidad competitiva.
-*   **Integridad Atómica**: Uso de `runTransaction()` para evitar sobreventa de cupos tanto en Android como en Web.
-*   **Comunicación C2C**: Flujo de notificaciones basado en FCM v1 y OAuth2, permitiendo interacción directa entre pasajero y operador.
-
----
-
-## 🔐 4. Sistema de Identidad Única (SSO)
-El ecosistema utiliza **Firebase Auth** como proveedor de identidad universal:
-*   Un solo `UID` permite al usuario transitar entre la App (Pasajero/Chofer) y el Portal Web (Dueño/Admin).
-*   **RBAC Dinámico**: El sistema resuelve el rango del usuario en tiempo real consultando los nodos `/admins` y `/dueños`.
+*   **Seat Engine**: Algoritmo para el mapeo y validación de asientos en tiempo real.
+*   **Reservation Engine**: Gestión de transacciones atómicas para asegurar la integridad de la compra.
+*   **Loyalty Engine**: Sistema de cálculo y redención de Puntos Go.
 
 ---
 
-## 📱 5. Optimizaciones Android 15 (SDK 35)
-*   **Edge-to-Edge Native**: Soporte integral para pantallas de borde a borde.
-*   **16 KB Page Alignment**: Compatibilidad con hardware de próxima generación.
-*   **Privacy First**: Implementación del flujo de "Derecho al Olvido" sincronizado entre App y Web.
+## 🔐 3. Seguridad y Privacidad (Android 15)
+*   **Aislamiento de Perfiles**: El app filtra los datos locales basándose en el rol (Pasajero o Conductor).
+*   **Protección de Código**: Implementación de reglas de **ProGuard** para blindar la comunicación con Google Auth y FCM.
+*   **Compliance**: Flujo integrado de "Derecho al Olvido" (Eliminación de cuenta) cumpliendo con las políticas de Google Play.
 
 ---
-**Chop Code Solutions - Arquitectura de Software 2026**
-*Engineering for Rural Productivity.*
+
+## 🚀 4. Evolución Técnica (Fase 4)
+*   **Migration**: Reemplazo gradual de Fragments por componentes funcionales de Compose.
+*   **Sync**: Mantenimiento de la estrategia "Mirror" para asegurar que la App y la Web compartan la misma lógica de negocio 1:1.
+
+---
+**ChopCode Solutions - Mobile Architecture 2026**

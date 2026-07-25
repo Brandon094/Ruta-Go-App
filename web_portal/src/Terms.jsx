@@ -26,7 +26,7 @@ export default function Terms({ onBack }) {
           </div>
 
           <p className="text-slate-600 leading-relaxed italic">
-            Versión 1.4.0 Stable | Vigentes desde el 16 de julio de 2026.
+            Versión 1.9.9.5 Stable | Vigentes desde el 24 de julio de 2026.
             Al utilizar la plataforma (App o Web), usted acepta estos términos.
           </p>
 

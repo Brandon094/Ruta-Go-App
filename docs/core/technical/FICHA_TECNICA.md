@@ -1,6 +1,6 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.5.0 Ecosystem
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.9.5 Premium
 
-Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura.
+Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura de alto rendimiento.
 
 ---
 
@@ -9,7 +9,7 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 *   **Plataformas:** Ruta-Go (App & Web), Agro-Go (Flutter), Cargo-Go (Logística).
 *   **Fabricante:** ChopCode Solutions.
 *   **Titular:** Brandon Daza Cerquera.
-*   **Versión Global:** v1.5.0.
+*   **Versión Global:** v1.9.9.5 High Fidelity.
 
 ---
 
@@ -17,36 +17,35 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 
 ### 2.1 Ecosistema Móvil (Ruta-Go Android)
 *   **Lenguaje:** Java 17 (Target SDK 35 - Android 15).
-*   **Framework:** Android SDK Nativo.
-*   **Arquitectura:** MVVM Reactivo con LiveData.
-*   **UI/UX:** XML con Material Design 3 y WindowUtils (Edge-to-Edge).
+*   **Arquitectura:** MVVM Reactivo con Repositorios Desacoplados.
+*   **UI/UX:** XML Material Design 3 (Transición a Jetpack Compose iniciada).
+*   **Capacidades:** Edge-to-Edge nativo, WindowUtils para gestión de insets.
 
 ### 2.2 Ecosistema Web (Ruta-Go Portal)
-*   **Framework:** React 18.
-*   **Build Tool:** Vite.
-*   **Estilos:** Tailwind CSS 3.
-*   **Arquitectura:** SPA (Single Page Application).
+*   **Framework:** React 18 (Hooks & Transitions).
+*   **Diseño:** Tailwind CSS 3 (Atomic Design System).
+*   **Rendimiento:** Vite + Code Splitting (React Lazy & Suspense).
+*   **Métricas:** Lighthouse Score > 90 en todas las categorías.
 
-### 2.3 Infraestructura Backend (Firebase Cloud)
-*   **Hosting:** Firebase Hosting (HTTPS/SSL).
-*   **Cloud Logic:** Cloud Functions (Node.js 22).
-*   **Bases de Datos:** Realtime Database (RTDB) & Cloud Firestore.
-*   **Auth:** Firebase Authentication (SSO).
+### 2.3 Infraestructura Backend (Shared Core)
+*   **Cloud Logic:** Firebase Cloud Functions (Node.js 22).
+*   **Bases de Datos:** Realtime Database (RTDB) para alta concurrencia.
+*   **Auth:** Firebase Authentication con SSO (Single Sign-On).
 
 ---
 
 ## 🛰️ 3. Capacidades y Rendimiento
-1.  **Latencia Ultra-baja**: Motor de reservas con sincronización en milisegundos.
-2.  **Aislamiento de Datos (RBAC)**: Segregación total entre perfiles de Admin, Socio, Conductor y Pasajero.
-3.  **Seguridad**: Blindaje mediante reglas NoSQL y ProGuard.
-4.  **Cumplimiento Legal**: Habeas Data (Ley 1581) y Derecho al Olvido automatizado.
+1.  **Sincronización Atómica**: Motor de reservas con `runTransaction()` para inventario 100% preciso.
+2.  **Inteligencia Analítica**: Cálculo automático de ingresos y ocupación cruzada (Venta App + Física).
+3.  **Navegación Fluida**: Motor de transiciones de React 18 para evitar bloqueos de interfaz.
+4.  **Accesibilidad AA**: Cumplimiento de estándares internacionales para lectores de pantalla y contraste.
 
 ---
 
 ## 🔑 4. Servicios Cloud Integrados
-*   **FCM v1**: Mensajería push bidireccional.
-*   **Google Auth**: Identidad federada.
-*   **Google Cloud Storage**: Persistencia de archivos y perfiles.
+*   **FCM v1**: Notificaciones push y mensajería instantánea.
+*   **Cloud Scheduler**: Automatización de rotación de turnos y limpieza de datos.
+*   **Firebase Hosting**: Despliegue de alta disponibilidad con SSL.
 
 ---
 **© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural.**

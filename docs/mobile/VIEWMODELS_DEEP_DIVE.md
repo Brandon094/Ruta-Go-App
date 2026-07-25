@@ -1,47 +1,45 @@
-# 📖 Inmersión Técnica: Gestión de Estado (ViewModels)
+# 📖 Inmersión Técnica: Gestión de Estado (ViewModels) v1.9.9.5
 
-Este documento detalla la arquitectura de la capa de presentación del Ecosistema Go, basada en el patrón MVVM y la programación reactiva.
+Este documento detalla la arquitectura de la capa de presentación del Ecosistema Go, basada en el patrón MVVM y la programación reactiva para Android.
 
 ---
 
 ## 🏛️ 1. Filosofía Arquitectónica
 Los ViewModels en Ruta-Go actúan como el cerebro de cada pantalla, desacoplando la lógica de negocio de la interfaz de usuario. Siguen estos principios:
 
-*   **Independencia de la Vista**: No poseen referencias a `Context`, `Views` o `Resources` (para evitar memory leaks y facilitar pruebas unitarias).
-*   **Comunicación Unidireccional**: Exponen estados mediante `LiveData` que las Actividades observan pasivamente.
-*   **Persistencia de Estado**: Sobreviven a cambios de configuración (como rotación de pantalla) gracias a la librería `androidx.lifecycle`.
+*   **Independencia de la Vista**: No poseen referencias a `Context`, `Views` o `Resources`. Esta pureza facilita la futura migración a **Jetpack Compose**.
+*   **Comunicación Unidireccional**: Exponen estados mediante `LiveData` o `StateFlow` que las vistas observan pasivamente.
+*   **Persistencia de Estado**: Sobreviven a cambios de configuración gracias a la arquitectura de componentes de Android.
 
 ---
 
-## 🏗️ 2. BaseViewModel (El Estandar)
-Todos los ViewModels heredan de `BaseViewModel`, que centraliza:
-*   `loadingLiveData`: Control global de Shimmers y ProgressBars.
+## 🏗️ 2. BaseViewModel (El Estándar)
+Todos los ViewModels heredan de `BaseViewModel`, que centraliza la comunicación base:
+*   `loadingLiveData`: Control global de Shimmers y ProgressBars (Sincronizado con el estándar visual de la web).
 *   `errorLiveData`: Canal único para notificaciones de fallo al usuario.
-*   `registrarEventoAnalitico()`: Método protegido para telemetría automática.
+*   `registrarEventoAnalitico()`: Integración nativa con Firebase Analytics.
 
 ---
 
 ## 👨‍✈️ 3. ViewModels de Conductor (Operativos)
-Diseñados para la eficiencia y el control financiero:
-*   **`DriverStatsViewModel`**: Cruza datos de reservas y disponibilidad técnica para mostrar ingresos reales y ocupación.
-*   **`ManageSeatsViewModel`**: Diferencia entre ocupación por App y bloqueos físicos de terminal.
-*   **`DriverRegistrationViewModel`**: Orquesta la creación multi-nodo (Usuarios, Conductores, Vehículos).
+Diseñados para el control total en ruta:
+*   **`DriverStatsViewModel`**: Implementa la **Inteligencia Analítica 360°**, cruzando reservas de la App con ventas físicas para reportar ingresos reales.
+*   **`ManageSeatsViewModel`**: Gestiona el mapa de asientos interactivo con bloqueo atómico.
 
 ---
 
 ## 🚶 4. ViewModels de Pasajero (Experiencia)
-Enfocados en la reactividad y la facilidad de uso:
-*   **`ScheduleViewModel`**: Mantiene la planilla de horarios sincronizada globalmente sin necesidad de recargar.
-*   **`CreateReservationViewModel`**: Gestiona el mapa interactivo de asientos con validaciones atómicas.
-*   **`PassengerProfileViewModel`**: Calcula en caliente los "Puntos Go" y métricas de fidelización.
+Enfocados en la reactividad y la consistencia "Mirror":
+*   **`ScheduleViewModel`**: Mantiene la planilla de horarios sincronizada globalmente. Implementa la lógica de "Próximo Viaje" (Badge SIGUIENTE).
+*   **`CreateReservationViewModel`**: Orquesta el proceso de compra con validaciones de disponibilidad en milisegundos.
 
 ---
 
 ## 🔄 5. Ciclo de Vida y Limpieza
-Para garantizar un rendimiento óptimo, especialmente en dispositivos de gama baja:
-1.  **Suscripción**: Se activa en el `onCreate` de la vista o mediante un método `init()`.
-2.  **Escucha**: Firebase Realtime Database empuja cambios solo cuando ocurren.
-3.  **Liberación**: El método `onCleared()` de cada ViewModel es responsable de remover todos los `ValueEventListener` activos.
+Para garantizar un rendimiento óptimo:
+1.  **Suscripción**: Se activa al inicializar el ViewModel mediante inyección de dependencias o métodos `init`.
+2.  **Reactividad**: Los listeners de Firebase se mantienen activos mientras la vista está en primer plano.
+3.  **Liberación**: El método `onCleared()` es responsable de remover todos los `ValueEventListener` activos, evitando memory leaks.
 
 ---
-**Chop Code Solutions - Documentación de Ingeniería v1.3.0**
+**Chop Code Solutions - Mobile Engineering 2026**

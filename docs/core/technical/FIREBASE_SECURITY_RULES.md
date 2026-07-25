@@ -1,4 +1,4 @@
-# 🛡️ Manual de Seguridad: Firebase Realtime Database (v1.6.7)
+# 🛡️ Manual de Seguridad: Firebase Realtime Database (v1.9.9.5)
 
 Este documento detalla la lógica de gobernanza de datos del ecosistema **Ruta-Go**, asegurando la privacidad del usuario, el aislamiento comercial entre socios y el cumplimiento con la Ley de Habeas Data.
 
@@ -7,7 +7,7 @@ Este documento detalla la lógica de gobernanza de datos del ecosistema **Ruta-G
 ## 🏛️ 1. Filosofía de Seguridad (RBAC)
 El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Locking**.
 
-*   **Identidad Obligatoria**: `auth != null` es el requisito base.
+*   **Identidad Obligatoria**: `auth != null` es el requisito base para cualquier operación.
 *   **Aislamiento de Perfiles**: Los datos personales están bloqueados por el UID del propietario.
 *   **Jerarquía de Poder**: Admin Root > Dueño de Flota (Socio) > Operador (Conductor) > Pasajero.
 
@@ -16,46 +16,40 @@ El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Lo
 ## 🔐 2. Análisis de Nodos Críticos
 
 ### 👥 Perfiles y Búsqueda (/usuarios)
-*   **Lectura Expandida**: A partir de v1.5.0, tanto **Admins** como **Dueños** pueden leer la lista de usuarios.
-    *   *Propósito*: Permitir la búsqueda de conductores por Email para vincularlos a vehículos desde el portal web.
-*   **Escritura Restringida**: Solo el Admin Root o el propio Usuario pueden modificar los datos del perfil.
+*   **Lectura Administrativa**: Tanto **Admins** como **Dueños** pueden leer la lista de usuarios para facilitar la búsqueda de conductores por email.
+*   **Lectura de Perfil**: Cualquier usuario autenticado puede leer su propio perfil.
+*   **Escritura Restringida**: Solo el Admin Root o el propio Usuario pueden modificar sus datos personales.
 
 ### 💼 Gestión de Socios (/dueños)
-*   **Activación**: Solo el Admin Root tiene permiso de escritura (`.write`) para otorgar el rango de Socio a un UID.
-*   **Verificación**: El portal web consulta este nodo para renderizar el Dashboard de Negocios o denegar el acceso.
+*   **Activación**: Solo el Admin Root puede otorgar el rango de Socio. Un usuario puede escribir su propio nodo solo si es para registro inicial (pendiente).
+*   **Auditoría**: El portal web valida la existencia del UID en este nodo antes de permitir el acceso al Business Dashboard.
 
 ### 🚗 Control de Activos (/vehiculos)
-*   **Propiedad Blindada**: La escritura en un vehículo está permitida bajo una jerarquía triple:
-    1. El **Dueño** (`ownerId`) puede gestionar su activo desde la web.
-    2. El **Conductor** (`driverId` / `conductorId`) puede actualizar datos técnicos desde la App móvil.
-    3. El **Admin Root** tiene control total.
-*   **Indexación**: Nodo indexado por `driverId` y `ownerId` para consultas eficientes.
+*   **Propiedad Blindada**: La escritura está permitida si el `auth.uid` coincide con el `ownerId` registrado, o si el usuario es Admin.
+*   **Integridad de Datos**: Los conductores pueden leer la información técnica de su bus asignado para la operación diaria.
 
 ### 🕒 Gestión de Horarios (/horarios)
-*   **Visibilidad**: Lectura pública para permitir la consulta de rutas.
-*   **Asignación Inteligente**: El Admin Root y los **Dueños** tienen permiso de escritura para asignar conductores y vincular vehículos a turnos específicos.
-*   **Auto-asignación**: Se mantiene la capacidad de los conductores de auto-asignarse a turnos libres.
+*   **Operación Master**: Solo Admins y Dueños pueden modificar la estructura de turnos.
+*   **Asignación de Operador**: Los conductores pueden vincularse a turnos vacíos, pero no pueden sobrescribir a otros compañeros.
 
 ### 💺 Motor de Disponibilidad (/disponibilidadAsientos)
-*   **Inicialización y Operación**: Los Dueños, el Admin y los **Pasajeros** tienen permiso de escritura (`.write: "auth != null"`) para permitir transacciones de reserva y bloqueos manuales.
-*   **Blindaje de Infraestructura**: Solo el Admin Root o el Dueño/Conductor asignado pueden modificar el campo `totalAsientos` (capacidad técnica del vehículo), protegiendo al sistema de alteraciones fraudulentas.
+*   **Transaccionalidad**: Escritura abierta para usuarios autenticados para permitir reservas en tiempo real.
+*   **Blindaje de Capacidad**: La edición del campo `totalAsientos` (capacidad técnica) está restringida al Admin Root, al Dueño de la flota o al Conductor asignado al turno, evitando fraudes de sobrecupo.
 
 ### 🎫 Reservas y Privacidad (/reservas)
-*   **Paridad de Identidad**: El sistema soporta los campos `userId` y `usuarioId` de forma intercambiable para garantizar la visibilidad del historial entre la App Android y el Portal Web.
-*   **Validación Cruzada**: El acceso a una reserva requiere que el `auth.uid` sea del Pasajero, el Conductor asignado, el Dueño del bus o el Admin.
+*   **Validación Cruzada**: Una reserva solo puede ser leída o escrita por los involucrados: el Pasajero, el Conductor, el Dueño del bus o el Admin Root.
+*   **Indexación**: El nodo está optimizado para búsquedas por `driverId`, `scheduleId`, `userId` y `reservationDate`.
 
 ### 💬 Mensajería Instantánea (/chats)
-*   **Privacidad Contextual**: El acceso de lectura y escritura está restringido a los participantes directos de la reserva (`userId`/`usuarioId` o `driverId`/`conductorId`).
-*   **Mediación**: El Admin Root y los Dueños de la flota asignada tienen permisos de lectura para soporte y mediación logística.
+*   **Privacidad Punto a Punto**: Solo el pasajero y el conductor de la reserva asociada pueden leer y escribir mensajes.
+*   **Supervisión**: Admins y Dueños tienen acceso de lectura para resolución de disputas y soporte logístico.
 
 ### ⭐ Reputación y Feedback (/calificaciones_conductores)
-*   **Transparencia**: Lectura pública para usuarios autenticados para fomentar la confianza en el ecosistema.
-*   **Integridad de Reseña**: La escritura es atómica y no permite ediciones (`!data.exists()`). Soporta validación dual de identidad (`userId` / `usuarioId`). Solo el pasajero titular de la reserva puede generar la calificación.
+*   **Transparencia**: Lectura pública para usuarios registrados.
+*   **Protección de Reseña**: Solo se permite la creación de una nueva reseña (`!data.exists()`). No se permiten ediciones posteriores para garantizar la autenticidad del feedback.
 
 ### 📊 Protección Financiera (/estadisticas)
-Nodo de máxima sensibilidad. El acceso de lectura está filtrado lógicamente:
-*   **Conductores**: Solo ven su estadística personal diaria.
-*   **Dueños / Admins**: Acceso administrativo total sobre los nodos de su flota para contabilidad en tiempo real.
+*   **Acceso Filtrado**: Los conductores solo pueden acceder a sus estadísticas del día actual. Admins y Dueños tienen visibilidad completa de los ingresos de su flota.
 
 ---
 **ChopCode Solutions - Ingeniería de Seguridad 2026**

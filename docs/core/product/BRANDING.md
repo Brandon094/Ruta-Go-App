@@ -1,11 +1,11 @@
-# 🎨 Manual de Identidad Visual - Ruta-Go v1.5.0
+# 🎨 Manual de Identidad Visual - Ruta-Go v1.9.9.5
 
-Este documento define las directrices estéticas, paleta de colores y el uso de marca para garantizar una experiencia visual coherente en la App móvil (Android) y el Portal Web (React).
+Este documento define las directrices estéticas, paleta de colores y el uso de marca para garantizar una experiencia visual coherente en todo el ecosistema (Android Nativo y Portal Web).
 
 ---
 
 ## 1. Concepto de Marca
-Ruta-Go proyecta **agilidad, seguridad y modernidad**. La combinación del naranja vibrante con el azul marino (Navy) transmite energía y seriedad corporativa.
+Ruta-Go proyecta **agilidad, seguridad y modernidad**. La combinación del naranja vibrante con el azul marino (Navy) transmite energía y seriedad corporativa. La identidad es "Mirror", lo que significa que el usuario debe sentir la misma marca sin importar el dispositivo que use.
 
 ---
 
@@ -26,23 +26,27 @@ Ruta-Go proyecta **agilidad, seguridad y modernidad**. La combinación del naran
 
 ---
 
-## ✨ 3. Estética Web: Glassmorphism & Business
-Para el Portal Web v1.5.0, se introducen elementos de **Glassmorphism** para denotar exclusividad empresarial:
-*   **Transparencias**: Uso de `backdrop-blur-md` en Navbars y tarjetas.
-*   **Contraste**: Logos oficiales siempre sobre contenedores Navy o con bordes de alta definición para legibilidad en fondos blancos.
+## ⚛️ 3. Implementación Atómica (Single Source of Truth)
+Para garantizar la consistencia, el branding se centraliza en componentes base:
+
+### Átomo `BrandLogo` (Web)
+*   **Contenedor**: Siempre utiliza fondos Navy (`#061426`) o variantes traslúcidas con borde para asegurar legibilidad.
+*   **Animación**: Rebote suave (`animate-bounce-slow`) para denotar dinamismo.
+*   **Variante Glass**: Uso de `backdrop-blur-sm` para integraciones en pies de página o cabeceras flotantes.
 
 ---
 
-## 🖼️ 4. Activos de Marca
-*   **`logo_icon`**: Imagotipo circular oficial usado como Favicon y avatar.
-*   **`logo_main`**: Versión horizontal para Toolbars.
-*   **`logo_splash`**: Identidad animada para el arranque de sistemas.
+## ✨ 4. Estética de Interfaz
+*   **Glassmorphism**: Utilizado en el Portal Web para denotar exclusividad empresarial (dueños y administradores).
+*   **Material Design 3**: Estándar para la aplicación Android, con bordes redondeados de 28dp a 32dp.
+*   **Transiciones**: Navegación fluida sin parpadeos, utilizando el `SplashScreen` como puente visual entre estados.
 
 ---
 
 ## 🌓 5. Adaptabilidad (Responsive & Theme)
 *   **Móvil (Android 15)**: Soporte Edge-to-Edge integral.
-*   **Web (Responsive)**: Layout adaptable que prioriza la visualización de Dashboards en PC y toma de decisiones rápida en móviles.
+*   **Web (Responsive)**: Layout que utiliza **Code Splitting** para optimizar la carga y se adapta de 1 a 3 columnas según el dispositivo.
+*   **Accesibilidad AA**: Contraste optimizado y nombres accesibles en todos los elementos interactivos.
 
 ---
 **ChopCode Solutions - Branding Department 2026**

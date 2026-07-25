@@ -1,50 +1,45 @@
-# ⚙️ Manual de Administración y Operación - Ruta-Go v1.5.0 Ecosystem
+# ⚙️ Manual de Administración y Operación - Ruta-Go v1.9.9.5 Ecosystem
 
-Este documento guía al Admin Root en la gestión estratégica del ecosistema, utilizando la Firebase Console y el nuevo Portal Web Administrativo.
+Este documento guía al Administrador Root y a los Socios en la gestión estratégica del ecosistema, utilizando la Firebase Console y el Portal Web de Alta Fidelidad.
 
 ---
 
 ## 🌎 1. Centros de Mando
 1.  **Firebase Console**: Para gestión de bajo nivel (nodos JSON, Auth, Cloud Functions).
-2.  **Web Portal (Admin)**: Dashboard centralizado para monitoreo de ingresos, auditoría de dueños y vinculación de conductores.
+2.  **Web Portal (Admin/Owner)**: Dashboard centralizado con inteligencia analítica 360°, monitoreo de ingresos (App + Calle) y gestión de flota.
 
 ---
 
 ## 💰 2. Gestión de Tarifas y Economía
 Los precios residen en el nodo `/precios/`.
-*   **Edición**: Solo permitida por el Admin Root.
-*   **Segmentación**: Rutas identificadas como `nataga` y `la plata`.
-*   **Nota**: Los cambios son reactivos; impactan inmediatamente en el cálculo de pasajes en la App.
+*   **Edición**: Exclusiva del Admin Root.
+*   **Inteligencia de Ruta**: El sistema detecta automáticamente la dirección mediante el destino final (Nátaga <-> La Plata).
+*   **Sincronización**: Los cambios impactan inmediatamente en el cálculo de pasajes y en el valor de las reservas en ambas plataformas.
 
 ---
 
-## 💼 3. Gobernanza de Socios (Dueños)
-El modelo v1.5.0 introduce la gestión de socios para escalar la flota.
+## 💼 3. Gobernanza de Socios y Flota
+El portal permite escalar la operación mediante la figura de socios independientes.
 
-### Activación de Socios:
-1.  **Registro**: El socio se registra en el Portal Web. Queda en estado `"pendiente"` en el nodo `/dueños/`.
-2.  **Habilitación**: El Admin Root cambia el valor en `/dueños/$uid` de `"pendiente"` a `true`.
-3.  **Asignación de Activos**: En el nodo `/vehiculos/$placa`, añada el campo `ownerId` con el UID del socio para vincular el bus a su dashboard.
+### Flujo de Activación:
+1.  **Registro**: El socio se une mediante el flujo de "Registrar mi Flota".
+2.  **Habilitación**: El Admin Root debe validar al socio en el nodo `/dueños/` cambiando su estado a `true`.
+3.  **Vinculación de Activos**: En la pestaña "Vehículos", se asigna un `ownerId`. Esto permite que el socio vea la telemetría y finanzas de ese bus de forma aislada.
 
 ---
 
-## 👨‍✈️ 4. Gestión Operativa
-### Vinculación de Conductores:
-*   Use el portal web para buscar conductores por Email.
-*   Al vincular un conductor, el sistema actualiza atómicamente el campo `driverId` en el vehículo y `vehiclePlate` en el conductor.
-
-### Planilla de Horarios:
-*   Ubicación: Nodo `/horarios/`.
-*   **Intervención**: Si la rotación automática falla, el Admin puede reasignar un `conductorId` manualmente desde la web o la consola.
+## 👨‍✈️ 4. Gestión de Operadores y Turnos
+### Asignación de Turnos (Speed Mode):
+*   **Parejas de Horarios**: El sistema agrupa automáticamente los turnos de Ida y Regreso (ej: `h001` + `h011`).
+*   **Turnos Especiales**: El sistema respeta el algoritmo de rotación, agrupando el "Triple Turno 8" (`h008`, `h018`, `h010`) y el "Turno 9 Solo".
+*   **Sincronización Automática**: Al asignar un conductor a un horario, el sistema resetea la capacidad a 13/13 (o la capacidad real del bus) en los nodos de disponibilidad.
 
 ---
 
 ## 🛡️ 5. Seguridad y Mantenimiento
-*   **Bloqueo**: Cambie el `status` de un usuario a `blocked` para denegar acceso inmediato.
-*   **Limpieza (Cloud Functions)**:
-    *   `automatedRotation`: (7:00 PM) Prepara la planilla del día siguiente.
-    *   `cleanupMarkedAccounts`: (Domingo 3:00 AM) Ejecuta el borrado legal de 30 días.
-*   **Auditoría**: Monitoree **Crashlytics** para asegurar la estabilidad en Android 15.
+*   **Moderación**: Botones rápidos en el directorio de pasajeros para **Banear** (status: `blocked`) o **Inactivar** cuentas.
+*   **Derecho al Olvido**: Monitoreo de solicitudes de borrado en el nodo `/usuarios/`. La función `cleanupMarkedAccounts` ejecutará la eliminación definitiva tras 30 días.
+*   **Monitoreo de Rendimiento**: Revisar periódicamente las métricas de Lighthouse para asegurar que la web se mantenga por encima de 90 en todos los rubros.
 
 ---
 **ChopCode Solutions - Dirección de Operaciones 2026**
