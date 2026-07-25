@@ -4,6 +4,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.9] - 2026-07-24 (Operational Excellence & Final Parity)
+### Añadido
+- **Refactor Atómico en Planilla**: Migración de la tabla de horarios a un sistema de Organismos (`ScheduleTable`) y Moléculas (`ScheduleCard`), logrando un código 100% DRY y escalable.
+- **Sincronización 'Regla de las 7 PM'**: Implementación de la lógica de negocio de Android donde, tras las 19:00, el sistema habilita automáticamente los viajes para el día siguiente en la web.
+- **Acceso Administrativo Irrestricto**: Los roles Root y Owner ahora pueden acceder a la gestión de asientos de viajes pasados para auditoría y cierre de cuentas, eliminando el bloqueo por tiempo que aplica a pasajeros.
+- **Fix Estético de Identidad**: Corrección del radio de curvatura en los badges de "Siguiente" para mantener la consistencia con el diseño de tarjetas Android.
+
+### Cambiado
+- **Lógica de Próximo Viaje**: Optimización del motor de búsqueda de despachos para marcar correctamente el hito "Siguiente" incluso después del reset de jornada nocturna.
+
 ## [1.6.8] - 2026-07-24 (Dynamic Rotation & Dedicated Roles)
 ### Añadido
 - **Identificación de Conductor Fijo por ID**: El algoritmo de rotación ahora identifica al conductor dedicado (anteriormente "Brayan") mediante su UID vinculado al horario `h005`. Esto permite que los dueños cambien al operador del turno privilegiado sin necesidad de modificar el código del servidor.
