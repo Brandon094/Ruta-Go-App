@@ -230,7 +230,11 @@ function App() {
         {isLoaded && !isManagement && (
           <div className="h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
              <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
-             <BottomNavItem icon={<HistoryIcon size={22}/>} active={activeTab === 'history'} onClick={() => setActiveTab('history')} />
+             <BottomNavItem
+               icon={<HistoryIcon size={22}/>}
+               active={activeTab === 'history' || activeTab === 'business_history'}
+               onClick={() => setActiveTab(role?.type === 'DRIVER' ? 'business_history' : 'history')}
+             />
              <BottomNavItem icon={<User size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
              <button onClick={() => auth.signOut()} className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"><XCircle size={22}/></button>
           </div>

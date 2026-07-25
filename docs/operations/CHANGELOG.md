@@ -55,6 +55,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Añadido
 - **Paridad Total con App Nativa**: Consolidación de todas las funciones operativas de Pasajero y Conductor en la web.
 - **Monitor de Despachos (Business History)**: Nueva pestaña exclusiva para roles administrativos y conductores que centraliza toda la actividad operativa del holding, separándola de los viajes personales.
+- **Navegación Inteligente para Conductores**: El botón de historial en la barra de navegación inferior ahora redirige automáticamente a "Despachos" para conductores, asegurando el foco en su actividad laboral.
 - **Feedback Contextual Inteligente**: Implementación de mensajes de estado vacío diferenciados para el historial personal (*"No hay actividad registrada"*) y el monitor de negocio (*"Sin despachos registrados"*).
 - **Redirección Proactiva para Jefes**: Los administradores y dueños ahora ven un botón de acción en su historial personal vacío que los lleva directamente al flujo de reserva (Venta Asistida).
 - **Atomic Architecture Foundation**: Migración de todos los diálogos y botones a un sistema de diseño atómico (`Modal.jsx`, `Button.jsx`, `IconRow.jsx`).
