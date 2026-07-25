@@ -3,6 +3,7 @@ import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, 
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 import { SidebarSection } from './SidebarSection';
+import { BrandLogo } from '../ui/BrandLogo';
 
 /**
  * 🏛️ Organism: Sidebar
@@ -69,9 +70,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
       `}>
         <div className="p-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-secondary-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg transition-colors border border-transparent dark:border-white/10">
-              <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-6 h-6 object-contain" />
-            </div>
+            <BrandLogo size="w-10 h-10" imgSize="w-6 h-6" animate={false} />
             <div className="flex flex-col leading-tight text-left">
               <span className="text-lg font-black tracking-tight text-[#061426] dark:text-white uppercase italic">Ruta-Go</span>
               <span className="text-[10px] text-primary-500 font-black tracking-widest uppercase opacity-80">

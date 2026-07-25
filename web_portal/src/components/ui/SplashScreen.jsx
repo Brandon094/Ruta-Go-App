@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 /**
  * 🛰️ Molecule: SplashScreen
@@ -8,18 +9,18 @@ import { Loader2 } from 'lucide-react';
  */
 export function SplashScreen({ message = "Iniciando Ecosistema..." }) {
   return (
-    <div className="h-screen w-full bg-secondary-50 dark:bg-[#061426] flex flex-col items-center justify-center gap-8 transition-colors duration-500 overflow-hidden relative">
+    <div className="h-screen w-full bg-secondary-50 dark:bg-secondary-900 flex flex-col items-center justify-center gap-8 transition-colors duration-500 overflow-hidden relative">
 
       {/* Efectos de Fondo (Branding) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/10 rounded-full blur-[120px] animate-pulse"></div>
 
       <div className="relative group scale-110 md:scale-125">
-        {/* Logo con Animación de Giro Suave */}
-        <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-[#061426] dark:bg-white/5 rounded-3xl flex items-center justify-center shadow-2xl border border-white/5 transition-transform duration-700 group-hover:rotate-12">
-          <img
-            src="/assets/logo_icon.png"
-            alt="Ruta-Go"
-            className="w-16 h-16 md:w-20 md:h-20 object-contain animate-bounce-slow"
+        {/* Átomo: Logo con Animación de Giro Suave en el contenedor padre */}
+        <div className="relative z-10 transition-transform duration-700 group-hover:rotate-12">
+          <BrandLogo
+            size="w-24 h-24 md:w-32 md:h-32"
+            imgSize="w-16 h-16 md:w-20 md:h-20"
+            className="!rounded-3xl border-white/5"
           />
         </div>
 
