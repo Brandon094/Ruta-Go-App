@@ -1,5 +1,6 @@
 import React from 'react';
 import { Badge } from '../ui/Badge';
+import { StatsCard } from './StatsCard';
 
 /**
  * 🏛️ Organism: ExecutiveHeader
@@ -40,11 +41,11 @@ export function ExecutiveHeader({
         </Badge>
       </div>
 
-      {/* Slot para la barra de KPIs (Organismo interno o lista de moléculas) */}
+      {/* ⚛️ Molecule: StatsCard Glass (Refactored) */}
       <div className="max-w-7xl mx-auto mt-8">
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-6 lg:p-8 shadow-xl dark:shadow-none transition-colors duration-300">
+        <StatsCard variant="glass" className="!rounded-[2.5rem]">
           {children}
-        </div>
+        </StatsCard>
       </div>
     </div>
   );

@@ -4,6 +4,24 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.7.1] - 2026-07-24 (Comprehensive UI Audit & Atomic Standardization)
+### Añadido
+- **Auditoría de Arquitectura Atómica (Fases 1-3)**: Implementación de un sistema de diseño estrictamente modular en todo el portal web.
+- **Nuevas Moléculas Core**:
+    - **`StatsCard.jsx`**: Contenedor maestro para métricas con variantes 'solid' y 'glass'.
+    - **`PendingReservationCard.jsx`**: Módulo independiente para la gestión de solicitudes de conductores.
+    - **`RouteStatusCard.jsx`**: Visualización estandarizada de ocupación por trayecto.
+    - **`ProfileCard.jsx`**: Tarjeta modular para datos de identidad y vehículos.
+- **Nuevos Organismos**:
+    - **`HistoryHeader.jsx`**: Orquestador de búsqueda y filtros para el historial.
+    - **`HistorySummary.jsx`**: Resumen analítico de viajes.
+    - **`ProfileHeader.jsx`**: Cabecera de identidad Mirror v1.7.0.
+- **Sincronización DRY (Don't Repeat Yourself)**: Centralización de lógica de filtrado de rutas en `FormatUtils.js`.
+
+### Cambiado
+- **Refactor de Edición de Perfil**: Migración del flujo de edición a un sistema basado en el átomo **`Modal.jsx`**, eliminando vistas manuales y mejorando la consistencia visual.
+- **Unificación Administrativa**: Los modales de conductores y vehículos ahora comparten la misma base atómica, facilitando el mantenimiento y la escalabilidad.
+
 ## [1.7.0] - 2026-07-24 (Advanced UX & Counter Intelligence)
 ### Añadido
 - **Menú de Leyenda de Contadores**: Implementación del menú desplegable en el Dashboard del Pasajero que explica el significado de cada métrica (Confirmadas, Canceladas, Total), replicando fielmente la UX de la App móvil.

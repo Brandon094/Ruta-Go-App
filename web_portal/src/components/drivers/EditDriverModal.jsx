@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Clock, Trash2, AlertCircle, Loader2, User, Hash, Shield, Briefcase, Bus } from 'lucide-react';
+import { Save, Clock, Trash2, AlertCircle, Loader2, User, Briefcase, Bus } from 'lucide-react';
 import { driverService } from '../../services/driverService';
 import { Input } from '../ui/Input';
+import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { ref, get, update } from "firebase/database";
 import { db } from '../../firebase';
 
 /**
- * 🛠️ Component: EditDriverModal
- *
+ * 🛠️ Component: EditDriverModal (Atomic Refactor v1.7.0)
  * Interfaz de gestión avanzada para administradores.
  */
 export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [], users = [], vehicles = [] }) {
@@ -31,7 +32,6 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
       nombre: users.find(u => u.id === o.id)?.nombre || 'Socio sin nombre'
     }));
 
-  // Obtener vehículos del dueño seleccionado
   const myVehicles = formData.ownerId
     ? vehicles.filter(v => v.ownerId === formData.ownerId)
     : (isAdmin ? [] : vehicles.filter(v => v.ownerId === role?.uid));
@@ -40,11 +40,9 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
     let isMounted = true;
     const fetchData = async () => {
       try {
-        // 1. Cargar horarios
         const schedules = await driverService.getAllSchedules();
         if (isMounted) setAllSchedules(schedules);
 
-        // 2. Cargar dueño actual del vehículo
         const vehicleId = driver.vehiculoId || driver.placaVehiculo;
         if (vehicleId) {
           const vSnap = await get(ref(db, `vehiculos/${vehicleId}`));
@@ -53,7 +51,7 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
           }
         }
       } catch (err) {
-        console.error("Error cargando datos de edición:", err);
+        console.error(err);
       }
     };
     fetchData();
@@ -68,11 +66,9 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
     );
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-      // 1. Actualizar conductor y vínculos
       await driverService.updateDriver(driver.id, {
         nombre: formData.nombre,
         placaVehiculo: formData.placaVehiculo,
@@ -81,190 +77,139 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
         horariosAsignados: selectedSchedules
       }, driver.vehiculoId || driver.placaVehiculo);
 
-      // 2. Si es ADMIN y cambió el dueño, actualizar en el nodo vehículo
       if (isAdmin && formData.ownerId) {
-        await update(ref(db, `vehiculos/${formData.placaVehiculo}`), {
-          ownerId: formData.ownerId
-        });
+        await update(ref(db, `vehiculos/${formData.placaVehiculo}`), { ownerId: formData.ownerId });
       }
 
       if (onRefresh) onRefresh();
       onClose();
     } catch (error) {
-      alert("Error al actualizar: " + error.message);
+      alert("Error: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm(`¿Seguro que deseas ELIMINAR a ${driver.nombre}? Esta acción no se puede deshacer.`)) {
-      setLoading(true);
-      try {
-        await driverService.deleteDriver(driver.id);
-        if (onRefresh) onRefresh();
-        onClose();
-      } catch (error) {
-        alert("Error al eliminar: " + error.message);
-      } finally {
-        setLoading(false);
-      }
+    if (!window.confirm(`¿Seguro que deseas ELIMINAR a ${driver.nombre}?`)) return;
+    setLoading(true);
+    try {
+      await driverService.deleteDriver(driver.id);
+      if (onRefresh) onRefresh();
+      onClose();
+    } catch (error) {
+      alert("Error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-all animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-secondary-800 w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-transparent dark:border-white/5 transition-colors duration-300">
+    <Modal isOpen={true} onClose={onClose} title="Configuración de Operador">
+      <div className="p-8 space-y-10 overflow-y-auto max-h-[75vh]">
 
-        {/* Header */}
-        <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5 transition-colors duration-300">
-          <div>
-            <h3 className="text-2xl font-black text-slate-800 dark:text-white tracking-tight italic uppercase">Editar Conductor</h3>
-            <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest mt-1">ID Operativo: {driver.id.substring(0,8)}</p>
-          </div>
-          <button onClick={onClose} className="p-2 text-slate-400 dark:text-white/20 hover:text-primary-500 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-all">
-            <X size={24} />
-          </button>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          {/* Columna Izquierda: Datos */}
+          <div className="space-y-6">
+            <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest flex items-center gap-2 italic">
+              <div className="w-1.5 h-3 bg-primary-500 rounded-full"></div> Información Maestra
+            </h4>
 
-        {/* Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-5">
-              <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-1 h-3 bg-primary-500 rounded-full"></div> Perfil Básico
-              </h4>
-              <Input
-                label="Nombre Legal"
-                icon={<User size={18} />}
-                value={formData.nombre}
-                onChange={(val) => setFormData({...formData, nombre: val})}
-              />
+            <Input
+              label="Nombre del Conductor"
+              icon={<User size={18} />}
+              value={formData.nombre}
+              onChange={(val) => setFormData({...formData, nombre: val})}
+            />
 
+            <div className="space-y-1.5 group">
+              <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Vehículo Asignado</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-500">
+                  <Bus size={18} />
+                </div>
+                <select
+                  className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none appearance-none transition-all text-sm italic"
+                  value={formData.placaVehiculo}
+                  onChange={(e) => setFormData({...formData, placaVehiculo: e.target.value})}
+                >
+                  <option value="">Seleccionar Placa...</option>
+                  {myVehicles.map(v => (
+                    <option key={v.id || v.placa} value={v.placa || v.id} className="bg-white dark:bg-secondary-800">
+                      {v.placa || v.id} - {v.modelo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {isAdmin && (
               <div className="space-y-1.5 group">
-                <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1">Vehículo Asignado</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-white/30 uppercase tracking-widest ml-1">Dueño de Flota</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
-                    <Bus size={18} />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-500">
+                    <Briefcase size={18} />
                   </div>
                   <select
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all text-sm italic"
-                    value={formData.placaVehiculo}
-                    onChange={(e) => setFormData({...formData, placaVehiculo: e.target.value})}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 outline-none appearance-none transition-all text-sm italic"
+                    value={formData.ownerId}
+                    onChange={(e) => setFormData({...formData, ownerId: e.target.value})}
                   >
-                    <option value="">Seleccionar Placa...</option>
-                    {myVehicles.map(v => (
-                      <option key={v.id || v.placa} value={v.placa || v.id} className="bg-white dark:bg-secondary-800">
-                        {v.placa || v.id} - {v.modelo}
-                      </option>
+                    <option value="">Asignar Socio...</option>
+                    {approvedOwners.map(owner => (
+                      <option key={owner.id} value={owner.id} className="bg-white dark:bg-secondary-800">{owner.nombre}</option>
                     ))}
                   </select>
                 </div>
               </div>
+            )}
+          </div>
 
-              <div className="space-y-1.5 group">
-                <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">Estado</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
-                    <Shield size={18} />
-                  </div>
-                  <select
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all text-sm"
-                    value={formData.status}
-                    onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  >
-                    <option value="active" className="bg-white dark:bg-secondary-800">🟢 En Ruta (Activo)</option>
-                    <option value="inactive" className="bg-white dark:bg-secondary-800">🟡 Descanso (Inactivo)</option>
-                    <option value="blocked" className="bg-white dark:bg-secondary-800">🔴 Bloqueado (Sin Acceso)</option>
-                  </select>
-                </div>
-              </div>
-
-              {isAdmin && (
-                <div className="space-y-1.5 group">
-                  <label className="text-[10px] font-black text-slate-400 dark:text-white/40 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-primary-500">Asignar Dueño (Root)</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-300 dark:text-white/20 transition-colors group-focus-within:text-primary-500">
-                      <Briefcase size={18} />
+          {/* Columna Derecha: Horarios */}
+          <div className="space-y-6">
+            <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest flex items-center gap-2 italic">
+              <Clock size={14}/> Escalafón de Ruta
+            </h4>
+            <div className="bg-slate-50 dark:bg-white/5 rounded-[2.5rem] p-5 border border-slate-100 dark:border-white/5 max-h-[320px] overflow-y-auto space-y-2 custom-scrollbar">
+              {allSchedules.length > 0 ? (
+                allSchedules.map(s => (
+                  <label key={s.id} className={`flex items-center gap-3 p-4 rounded-2xl border transition-all cursor-pointer group ${selectedSchedules.includes(s.id) ? 'bg-primary-500 border-transparent shadow-lg shadow-orange-500/20' : 'bg-white dark:bg-secondary-700 border-slate-100 dark:border-white/5 hover:border-primary-500/30'}`}>
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={selectedSchedules.includes(s.id)}
+                      onChange={() => toggleSchedule(s.id)}
+                    />
+                    <div className="flex flex-col text-left">
+                      <span className={`text-xs font-black italic ${selectedSchedules.includes(s.id) ? 'text-[#061426]' : 'text-slate-800 dark:text-white'}`}>{s.hora}</span>
+                      <span className={`text-[9px] font-bold uppercase truncate max-w-[140px] ${selectedSchedules.includes(s.id) ? 'text-[#061426]/60' : 'text-slate-400 dark:text-white/30'}`}>{s.ruta}</span>
                     </div>
-                    <select
-                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl font-bold text-slate-700 dark:text-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 focus:border-primary-500 appearance-none transition-all text-sm italic"
-                      value={formData.ownerId}
-                      onChange={(e) => setFormData({...formData, ownerId: e.target.value})}
-                    >
-                      <option value="">Seleccionar Socio...</option>
-                      {approvedOwners.map(owner => (
-                        <option key={owner.id} value={owner.id} className="bg-white dark:bg-secondary-800">{owner.nombre}</option>
-                      ))}
-                    </select>
-                  </div>
+                  </label>
+                ))
+              ) : (
+                <div className="py-20 flex flex-col items-center gap-2 opacity-30">
+                  <Loader2 className="animate-spin text-primary-500" size={24} />
                 </div>
               )}
             </div>
-
-            <div className="space-y-5">
-              <h4 className="text-[10px] font-black text-primary-500 uppercase tracking-widest flex items-center gap-2">
-                <Clock size={12}/> Escalafón de Hoy
-              </h4>
-              <div className="bg-slate-50 dark:bg-white/5 rounded-[2rem] p-5 border border-slate-100 dark:border-white/5 max-h-[300px] overflow-y-auto space-y-2 custom-scrollbar text-center transition-colors">
-                {allSchedules.length > 0 ? (
-                  allSchedules.map(s => (
-                    <label key={s.id} className="flex items-center gap-3 p-3.5 bg-white dark:bg-secondary-700 rounded-2xl border border-slate-100 dark:border-white/5 hover:border-primary-500/40 dark:hover:border-primary-500/40 cursor-pointer transition-all group">
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 rounded-lg border-slate-300 dark:border-white/10 text-primary-500 focus:ring-primary-500/20 transition-all cursor-pointer"
-                        checked={selectedSchedules.includes(s.id)}
-                        onChange={() => toggleSchedule(s.id)}
-                      />
-                      <div className="flex flex-col text-left">
-                        <span className="text-xs font-black text-slate-800 dark:text-white leading-none italic">{s.hora}</span>
-                        <span className="text-[9px] font-bold text-slate-400 dark:text-white/40 uppercase mt-1 truncate max-w-[150px]">{s.ruta}</span>
-                      </div>
-                    </label>
-                  ))
-                ) : (
-                  <div className="py-10 flex flex-col items-center gap-2 opacity-30">
-                    <Loader2 className="animate-spin text-primary-500" size={24} />
-                    <p className="text-[10px] text-slate-400 dark:text-white font-bold uppercase italic">Sincronizando horarios...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 bg-amber-50 dark:bg-amber-500/10 rounded-2xl border border-amber-100 dark:border-amber-500/20 flex items-start gap-3 transition-colors">
-            <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={16} />
-            <p className="text-[10px] text-amber-700 dark:text-amber-500 font-bold leading-relaxed uppercase italic">
-              Nota: La modificación de turnos es una acción de nivel administrador. Los cambios se reflejarán en la App del conductor inmediatamente.
-            </p>
-          </div>
-        </form>
-
-        {/* Footer */}
-        <div className="p-8 bg-slate-50 dark:bg-black/20 border-t border-slate-100 dark:border-white/5 flex items-center justify-between transition-colors">
-          <button
-            type="button"
-            disabled={loading}
-            onClick={handleDelete}
-            className="flex items-center gap-2 px-6 py-3.5 rounded-2xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-black text-[10px] uppercase disabled:opacity-50 group"
-          >
-            <Trash2 size={16} className="group-hover:scale-110 transition-transform" /> Eliminar
-          </button>
-
-          <div className="flex items-center gap-4">
-            <button type="button" onClick={onClose} className="px-6 py-3.5 font-black text-[10px] text-slate-400 dark:text-white/20 uppercase tracking-widest hover:text-slate-600 dark:hover:text-white transition-colors">
-              Cancelar
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="flex items-center gap-3 px-10 py-4 bg-primary-500 hover:bg-orange-600 text-white rounded-2xl shadow-xl shadow-primary-500/30 transition-all transform active:scale-95 font-black text-[10px] uppercase disabled:opacity-70 italic"
-            >
-              {loading ? <Loader2 className="animate-spin" size={18} /> : <><Save size={18} /> Guardar Cambios</>}
-            </button>
           </div>
         </div>
+
+        {/* Action Buttons */}
+        <div className="pt-6 border-t border-slate-100 dark:border-white/5 flex flex-col gap-4">
+           <div className="flex gap-4">
+              <Button onClick={handleSubmit} isLoading={loading} size="full" icon={Save} className="!rounded-2xl">
+                 Guardar Cambios
+              </Button>
+              <Button onClick={onClose} variant="ghost" className="text-slate-400 !px-8">
+                 Cerrar
+              </Button>
+           </div>
+           <Button onClick={handleDelete} variant="ghost" size="sm" icon={Trash2} className="!text-red-500/60 hover:!text-red-500 !py-2 self-center font-black uppercase text-[10px] tracking-widest">
+              Eliminar Conductor del Sistema
+           </Button>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 }

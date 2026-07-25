@@ -62,5 +62,23 @@ export const FormatUtils = {
    */
   formatSeat: (seat) => {
     return seat ? `A${seat}` : "N/A";
+  },
+
+  /**
+   * Filtra horarios por dirección de ruta (Natagá -> La Plata o viceversa).
+   */
+  filterSchedulesByRoute: (schedules, direction = 'toLaPlata') => {
+    const list = Array.isArray(schedules) ? schedules : [];
+    return list.filter(s => {
+      const ruta = (s.ruta || "").toLowerCase();
+      const nIdx = ruta.indexOf('nátaga');
+      const lIdx = ruta.indexOf('la plata');
+
+      if (direction === 'toLaPlata') {
+        return ruta.includes('nátaga -> la plata') || (nIdx !== -1 && lIdx !== -1 && nIdx < lIdx);
+      } else {
+        return ruta.includes('la plata -> nátaga') || (nIdx !== -1 && lIdx !== -1 && lIdx < nIdx);
+      }
+    });
   }
 };

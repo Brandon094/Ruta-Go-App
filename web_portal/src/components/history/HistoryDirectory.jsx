@@ -4,7 +4,8 @@ import { ReservationHistoryCard } from './ReservationHistoryCard';
 import { TicketModal } from './TicketModal';
 import { RatingModal } from './RatingModal';
 import { ChatModal } from './ChatModal';
-import { Input } from '../ui/Input';
+import { HistoryHeader } from './HistoryHeader';
+import { HistorySummary } from './HistorySummary';
 
 export function HistoryDirectory({ type = 'personal', reservations, role, drivers = [], onNavigate }) {
   const [filter, setFilter] = useState('Todos');
@@ -15,7 +16,7 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
 
   const isBusiness = type === 'business';
 
-  const filteredList = reservations
+  const filteredList = (reservations || [])
     .filter(res => {
       const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
       const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
@@ -42,71 +43,32 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
     .sort((a, b) => (b.reservationDate || b.fechaReserva || 0) - (a.reservationDate || a.fechaReserva || 0));
 
   const stats = {
-    confirmed: reservations.filter(r => {
+    confirmed: (reservations || []).filter(r => {
       const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
       return s === 'confirmada' || s === 'confirmado' || s === 'completada' || s === 'confirmed';
     }).length,
-    canceled: reservations.filter(r => {
+    canceled: (reservations || []).filter(r => {
       const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
       return s === 'cancelada' || s === 'canceled';
     }).length,
-    total: reservations.length
+    total: (reservations || []).length
   };
 
   return (
-    <div className="animate-in fade-in duration-700 -m-4 lg:-m-8">
+    <div className="animate-in fade-in duration-700 -m-4 lg:-m-8 flex flex-col min-h-full">
 
-      {/* 🟠 HEADER NARANJA */}
-      <div className="bg-primary-500 p-6 lg:p-8 pb-20 relative overflow-hidden shadow-2xl transition-all duration-300">
-        <div className="max-w-5xl mx-auto space-y-6 relative z-10">
+      {/* 🏛️ Organism: HistoryHeader (Atomic Refactor) */}
+      <HistoryHeader
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filter={filter}
+        setFilter={setFilter}
+      />
 
-          {/* Barra de Búsqueda Siempre Visible Arriba */}
-          <div className="px-2 md:px-0">
-            <Input
-              placeholder="Buscar por pasajero, ruta o placa..."
-              icon={Search}
-              value={searchTerm}
-              onChange={(val) => setSearchTerm(val)}
-              className="!bg-white/10 !border-white/20 !text-white !placeholder:text-white/40 focus:!ring-white/20 shadow-lg"
-            />
-          </div>
+      <div className="max-w-3xl mx-auto -mt-15 relative z-20 px-4 space-y-10 pb-20 w-full">
 
-          {/* Chips de Filtro */}
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 w-full justify-start px-2 md:px-0">
-            {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-lg border ${
-                  filter === f
-                  ? 'bg-secondary-900 text-white border-transparent'
-                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-3xl mx-auto -mt-15 relative z-20 px-4 space-y-10 pb-20">
-
-        {/* 📊 SUMMARY CARD */}
-        <div className="card-base rounded-[2.5rem] p-8 md:p-10 grid grid-cols-3 gap-8 border-none shadow-2xl bg-white dark:bg-[#061426] transition-colors duration-300">
-           <div className="text-center space-y-2">
-              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Confirmados</p>
-              <span className="text-4xl font-black text-green-500 dark:text-green-400 block">{stats.confirmed}</span>
-           </div>
-           <div className="text-center space-y-2 border-x border-slate-100 dark:border-white/5 px-4">
-              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Cancelados</p>
-              <span className="text-4xl font-black text-red-500 dark:text-red-400 block">{stats.canceled}</span>
-           </div>
-           <div className="text-center space-y-2">
-              <p className="text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Total</p>
-              <span className="text-4xl font-black text-orange-500 dark:text-orange-400 block">{stats.total}</span>
-           </div>
-        </div>
+        {/* ⚛️ Molecule: HistorySummary (Atomic Refactor) */}
+        <HistorySummary stats={stats} />
 
         <div className="space-y-6">
           <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase italic tracking-tight px-2 transition-colors">

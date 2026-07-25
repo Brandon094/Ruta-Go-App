@@ -4,6 +4,7 @@ import { SummaryMetric } from '../SummaryMetric';
 import { OwnerRouteProgressCard } from '../OwnerRouteProgressCard';
 import { ExecutiveHeader } from '../ExecutiveHeader';
 import { FeatureCard } from '../FeatureCard';
+import { MetricGrid } from '../MetricGrid';
 
 /**
  * 💼 Component: OwnerOverview
@@ -22,14 +23,14 @@ export function OwnerOverview({ stats, routeStats, role }) {
         badgeText="Cuenta Premium"
         badgeVariant="info"
       >
-        {/* Grilla de Métricas (Moléculas) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        {/* ⚛️ Molecule: MetricGrid (Atomic Refactor) */}
+        <MetricGrid cols={3}>
           <SummaryMetric label="Mis Vehículos" value={stats.totalVehicles} icon={<Bus size={18} className="text-primary-500 mb-1"/>} color="text-[#061426] dark:text-white" />
           <SummaryMetric label="Reservas Hoy" value={stats.todayReservations} icon={<Calendar size={18} className="text-purple-500 mb-1"/>} color="text-[#061426] dark:text-white" />
           <div className="border-t md:border-t-0 md:border-l border-slate-100 dark:border-white/5 pt-4 md:pt-0 md:pl-4 lg:pl-8">
             <SummaryMetric label="Ingresos de Flota" value={stats.totalRevenue} icon={<Activity size={18} className="text-green-500 mb-1"/>} color="text-green-600 dark:text-green-400" isCurrency={true} />
           </div>
-        </div>
+        </MetricGrid>
       </ExecutiveHeader>
 
       <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0 space-y-10">
