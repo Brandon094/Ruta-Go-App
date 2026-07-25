@@ -71,6 +71,8 @@ export function DriverOverview({ stats, schedules = [], drivers = [], reservatio
       <MirrorHeader
         avatarText={myName.substring(0, 1)}
         avatarBgColor="bg-yellow-400"
+        title={myName}
+        subtitle={`Placa: ${myPlate}`}
         badgeText="Conductor Activo"
         badgeVariant="dark"
       >

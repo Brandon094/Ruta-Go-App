@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Settings, Tag, MapPin } from 'lucide-react';
 import { DirectoryHeader } from '../common/DirectoryHeader';
-import { InfoTip } from '../InfoTip';
+import { InfoTip } from '../dashboard/InfoTip';
 import { PricingCard } from './PricingCard';
 import { pricingService } from '../../services/pricingService';
 
