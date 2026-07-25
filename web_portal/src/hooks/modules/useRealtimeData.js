@@ -214,8 +214,18 @@ export const useRealtimeData = (user, role) => {
       const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(s.placaVehiculo || s.vehiculoId));
 
       if (isOwned || isMine) {
-        if (ruta.includes("la plata")) { lpRes += resCount; lpSeats += avail; }
-        else if (ruta.includes("nátaga") || ruta.includes("nataga")) { ntRes += resCount; ntSeats += avail; }
+        // 🧠 Mejora de Detección de Trayecto (Fix Ocupación Global v1.8.7)
+        // Buscamos explícitamente el destino después de la flecha para evitar colisiones
+        const isToLaPlata = ruta.includes("-> la plata") || ruta.includes("➔ la plata") || ruta.endsWith("la plata");
+        const isToNataga = ruta.includes("-> nataga") || ruta.includes("➔ nataga") || ruta.includes("-> nátaga") || ruta.includes("➔ nátaga") || ruta.endsWith("nataga") || ruta.endsWith("nátaga");
+
+        if (isToLaPlata) {
+          lpRes += resCount;
+          lpSeats += avail;
+        } else if (isToNataga) {
+          ntRes += resCount;
+          ntSeats += avail;
+        }
         totalResHoy += resCount;
       }
 
