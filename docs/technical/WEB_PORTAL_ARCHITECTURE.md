@@ -12,7 +12,7 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
 *   **Estructura Atómica (Auditada v1.9.8)**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
-    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`, `RoleBenefit`, `SolutionCard`, `RouteBadge`.
+    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`, `RoleBenefit`, `SolutionCard`, `RouteBadge`, `SplashScreen`.
     *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`, `HistoryHeader`, `ProfileHeader`, `AuthLayout`, `RegisterSuccess`.
 *   **Gobernanza DRY**: El 100% del ecosistema web (Gestión, Onboarding y Soporte) ha sido auditado para eliminar lógica duplicada y componentes redundantes.
 *   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.

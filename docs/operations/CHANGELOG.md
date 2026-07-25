@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9] - 2026-07-24 (Identity Resolution & SplashScreen Premium)
+### Añadido
+- **Molécula `SplashScreen.jsx`**: Nueva pantalla de carga con el branding oficial de Ruta-Go. Implementa animaciones orbitales y efectos de iluminación para una experiencia de usuario de alta fidelidad.
+- **Gestión de Carga de Identidad**: Implementación de guardas en el orquestador principal (`App.jsx`) para cubrir el periodo de resolución de roles de Firebase.
+
+### Corregido
+- **Bug de Dashboards Fantasma**: Eliminado el glitch visual donde se mostraba brevemente el dashboard de un rol incorrecto durante el cambio de sesión o inicio de aplicación. Ahora el sistema espera la resolución total de la identidad antes de renderizar la interfaz de gestión.
+
 ## [1.9.8] - 2026-07-24 (Driver UX Upgrade & Atomic Consistency)
 ### Añadido
 - **Upgrade del Dashboard de Conductor**: Unificación visual del estado de rutas. Ahora el conductor visualiza su ocupación con el mismo motor de barras de progreso y porcentajes que los dueños, logrando una paridad 1:1 en la calidad de datos.

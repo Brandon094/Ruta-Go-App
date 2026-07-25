@@ -35,6 +35,7 @@ import { EditDriverModal } from './components/drivers/EditDriverModal';
 import { AddDriverModal } from './components/drivers/AddDriverModal';
 import { VehicleModal } from './components/vehicles/VehicleModal';
 import { SeatManagementModal } from './components/schedules/SeatManagementModal';
+import { SplashScreen } from './components/ui/SplashScreen';
 
 // Hooks
 import { useRealtimeStats } from './hooks/useRealtimeStats';
@@ -80,15 +81,11 @@ function App() {
   const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routeStats, vehicles } = useRealtimeStats(user);
 
   if (loadingAuth) {
-    return (
-      <div className="h-screen bg-secondary-50 dark:bg-[#061426] flex flex-col items-center justify-center gap-6 transition-colors duration-500">
-        <div className="relative">
-          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-16 h-16 object-contain animate-pulse" />
-          <Loader2 className="text-primary-500 animate-spin absolute -bottom-2 -right-2" size={24} />
-        </div>
-        <p className="text-slate-400 dark:text-white/40 text-[10px] font-black uppercase tracking-widest animate-pulse">Autenticando...</p>
-      </div>
-    );
+    return <SplashScreen message="Autenticando..." />;
+  }
+
+  if (user && role.loading) {
+    return <SplashScreen message="Resolviendo Identidad..." />;
   }
 
   if (!user) {
@@ -180,9 +177,9 @@ function App() {
               />
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
-            ) : (
+            ) : role?.type === 'ADMIN' ? (
               <AdminOverview stats={stats} routeStats={routeStats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
-            )
+            ) : null
           ) : activeTab === 'history' ? (
             <HistoryDirectory type="personal" reservations={personalReservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab(isManagement ? 'passenger_view' : 'overview')} />
           ) : activeTab === 'business_history' ? (
