@@ -69,7 +69,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
       `}>
         <div className="p-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#061426] dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg transition-colors">
+            <div className="w-10 h-10 bg-secondary-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg transition-colors border border-transparent dark:border-white/10">
               <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-6 h-6 object-contain" />
             </div>
             <div className="flex flex-col leading-tight text-left">

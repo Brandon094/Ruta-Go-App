@@ -30,7 +30,9 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
         )}
 
         <div className="flex items-center gap-3">
-          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-8 h-8 object-contain" />
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-secondary-900 dark:bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shrink-0 transition-colors border border-transparent dark:border-white/10">
+            <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-5 h-5 md:w-7 md:h-7 object-contain" />
+          </div>
           <h2 className="text-xl lg:text-2xl font-black text-slate-800 dark:text-white tracking-tight truncate max-w-[200px] md:max-w-none uppercase italic">
             {isLoading ? 'Verificando...' : title}
           </h2>

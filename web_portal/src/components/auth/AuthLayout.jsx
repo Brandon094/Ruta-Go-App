@@ -26,7 +26,9 @@ export function AuthLayout({
         </div>
 
         <div className="relative z-10 flex items-center gap-3">
-          <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-12 h-12 object-contain" />
+          <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shadow-lg shrink-0 transition-colors border border-white/10 backdrop-blur-sm">
+            <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-7 h-7 object-contain" />
+          </div>
           <span className="text-3xl font-black tracking-tighter text-white uppercase italic">Ruta-Go</span>
         </div>
 

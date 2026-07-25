@@ -145,5 +145,3 @@ function Login({ onShowRegister, onBack }) {
 }
 
 export default Login;
-
-export default Login;

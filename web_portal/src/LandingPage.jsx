@@ -69,7 +69,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
       <nav className="fixed top-0 w-full bg-white/90 dark:bg-[#061426]/90 backdrop-blur-md z-50 border-b border-slate-200 dark:border-white/5 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-3 md:px-6 h-16 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#061426] dark:bg-[#FF7A1A] rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shrink-0 transition-colors">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-secondary-900 dark:bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shrink-0 transition-colors border border-transparent dark:border-white/10">
               <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-5 h-5 md:w-7 md:h-7 object-contain" />
             </div>
             <span className="text-lg md:text-2xl font-black tracking-tighter text-[#061426] dark:text-white uppercase italic">Ruta-Go</span>
