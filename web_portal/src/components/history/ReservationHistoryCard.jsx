@@ -1,5 +1,5 @@
-import React from 'react';
-import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, User, MapPin, Armchair, Tag, Ticket, MessageSquare, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { IconRow } from '../ui/IconRow';
@@ -7,9 +7,10 @@ import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 🎫 Organism: ReservationHistoryCard
- * UI Espejo 1:1 de la App Nativa para el historial (v1.6.5 Atomic & DRY)
+ * UI Espejo 1:1 de la App Nativa para el historial con diseño expansible (v1.7.6)
  */
 export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, onRate, onChat }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
@@ -24,7 +25,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
 
   const isPassenger = role?.type === 'PASSENGER';
 
-  // --- 🧠 Resolución Dinámica de Identidad (Fix Historial) ---
+  // --- 🧠 Resolución Dinámica de Identidad ---
   const driverData = drivers.find(d => d.id === res.driverId || d.id === res.conductorId);
   const resolvedDriverName = driverData?.nombre || res.driver || "Conductor";
   const resolvedPassengerName = res.name || res.nombre || res.nombreUsuario || "Pasajero";
@@ -34,90 +35,119 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
   const price = res.price || res.precio || 12000;
 
   return (
-    <div className="bg-[#0A1F30] rounded-[2.5rem] p-6 lg:p-8 space-y-6 border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-300 group animate-pop">
+    <div
+      onClick={() => setIsExpanded(!isExpanded)}
+      className="bg-[#0A1F30] rounded-[2.5rem] p-6 lg:p-8 space-y-6 border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-300 group animate-pop cursor-pointer hover:ring-2 ring-primary-500/20"
+    >
 
-      {/* Header Row: Date & Badge */}
+      {/* Header Row: Date & Badge (Siempre Visible) */}
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-3 text-primary-500">
             <Clock size={18} />
-            <span className="text-xs font-black uppercase tracking-widest">
-              {date ? new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) + ' - ' + new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-- --- ---- - --:--'}
-            </span>
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] font-black uppercase tracking-widest">
+                {date ? new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : '-- ---'}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-300">
+                  {date ? new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--'}
+                </span>
+                {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              </div>
+            </div>
          </div>
-         <Badge variant={isConfirmed ? 'success' : isCanceled ? 'error' : 'warning'} className="!rounded-xl px-4 py-1.5 lowercase first-letter:uppercase">
-           {res.estadoReserva || res.reservationStatus || 'Pendiente'}
-         </Badge>
+         <div className="flex items-center gap-2">
+           <Badge variant={isConfirmed ? 'success' : isCanceled ? 'error' : 'warning'} className="!rounded-xl px-4 py-1.5 lowercase first-letter:uppercase">
+             {res.estadoReserva || res.reservationStatus || 'Pendiente'}
+           </Badge>
+         </div>
       </div>
 
-      {/* Info Body (Using Molecules) */}
-      <div className="space-y-4">
-         <IconRow icon={User} rightContent={personPhone}>
-            <span className="text-sm font-black text-white uppercase italic">{personName}</span>
-         </IconRow>
+      {/* Identidad y Ruta (Siempre Visible de forma compacta) */}
+      <div className="flex flex-col gap-2 text-left">
+        <div className="flex items-center gap-3">
+          <User size={14} className="text-slate-500" />
+          <span className="text-sm font-black text-white uppercase italic truncate">{personName}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <MapPin size={14} className="text-slate-500" />
+          <span className="text-xs font-bold text-slate-300 uppercase italic truncate">{origin} ➔ {destination}</span>
+        </div>
+      </div>
 
-         <IconRow icon={MapPin}>
-            <span className="text-sm font-black text-white uppercase italic">{origin} ➔ {destination}</span>
-         </IconRow>
-
-         <div className="flex items-center justify-between pt-2">
+      {/* Contenido Expandible */}
+      {isExpanded && (
+        <div className="space-y-6 animate-in slide-in-from-top-4 duration-300 border-t border-white/5 pt-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-left">
                <div className="p-2.5 bg-primary-500/10 rounded-xl text-primary-500">
                   <Armchair size={20} />
                </div>
-               <span className="text-lg font-black text-white">{seat !== -1 && seat !== undefined ? `A${seat}` : '---'}</span>
+               <div className="flex flex-col">
+                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Asiento</span>
+                 <span className="text-lg font-black text-white leading-none">{seat !== -1 && seat !== undefined ? `A${seat}` : '---'}</span>
+               </div>
             </div>
-            <div className="flex items-center gap-2 text-primary-500 font-black">
-               <Tag size={16} />
-               <span className="text-lg tracking-tighter">{FormatUtils.formatPrice(price)}</span>
+            <div className="flex items-center gap-4 text-right">
+               <div className="flex flex-col">
+                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Valor Pagado</span>
+                 <span className="text-lg text-primary-500 font-black tracking-tighter leading-none">{FormatUtils.formatPrice(price)}</span>
+               </div>
+               <div className="p-2.5 bg-primary-500/10 rounded-xl text-primary-500">
+                  <Tag size={20} />
+               </div>
             </div>
-         </div>
-      </div>
+          </div>
 
-      {/* Action Buttons Grid (Using Atoms) */}
-      <div className={`grid ${isConfirmed ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
-         <Button
-           variant="ghost"
-           size="full"
-           className="!border-2 !border-primary-500 !text-primary-500 !rounded-2xl !py-4 hover:!bg-primary-500 hover:!text-[#061426]"
-           icon={Ticket}
-           onClick={onViewTicket}
-         >
-            Tiquete
-         </Button>
+          <IconRow icon={User} rightContent={personPhone} className="!bg-white/5 !p-4 !rounded-2xl">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contacto</span>
+            <span className="text-xs font-black text-white uppercase">{personName}</span>
+          </IconRow>
 
-         {isConfirmed && (
-           <Button
-             variant="primary"
-             size="full"
-             className="!rounded-2xl !py-4"
-             icon={MessageSquare}
-             onClick={onChat}
-           >
-              Chat
-           </Button>
-         )}
-      </div>
+          {/* Botones de Acción */}
+          <div className={`grid ${isConfirmed ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
+             <Button
+               variant="ghost"
+               size="full"
+               className="!border-2 !border-primary-500 !text-primary-500 !rounded-2xl !py-4 hover:!bg-primary-500 hover:!text-[#061426]"
+               icon={Ticket}
+               onClick={(e) => { e.stopPropagation(); onViewTicket(); }}
+             >
+                Tiquete
+             </Button>
 
-      {/* Calificar Button (Only for Confirmed + Passenger + Not Rated) */}
-      {isConfirmed && isPassenger && !isRated && (
-        <Button
-          variant="primary"
-          size="full"
-          className="!rounded-[1.8rem] !py-5 tracking-[0.2em] shadow-2xl shadow-primary-500/40"
-          onClick={onRate}
-        >
-           Calificar Viaje
-        </Button>
-      )}
+             {isConfirmed && (
+               <Button
+                 variant="primary"
+                 size="full"
+                 className="!rounded-2xl !py-4 shadow-lg shadow-orange-500/10"
+                 icon={MessageSquare}
+                 onClick={(e) => { e.stopPropagation(); onChat(); }}
+               >
+                  Chat
+               </Button>
+             )}
+          </div>
 
-      {/* Rated Info (Optional: if already rated, show stars) */}
-      {isRated && (
-        <div className="flex items-center justify-center gap-2 py-3 bg-white/5 rounded-2xl border border-white/5">
-           <Star className="text-amber-400 fill-amber-400" size={14} />
-           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Viaje Calificado</span>
+          {isConfirmed && isPassenger && !isRated && (
+            <Button
+              variant="primary"
+              size="full"
+              className="!rounded-[1.8rem] !py-5 tracking-[0.2em] shadow-2xl shadow-primary-500/40"
+              onClick={(e) => { e.stopPropagation(); onRate(); }}
+            >
+               Calificar Viaje
+            </Button>
+          )}
+
+          {isRated && (
+            <div className="flex items-center justify-center gap-2 py-3 bg-white/5 rounded-2xl border border-white/5">
+               <Star className="text-amber-400 fill-amber-400" size={14} />
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Viaje Calificado</span>
+            </div>
+          )}
         </div>
       )}
-
     </div>
   );
 }

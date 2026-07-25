@@ -12,6 +12,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.7.6] - 2026-07-24 (Advanced Management UX & Unified History)
+### Añadido
+- **Historial Expansible (Pasajero/Despacho)**: Implementación de diseño colapsable en `ReservationHistoryCard`. Las tarjetas ahora muestran solo la información vital (Nombre, Ruta, Fecha) por defecto, y se expanden para revelar detalles de contacto, asientos y acciones (Tiquete/Chat).
+- **Indicadores de Navegación**: Adición de iconos de estado de expansión sincronizados con el resto de la suite de gestión.
+
+### Cambiado
+- **Refactor de Jerarquía Visual**: Optimización del espacio en el historial permitiendo navegar por largas listas de viajes de forma mucho más eficiente.
+- **Consolidación de Identidad Administrativa**: Unificación definitiva de las tarjetas de historial bajo los principios de **Atomic Design** y **DRY**.
+
 ## [1.7.5] - 2026-07-24 (Management Architecture Unification & Directory Refactor)
 ### Añadido
 - **Organismo `DirectoryHeader.jsx`**: Centralización del encabezado para todos los directorios administrativos (Socios, Vehículos, Conductores). Implementa búsqueda reactiva y botones de acción unificados.
