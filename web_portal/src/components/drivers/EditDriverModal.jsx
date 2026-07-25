@@ -126,6 +126,44 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
     return groups;
   }, [allSchedules]);
 
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      await driverService.updateDriver(driver.id, {
+        nombre: formData.nombre,
+        placaVehiculo: formData.placaVehiculo,
+        vehiculoId: formData.placaVehiculo,
+        status: formData.status,
+        horariosAsignados: selectedSchedules
+      }, driver.vehiculoId || driver.placaVehiculo);
+
+      if (isAdmin && formData.ownerId) {
+        await update(ref(db, `vehiculos/${formData.placaVehiculo}`), { ownerId: formData.ownerId });
+      }
+
+      if (onRefresh) onRefresh();
+      onClose();
+    } catch (error) {
+      alert("Error: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(`¿Seguro que deseas ELIMINAR a ${driver.nombre}?`)) return;
+    setLoading(true);
+    try {
+      await driverService.deleteDriver(driver.id);
+      if (onRefresh) onRefresh();
+      onClose();
+    } catch (error) {
+      alert("Error: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal isOpen={true} onClose={onClose} title="Configuración de Operador" maxWidth="max-w-5xl">
       <div className="p-8 lg:p-12 space-y-10 overflow-y-auto max-h-[85vh]">
@@ -253,15 +291,6 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
                     );
                   })}
                 </div>
-              ) : (
-                <div className="py-20 flex flex-col items-center gap-4 opacity-30 italic font-bold text-slate-400">
-                  <Loader2 className="animate-spin text-primary-500" size={32} />
-                  <p className="text-xs uppercase tracking-widest">Sincronizando Planilla...</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
               ) : (
                 <div className="py-20 flex flex-col items-center gap-4 opacity-30 italic font-bold text-slate-400">
                   <Loader2 className="animate-spin text-primary-500" size={32} />

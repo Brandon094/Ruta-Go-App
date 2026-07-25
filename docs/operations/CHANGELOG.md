@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.8] - 2026-07-24 (Driver UX Upgrade & Atomic Consistency)
+### Añadido
+- **Upgrade del Dashboard de Conductor**: Unificación visual del estado de rutas. Ahora el conductor visualiza su ocupación con el mismo motor de barras de progreso y porcentajes que los dueños, logrando una paridad 1:1 en la calidad de datos.
+- **Refactor Atómico `RouteProgressCard.jsx`**: Evolución de la molécula para soportar interacción (`onClick`) y metadatos temporales (`time`), eliminando la necesidad de componentes duplicados.
+
+### Cambiado
+- **Limpieza DRY**: Eliminación definitiva de `RouteStatusCard.jsx`. Toda la suite de gestión ahora utiliza el estándar de barras de progreso para métricas de ocupación.
+
 ## [1.9.7] - 2026-07-24 (Rotation Algorithm Precision & Grouping Fix)
 ### Corregido
 - **Sincronización de Horarios (Portal-Cloud)**: Refactorización total de la lógica de agrupamiento en los modales de conductores. Ahora la interfaz refleja con precisión la estructura de las Cloud Functions:

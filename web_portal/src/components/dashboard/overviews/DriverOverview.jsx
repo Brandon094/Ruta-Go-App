@@ -11,11 +11,11 @@ import { MirrorHeader } from '../MirrorHeader';
 import { SummaryMetric } from '../SummaryMetric';
 import { StatsCard } from '../StatsCard';
 import { PendingReservationCard } from '../PendingReservationCard';
-import { RouteStatusCard } from '../RouteStatusCard';
+import { RouteProgressCard } from '../RouteProgressCard';
 
 /**
  * 👨‍✈️ Component: DriverOverview
- * UI Espejo 1:1 de la App Móvil para conductores (v1.7.0 Atomic)
+ * UI Espejo 1:1 de la App Móvil para conductores (v1.9.8 Atomic)
  */
 export function DriverOverview({ stats, schedules = [], drivers = [], reservations = [], role, onManage, vehicles = [] }) {
   const [actionLoading, setActionLoading] = useState(null);
@@ -142,12 +142,17 @@ export function DriverOverview({ stats, schedules = [], drivers = [], reservatio
            </div>
 
            {mySchedules.length > 0 ? (
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {mySchedules.map(schedule => (
-                  <RouteStatusCard
+                  <RouteProgressCard
                     key={schedule.id}
-                    schedule={schedule}
-                    onManage={() => onManage(schedule)}
+                    name={schedule.ruta}
+                    time={schedule.hora}
+                    reservations={schedule.reservasCount || 0}
+                    available={schedule.asientosDisponibles || 0}
+                    icon={<MapPin className="text-primary-500" size={20} />}
+                    color="bg-primary-500"
+                    onClick={() => onManage(schedule)}
                   />
                 ))}
              </div>
