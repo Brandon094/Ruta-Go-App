@@ -1,6 +1,6 @@
 # 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.6.9), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.8.3), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
@@ -12,8 +12,8 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
 *   **Estructura Atómica**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
-    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`. Combinaciones de átomos con lógica visual.
-    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`. Piezas complejas de UI que orquestan la experiencia del usuario.
+    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`. Combinaciones de átomos con lógica visual.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`. Piezas complejas de UI que orquestan la experiencia del usuario.
 *   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.
 *   **Capa de Utilidades**: `FormatUtils.js` y `AnimationUtils.js` para asegurar la paridad de comportamiento con Android (conteo de dinero, formatos moneda COP).
 *   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.

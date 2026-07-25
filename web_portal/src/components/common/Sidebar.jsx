@@ -2,9 +2,11 @@ import React from 'react';
 import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle, Briefcase, Car, Settings, Ticket } from 'lucide-react';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
+import { SidebarSection } from './SidebarSection';
 
 /**
- * 🟦 Sidebar Component - Navegación Principal Responsiva
+ * 🏛️ Organism: Sidebar
+ * Navegación principal con secciones colapsables y diseño atómico (v1.8.3)
  */
 export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
   const handleLogout = () => signOut(auth);
@@ -65,7 +67,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
         lg:relative lg:translate-x-0 lg:z-20
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div className="p-8 flex items-center justify-between">
+        <div className="p-8 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#061426] dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg transition-colors">
               <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-6 h-6 object-contain" />
@@ -85,7 +87,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-8 overflow-y-auto scrollbar-hide py-4">
+        <nav className="flex-1 px-4 space-y-6 overflow-y-auto scrollbar-hide py-4">
           {sections.map((section, idx) => {
             if (section.hidden) return null;
 
@@ -93,31 +95,26 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
             if (filteredItems.length === 0) return null;
 
             return (
-              <div key={idx} className="space-y-2">
-                <h4 className="px-5 text-[10px] font-black text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">
-                  {section.title}
-                </h4>
-                <div className="space-y-1">
-                  {filteredItems.map((item) => (
-                    <NavItem
-                      key={item.id}
-                      icon={item.icon}
-                      label={item.label}
-                      active={activeTab === item.id}
-                      onClick={() => {
-                        setActiveTab(item.id);
-                        if (window.innerWidth < 1024) onClose();
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
+              <SidebarSection key={idx} title={section.title}>
+                {filteredItems.map((item) => (
+                  <NavItem
+                    key={item.id}
+                    icon={item.icon}
+                    label={item.label}
+                    active={activeTab === item.id}
+                    onClick={() => {
+                      setActiveTab(item.id);
+                      if (window.innerWidth < 1024) onClose();
+                    }}
+                  />
+                ))}
+              </SidebarSection>
             );
           })}
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-4 border-t border-slate-100 dark:border-white/5 space-y-1 text-left">
+        <div className="p-4 border-t border-slate-100 dark:border-white/5 space-y-1 text-left shrink-0">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-black text-xs uppercase tracking-widest"
@@ -127,6 +124,26 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
         </div>
       </aside>
     </>
+  );
+}
+
+function NavItem({ icon, label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 group
+        ${active
+          ? 'bg-primary-500 text-white shadow-xl shadow-orange-500/30'
+          : 'text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-[#061426] dark:hover:text-white'
+        }
+      `}
+    >
+      <span className={`${active ? 'scale-110' : 'group-hover:scale-110'} transition-transform`}>
+        {icon}
+      </span>
+      <span className="font-bold text-xs uppercase tracking-widest">{label}</span>
+    </button>
   );
 }
 

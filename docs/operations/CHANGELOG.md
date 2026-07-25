@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.8.3] - 2026-07-24 (Atomic Sidebar & Collapsible UX)
+### Añadido
+- **Molécula `SidebarSection.jsx`**: Implementación de secciones colapsables para la barra lateral administrativa, permitiendo una navegación mucho más limpia y organizada.
+- **Refactor Atómico del Sidebar**: Reestructuración completa del `Sidebar.jsx` siguiendo principios de diseño atómico para mejorar la mantenibilidad y consistencia visual.
+
+### Cambiado
+- **UX de Navegación**: Optimización del espacio vertical en el panel de gestión mediante el uso de contenedores expandibles/colapsables con animaciones suaves.
+- **Identidad Visual**: Ajuste de iconos y tipografías en el sidebar para una integración 1:1 con el resto de la suite premium.
+
 ## [1.8.2] - 2026-07-24 (Explicit User Manuals & Atomic Help Center)
 ### Añadido
 - **Refactor Atómico del Centro de Ayuda**: Creación de los componentes `ManualSection.jsx` (Organismo) y `ManualStep.jsx` (Molécula) para estandarizar las guías de usuario.
