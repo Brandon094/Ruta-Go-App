@@ -578,6 +578,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.2.3] - 2026-05-24 (Stable Gold Master)
+*Consolidación de la estabilidad del sistema nativo, introduciendo el motor de rescate de cuentas y automatización de mantenimiento preventivo.*
+
 ### Añadido
 - **Tutorial Interactivo Hub**: Sistema de guías paso a paso centralizado para pasajeros y conductores.
 - **Rescate de Cuenta**: Flujo de reactivación automática si el usuario intenta ingresar durante el periodo de gracia de borrado.
@@ -600,6 +602,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.2.2] - 2026-05-24
+*Ajustes técnicos de cumplimiento para la distribución en tiendas oficiales.*
+
 ### Cambiado
 - Ajuste de targetSdkVersion a 35 para cumplimiento con políticas de Google Play.
 - Incremento de versionCode para despliegue.
@@ -607,6 +611,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.2.1] - 2026-05-23
+*Empoderamiento del operador con flujos de registro autónomos y auditoría de integridad de datos.*
+
 ### Añadido
 - **Registro Autónomo de Conductores**: Los choferes ahora pueden registrarse, subir su vehículo y elegir horarios sin intervención administrativa.
 - **Sanity Check**: Capa lógica para filtrar conductores inexistentes en la planilla de horarios.
@@ -617,6 +623,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.2.0] - 2026-05-15
+*Implementación de la infraestructura de seguridad basada en roles para separar el flujo de trabajo de choferes y clientes.*
+
 ### Añadido
 - **Segregación de Roles**: División física de los nodos `/usuarios/` y `/conductores/` en Firebase.
 - **Login Inteligente**: Detección automática de rol tras autenticación con Google.
@@ -624,6 +632,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.1.0] - 2026-03-10
+*Lanzamiento del motor transaccional de asientos y digitalización de la contabilidad de a bordo.*
+
 ### Añadido
 - **Mapa de Asientos Interactivo**: Primera versión del motor de selección de puestos para pasajeros.
 - **Venta Física**: Botón de bloqueo de asientos para conductores.
@@ -632,6 +642,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ---
 
 ## [1.0.0] - 2025-05-01
+*Nacimiento de Ruta-Go: La semilla tecnológica para el transporte regional del Huila.*
+
 ### Añadido
 - Lanzamiento inicial de la plataforma Ruta-Go.
 - Consulta de horarios y trayectos básicos.

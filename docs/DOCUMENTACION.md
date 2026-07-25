@@ -51,6 +51,7 @@ Arquitectura del portal de gestión y landing page.
 ### ⚙️ Operaciones y Gestión
 *   [**Historial de Cambios (Changelog)**](./core/operations/CHANGELOG.md): Registro de versiones.
 *   [**Agente Orquestador**](./core/agents/ORCHESTRATOR.md): Gobernanza de la sesión.
+*   [**Agentes Especializados**](./core/agents/): Manuales de roles (UI/UX, Lógica, Web, QA, Legal).
 
 ---
 **© 2026 Chop Code Solutions - Ingeniería para la Productividad Rural**

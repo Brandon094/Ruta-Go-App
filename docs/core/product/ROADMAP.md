@@ -31,47 +31,46 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## ✅ Fase 3: Operación Web Total y Monetización (Completado - Paridad Lograda)
-*Objetivo: Alcanzar paridad de funciones con la App móvil y comenzar la captura de valor.*
+## ✅ Fase 3: Operación Web Total e Ingeniería de Alta Fidelidad (Completado)
+*Objetivo: Alcanzar paridad de funciones con la App móvil y elevar el estándar técnico a nivel de Startup Silicon Valley.*
 
 ### 🛠️ 1. Motor de Reservas & Notificaciones
 *   [x] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone (Payload 1:1 con Android).
-*   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web. (Pendiente)
+*   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web.
 
-### 👑 2. Gobernanza Root Pro (Control Maestro)
+### 👑 2. Gobernanza Root Pro & Analítica Avanzada
 *   [x] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
-*   [x] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
-*   [x] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
-*   [x] **🔄 Refactor de Rotación (Escalafón Fijo & ID Dinámico)**: Eliminado el ordenamiento dinámico por ID en la Cloud Function `automatedRotation` y migrado a un sistema basado en la propiedad `posicionEscalafon`. Se implementó la identificación dinámica del conductor fijo mediante el ID asignado al horario `h005`, eliminando la dependencia de nombres específicos (Brayan).
-*   [ ] **📈 Analítica Extendida**: Implementación de gráficas históricas de ingresos y ocupación (no solo diaria).
-*   [ ] **📜 Registro de Auditoría**: Bitácora de cambios realizados por administradores para trazabilidad operativa.
-*   [ ] **📦 Exportación de Reportes**: Generación de PDFs/Excel de despachos y contabilidad para dueños y admins.
+*   [x] **🛡️ Control de Pasajeros**: Suite de moderación para **Banear, Inactivar o Borrar** cuentas.
+*   [x] **🔄 Refactor de Rotación (Escalafón Fijo & ID Dinámico)**: Sincronización milimétrica con Cloud Functions para turnos triples y especiales.
+*   [x] **📊 Motor de Inteligencia Analítica (v1.9.0)**: 
+    *   Cálculo de ingresos basado en ocupación real (Digital + Venta Física).
+    *   Detección inteligente de trayecto por destino final (Nátaga <-> La Plata).
+*   [ ] **📦 Exportación de Reportes**: Generación de PDFs/Excel de despachos y contabilidad.
 
-### 🎫 3. Experiencia de Usuario "Premium" (Mirror 1:1)
-*   [x] **📱 Suite de Viaje en Historial**:
-    *   [x] Visualización de **Tiquete Digital** (diseño espejo de la App).
-    *   [x] Módulo de **Chat en vivo** para coordinar con el conductor.
-    *   [x] Sistema de **Calificación de Viaje** (1-5 estrellas).
-*   [x] **✨ Micro-interacciones & Utils (Startup Grade)**: 
-    *   [x] Implementación de `FormatUtils` y `AnimationUtils` (conteo animado de moneda, abreviaciones K/M).
-    *   [x] **Bus Departure Animation**: El botón de reserva se transforma en bus y "arranca" cuando el viaje ha pasado.
-    *   [x] **Seat Pop Animation**: Entrada escalonada y animada del mapa de asientos.
-    *   [x] **Card Entry Effects**: Animaciones de aparición para tarjetas de historial y dashboards.
-*   [ ] **🌟 Programa de Fidelización "Puntos Go"**: Implementación de niveles y redención de puntos.
+### 🎫 3. Experiencia de Usuario "Premium" & Rendimiento (v1.9.9.5)
+*   [x] **⚛️ Arquitectura Atómica & DRY**: Refactorización total del 100% del portal en Atoms, Molecules y Organisms.
+*   [x] **🚀 Optimización Extreme Performance**:
+    *   **React Lazy & Suspense**: Code splitting para carga instantánea de la Landing Page.
+    *   **Motor de Transiciones React 18**: Navegación fluida sin parpadeos visuales (glitches).
+    *   **Auditoría Lighthouse**: 90+ en Accesibilidad y 100 en SEO / Best Practices.
+*   [x] **✨ Identidad de Marca Unificada**:
+    *   **SplashScreen Premium**: Experiencia de carga de alta fidelidad.
+    *   **Átomo BrandLogo**: Centralización total de la imagen corporativa.
+*   [x] **👨‍✈️ Upgrade Dashboard Conductor**: Visualización de progreso y porcentajes idéntica a la de los socios.
 
 ---
 
-## 📱 Fase 4: Modernización Android Nativa (Evolución Técnica)
-*Objetivo: Migrar la App Android a una arquitectura DRY y Atomic Design para paridad total con la Web.*
+## 📱 Fase 4: Modernización Android & Proyectos Especiales (En Desarrollo)
+*Objetivo: Migrar la App Android a Compose e integrar la tecnología en el vehículo mismo.*
 
-### 🏗️ 1. Refactor de Arquitectura (DRY)
-*   [ ] **🧩 Unificación de Motores**: Consolidar la lógica de negocios (precios, reservas, bloqueos) en una capa de servicios compartida entre los flujos de Pasajero y Conductor.
-*   [ ] **⚛️ Atomic Design en XML**: Creación de una biblioteca de estilos y componentes reutilizables (Atoms/Molecules) para reducir la duplicidad de layouts.
-*   [ ] **🎮 Lógica de Interfaz Dinámica**: Reemplazar Activities separadas por layouts inteligentes que adapten sus funciones según el rol del usuario (Mobile Mirror Logic).
+### 🏗️ 1. Modernización Nativa
+*   [ ] **🎨 Transición a Jetpack Compose**: UI declarativa para paridad total con React.
+*   [ ] **🧩 Unificación de Motores**: Capa de servicios compartida (DRY) entre móvil y web.
 
-### 🚀 2. Transición a Jetpack Compose
-*   [ ] **🎨 UI Declarativa**: Migración gradual de vistas XML a Jetpack Compose para lograr una estructura de código "hermana" de React.
-*   [ ] **🔄 Sincronización de Componentes**: Garantizar que el Mapa de Asientos y los Dashboards sean visualmente idénticos en Web y Android mediante el uso de componentes de UI unificados.
+### 🚗 2. Ruta-Go In-Car (Android Auto)
+*   [ ] **🎮 Interfaz Android Auto**: Panel simplificado para la pantalla del vehículo.
+*   [ ] **✅ Gestión Manos Libres**: Permitir que el conductor acepte o cancele reservas con un toque desde el tablero.
+*   [ ] **📢 Avisos por Voz**: Notificaciones auditivas de nuevos pasajeros durante la ruta.
 
 ---
 
