@@ -60,6 +60,7 @@ export function AuthLayout({
             size="sm"
             onClick={onBack}
             icon={ArrowLeft}
+            aria-label="Volver a la página principal"
             className="!p-3 rounded-full group"
           />
         </div>

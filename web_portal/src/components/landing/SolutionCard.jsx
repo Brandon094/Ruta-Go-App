@@ -16,11 +16,11 @@ export function SolutionCard({ icon, title, desc, color, features, actions, isSt
         {icon}
       </div>
       <h3 className="text-xl md:text-2xl font-black text-[#061426] dark:text-white mb-3 md:mb-4 uppercase italic leading-none">{title}</h3>
-      <p className="text-sm md:text-base text-slate-600 dark:text-white/40 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem] font-medium">{desc}</p>
+      <p className="text-sm md:text-base text-slate-700 dark:text-white/70 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem] font-medium">{desc}</p>
 
       <ul className="space-y-2 md:space-y-3 mb-8 flex-1">
         {features.map((f, i) => (
-          <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-bold text-slate-400 dark:text-white/30 uppercase tracking-wide list-none">
+          <li key={i} className="flex items-center gap-2 md:gap-3 text-xs font-bold text-slate-500 dark:text-white/50 uppercase tracking-wide list-none">
             <CheckCircle2 size={14} className="text-green-500 md:size-4 shrink-0" /> {f}
           </li>
         ))}
@@ -34,10 +34,10 @@ export function SolutionCard({ icon, title, desc, color, features, actions, isSt
               href={act.link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center transition-all active:scale-95 flex items-center justify-center gap-2 ${
+              className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest text-center transition-all active:scale-95 flex items-center justify-center gap-2 ${
                 act.type === 'primary'
                   ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-600'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/80 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
               }`}
             >
               {act.label} <ChevronRight size={14} />
@@ -46,10 +46,10 @@ export function SolutionCard({ icon, title, desc, color, features, actions, isSt
             <button
               key={i}
               onClick={act.action}
-              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
+              className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
                 act.type === 'primary'
                   ? 'bg-[#061426] dark:bg-primary-500 text-white shadow-lg shadow-slate-900/30 dark:shadow-primary-500/20 hover:bg-black dark:hover:bg-primary-600'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
+                  : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/80 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
               }`}
             >
               {act.label} <ChevronRight size={14} />

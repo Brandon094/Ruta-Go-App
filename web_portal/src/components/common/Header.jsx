@@ -24,6 +24,7 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
         {(isRoot || isOwner) && (
           <button
             onClick={onMenuClick}
+            aria-label="Abrir Menú Lateral"
             className="lg:hidden p-2.5 text-slate-500 dark:text-white/40 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all active:scale-90"
           >
             <Menu size={24} />
@@ -42,6 +43,7 @@ export function Header({ title, userEmail, onMenuClick, role, theme, onToggleThe
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
           className="p-3 text-slate-400 dark:text-white/20 hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl transition-all group"
           title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         >

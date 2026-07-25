@@ -4,6 +4,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.3] - 2026-07-24 (Lighthouse Audit & Core Optimization)
+### Añadido
+- **Accesibilidad Nivel AA**:
+    - Implementación de `aria-label` en todos los botones de navegación (Bottom Nav, Navbar, Modales) para soporte de lectores de pantalla.
+    - Mejora de contraste en textos secundarios en toda la Landing Page y tarjetas de soluciones.
+    - Definición de hitos semánticos con la etiqueta `<main>` para una mejor estructura de documento.
+- **Optimización de Activos (LCP/FCP)**:
+    - Redimensionamiento de imágenes hero de Unsplash (de 2069px a 800px) para reducir la carga de red en un 70%.
+    - Adición de atributos `width` y `height` para evitar saltos de layout (CLS).
+    - Ampliación de objetivos táctiles (botones y puntos de control) para cumplimiento de estándares de usabilidad móvil.
+
+### Cambiado
+- **Refactor DRY en UI**: Estandarización de tamaños de fuente mínimos en botones operativos (`text-xs` como base) para evitar fatiga visual.
+
 ## [1.9.9.2] - 2026-07-24 (Advanced Performance & Code Splitting)
 ### Añadido
 - **Implementación de React Lazy & Suspense**: Refactorización profunda de la arquitectura de carga. Ahora el portal web utiliza "Code Splitting" para cargar únicamente los módulos necesarios según la navegación del usuario.

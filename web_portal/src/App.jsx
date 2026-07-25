@@ -229,14 +229,31 @@ function App() {
           {/* Bottom Nav Simulation - Espejo de App Móvil */}
           {isLoaded && !isManagement && (
             <div className="h-20 bg-white dark:bg-[#061929] border-t border-slate-200 dark:border-white/5 flex items-center justify-around px-6 shrink-0 transition-colors duration-300 shadow-2xl">
-              <BottomNavItem icon={<LayoutDashboard size={22}/>} active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
+              <BottomNavItem
+                icon={<LayoutDashboard size={22}/>}
+                active={activeTab === 'overview'}
+                onClick={() => setActiveTab('overview')}
+                label="Ir a Dashboard"
+              />
               <BottomNavItem
                 icon={<HistoryIcon size={22}/>}
                 active={activeTab === 'history' || activeTab === 'business_history'}
                 onClick={() => setActiveTab(role?.type === 'DRIVER' ? 'business_history' : 'history')}
+                label="Ver Historial"
               />
-              <BottomNavItem icon={<User size={22}/>} active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-              <button onClick={() => auth.signOut()} className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"><XCircle size={22}/></button>
+              <BottomNavItem
+                icon={<User size={22}/>}
+                active={activeTab === 'profile'}
+                onClick={() => setActiveTab('profile')}
+                label="Ver mi Perfil"
+              />
+              <button
+                onClick={() => auth.signOut()}
+                aria-label="Cerrar Sesión"
+                className="p-3 text-red-500 dark:text-red-400 opacity-80 hover:opacity-100 transition-opacity"
+              >
+                <XCircle size={22}/>
+              </button>
             </div>
           )}
         </main>
@@ -258,12 +275,15 @@ function App() {
       </div>
     </Suspense>
   );
-  );
 }
 
-function BottomNavItem({ icon, active, onClick }) {
+function BottomNavItem({ icon, active, onClick, label }) {
   return (
-    <button onClick={onClick} className={`p-4 transition-all ${active ? 'text-primary-500 scale-110 drop-shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-600 dark:hover:text-white/40'}`}>
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className={`p-4 transition-all ${active ? 'text-primary-500 scale-110 drop-shadow-sm' : 'text-slate-400 dark:text-white/20 hover:text-slate-600 dark:hover:text-white/40'}`}
+    >
       {icon}
     </button>
   );

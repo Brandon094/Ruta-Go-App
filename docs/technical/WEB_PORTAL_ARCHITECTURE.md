@@ -1,6 +1,6 @@
 # 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.9.8), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.9.9.3), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
@@ -10,7 +10,7 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
-*   **Estructura Atómica (Auditada v1.9.8)**:
+*   **Estructura Atómica (Auditada v1.9.9.3)**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`. Componentes básicos e indivisibles.
     *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`, `RoleBenefit`, `SolutionCard`, `RouteBadge`, `SplashScreen`.
     *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`, `HistoryHeader`, `ProfileHeader`, `AuthLayout`, `RegisterSuccess`.
