@@ -12,6 +12,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.7.9] - 2026-07-24 (Comprehensive Directory Optimization)
+### Añadido
+- **Pasajeros Expansibles (Audit Final)**: Implementación de diseño expansible en `UserCard.jsx`. La lista de pasajeros es ahora mucho más compacta, ocultando información de contacto, puntos de fidelidad y acciones de moderación (Ban/Inactivar/Borrar) bajo demanda.
+- **Sincronización DRY en Usuarios**: Integración definitiva de la molécula `ContactInfo.jsx` en el flujo de gestión de pasajeros.
+
+### Cambiado
+- **Estandarización de Interacciones Administrativas**: Unificación de comportamientos de clic, iconos de estado (Chevron) y animaciones de entrada en todos los directorios del portal (Socios, Vehículos, Conductores y Pasajeros).
+
 ## [1.7.8] - 2026-07-24 (UI Minimalism & TopBar Priority)
 ### Añadido
 - **Jerarquía Visual Optimizada**: Eliminación de títulos redundantes en los encabezados internos (`DirectoryHeader`, `ExecutiveHeader`, `MirrorHeader`) para priorizar la **Header TopBar** global. Esto reduce la contaminación visual y mejora el foco en los datos.
