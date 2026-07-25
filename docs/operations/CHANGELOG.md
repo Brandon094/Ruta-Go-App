@@ -4,6 +4,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.8.8] - 2026-07-24 (Advanced Analytics Engine & Multi-Direction Fix)
+### Corregido
+- **Bug de Ocupación Global (Admin/Owner)**: Refactorización profunda del motor de detección de rutas en `useRealtimeData.js`. El sistema ahora clasifica los trayectos basándose exclusivamente en el **Destino Final** extraído de la cadena de texto, eliminando errores de conteo cruzado y restaurando la visibilidad del trayecto de regreso ("La Plata -> Nátaga") que aparecía en 0.
+- **Soporte de Caracteres Especiales**: Mejora de normalización para reconocer flechas tanto legacy (`->`) como modernas (`➔`) y acentos en "Nátaga".
+
 ## [1.8.7] - 2026-07-24 (Critical Analytics Fix & Route Intelligence)
 ### Corregido
 - **Bug de Ocupación Global**: Reparada la lógica de agrupación en el motor de analítica (`useRealtimeData.js`) que causaba colisiones entre trayectos. Anteriormente, ambas rutas se sumaban erróneamente a "La Plata" porque ambas contenían el nombre de la ciudad. Ahora el sistema identifica la dirección mediante el destino explícito, separando correctamente las métricas de "Nátaga -> La Plata" y "La Plata -> Nátaga".
