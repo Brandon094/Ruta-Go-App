@@ -64,8 +64,6 @@ export function PricingDirectory({ prices = {} }) {
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
       <DirectoryHeader
-        icon={Settings}
-        title="Gestión de Tarifas"
         subtitle="Configuración de precios y cobros del holding"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

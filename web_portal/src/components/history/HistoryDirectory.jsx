@@ -62,8 +62,6 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
       {isBusiness ? (
         <div className="p-4 lg:p-8 pb-0">
           <DirectoryHeader
-            icon={Ticket}
-            title="Monitor de Despachos"
             subtitle="Historial operativo de la flota"
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}

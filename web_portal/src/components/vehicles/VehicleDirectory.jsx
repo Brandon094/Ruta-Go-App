@@ -25,8 +25,6 @@ export function VehicleDirectory({ vehicles = [], drivers = [], onAdd, onEdit, o
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
       <DirectoryHeader
-        icon={Car}
-        title={isAdmin ? "Gestión de Flota Global" : "Mi Flota de Vehículos"}
         subtitle="Control de activos y vinculación de conductores"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

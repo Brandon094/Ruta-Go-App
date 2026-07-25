@@ -17,18 +17,12 @@ export function DriverItinerary({ schedules = [], drivers = [], reservations = [
       {/* Sección 1: Check-in de Pasajeros */}
       <div className="space-y-6">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/5 pb-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-2xl text-green-500 shadow-sm">
-              <CheckCircle2 size={28} />
-            </div>
-            <div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Check-in Pasajeros</h3>
-              <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Confirma abordaje en tiempo real</p>
-            </div>
+          <div className="flex items-center gap-3">
+             <h4 className="text-xs font-black uppercase tracking-widest text-primary-500 italic">Check-in de Abordaje</h4>
+             <span className="bg-primary-500/10 text-primary-500 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter">
+                {pendingReservations.length} Solicitudes
+             </span>
           </div>
-          <span className="bg-primary-500 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-lg shadow-primary-500/20 animate-pulse">
-            {pendingReservations.length} Pendientes
-          </span>
         </div>
 
         {pendingReservations.length > 0 ? (
@@ -58,14 +52,8 @@ export function DriverItinerary({ schedules = [], drivers = [], reservations = [
 
       {/* Sección 2: Itinerario de Turnos */}
       <div className="space-y-6 pt-6">
-        <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
-          <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500 shadow-sm">
-            <Calendar size={28} />
-          </div>
-          <div>
-            <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Mi Itinerario</h3>
-            <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Gestión de turnos y ventas de calle</p>
-          </div>
+        <div className="border-b border-slate-200 dark:border-white/5 pb-6 text-left">
+           <h4 className="text-xs font-black uppercase tracking-widest text-primary-500 italic">Cronograma de Turnos</h4>
         </div>
         <ScheduleTable schedules={mySchedules} drivers={drivers} role={role} onManage={onManage} vehicles={vehicles} />
       </div>

@@ -19,8 +19,6 @@ export function AdminOverview({ stats, routeStats }) {
       {/* 🏛️ ORGANISMO: ExecutiveHeader (DRY) */}
       <ExecutiveHeader
         icon={ShieldCheck}
-        title="Panel de Control Maestro"
-        subtitle="Administrador Root"
         badgeText="Sistema Operativo"
         badgeVariant="warning"
       >

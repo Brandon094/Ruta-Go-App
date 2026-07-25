@@ -25,8 +25,6 @@ export function ScheduleDirectory({ schedules = [], drivers, role, onManage, veh
     <div className="space-y-10 pb-20 animate-in fade-in duration-500">
       <div className="px-2">
         <DirectoryHeader
-          icon={Clock}
-          title="Planilla Maestra de Despachos"
           subtitle="Cronograma global de horarios y asignaciones"
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

@@ -2,14 +2,12 @@ import React from 'react';
 import { Badge } from '../ui/Badge';
 
 /**
- * 📱 Organism: MirrorHeader
- * Cabecera naranja que imita la App nativa (Mirror Mode).
- * Sigue principios de Atomic Design.
+ * 📱 Organism: MirrorHeader (Refactored v1.7.8)
+ * Cabecera naranja simplificada para Pasajeros y Conductores.
+ * Prioriza la Header TopBar para evitar redundancia de nombres.
  */
 export function MirrorHeader({
   avatarText,
-  title,
-  subtitle,
   badgeText,
   badgeVariant = "info",
   avatarBgColor = "bg-slate-200",
@@ -18,16 +16,17 @@ export function MirrorHeader({
   return (
     <div className="bg-primary-500 -mt-4 lg:-mt-8 -mx-4 lg:-mx-8 p-6 lg:p-10 pb-16 relative overflow-hidden shadow-2xl transition-colors duration-300 shrink-0">
       <div className="max-w-4xl mx-auto flex items-center justify-between relative z-10">
-        {/* Molécula: Perfil Mirror */}
+        {/* Molécula: Avatar Mirror */}
         <div className="flex items-center gap-5">
-          <div className="w-16 h-16 lg:w-20 lg:h-20 bg-white/20 rounded-full border-2 border-white/30 p-1 flex items-center justify-center shadow-inner overflow-hidden">
-             <div className={`w-full h-full ${avatarBgColor} rounded-full flex items-center justify-center text-[#061426] font-black text-xl lg:text-2xl shadow-sm`}>
+          <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white/20 rounded-2xl border-2 border-white/30 p-1 flex items-center justify-center shadow-inner overflow-hidden">
+             <div className={`w-full h-full ${avatarBgColor} rounded-xl flex items-center justify-center text-[#061426] font-black text-xl shadow-sm`}>
                {avatarText}
              </div>
           </div>
-          <div className="text-white text-left">
-            <p className="font-bold text-xs uppercase tracking-widest leading-none mb-1 opacity-80 italic">{subtitle}</p>
-            <h2 className="text-xl lg:text-2xl font-black tracking-tight uppercase italic">{title}</h2>
+          <div className="text-left">
+            <p className="text-[10px] font-black text-white/60 uppercase tracking-[0.2em] italic truncate max-w-[150px] md:max-w-none">
+              Operación en Tiempo Real
+            </p>
           </div>
         </div>
 

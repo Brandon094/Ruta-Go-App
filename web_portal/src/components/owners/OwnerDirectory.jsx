@@ -22,8 +22,6 @@ export function OwnerDirectory({ owners = [], users = [] }) {
     <div className="space-y-10 pb-20 px-2">
 
       <DirectoryHeader
-        icon={Briefcase}
-        title="Gestión de Socios"
         subtitle="Control de acceso y auditoría de dueños de flota"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

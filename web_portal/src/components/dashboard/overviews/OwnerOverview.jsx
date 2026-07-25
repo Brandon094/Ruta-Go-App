@@ -18,8 +18,6 @@ export function OwnerOverview({ stats, routeStats, role }) {
       {/* 🏛️ ORGANISMO: ExecutiveHeader (DRY) */}
       <ExecutiveHeader
         icon={Briefcase}
-        title="Dashboard Corporativo"
-        subtitle="Socio del Holding"
         badgeText="Cuenta Premium"
         badgeVariant="info"
       >

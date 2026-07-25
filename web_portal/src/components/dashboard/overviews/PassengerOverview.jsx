@@ -20,8 +20,6 @@ export function PassengerOverview({ stats, schedules = [], drivers = [], role, o
       {/* 📱 ORGANISMO: MirrorHeader (DRY) */}
       <MirrorHeader
         avatarText={role?.uid?.substring(0, 1).toUpperCase() || 'P'}
-        title={role?.name || 'Pasajero Ruta-Go'}
-        subtitle="¡Bienvenido de nuevo!"
         badgeText="Pasajero Activo"
         badgeVariant="info"
       >

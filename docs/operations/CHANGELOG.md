@@ -12,6 +12,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.7.8] - 2026-07-24 (UI Minimalism & TopBar Priority)
+### Añadido
+- **Jerarquía Visual Optimizada**: Eliminación de títulos redundantes en los encabezados internos (`DirectoryHeader`, `ExecutiveHeader`, `MirrorHeader`) para priorizar la **Header TopBar** global. Esto reduce la contaminación visual y mejora el foco en los datos.
+- **Rediseño de DirectoryHeader**: Transformación del componente en una barra de acciones minimalista que mantiene solo el subtítulo contextual y las herramientas de búsqueda/acción.
+
+### Cambiado
+- **Refactor de Cabeceras Administrativas**: Simplificación de `ExecutiveHeader` y `MirrorHeader`, removiendo nombres de usuario y títulos de vista duplicados, delegando esa responsabilidad al orquestador de la TopBar.
+
 ## [1.7.7] - 2026-07-24 (Administrative Identity & Global UX Consolidation)
 ### Añadido
 - **Unificación de Monitor de Despachos**: Refactorización del encabezado del historial operativo para usar `DirectoryHeader`. Ahora los despachos tienen el mismo "look & feel" que la gestión de vehículos y conductores, distanciándose del estilo de historial personal del pasajero.

@@ -24,8 +24,6 @@ export function DriverDirectory({ drivers = [], onEditDriver, onAddDriver }) {
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
       <DirectoryHeader
-        icon={Bus}
-        title="Gestión de Operadores"
         subtitle="Administración de conductores y asignación de turnos"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
