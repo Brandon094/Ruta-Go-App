@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Briefcase, Search } from 'lucide-react';
-import { Input } from '../ui/Input';
+import { Briefcase } from 'lucide-react';
+import { DirectoryHeader } from '../common/DirectoryHeader';
 import { OwnerCard } from './OwnerCard';
 
 /**
@@ -20,28 +20,14 @@ export function OwnerDirectory({ owners = [], users = [] }) {
 
   return (
     <div className="space-y-10 pb-20 px-2">
-      {/* Header Informativo */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 dark:border-white/5 pb-8">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500 shadow-sm">
-            <Briefcase size={28} />
-          </div>
-          <div>
-            <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Gestión de Socios</h3>
-            <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Control de acceso y auditoría de dueños</p>
-          </div>
-        </div>
 
-        {/* Search Bar Atómica */}
-        <div className="w-full md:w-80">
-          <Input
-            placeholder="Buscar socio por nombre o email..."
-            icon={Search}
-            value={searchTerm}
-            onChange={(val) => setSearchTerm(val)}
-          />
-        </div>
-      </div>
+      <DirectoryHeader
+        icon={Briefcase}
+        title="Gestión de Socios"
+        subtitle="Control de acceso y auditoría de dueños de flota"
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       {/* Grid de Socios */}
       {filteredOwners.length > 0 ? (

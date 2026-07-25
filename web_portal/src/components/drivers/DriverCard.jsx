@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Bus, TrendingUp, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { ContactInfo } from '../ui/ContactInfo';
 
 /**
  * ⚛️ Molecule: DriverCard
- * Gestión de conductores con diseño expansible y cumplimiento DRY.
+ * Tarjeta informativa para la gestión de conductores con vista expansible.
  */
 export function DriverCard({ driver, onEdit }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,7 +19,7 @@ export function DriverCard({ driver, onEdit }) {
       className="card-base p-6 rounded-[2.5rem] flex flex-col gap-6 group hover:shadow-2xl transition-all duration-500 bg-white dark:bg-[#0A1F30] border border-slate-100 dark:border-none relative cursor-pointer"
     >
 
-      {/* Identidad - Siempre visible */}
+      {/* Header - Siempre visible */}
       <div className="flex items-start justify-between">
         <div className="flex gap-4 min-w-0">
           <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-colors shadow-inner ${
@@ -34,7 +33,7 @@ export function DriverCard({ driver, onEdit }) {
             </h4>
             <div className="flex items-center gap-2 mt-1">
               <TrendingUp size={12} className="text-primary-500" />
-              <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest truncate">
+              <p className="text-[11px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest truncate">
                 Placa: {driver.placaVehiculo || 'N/A'}
               </p>
               {isExpanded ? <ChevronUp size={14} className="text-primary-500" /> : <ChevronDown size={14} className="text-slate-300" />}
@@ -49,14 +48,6 @@ export function DriverCard({ driver, onEdit }) {
       {/* Contenido Expandible */}
       {isExpanded && (
         <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
-
-          {/* Información de Contacto (DRY Puro) */}
-          <ContactInfo
-            email={driver.email}
-            phone={driver.telefono}
-            className="text-left border-t border-slate-50 dark:border-white/5 pt-6"
-          />
-
           <div className="p-4 bg-slate-50 dark:bg-black/20 rounded-2xl border border-slate-100 dark:border-white/5 shadow-inner">
             <p className="text-[9px] text-slate-400 dark:text-white/40 font-black uppercase tracking-[0.2em] mb-2 px-1 text-left">Turnos Asignados</p>
             <p className="text-xs text-slate-700 dark:text-white/80 font-bold truncate px-1 italic text-left">

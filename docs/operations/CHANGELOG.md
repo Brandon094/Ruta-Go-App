@@ -12,6 +12,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.7.5] - 2026-07-24 (Management Architecture Unification & Directory Refactor)
+### Añadido
+- **Organismo `DirectoryHeader.jsx`**: Centralización del encabezado para todos los directorios administrativos (Socios, Vehículos, Conductores). Implementa búsqueda reactiva y botones de acción unificados.
+- **Auditoría de Flota y Operadores (Fase 4)**: Unificación total de la experiencia de usuario para el Admin Root y los Dueños en las pestañas de gestión.
+
+### Cambiado
+- **Refactor DRY de Directorios**: Migración de `VehicleDirectory`, `OwnerDirectory` y `DriverDirectory` al nuevo estándar de `DirectoryHeader`, eliminando código duplicado en un 50% en estas vistas.
+- **Sincronización Singleton en App.jsx**: Estandarización del uso de `vehicleService` en el orquestador principal, eliminando importaciones dinámicas innecesarias.
+
 ## [1.7.3] - 2026-07-24 (Administrative Service Layer & Component Cleanup)
 ### Añadido
 - **Capa de Servicios de Gestión**: Implementación de `ownerService.js` y `userService.js` para centralizar la lógica de Firebase (Singleton), eliminando llamadas directas a la base de datos desde los componentes.

@@ -39,8 +39,10 @@ import { SeatManagementModal } from './components/schedules/SeatManagementModal'
 // Hooks
 import { useRealtimeStats } from './hooks/useRealtimeStats';
 
+import { vehicleService } from './services/vehicleService';
+
 /**
- * 🖥️ Ruta-Go Portal - Orquestador Principal (Modularizado v1.5.1)
+ * 🖥️ Ruta-Go Portal - Orquestador Principal (Modularizado v1.7.5)
  */
 function App() {
   const [user, setUser] = useState(null);
@@ -197,7 +199,7 @@ function App() {
               onEdit={(v) => setEditingVehicle(v)}
               onDelete={(placa) => {
                 if(window.confirm('¿Seguro de eliminar este vehículo?')) {
-                  import('./services/vehicleService').then(m => m.vehicleService.deleteVehicle(placa));
+                  vehicleService.deleteVehicle(placa);
                 }
               }}
               role={role}
