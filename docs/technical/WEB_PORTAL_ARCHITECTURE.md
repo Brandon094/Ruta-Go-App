@@ -1,6 +1,6 @@
 # 🖥️ Arquitectura y Ecosistema Web - Ruta-Go
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.9.9.4), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal** (v1.9.9.5), la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 
 ---
 
@@ -10,10 +10,11 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
-*   **Estructura Atómica (Auditada v1.9.9.4)**:
+*   **Estructura Atómica (Auditada v1.9.9.5)**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`. Componentes básicos e indivisibles.
     *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`, `RoleBenefit`, `SolutionCard`, `RouteBadge`, `SplashScreen`.
     *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`, `HistoryHeader`, `ProfileHeader`, `AuthLayout`, `RegisterSuccess`.
+*   **Optimización de Carga**: Implementación de **React Lazy & Suspense** para Code Splitting masivo y **useTransition** para una navegación fluida sin bloqueos de UI.
 *   **Gobernanza DRY**: El 100% del ecosistema web (Gestión, Onboarding y Soporte) ha sido auditado para eliminar lógica duplicada y componentes redundantes.
 *   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.
 *   **Capa de Utilidades**: `FormatUtils.js` y `AnimationUtils.js` para asegurar la paridad de comportamiento con Android (conteo de dinero, formatos moneda COP).

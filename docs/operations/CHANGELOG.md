@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Transition Engine)
+### Añadido
+- **Motor de Transiciones React 18**: Implementación del hook `useTransition` para gestionar cambios de estado pesados. Esto permite que la interfaz sea responsiva incluso durante procesos de carga de módulos o datos.
+- **Navegación Blindada**: Creación de helpers `navigateTo` y `changeTab` que envuelven las actualizaciones de estado en bloques de transición, eliminando parpadeos y estados inconsistentes.
+
+### Corregido
+- **Eliminación definitiva de Glitches de Dashboard**: Gracias al motor de transiciones y la sincronización con el `SplashScreen`, el sistema ya no muestra Dashboards de otros roles durante el cambio de sesión o navegación rápida. La vista actual se mantiene hasta que la nueva está lista "detrás de cámaras".
+
 ## [1.9.9.4] - 2026-07-24 (Accessibility AA & Image Format Optimization)
 ### Añadido
 - **Accesibilidad Nivel AA (Segunda Intervención)**:

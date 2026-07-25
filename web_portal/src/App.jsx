@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useTransition } from 'react';
 import { Loader2, LayoutDashboard, History as HistoryIcon, User, XCircle } from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase';
@@ -58,6 +58,7 @@ function App() {
   const [isAddingVehicle, setIsAddingVehicle] = useState(false);
   const [managingSchedule, setManagingSchedule] = useState(null);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -80,6 +81,19 @@ function App() {
 
   const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routeStats, vehicles } = useRealtimeStats(user);
 
+  // Helper para cambios de vista seguros con transiciones (v1.9.9.5)
+  const navigateTo = (nextView) => {
+    startTransition(() => {
+      setView(nextView);
+    });
+  };
+
+  const changeTab = (nextTab) => {
+    startTransition(() => {
+      setActiveTab(nextTab);
+    });
+  };
+
   if (loadingAuth) {
     return <SplashScreen message="Autenticando..." />;
   }
@@ -88,20 +102,24 @@ function App() {
     return <SplashScreen message="Resolviendo Identidad..." />;
   }
 
+  if (isPending) {
+    return <SplashScreen message="Cargando Módulos..." />;
+  }
+
   if (!user) {
-    if (view === 'login') return <Login onBack={() => setView('landing')} onShowRegister={() => { setRegisterMode('owner'); setView('register'); }} />;
-    if (view === 'register') return <Register onBack={() => setView('landing')} initialMode={registerMode} />;
-    if (view === 'terms') return <Terms onBack={() => setView('landing')} />;
-    if (view === 'privacy') return <Privacy onBack={() => setView('landing')} />;
-    if (view === 'manual') return <UserManual onBack={() => setView('landing')} />;
+    if (view === 'login') return <Login onBack={() => navigateTo('landing')} onShowRegister={() => { setRegisterMode('owner'); navigateTo('register'); }} />;
+    if (view === 'register') return <Register onBack={() => navigateTo('landing')} initialMode={registerMode} />;
+    if (view === 'terms') return <Terms onBack={() => navigateTo('landing')} />;
+    if (view === 'privacy') return <Privacy onBack={() => navigateTo('landing')} />;
+    if (view === 'manual') return <UserManual onBack={() => navigateTo('landing')} />;
     return (
       <LandingPage
-        onLogin={() => setView('login')}
-        onRegisterOwner={() => { setRegisterMode('owner'); setView('register'); }}
-        onRegisterPassenger={() => { setRegisterMode('passenger'); setView('register'); }}
-        onViewTerms={() => setView('terms')}
-        onViewPrivacy={() => setView('privacy')}
-        onViewManual={() => setView('manual')}
+        onLogin={() => navigateTo('login')}
+        onRegisterOwner={() => { setRegisterMode('owner'); navigateTo('register'); }}
+        onRegisterPassenger={() => { setRegisterMode('passenger'); navigateTo('register'); }}
+        onViewTerms={() => navigateTo('terms')}
+        onViewPrivacy={() => navigateTo('privacy')}
+        onViewManual={() => navigateTo('manual')}
       />
     );
   }
@@ -110,19 +128,19 @@ function App() {
   const isLoaded = !role?.loading;
 
   return (
-    <Suspense fallback={<SplashScreen message="Cargando Módulos..." />}>
+    <Suspense fallback={<SplashScreen message="Sincronizando..." />}>
       <div className="flex h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white antialiased font-sans overflow-hidden transition-colors duration-300">
         {isLoaded && isManagement && (
           <Sidebar
             isOpen={isSidebarOpen}
             onClose={() => setIsSidebarOpen(false)}
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={changeTab}
             role={role}
           />
         )}
 
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <main id="main-content" className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <Header
             title={
               activeTab === 'overview' ?
@@ -182,11 +200,11 @@ function App() {
                 <AdminOverview stats={stats} routeStats={routeStats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
               ) : null
             ) : activeTab === 'history' ? (
-              <HistoryDirectory type="personal" reservations={personalReservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab(isManagement ? 'passenger_view' : 'overview')} />
+              <HistoryDirectory type="personal" reservations={personalReservations} role={role} drivers={allDrivers} onNavigate={() => changeTab(isManagement ? 'passenger_view' : 'overview')} />
             ) : activeTab === 'business_history' ? (
-              <HistoryDirectory type="business" reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab('overview')} />
+              <HistoryDirectory type="business" reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => changeTab('overview')} />
             ) : activeTab === 'profile' ? (
-              <ProfileDirectory user={user} role={role} onNavigate={setActiveTab} />
+              <ProfileDirectory user={user} role={role} onNavigate={changeTab} />
             ) : activeTab === 'owners' ? (
               <OwnerDirectory owners={owners} users={usersList} />
             ) : activeTab === 'vehicles' ? (
@@ -232,19 +250,19 @@ function App() {
               <BottomNavItem
                 icon={<LayoutDashboard size={22}/>}
                 active={activeTab === 'overview'}
-                onClick={() => setActiveTab('overview')}
+                onClick={() => changeTab('overview')}
                 label="Ir a Dashboard"
               />
               <BottomNavItem
                 icon={<HistoryIcon size={22}/>}
                 active={activeTab === 'history' || activeTab === 'business_history'}
-                onClick={() => setActiveTab(role?.type === 'DRIVER' ? 'business_history' : 'history')}
+                onClick={() => changeTab(role?.type === 'DRIVER' ? 'business_history' : 'history')}
                 label="Ver Historial"
               />
               <BottomNavItem
                 icon={<User size={22}/>}
                 active={activeTab === 'profile'}
-                onClick={() => setActiveTab('profile')}
+                onClick={() => changeTab('profile')}
                 label="Ver mi Perfil"
               />
               <button
