@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Bus,
-  ShieldCheck,
-  Clock,
   TrendingUp,
   Users,
-  MapPin,
   ChevronRight,
-  Star,
-  CheckCircle2
+  Star
 } from 'lucide-react';
+import { SolutionCard } from './components/landing/SolutionCard';
+import { RouteBadge } from './components/landing/RouteBadge';
 
 /**
  * 🚀 Componente: LandingPage
@@ -89,20 +87,20 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
       </nav>
 
       {/* 🔥 HERO SECTION */}
-      <header className="pt-28 md:pt-40 pb-12 md:pb-20 px-4 md:px-6 overflow-hidden relative">
+      <header className="pt-28 md:pt-40 pb-12 md:pb-20 px-4 md:px-6 overflow-hidden relative text-left">
         <div className="absolute top-20 right-0 w-64 md:w-96 h-64 md:h-96 bg-primary-500/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div className="space-y-4 md:space-y-8 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-primary-50 dark:bg-primary-500/10 rounded-full text-primary-600 dark:text-primary-400 font-black text-[8px] md:text-[10px] uppercase tracking-widest border border-primary-100 dark:border-primary-500/20 mx-auto lg:mx-0">
+          <div className="space-y-4 md:space-y-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-primary-50 dark:bg-primary-500/10 rounded-full text-primary-600 dark:text-primary-400 font-black text-[8px] md:text-[10px] uppercase tracking-widest border border-primary-100 dark:border-primary-500/20">
               <Star size={12} className="md:size-[14px]" /> El futuro del transporte huilense
             </div>
             <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-[#061426] dark:text-white leading-[1.1] tracking-tight uppercase italic">
               Conectando <span className="text-primary-500">Nátaga</span> y La Plata con tecnología.
             </h1>
-            <p className="text-base md:text-xl text-slate-600 dark:text-white/40 leading-relaxed max-w-lg mx-auto lg:mx-0 px-2 md:px-0">
+            <p className="text-base md:text-xl text-slate-600 dark:text-white/40 leading-relaxed max-w-lg font-medium">
               Ruta-Go profesionaliza el transporte intermunicipal. Reservas en tiempo real, control de flota y una experiencia premium para todos.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start px-4 sm:px-0">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <a
                 href="https://play.google.com/store/apps/details?id=com.chopcode.rutago.app"
                 target="_blank"
@@ -134,8 +132,8 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
             <div className="absolute -bottom-4 -left-2 md:-bottom-6 md:-left-6 bg-white dark:bg-secondary-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl border border-slate-100 dark:border-white/5 flex items-center gap-3 md:gap-4 animate-bounce-slow">
               <div className="w-10 h-10 md:w-12 h-12 bg-amber-50 dark:bg-amber-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-500 shadow-inner"><Star size={22} fill="currentColor" /></div>
               <div>
-                <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest">Calificación</p>
-                <p className="text-base md:text-lg font-black text-[#061426] dark:text-white leading-none">4.9 / 5.0</p>
+                <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest leading-none">Calificación</p>
+                <p className="text-base md:text-lg font-black text-[#061426] dark:text-white leading-none mt-1">4.9 / 5.0</p>
               </div>
             </div>
           </div>
@@ -152,7 +150,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
 
           <div className="hidden lg:grid grid-cols-3 gap-8">
             {solutions.map((sol, index) => (
-              <ValueCard key={index} {...sol} isStatic />
+              <SolutionCard key={index} {...sol} isStatic />
             ))}
           </div>
 
@@ -168,7 +166,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
                        : 'translate-x-full opacity-0 scale-95 z-0'
                    }`}
                  >
-                   <ValueCard {...sol} />
+                   <SolutionCard {...sol} />
                  </div>
                );
              })}
@@ -191,7 +189,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
       {/* 🚌 ROUTES SECTION */}
       <section className="py-16 md:py-24 bg-transparent dark:bg-[#061426] transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center space-y-8 md:space-y-12">
-          <h2 className="text-3xl md:text-4xl font-black text-[#061426] dark:text-white tracking-tight max-w-2xl px-4 uppercase italic">
+          <h2 className="text-3xl md:text-4xl font-black text-[#061426] dark:text-white tracking-tight max-w-2xl px-4 uppercase italic leading-tight">
             Conectamos el sur del Huila.
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8">
@@ -228,7 +226,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
               <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
                 <img src="/assets/logo_icon.png" alt="Ruta-Go Logo" className="w-7 h-7 object-contain" />
               </div>
-              <span className="text-xl font-black tracking-tighter uppercase italic">Ruta-Go</span>
+              <span className="text-xl font-black tracking-tighter uppercase italic leading-none">Ruta-Go</span>
             </div>
             <div className="text-white/20 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] order-3 md:order-none">
                ChopCode Solutions © 2026 • Huila, CO
@@ -241,73 +239,6 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
           </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function ValueCard({ icon, title, desc, color, features, actions, isStatic }) {
-  return (
-    <div
-      className={`card-base p-8 md:p-10 rounded-3xl md:rounded-[3rem] group ${
-        isStatic ? 'hover:shadow-2xl hover:-translate-y-2' : ''
-      }`}
-    >
-      <div className={`mb-6 md:mb-8 w-14 h-14 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center bg-slate-50 dark:bg-white/5 ${color} group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
-        {icon}
-      </div>
-      <h3 className="text-xl md:text-2xl font-black text-[#061426] dark:text-white mb-3 md:mb-4 uppercase italic">{title}</h3>
-      <p className="text-sm md:text-base text-slate-600 dark:text-white/40 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem] font-medium">{desc}</p>
-
-      <ul className="space-y-2 md:space-y-3 mb-8">
-        {features.map((f, i) => (
-          <li key={i} className="flex items-center gap-2 md:gap-3 text-[10px] md:text-xs font-bold text-slate-400 dark:text-white/30 uppercase tracking-wide">
-            <CheckCircle2 size={14} className="text-green-500 md:size-4" /> {f}
-          </li>
-        ))}
-      </ul>
-
-      <div className="flex flex-col gap-3">
-        {actions.map((act, i) => (
-          act.link ? (
-            <a
-              key={i}
-              href={act.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                act.type === 'primary'
-                  ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30 hover:bg-primary-600'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
-              }`}
-            >
-              {act.label} <ChevronRight size={14} />
-            </a>
-          ) : (
-            <button
-              key={i}
-              onClick={act.action}
-              className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 ${
-                act.type === 'primary'
-                  ? 'bg-[#061426] dark:bg-primary-500 text-white shadow-lg shadow-slate-900/30 dark:shadow-primary-500/20 hover:bg-black dark:hover:bg-primary-600'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
-              }`}
-            >
-              {act.label} <ChevronRight size={14} />
-            </button>
-          )
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function RouteBadge({ city }) {
-  return (
-    <div className="px-6 md:px-10 py-4 md:py-6 bg-white dark:bg-white/5 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-white/5 flex items-center gap-3 md:gap-4 group hover:bg-white dark:hover:bg-white/10 hover:shadow-xl transition-all duration-500 shadow-sm">
-      <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-50 dark:bg-secondary-900 rounded-xl md:rounded-2xl shadow-inner flex items-center justify-center text-primary-500 group-hover:rotate-12 transition-transform">
-        <MapPin size={20} className="md:size-6" />
-      </div>
-      <span className="text-lg md:text-2xl font-black text-[#061426] dark:text-white uppercase italic tracking-tighter">{city}</span>
     </div>
   );
 }

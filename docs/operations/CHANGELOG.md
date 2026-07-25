@@ -4,6 +4,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.8.4] - 2026-07-24 (Onboarding & Auth Architecture Unification)
+### Añadido
+- **Organismo `AuthLayout.jsx`**: Centralización de la estructura visual para los flujos de acceso y registro. Implementa el diseño de dos columnas (Branding Hero + Formulario) de forma estandarizada.
+- **Moléculas de Autenticación**:
+    - **`RoleBenefit.jsx`**: Item modular para listar ventajas de perfiles.
+    - **`RegisterSuccess.jsx`**: Vista de confirmación atómica tras la creación de cuentas.
+- **Componentes de Landing Page**:
+    - **`SolutionCard.jsx`**: Tarjeta de propuesta de valor modularizada.
+    - **`RouteBadge.jsx`**: Insignia de trayecto estandarizada.
+
+### Cambiado
+- **Refactor DRY en Onboarding**: Eliminación de código duplicado en `Login.jsx` y `Register.jsx` mediante el uso del nuevo layout compartido.
+- **Estandarización de LandingPage**: Limpieza del orquestador público delegando la interfaz a sus nuevos componentes atómicos.
+- **UX de Registro**: Mejora en la claridad de los beneficios por rol y optimización de la responsividad en formularios.
+
 ## [1.8.3] - 2026-07-24 (Atomic Sidebar & Collapsible UX)
 ### Añadido
 - **Molécula `SidebarSection.jsx`**: Implementación de secciones colapsables para la barra lateral administrativa, permitiendo una navegación mucho más limpia y organizada.
