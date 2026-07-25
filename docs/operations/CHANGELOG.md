@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.7.0] - 2026-07-24 (Advanced UX & Counter Intelligence)
+### Añadido
+- **Menú de Leyenda de Contadores**: Implementación del menú desplegable en el Dashboard del Pasajero que explica el significado de cada métrica (Confirmadas, Canceladas, Total), replicando fielmente la UX de la App móvil.
+- **Molécula `CounterLegend.jsx`**: Nuevo componente atómico para la gestión de leyendas expandibles en Dashboards.
+
+### Cambiado
+- **Refactor de Tarjeta de Estadísticas**: Optimización del contenedor de métricas en el Dashboard de pasajeros para integrar la leyenda sin comprometer el diseño 'Mirror'.
+
 ## [1.6.9] - 2026-07-24 (Operational Excellence & Final Parity)
 ### Añadido
 - **Refactor Atómico en Planilla**: Migración de la tabla de horarios a un sistema de Organismos (`ScheduleTable`) y Moléculas (`ScheduleCard`), logrando un código 100% DRY y escalable.

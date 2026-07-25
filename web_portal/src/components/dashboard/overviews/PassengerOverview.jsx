@@ -4,6 +4,7 @@ import { SummaryMetric } from '../SummaryMetric';
 import { ScheduleTable } from '../../schedules/ScheduleTable';
 import { Button } from '../../ui/Button';
 import { MirrorHeader } from '../MirrorHeader';
+import { CounterLegend } from '../CounterLegend';
 
 export function PassengerOverview({ stats, schedules = [], drivers = [], role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
@@ -34,12 +35,15 @@ export function PassengerOverview({ stats, schedules = [], drivers = [], role, o
         badgeVariant="info"
       >
         {/* 🌑 Molécula: Stats Card (Mirror Android) */}
-        <div className="card-base rounded-[2.5rem] p-6 lg:p-8 space-y-8 bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
-          <div className="grid grid-cols-3 gap-4">
+        <div className="card-base rounded-[2.5rem] overflow-hidden bg-white dark:bg-[#061426] shadow-xl transition-colors duration-300">
+          <div className="grid grid-cols-3 gap-4 p-6 lg:p-8 pb-4">
             <SummaryMetric label="Confirmadas" value={stats.confirmedReservations} icon={<CheckCircle2 size={16} className="text-orange-500 mb-1"/>} />
             <SummaryMetric label="Canceladas" value={stats.canceledReservations} icon={<XCircle size={16} className="text-red-500 mb-1"/>} />
             <SummaryMetric label="Total" value={stats.totalUserReservations} icon={<CheckCircle2 size={16} className="text-green-500 mb-1"/>} />
           </div>
+
+          {/* Legend Molecule (v1.7.0 Sync) */}
+          <CounterLegend />
         </div>
       </MirrorHeader>
 
