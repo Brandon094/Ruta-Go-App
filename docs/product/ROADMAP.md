@@ -42,7 +42,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 *   [x] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.
 *   [x] **📑 Selector de Dueños**: Reemplazar ingreso manual de UIDs por una lista desplegable de socios aprobados al crear conductores.
 *   [x] **🛡️ Control de Pasajeros**: Botones de acción en la tabla de usuarios para **Banear, Inactivar o Borrar** cuentas con un clic.
-*   [x] **🔄 Refactor de Rotación (Escalafón Fijo)**: Eliminado el ordenamiento dinámico por ID en la Cloud Function `automatedRotation` y migrado a un sistema basado en la propiedad `posicionEscalafon` para evitar desincronización al añadir nuevos conductores.
+*   [x] **🔄 Refactor de Rotación (Escalafón Fijo & ID Dinámico)**: Eliminado el ordenamiento dinámico por ID en la Cloud Function `automatedRotation` y migrado a un sistema basado en la propiedad `posicionEscalafon`. Se implementó la identificación dinámica del conductor fijo mediante el ID asignado al horario `h005`, eliminando la dependencia de nombres específicos (Brayan).
 *   [ ] **📈 Analítica Extendida**: Implementación de gráficas históricas de ingresos y ocupación (no solo diaria).
 *   [ ] **📜 Registro de Auditoría**: Bitácora de cambios realizados por administradores para trazabilidad operativa.
 *   [ ] **📦 Exportación de Reportes**: Generación de PDFs/Excel de despachos y contabilidad para dueños y admins.

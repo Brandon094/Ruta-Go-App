@@ -4,6 +4,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.6.8] - 2026-07-24 (Dynamic Rotation & Dedicated Roles)
+### Añadido
+- **Identificación de Conductor Fijo por ID**: El algoritmo de rotación ahora identifica al conductor dedicado (anteriormente "Brayan") mediante su UID vinculado al horario `h005`. Esto permite que los dueños cambien al operador del turno privilegiado sin necesidad de modificar el código del servidor.
+
+### Cambiado
+- **Lógica de Exclusión**: Los conductores asignados a turnos fijos son excluidos automáticamente del pool de rotación basándose en el estado actual de la planilla de horarios.
+
 ## [1.6.7] - 2026-07-24 (Operational Excellence & Multi-Role Sync)
 ### Añadido
 - **Sistema de Escalafón Determinista**: Migración exitosa a la propiedad `posicionEscalafon` para la rotación de turnos, eliminando la desincronización por ordenamiento dinámico en Cloud Functions.

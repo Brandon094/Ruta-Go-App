@@ -58,7 +58,11 @@ exports.automatedRotation = onSchedule({
 
         const conductoresParaRotar = [];
         const tokensPasajeros = [];
-        let brayanId = null;
+
+        // 🧠 Identificación Dinámica del Conductor Fijo (Ancla: h005)
+        // Ya no dependemos del nombre "Brayan", sino de quién ocupe el cargo en la planilla
+        const fixedConductorId = horariosSnap.child('h005').child('conductorId').val();
+        let brayanId = null; // Mantenemos el nombre de variable para no romper el resto del script
 
         // Clasificación de conductores y captura de tokens de notificación
         conductoresSnap.forEach((snap) => {
@@ -66,8 +70,8 @@ exports.automatedRotation = onSchedule({
             const uid = snap.key;
             const token = data.tokenFCM || tokenMap[uid];
 
-            // Regla de Negocio Especial: Asignación fija para el conductor Brayan
-            if (data.nombre && data.nombre.toLowerCase().includes("brayan")) {
+            // Si el UID coincide con el asignado a h005, se marca como conductor fijo
+            if (uid === fixedConductorId) {
                 brayanId = uid;
             } else {
                 conductoresParaRotar.push({
@@ -92,7 +96,7 @@ exports.automatedRotation = onSchedule({
         const notificationPromises = [];
         const dispUpdates = {};
 
-        // 2. ASIGNACIÓN FIJA (BRAYAN - Horarios h005, h015)
+        // 2. ASIGNACIÓN FIJA (Dedicada - Horarios h005, h015)
         if (brayanId) {
             const horariosFijos = ["h005", "h015"];
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
