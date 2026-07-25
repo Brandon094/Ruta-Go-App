@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.7.3] - 2026-07-24 (Administrative Service Layer & Component Cleanup)
+### Añadido
+- **Capa de Servicios de Gestión**: Implementación de `ownerService.js` y `userService.js` para centralizar la lógica de Firebase (Singleton), eliminando llamadas directas a la base de datos desde los componentes.
+- **Molécula `ContactInfo.jsx`**: Nuevo componente para estandarizar la visualización de datos de contacto (Email/Teléfono) en todas las tarjetas del sistema.
+
+### Cambiado
+- **Refactor de Directorio de Socios**: Reorganización de componentes moviendo `OwnerCard.jsx` a su directorio correspondiente (`/owners/`) y aplicando principios **DRY** al compartir lógica con el directorio de usuarios.
+- **Auditoría Root v1.7.3**: Finalización de la estandarización de las pestañas de gestión para el Administrador Maestro.
+
 ## [1.7.2] - 2026-07-24 (General Management Audit & UI Parity)
 ### Añadido
 - **Consolidación Admin/Owner**: Implementación de la sección de **Ocupación Global** para el Administrador Root, logrando paridad analítica con el Dashboard del Socio.

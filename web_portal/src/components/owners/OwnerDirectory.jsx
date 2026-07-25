@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Briefcase, Search } from 'lucide-react';
 import { Input } from '../ui/Input';
-import { OwnerCard } from '../users/OwnerCard';
+import { OwnerCard } from './OwnerCard';
 
 /**
  * 💼 Component: OwnerDirectory

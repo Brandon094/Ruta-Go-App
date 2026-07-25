@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { User, Mail, Phone, Trash2, Award, Ban, ShieldOff, CheckCircle2 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { ref, update, remove } from "firebase/database";
-import { db } from '../../firebase';
+import { ContactInfo } from '../ui/ContactInfo';
+import { userService } from '../../services/userService';
 
 export function UserCard({ user, adminRole }) {
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export function UserCard({ user, adminRole }) {
     if (!window.confirm(`¿Seguro que deseas cambiar el estado de ${user.nombre} a ${newStatus}?`)) return;
     setLoading(true);
     try {
-      await update(ref(db, `usuarios/${user.id}`), { status: newStatus });
+      await userService.updateStatus(user.id, newStatus);
     } catch (error) {
       console.error(error);
       alert("Error al actualizar estado");
@@ -32,7 +32,7 @@ export function UserCard({ user, adminRole }) {
     if (!window.confirm(`⚠️ ADVERTENCIA: ¿Estás TOTALMENTE SEGURO de eliminar a ${user.nombre}? Esta acción es irreversible.`)) return;
     setLoading(true);
     try {
-      await remove(ref(db, `usuarios/${user.id}`));
+      await userService.deleteUser(user.id);
     } catch (error) {
       console.error(error);
       alert("Error al eliminar usuario");
@@ -76,22 +76,16 @@ export function UserCard({ user, adminRole }) {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-3 text-slate-500 dark:text-white/40 text-xs">
-          <Mail size={14} className="text-primary-500" />
-          <span className="truncate font-medium">{user.email || 'Sin correo'}</span>
-        </div>
+      <div className="flex justify-between items-end">
+        <ContactInfo
+          email={user.email}
+          phone={user.telefono || user.phone}
+          className="flex-1 text-left"
+        />
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-slate-500 dark:text-white/40 text-xs">
-            <Phone size={14} className="text-primary-500" />
-            <span className="font-medium">{user.telefono || user.phone || 'N/A'}</span>
-          </div>
-
-          <div className="flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 rounded-full border border-amber-100 dark:border-amber-500/20 shadow-sm">
-            <Award size={12} className="text-amber-500" />
-            <span className="text-[10px] font-black text-amber-700 dark:text-amber-500 uppercase tracking-tighter">{user.puntosGo || 0} pts</span>
-          </div>
+        <div className="flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-500/10 rounded-full border border-amber-100 dark:border-amber-500/20 shadow-sm shrink-0">
+          <Award size={12} className="text-amber-500" />
+          <span className="text-[10px] font-black text-amber-700 dark:text-amber-500 uppercase tracking-tighter">{user.puntosGo || 0} pts</span>
         </div>
       </div>
 
