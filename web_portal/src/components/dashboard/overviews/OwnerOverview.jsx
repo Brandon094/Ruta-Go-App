@@ -1,15 +1,15 @@
 import React from 'react';
 import { Activity, Bus, Calendar, Info, MapPin, Briefcase, TrendingUp } from 'lucide-react';
 import { SummaryMetric } from '../SummaryMetric';
-import { OwnerRouteProgressCard } from '../OwnerRouteProgressCard';
+import { RouteProgressCard } from '../RouteProgressCard';
 import { ExecutiveHeader } from '../ExecutiveHeader';
 import { FeatureCard } from '../FeatureCard';
 import { MetricGrid } from '../MetricGrid';
+import { InfoTip } from '../InfoTip';
 
 /**
  * 💼 Component: OwnerOverview
  * Vista ejecutiva para el Socio/Dueño de Flota.
- * Sigue el patrón visual 'melo' del AdminOverview (Atomic Design & DRY).
  */
 export function OwnerOverview({ stats, routeStats, role }) {
   return (
@@ -33,9 +33,9 @@ export function OwnerOverview({ stats, routeStats, role }) {
         </MetricGrid>
       </ExecutiveHeader>
 
-      <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0 space-y-10">
+      <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0 space-y-12">
 
-        {/* 🛣️ SECCIÓN: OCUPACIÓN POR RUTA (Organismos internos) */}
+        {/* 🛣️ SECCIÓN: OCUPACIÓN POR RUTA */}
         <div className="space-y-8">
             <div className="flex items-center justify-between px-2">
                <div className="flex items-center gap-3">
@@ -46,14 +46,14 @@ export function OwnerOverview({ stats, routeStats, role }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2">
-              <OwnerRouteProgressCard
+              <RouteProgressCard
                 name="Nátaga → La Plata"
                 reservations={routeStats.toLaPlata.reservations}
                 available={routeStats.toLaPlata.seats}
                 icon={<MapPin className="text-orange-500" size={20} />}
                 color="bg-orange-500"
               />
-              <OwnerRouteProgressCard
+              <RouteProgressCard
                 name="La Plata → Nátaga"
                 reservations={routeStats.toNataga.reservations}
                 available={routeStats.toNataga.seats}
@@ -63,7 +63,7 @@ export function OwnerOverview({ stats, routeStats, role }) {
             </div>
          </div>
 
-        {/* 🏛️ ORGANISMO: FeatureCard (Mirror Admin) */}
+        {/* 🏛️ ORGANISMO: FeatureCard */}
         <FeatureCard
           icon={TrendingUp}
           title="Rendimiento de Activos"
@@ -71,16 +71,11 @@ export function OwnerOverview({ stats, routeStats, role }) {
           tags={["Utilidad", "Gastos"]}
         />
 
-         {/* Tip de Valor (Molecula de Información) */}
-         <div className="mx-2 p-6 bg-[#061426] rounded-[2rem] border border-white/5 flex items-center gap-4 shadow-2xl">
-            <div className="w-12 h-12 bg-primary-500/20 rounded-2xl flex items-center justify-center text-primary-500 shrink-0">
-               <Info size={24} />
-            </div>
-            <p className="text-xs font-medium text-slate-400 text-left">
-               <span className="font-black text-primary-500 uppercase mr-1">Sugerencia Operativa:</span>
-               Mantén tus vehículos al día en la pestaña "Mi Flota" para asegurar que la disponibilidad en la App sea siempre del 100%.
-            </p>
-         </div>
+        {/* ⚛️ Molecule: InfoTip (Atomic Refactor) */}
+        <InfoTip
+          title="Sugerencia Operativa"
+          message="Mantén tus vehículos al día en la pestaña 'Mi Flota' para asegurar que la disponibilidad en la App sea siempre del 100%."
+        />
       </div>
     </div>
   );

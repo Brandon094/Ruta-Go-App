@@ -179,7 +179,7 @@ function App() {
             ) : role?.type === 'OWNER' ? (
               <OwnerOverview stats={stats} routeStats={routeStats} role={role} />
             ) : (
-              <AdminOverview stats={stats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
+              <AdminOverview stats={stats} routeStats={routeStats} role={role} users={usersList} drivers={allDrivers} owners={owners} />
             )
           ) : activeTab === 'history' ? (
             <HistoryDirectory type="personal" reservations={personalReservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab(isManagement ? 'passenger_view' : 'overview')} />

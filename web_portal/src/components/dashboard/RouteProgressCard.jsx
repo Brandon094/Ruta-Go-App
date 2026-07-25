@@ -1,7 +1,12 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 
-export function OwnerRouteProgressCard({ name, reservations, available, icon, color }) {
+/**
+ * ⚛️ Molecule: RouteProgressCard
+ * Muestra el progreso de ocupación de una ruta específica.
+ * Reutilizable para Dueños y Administradores.
+ */
+export function RouteProgressCard({ name, reservations, available, icon, color }) {
   const total = reservations + available;
   const percentage = total > 0 ? Math.round((reservations / total) * 100) : 0;
 

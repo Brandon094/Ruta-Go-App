@@ -4,6 +4,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.7.2] - 2026-07-24 (General Management Audit & UI Parity)
+### Añadido
+- **Consolidación Admin/Owner**: Implementación de la sección de **Ocupación Global** para el Administrador Root, logrando paridad analítica con el Dashboard del Socio.
+- **Molécula `InfoTip.jsx`**: Nuevo componente atómico para mostrar sugerencias operativas y alertas del sistema de forma estandarizada.
+- **Molécula `RouteProgressCard.jsx`**: Refactorización y generalización de la tarjeta de progreso de ruta (anteriormente exclusiva de Dueños) para uso universal en la suite de gestión.
+
+### Cambiado
+- **Refactor DRY de Dashboards**: Unificación de layouts, espaciados y componentes entre `AdminOverview` y `OwnerOverview`.
+- **Estandarización de Grillas**: Uso de `MetricGrid` en todas las vistas de gestión para asegurar responsividad 1:1.
+
 ## [1.7.1] - 2026-07-24 (Comprehensive UI Audit & Atomic Standardization)
 ### Añadido
 - **Auditoría de Arquitectura Atómica (Fases 1-3)**: Implementación de un sistema de diseño estrictamente modular en todo el portal web.

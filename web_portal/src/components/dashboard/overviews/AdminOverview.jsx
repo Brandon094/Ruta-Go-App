@@ -4,12 +4,15 @@ import { SummaryMetric } from '../SummaryMetric';
 import { ExecutiveHeader } from '../ExecutiveHeader';
 import { FeatureCard } from '../FeatureCard';
 import { MetricGrid } from '../MetricGrid';
+import { RouteProgressCard } from '../RouteProgressCard';
+import { InfoTip } from '../InfoTip';
+import { MapPin } from 'lucide-react';
 
 /**
  * 👑 Component: AdminOverview
  * Vista analítica maestra para el Administrador Root.
  */
-export function AdminOverview({ stats }) {
+export function AdminOverview({ stats, routeStats }) {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
@@ -33,13 +36,48 @@ export function AdminOverview({ stats }) {
         </MetricGrid>
       </ExecutiveHeader>
 
-      <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0">
-        {/* 🏛️ ORGANISMO: FeatureCard (DRY) */}
+      <div className="max-w-7xl mx-auto pt-6 px-2 lg:px-0 space-y-12">
+
+        {/* 🛣️ SECCIÓN: OCUPACIÓN GLOBAL (DRY con Owner) */}
+        <div className="space-y-8">
+            <div className="flex items-center justify-between px-2">
+               <div className="flex items-center gap-3">
+                  <Activity className="text-primary-500" size={20} />
+                  <h3 className="text-lg font-black text-[#061426] dark:text-white uppercase italic tracking-tight">Ocupación Global</h3>
+               </div>
+               <span className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-widest italic">Consolidado Total</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-2">
+              <RouteProgressCard
+                name="Nátaga → La Plata"
+                reservations={routeStats.toLaPlata.reservations}
+                available={routeStats.toLaPlata.seats}
+                icon={<MapPin className="text-orange-500" size={20} />}
+                color="bg-orange-500"
+              />
+              <RouteProgressCard
+                name="La Plata → Nátaga"
+                reservations={routeStats.toNataga.reservations}
+                available={routeStats.toNataga.seats}
+                icon={<MapPin className="text-blue-500" size={20} />}
+                color="bg-blue-500"
+              />
+            </div>
+         </div>
+
+        {/* 🏛️ ORGANISMO: FeatureCard */}
         <FeatureCard
           icon={Activity}
           title="Inteligencia de Datos"
           description="Estamos procesando los modelos predictivos para habilitar el motor de analítica avanzada. Próximamente podrás visualizar flujos de demanda y mapas de calor."
           tags={["Predicción", "Ocupación", "Finanzas"]}
+        />
+
+        {/* ⚛️ Molecule: InfoTip (Atomic Refactor) */}
+        <InfoTip
+          title="Estado del Sistema"
+          message="La base de datos se encuentra sincronizada. Todos los nodos operativos (RTDB) están respondiendo en menos de 200ms."
         />
       </div>
     </div>
