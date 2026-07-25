@@ -4,6 +4,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.7.4] - 2026-07-24 (UX Refinement & Expandable Interfaces)
+### Añadido
+- **Tarjetas Expansibles (UX Compacta)**: Implementación de lógica de expansión/colapso en `OwnerCard`, `VehicleCard` y `DriverCard`. Las listas ahora son mucho más compactas, permitiendo ver más elementos de un vistazo y expandiendo los detalles y acciones solo bajo demanda.
+- **Indicadores de Estado Visual**: Adición de iconos `ChevronDown`/`ChevronUp` y animaciones de entrada para mejorar la navegación táctil y con mouse.
+
+### Cambiado
+- **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
+
 ## [1.7.3] - 2026-07-24 (Administrative Service Layer & Component Cleanup)
 ### Añadido
 - **Capa de Servicios de Gestión**: Implementación de `ownerService.js` y `userService.js` para centralizar la lógica de Firebase (Singleton), eliminando llamadas directas a la base de datos desde los componentes.
