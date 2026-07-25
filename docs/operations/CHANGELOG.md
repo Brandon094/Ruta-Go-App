@@ -4,13 +4,23 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.6.7] - 2026-07-24 (Critical Backend Fix & Logic Refactor)
+## [1.6.7] - 2026-07-24 (Operational Excellence & Multi-Role Sync)
 ### Añadido
-- **Sistema de Escalafón Fijo**: Implementación de la propiedad `posicionEscalafon` en perfiles de conductores para garantizar una rotación de turnos determinista.
-- **Transaccionalidad en Rotación**: Refactor de la Cloud Function `automatedRotation` para eliminar la dependencia de ordenamientos dinámicos por ID, eliminando errores de asignación al integrar nuevos operadores.
+- **Sistema de Escalafón Determinista**: Migración exitosa a la propiedad `posicionEscalafon` para la rotación de turnos, eliminando la desincronización por ordenamiento dinámico en Cloud Functions.
+- **Micro-interacciones Premium**:
+    - **Bus Departure**: Animación del botón de reserva que se transforma en bus y "arranca" al expirar el tiempo.
+    - **Seat Pop**: Entrada animada y escalonada de las sillas en el mapa de selección.
+    - **Money Counter**: Conteo progresivo animado en todas las métricas financieras de los Dashboards.
+- **Separación de Historiales**: Implementación de flujos independientes para "Mi Historial Personal" y "Monitor de Despachos" (Business History).
+- **Feedback Contextual Inteligente**: Mensajes de estado vacío personalizados por rol y tipo de historial.
 
 ### Cambiado
-- **Lógica de Asignación**: Migración del bucle de rotación para usar índices estáticos de negocio en lugar de índices de matriz dinámicos, blindando el sistema contra colisiones de agenda.
+- **Refactor Atómico (DRY)**: Creación de la biblioteca de utilidades `FormatUtils.js` y `AnimationUtils.js` para paridad total de lógica con Android.
+- **Unificación de Identidad**: Soporte total para identidades híbridas (`userId`/`usuarioId`) en Chat, Calificaciones y Reglas de Seguridad.
+
+### Corregido
+- **Seguridad Blindada**: Actualización de reglas de Firebase para soportar de forma nativa los nuevos nodos de Chat y Reputación.
+- **Sincronización de Contadores**: Implementación de lógica auto-sanadora en transacciones de asientos para garantizar que el conteo de libres sea siempre exacto.
 
 ## [1.6.6] - 2026-07-24 (Visual Polish & Startup Grade UX)
 ### Añadido

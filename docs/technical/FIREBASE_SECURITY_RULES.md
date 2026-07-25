@@ -1,4 +1,4 @@
-# 🛡️ Manual de Seguridad: Firebase Realtime Database (v1.5.0)
+# 🛡️ Manual de Seguridad: Firebase Realtime Database (v1.6.7)
 
 Este documento detalla la lógica de gobernanza de datos del ecosistema **Ruta-Go**, asegurando la privacidad del usuario, el aislamiento comercial entre socios y el cumplimiento con la Ley de Habeas Data.
 
