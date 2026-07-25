@@ -4,6 +4,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.4] - 2026-07-24 (Accessibility AA & Image Format Optimization)
+### Añadido
+- **Accesibilidad Nivel AA (Segunda Intervención)**:
+    - Incremento masivo de ratios de contraste en textos secundarios en toda la Landing Page y componentes de dashboard.
+    - Ampliación de objetivos táctiles para el slider de soluciones en móviles (objetivo mínimo de 48px).
+- **Optimización de Entrega de Imágenes**:
+    - Migración forzada a formato **WebP** para activos remotos de Unsplash para mejorar el ahorro de red.
+    - Refinamiento de opacidades en el modo oscuro para cumplir con las pautas de legibilidad de la W3C.
+
+### Cambiado
+- **Refactor de Estilo**: Estandarización de `text-white/60` como base para descripciones en modo oscuro, eliminando el uso de `white/40` que generaba advertencias de contraste.
+
 ## [1.9.9.3] - 2026-07-24 (Lighthouse Audit & Core Optimization)
 ### Añadido
 - **Accesibilidad Nivel AA**:

@@ -16,11 +16,11 @@ export function SolutionCard({ icon, title, desc, color, features, actions, isSt
         {icon}
       </div>
       <h3 className="text-xl md:text-2xl font-black text-[#061426] dark:text-white mb-3 md:mb-4 uppercase italic leading-none">{title}</h3>
-      <p className="text-sm md:text-base text-slate-700 dark:text-white/70 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem] font-medium">{desc}</p>
+      <p className="text-sm md:text-base text-slate-700 dark:text-white/80 leading-relaxed mb-6 md:mb-8 min-h-[3.5rem] font-medium">{desc}</p>
 
       <ul className="space-y-2 md:space-y-3 mb-8 flex-1">
         {features.map((f, i) => (
-          <li key={i} className="flex items-center gap-2 md:gap-3 text-xs font-bold text-slate-500 dark:text-white/50 uppercase tracking-wide list-none">
+          <li key={i} className="flex items-center gap-2 md:gap-3 text-xs font-bold text-slate-600 dark:text-white/70 uppercase tracking-wide list-none">
             <CheckCircle2 size={14} className="text-green-500 md:size-4 shrink-0" /> {f}
           </li>
         ))}

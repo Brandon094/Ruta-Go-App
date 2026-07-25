@@ -105,7 +105,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
               <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-[#061426] dark:text-white leading-[1.1] tracking-tight uppercase italic">
                 Conectando <span className="text-primary-500">Nátaga</span> y La Plata con tecnología.
               </h1>
-              <p className="text-base md:text-xl text-slate-600 dark:text-white/40 leading-relaxed max-w-lg font-medium">
+              <p className="text-base md:text-xl text-slate-600 dark:text-white/60 leading-relaxed max-w-lg font-medium">
                 Ruta-Go profesionaliza el transporte intermunicipal. Reservas en tiempo real, control de flota y una experiencia premium para todos.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
@@ -132,7 +132,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
               <div className="bg-gradient-to-tr from-[#061426] to-[#0B2B3F] rounded-[2.5rem] md:rounded-[3rem] p-4 md:p-8 shadow-2xl shadow-slate-900/20 transform lg:rotate-2 border border-white/5">
                 <div className="bg-white dark:bg-secondary-900 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-inner">
                   <img
-                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800"
+                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800&fm=webp"
                     alt="Interior de un bus moderno de Ruta-Go"
                     width="800"
                     height="600"
@@ -145,7 +145,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
               <div className="absolute -bottom-4 -left-2 md:-bottom-6 md:-left-6 bg-white dark:bg-secondary-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-2xl border border-slate-100 dark:border-white/5 flex items-center gap-3 md:gap-4 animate-bounce-slow">
                 <div className="w-10 h-10 md:w-12 h-12 bg-amber-50 dark:bg-amber-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-500 shadow-inner"><Star size={22} fill="currentColor" /></div>
                 <div>
-                  <p className="text-[10px] text-slate-400 dark:text-white/40 font-bold uppercase tracking-widest leading-none">Calificación</p>
+                  <p className="text-[10px] text-slate-500 dark:text-white/60 font-bold uppercase tracking-widest leading-none">Calificación</p>
                   <p className="text-base md:text-lg font-black text-[#061426] dark:text-white leading-none mt-1">4.9 / 5.0</p>
                 </div>
               </div>
@@ -158,7 +158,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-12 md:mb-16 space-y-4">
               <h2 className="text-3xl md:text-4xl font-black text-[#061426] dark:text-white tracking-tight px-4 uppercase italic">Soluciones para todo el ecosistema</h2>
-              <p className="text-slate-500 dark:text-white/40 font-medium text-sm md:text-base">Haz clic en tu perfil para comenzar.</p>
+              <p className="text-slate-600 dark:text-white/60 font-medium text-sm md:text-base">Haz clic en tu perfil para comenzar.</p>
             </div>
 
             <div className="hidden lg:grid grid-cols-3 gap-8">
@@ -190,8 +190,8 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
                     key={i}
                     onClick={() => setActiveCard(i)}
                     aria-label={`Ver solución ${i + 1}`}
-                    className={`h-3 rounded-full transition-all duration-300 ${
-                      i === activeSolution ? 'w-10 bg-primary-500' : 'w-3 bg-slate-300 dark:bg-white/20'
+                    className={`h-4 rounded-full transition-all duration-300 p-2 box-content ${
+                      i === activeSolution ? 'w-10 bg-primary-500' : 'w-4 bg-slate-300 dark:bg-white/40'
                     }`}
                   />
                 ))}
@@ -224,7 +224,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
           <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight uppercase italic">
             ¿Listo para llevar tu flota <br className="hidden md:block" />al siguiente nivel?
           </h2>
-          <p className="text-white/40 text-lg md:text-xl max-w-2xl mx-auto px-4 font-medium">
+          <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto px-4 font-medium">
             Únete a la red de transporte más moderna de la región. Registra tu vehículo hoy mismo y empieza a ver los beneficios.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 pt-4 px-8 sm:px-0">
@@ -241,10 +241,10 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
               <BrandLogo variant="glass" imgSize="w-7 h-7" animate={false} />
               <span className="text-xl font-black tracking-tighter uppercase italic leading-none">Ruta-Go</span>
             </div>
-            <div className="text-white/20 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] order-3 md:order-none">
+            <div className="text-white/40 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] order-3 md:order-none">
                ChopCode Solutions © 2026 • Huila, CO
             </div>
-            <div className="flex justify-center md:justify-end gap-6 text-white/40 text-sm md:text-base order-2 md:order-none font-bold uppercase tracking-widest">
+            <div className="flex justify-center md:justify-end gap-6 text-white/70 text-sm md:text-base order-2 md:order-none font-bold uppercase tracking-widest">
                <span onClick={onViewManual} className="hover:text-primary-500 cursor-pointer transition-colors">Manual</span>
                <span onClick={onViewPrivacy} className="hover:text-primary-500 cursor-pointer transition-colors">Privacidad</span>
                <span onClick={onViewTerms} className="hover:text-primary-500 cursor-pointer transition-colors">Términos</span>
