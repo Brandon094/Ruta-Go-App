@@ -1,124 +1,220 @@
 import React from 'react';
 import {
   ArrowLeft, BookOpen, Users, Bus, Briefcase,
-  ShieldQuestion, CheckCircle2, MapPin, Calendar,
-  Smartphone, MousePointer2, CreditCard, Ticket,
+  ShieldQuestion, MapPin, Calendar,
+  Smartphone, MousePointer2, Ticket,
   ClipboardCheck, UserPlus, TrendingUp, Trash2,
-  HelpCircle, Info, ShieldCheck, Zap
+  ShieldCheck, Zap, Search, Key, Star, CreditCard
 } from 'lucide-react';
 import { Button } from './components/ui/Button';
+import { ManualSection } from './components/manual/ManualSection';
 
 /**
- * 📖 Componente: UserManual
- * Guía detallada adaptada al rol del usuario logueado.
+ * 📖 Componente: UserManual (Refactorizado v1.8.2)
+ * Guía explícita y detallada siguiendo Atomic Design y DRY.
  */
 export default function UserManual({ role, onBack, isTab = false }) {
   const userRole = role?.type || 'PASSENGER';
 
-  const sections = {
+  const manuals = {
     PASSENGER: {
-      title: "Centro de Ayuda al Pasajero",
-      icon: <Users className="text-blue-500" />,
+      title: "Guía Detallada del Pasajero",
+      icon: Users,
       color: "blue",
       steps: [
-        { title: "Consulta de Itinerarios", desc: "Navega entre las rutas principales (Nátaga ↔ La Plata) usando las pestañas superiores. El sistema resalta con un borde naranja y la etiqueta 'SIGUIENTE' el viaje más próximo a tu hora actual para que no pierdas tiempo buscando.", icon: <Calendar /> },
-        { title: "Disponibilidad en Vivo", desc: "Observa el icono del bus en cada horario; el número que lo acompaña indica los cupos libres en tiempo real. Si ves la etiqueta 'COMPLETADO' en rojo, significa que el vehículo ya no tiene asientos disponibles.", icon: <Users /> },
-        { title: "Reserva de Asientos", desc: "Próximamente podrás tocar el botón naranja (+) para abrir el mapa interactivo del vehículo. Podrás elegir tu ubicación preferida (ventana o pasillo) y bloquearla instantáneamente desde tu iPhone o PC.", icon: <MousePointer2 /> },
-        { title: "Tu Historial Digital", desc: "En la sección 'Historial' encontrarás todas tus reservas pasadas y futuras. Desde allí podrás verificar el estado de tus pagos, ver el número de asiento asignado y descargar tu comprobante de viaje.", icon: <Ticket /> },
-        { title: "Puntos Go & Estatus", desc: "Cada vez que viajas con Ruta-Go acumulas puntos automáticamente. Revisa tu nivel de fidelidad en tu perfil; ¡los pasajeros frecuentes obtienen beneficios exclusivos y prioridad en despachos!", icon: <Zap /> },
-        { title: "Ruta-Go en tu iPhone", desc: "Para una experiencia premium, abre el portal en Safari, toca el botón 'Compartir' (cuadrado con flecha) y selecciona 'Añadir a pantalla de inicio'. La web se comportará como una App nativa sin ocupar espacio en tu memoria.", icon: <Smartphone /> }
+        {
+          title: "1. Encontrar tu Viaje",
+          icon: Search,
+          description: "Entra a la pestaña 'Inicio'. Arriba verás dos botones: 'NATAGÁ ➔ LA PLATA' y 'LA PLATA ➔ NATAGÁ'. Toca el que necesites. Busca el horario que te sirva; si tiene un borde naranja y dice 'SIGUIENTE', es el bus que sale más pronto."
+        },
+        {
+          title: "2. Reservar tu Asiento",
+          icon: MousePointer2,
+          description: "Toca el botón naranja con el signo (+). Se abrirá el mapa del bus. Los cuadritos con un bus son asientos libres. Toca el que quieras (se pondrá verde) y luego dale al botón 'CONFIRMAR' abajo a la derecha. ¡Listo, tu cupo está separado!"
+        },
+        {
+          title: "3. Tu Tiquete Digital",
+          icon: Ticket,
+          description: "Ve a la pestaña 'Historial' (el icono del reloj abajo). Busca tu viaje y toca el botón 'TIQUETE'. Ahí verás tu número de asiento, el precio y el nombre del conductor. Puedes mostrarle esta pantalla al conductor al subir al bus."
+        },
+        {
+          title: "4. Hablar con el Conductor",
+          icon: Zap,
+          description: "Si el conductor ya confirmó tu viaje, en la misma pestaña de 'Historial' aparecerá un botón azul de 'CHAT'. Tócalo para escribirle si vas tarde o para preguntarle por dónde viene el bus."
+        },
+        {
+          title: "5. Puntos y Premios",
+          icon: Star,
+          description: "Cada vez que viajas, ganas 'Puntos Go'. Puedes ver cuántos tienes entrando a tu 'Perfil'. Entre más viajes, más puntos acumulas para obtener descuentos y beneficios en futuros trayectos."
+        },
+        {
+          title: "6. Ruta-Go en tu iPhone",
+          icon: Smartphone,
+          description: "Si usas iPhone, abre el portal en Safari. Toca el icono de compartir (un cuadrado con una flecha hacia arriba) y busca la opción 'Añadir a pantalla de inicio'. Así tendrás el icono de Ruta-Go como una App normal."
+        }
       ]
     },
     DRIVER: {
-      title: "Guía del Conductor",
-      icon: <Bus className="text-primary-500" />,
-      color: "orange",
+      title: "Guía de Operación para Conductores",
+      icon: Bus,
+      color: "amber",
       steps: [
-        { title: "Tu Itinerario", desc: "En 'Mi Itinerario' verás tus turnos asignados. El sistema resalta el viaje que te corresponde realizar a continuación.", icon: <Calendar /> },
-        { title: "Ventas de Calle", desc: "Usa el botón naranja (+) para abrir el mapa del bus y marcar asientos vendidos a pasajeros que abordan sin reserva previa.", icon: <Zap /> },
-        { title: "Confirmar Reservas", desc: "En la sección 'Confirmar Reservas', toca el botón verde al lado de cada pasajero cuando suban al bus para formalizar el ingreso.", icon: <ClipboardCheck /> },
-        { title: "Sincronización", desc: "Todos tus cambios se reflejan en tiempo real para los pasajeros y el dueño de la flota.", icon: <ShieldCheck /> }
+        {
+          title: "1. Ver tus Turnos",
+          icon: Calendar,
+          description: "Entra a 'Mi Itinerario'. Allí aparecerán los horarios que tienes asignados para hoy. El sistema te avisará cuál es tu próximo despacho para que estés pendiente de la salida."
+        },
+        {
+          title: "2. Confirmar Pasajeros",
+          icon: ClipboardCheck,
+          description: "Cuando un pasajero suba al bus, búscalo en la lista de 'Check-in' o en el detalle de la ruta. Toca el botón verde 'CONFIRMAR'. Esto es muy importante para que el sistema sepa que el asiento ya está ocupado físicamente."
+        },
+        {
+          title: "3. Vender a Pasajeros de Calle",
+          icon: Key,
+          description: "Si alguien te pide puesto en el camino, toca el botón naranja (+) para abrir el mapa del bus. Toca el asiento vacío y dale a 'BLOQUEAR'. Esto evita que alguien lo reserve por la App y te ayuda a llevar tus cuentas de dinero claras."
+        },
+        {
+          title: "4. Revisar tus Ganancias",
+          icon: TrendingUp,
+          description: "En tu panel principal verás un cuadro que dice 'Ingresos'. Allí el sistema te suma automáticamente lo de las reservas de la App y lo que bloqueaste manualmente. ¡Tus cuentas siempre claras!"
+        }
       ]
     },
     OWNER: {
-      title: "Guía del Socio/Dueño",
-      icon: <Briefcase className="text-amber-500" />,
+      title: "Manual de Gestión para Socios",
+      icon: Briefcase,
       color: "amber",
       steps: [
-        { title: "Dashboard de Flota", desc: "Monitorea en tiempo real cuántos de tus vehículos están en ruta y el recaudo bruto acumulado del día.", icon: <TrendingUp /> },
-        { title: "Gestión de Operadores", desc: "Usa la sección 'Conductores' para vincular nuevos choferes a tus activos usando su correo electrónico.", icon: <UserPlus /> },
-        { title: "Privacidad de Datos", desc: "Tu información financiera está aislada; ningún otro dueño puede ver tus ingresos o telemetría.", icon: <ShieldQuestion /> },
-        { title: "Planilla Maestra", desc: "Consulta los despachos globales para coordinar la logística de tus buses con el resto del holding.", icon: <MapPin /> }
+        {
+          title: "1. Control de Flota",
+          icon: TrendingUp,
+          description: "En tu Dashboard verás el resumen de todos tus vehículos. Puedes saber cuántas reservas hay en total y cuánto dinero ha generado tu flota el día de hoy en tiempo real."
+        },
+        {
+          title: "2. Administrar Vehículos",
+          icon: Bus,
+          description: "En la pestaña 'Vehículos' puedes ver tus buses. Toca uno para ver quién lo está manejando. Si compras un bus nuevo, usa el botón 'Añadir Vehículo' para registrar la placa, modelo y capacidad."
+        },
+        {
+          title: "3. Vincular Conductores",
+          icon: UserPlus,
+          description: "Para que un chofer maneje uno de tus buses, ve a 'Conductores' y dale a 'Vincular'. Solo necesitas el correo con el que él se registró en la App. El sistema los unirá automáticamente."
+        },
+        {
+          title: "4. Monitor de Despachos",
+          icon: MapPin,
+          description: "En 'Despachos' puedes ver la lista de todos los viajes que están haciendo tus buses. Puedes entrar a ver quiénes son los pasajeros y si el conductor ya confirmó los abordajes."
+        }
       ]
     },
     ADMIN: {
-      title: "Guía de Administrador",
-      icon: <ShieldCheck className="text-green-500" />,
+      title: "Manual de Control Maestro (Root)",
+      icon: ShieldCheck,
       color: "green",
       steps: [
-        { title: "Control Maestro", desc: "Tienes visibilidad total sobre todos los dueños, conductores y pasajeros del sistema.", icon: <TrendingUp /> },
-        { title: "Gobernanza", desc: "Puedes gestionar solicitudes de borrado de cuenta y verificar la integridad de los datos en tiempo real.", icon: <ShieldCheck /> },
-        { title: "Configuración Global", desc: "Acceso a la planilla de despachos para ajustar horarios y rutas base.", icon: <MapPin /> }
+        {
+          title: "1. Supervisar el Sistema",
+          icon: TrendingUp,
+          description: "Desde el 'Panel Maestro' tienes el control total. Puedes ver cuántos usuarios hay registrados, cuántos buses están operando y el total de dinero que mueve la plataforma."
+        },
+        {
+          title: "2. Gestión de Socios",
+          icon: Briefcase,
+          description: "Cuando alguien nuevo quiera ser Socio de flota, te aparecerá en la pestaña 'Socios'. Tú eres el único que puede 'Aprobar' su cuenta para que él pueda empezar a subir sus buses."
+        },
+        {
+          title: "3. Moderar Pasajeros",
+          icon: Users,
+          description: "Si un pasajero se porta mal o no paga, puedes buscarlo en 'Pasajeros' y usar el botón 'BAN' para quitarle el acceso. También puedes borrar cuentas si el usuario lo solicita por ley de datos."
+        },
+        {
+          title: "4. Cambiar Precios",
+          icon: CreditCard,
+          description: "Si la empresa decide subir o bajar el pasaje, ve a 'Precios'. Cambia el valor, dale a 'Guardar' y al segundo todos los pasajeros verán el nuevo precio en sus celulares."
+        }
       ]
     }
   };
 
-  const currentSection = sections[userRole] || sections.PASSENGER;
+  const currentManual = manuals[userRole] || manuals.PASSENGER;
 
   const content = (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <header className="flex flex-col md:flex-row items-center gap-6 p-8 bg-white dark:bg-white/5 rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-sm">
-        <div className="w-20 h-20 bg-primary-500 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-primary-500/20 transform -rotate-3">
-          <BookOpen size={40} />
+    <div className="space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+      {/* Header del Manual */}
+      <header className="flex flex-col md:flex-row items-center gap-8 p-10 bg-white dark:bg-[#0A1F30] rounded-[3rem] border border-slate-200 dark:border-white/5 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+
+        <div className="w-24 h-24 bg-primary-500 rounded-[2rem] flex items-center justify-center text-white shadow-xl shadow-primary-500/20 transform -rotate-3 shrink-0">
+          <BookOpen size={48} />
         </div>
-        <div className="text-center md:text-left space-y-1">
-          <h2 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase italic">Centro de Ayuda</h2>
-          <p className="text-slate-500 dark:text-white/40 font-medium text-sm">Explora las funcionalidades clave para tu rol de <span className="text-primary-500 font-bold">{userRole}</span>.</p>
+
+        <div className="text-center md:text-left space-y-2 relative z-10">
+          <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tight leading-none uppercase italic">Centro de Ayuda</h2>
+          <p className="text-slate-500 dark:text-white/40 font-medium text-base">
+            Instrucciones sencillas diseñadas para tu rol de <span className="text-primary-500 font-black">{userRole}</span>.
+          </p>
         </div>
       </header>
 
-      <section className="space-y-8">
-        <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/5 pb-4 px-2">
-          <div className="w-12 h-12 bg-white dark:bg-white/5 rounded-2xl flex items-center justify-center border border-slate-100 dark:border-none shadow-sm">
-            {currentSection.icon}
-          </div>
-          <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight italic">{currentSection.title}</h3>
-        </div>
+      {/* Sección Dinámica */}
+      <ManualSection
+        title={currentManual.title}
+        icon={currentManual.icon}
+        steps={currentManual.steps}
+        color={currentManual.color}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {currentSection.steps.map((step, i) => (
-            <div key={i} className="card-base p-8 rounded-[2.5rem] hover:ring-2 ring-primary-500/30 transition-all group">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl text-primary-500 group-hover:scale-110 transition-transform">
-                  {step.icon || <Info size={20} />}
-                </div>
-                <h4 className="font-black text-slate-800 dark:text-white uppercase text-sm tracking-widest">{step.title}</h4>
-              </div>
-              <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed font-medium">{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-red-50 dark:bg-red-500/5 p-8 md:p-10 rounded-[2.5rem] border border-red-100 dark:border-red-500/10 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-red-100 dark:bg-red-500/10 rounded-xl flex items-center justify-center text-red-600 dark:text-red-500">
-            <Trash2 size={24} />
+      {/* Bloque de Seguridad (Footer Informativo) */}
+      <div className="bg-red-50 dark:bg-red-500/5 p-10 md:p-12 rounded-[3rem] border-2 border-dashed border-red-100 dark:border-red-500/10 space-y-6">
+        <div className="flex items-center gap-5">
+          <div className="w-14 h-14 bg-red-100 dark:bg-red-500/10 rounded-2xl flex items-center justify-center text-red-600 dark:text-red-500 shadow-sm">
+            <ShieldQuestion size={28} />
           </div>
-          <h3 className="text-xl font-black text-red-800 dark:text-red-500 uppercase italic">Seguridad y Privacidad</h3>
+          <div className="text-left">
+            <h3 className="text-2xl font-black text-red-800 dark:text-red-500 uppercase italic leading-none">Seguridad de tus Datos</h3>
+            <p className="text-red-700/60 dark:text-red-500/40 text-[10px] font-bold uppercase tracking-widest mt-2">Ley 1581 de Protección de Datos</p>
+          </div>
         </div>
-        <p className="text-red-700/80 dark:text-red-500/60 text-sm leading-relaxed font-medium">
-          Tus datos están protegidos bajo la ley de Habeas Data. Si deseas retirarte de la plataforma, solicita el borrado desde tu Perfil. Tendrás un periodo de gracia de 30 días antes de la eliminación definitiva.
+        <p className="text-red-700/80 dark:text-red-500/60 text-sm leading-relaxed font-medium text-left">
+          En Ruta-Go nos tomamos en serio tu privacidad. Toda tu información personal y financiera está cifrada. Si alguna vez decides dejar de usar el servicio, puedes solicitar el borrado de tu cuenta desde el Perfil. Tendrás 30 días para arrepentirte antes de que borremos todo para siempre.
         </p>
-      </section>
+      </div>
 
-      <footer className="text-center pb-10">
-        <p className="text-[10px] text-slate-300 dark:text-white/20 font-black uppercase tracking-[0.3em]">
-          ChopCode Solutions © 2026 • Soporte: dazace94@gmail.com
+      <footer className="text-center pb-12">
+        <div className="w-16 h-1 bg-slate-100 dark:bg-white/5 mx-auto mb-8 rounded-full"></div>
+        <p className="text-[10px] text-slate-300 dark:text-white/20 font-black uppercase tracking-[0.4em]">
+          ChopCode Solutions © 2026 • Tecnología para el Transporte Intermunicipal
         </p>
       </footer>
     </div>
   );
+
+  if (isTab) return content;
+
+  return (
+    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white font-sans overflow-y-auto transition-colors duration-300">
+      <nav className="h-20 flex items-center gap-4 px-6 border-b border-slate-200 dark:border-white/5 sticky top-0 bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md z-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          icon={ArrowLeft}
+          className="!p-3 rounded-2xl"
+        >
+        </Button>
+        <div className="flex items-center gap-3">
+          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-8 h-8 object-contain" />
+          <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">Manual Operativo</h1>
+        </div>
+      </nav>
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        {content}
+      </div>
+    </div>
+  );
+}
 
   if (isTab) return content;
 

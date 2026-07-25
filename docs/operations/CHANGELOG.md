@@ -4,13 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.7.4] - 2026-07-24 (UX Refinement & Expandable Interfaces)
+## [1.8.2] - 2026-07-24 (Explicit User Manuals & Atomic Help Center)
 ### Añadido
-- **Tarjetas Expansibles (UX Compacta)**: Implementación de lógica de expansión/colapso en `OwnerCard`, `VehicleCard` y `DriverCard`. Las listas ahora son mucho más compactas, permitiendo ver más elementos de un vistazo y expandiendo los detalles y acciones solo bajo demanda.
-- **Indicadores de Estado Visual**: Adición de iconos `ChevronDown`/`ChevronUp` y animaciones de entrada para mejorar la navegación táctil y con mouse.
+- **Refactor Atómico del Centro de Ayuda**: Creación de los componentes `ManualSection.jsx` (Organismo) y `ManualStep.jsx` (Molécula) para estandarizar las guías de usuario.
+- **Contenido Explícito para Todos los Roles**: Reescritura completa de los manuales para Pasajeros, Conductores, Socios y Root con instrucciones paso a paso mucho más detalladas y fáciles de entender para personas con poca destreza tecnológica.
+- **Guía de Puntos Go**: Explicación detallada del sistema de fidelización para incentivar el uso de la plataforma.
 
 ### Cambiado
-- **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
+- **UX de Soporte**: Mejora en la legibilidad y jerarquía visual del manual, utilizando iconos descriptivos y un lenguaje más humano y menos técnico.
+
+## [1.8.1] - 2026-07-24 (Fix: Identidad MirrorHeader)
+### Añadido
+- **Fix de Identidad en MirrorHeader**: Restauración de nombres, bienvenida y visibilidad de estado para Pasajeros y Conductores en la cabecera naranja.
+- **Badge de Estado**: El distintivo ("Pasajero Activo" / "Conductor Activo") ahora es visible en todos los tamaños de pantalla.
 
 ## [1.8.0] - 2026-07-24 (Pricing Module Optimization & Atomic Refactor)
 ### Añadido
@@ -64,6 +70,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Refactor DRY de Directorios**: Migración de `VehicleDirectory`, `OwnerDirectory` y `DriverDirectory` al nuevo estándar de `DirectoryHeader`, eliminando código duplicado en un 50% en estas vistas.
 - **Sincronización Singleton en App.jsx**: Estandarización del uso de `vehicleService` en el orquestador principal, eliminando importaciones dinámicas innecesarias.
 
+## [1.7.4] - 2026-07-24 (UX Refinement & Expandable Interfaces)
+### Añadido
+- **Tarjetas Expansibles (UX Compacta)**: Implementación de lógica de expansión/colapso en `OwnerCard`, `VehicleCard` y `DriverCard`. Las listas ahora son mucho más compactas, permitiendo ver más elementos de un vistazo y expandiendo los detalles y acciones solo bajo demanda.
+- **Indicadores de Estado Visual**: Adición de iconos `ChevronDown`/`ChevronUp` y animaciones de entrada para mejorar la navegación táctil y con mouse.
+
+### Cambiado
+- **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
+
 ## [1.7.3] - 2026-07-24 (Administrative Service Layer & Component Cleanup)
 ### Añadido
 - **Capa de Servicios de Gestión**: Implementación de `ownerService.js` y `userService.js` para centralizar la lógica de Firebase (Singleton), eliminando llamadas directas a la base de datos desde los componentes.
@@ -77,8 +91,6 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Auditoría Root v1.7.3**: Finalización de la estandarización de las pestañas de gestión para el Administrador Maestro.
 - **Refactor DRY de Dashboards**: Unificación de layouts, espaciados y componentes entre `AdminOverview` y `OwnerOverview`.
 - **Estandarización de Grillas**: Uso de `MetricGrid` en todas las vistas de gestión para asegurar responsividad 1:1.
-
-## [1.7.1] - 2026-07-24 (Comprehensive UI Audit & Atomic Standardization)
 
 ## [1.7.1] - 2026-07-24 (Comprehensive UI Audit & Atomic Standardization)
 ### Añadido
@@ -232,7 +244,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Selector de Dueños Pro**: Implementación de listas desplegables para asignar propietarios a conductores, eliminando la entrada manual de UIDs y reduciendo errores operativos.
 - **Panel de Moderación de Pasajeros**: Suite de herramientas para que el Administrador Root pueda **Banear, Inactivar o Borrar** cuentas de pasajeros directamente desde la web con diálogos de confirmación.
 
-- **Automatización de Capacidad**: Sincronización atómica que inicializa automáticamente la disponibilidad de asientos (13/13) basándose en la capacidad real del vehículo al asignar un conductor a un horario.
+- **Automatización de Capacidad**: Sincronización atómica que inicializa automáticamente la disponibilidad de asientos (13/13) basándose en la capacidad real del vehículo al asign un conductor a un horario.
 - **Doble Vínculo en Horarios**: Los turnos ahora almacenan tanto `conductorId` como `vehiculoId` para una resolución de datos más rápida y robusta.
 - **Módulo de Gestión de Tarifas**: Nueva interfaz exclusiva para el Administrador Root que permite actualizar el precio de los pasajes por ruta en tiempo real.
 - **Búsqueda Operativa Expandida**: Los Dueños de Flota ahora tienen acceso a la lista de usuarios para facilitar la vinculación de conductores mediante búsqueda por email.
