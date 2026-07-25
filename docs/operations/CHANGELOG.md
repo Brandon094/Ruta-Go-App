@@ -4,10 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.8.8] - 2026-07-24 (Advanced Analytics Engine & Multi-Direction Fix)
+## [1.9.7] - 2026-07-24 (Rotation Algorithm Precision & Grouping Fix)
 ### Corregido
-- **Bug de Ocupación Global (Admin/Owner)**: Refactorización profunda del motor de detección de rutas en `useRealtimeData.js`. El sistema ahora clasifica los trayectos basándose exclusivamente en el **Destino Final** extraído de la cadena de texto, eliminando errores de conteo cruzado y restaurando la visibilidad del trayecto de regreso ("La Plata -> Nátaga") que aparecía en 0.
-- **Soporte de Caracteres Especiales**: Mejora de normalización para reconocer flechas tanto legacy (`->`) como modernas (`➔`) y acentos en "Nátaga".
+- **Sincronización de Horarios (Portal-Cloud)**: Refactorización total de la lógica de agrupamiento en los modales de conductores. Ahora la interfaz refleja con precisión la estructura de las Cloud Functions:
+    - **Turno 8 (Triple Especial)**: Se agrupan `h008`, `h018` y `h010` en un solo botón, respetando el ciclo de trabajo del conductor.
+    - **Turno 9 (Entrada)**: Se independiza `h009` como trayecto único.
+    - **Turnos 1-7**: Mantienen su estructura de parejas estándar.
+- **UX de Asignación**: Mejora en la visualización de los grupos de horarios para evitar confusiones operativas.
+
+## [1.9.6] - 2026-07-24 (UI Gran Turismo & Multi-Column Layout)
 
 ## [1.8.7] - 2026-07-24 (Critical Analytics Fix & Route Intelligence)
 ### Corregido

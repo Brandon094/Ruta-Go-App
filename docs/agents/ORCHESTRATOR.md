@@ -1,4 +1,4 @@
-# 🧠 Agente Orquestador Maestro - Ecosistema Go v1.8.6
+# 🧠 Agente Orquestador Maestro - Ecosistema Go v1.9.7
 
 **Misión**: Coordinar la evolución técnica y de negocio de RutaGo, AgroGo y CargoGo, asegurando la integridad del Master Plan y la cohesión entre agentes especializados.
 
@@ -8,8 +8,8 @@
 1.  **Vigilancia del Roadmap**: Supervisar la Fase 3 (Paridad Web & Monetización). La Fase 2 (Portal de Dueños) ha sido expandida con éxito hacia la operación total. ✅
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única soporte los roles de `ADMIN` y `OWNER` en web y móvil con paridad funcional 1:1.
 3.  **Gestión de Ramas (Branching)**: 
-    *   `v1.8.4` (Tag): Onboarding & Auth Architecture Unification (Estable actual). ✅
-    *   `master`: Código estable Suite Integral (v1.8.4).
+    *   `v1.9.7` (Tag): Rotation Algorithm Precision & Grouping Fix (Estable actual). ✅
+    *   `master`: Código estable Suite Integral (v1.9.7).
     *   `feature/loyalty`: Desarrollo del motor de Puntos Go y niveles de estatus.
 4.  **Consistencia del Holding**: Verificar que la identidad visual (Naranja/Navy) se mantenga en Android y React.
 

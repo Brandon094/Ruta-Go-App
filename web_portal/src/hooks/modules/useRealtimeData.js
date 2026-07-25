@@ -166,32 +166,8 @@ export const useRealtimeData = (user, role) => {
       return isOwned || isDriverMatch;
     });
 
-    // 4. Calcular Estadísticas
+    // 4. Calcular Estadísticas (Refactor v1.9.0 - Ingresos Totales Digital + Físico)
     let totalRev = 0, confirmed = 0, canceled = 0, totalUserRes = 0;
-
-    // Si es conductor, priorizamos el nodo oficial de estadísticas del día
-    if (userType === 'DRIVER') {
-      totalRev = raw.driverStats?.ingresosDiarios || 0;
-    }
-
-    // Estadísticas Personales (Historial del Usuario)
-    personalReservations.forEach(res => {
-      const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-      totalUserRes++;
-      if (status === "confirmada" || status === "completada" || status === "confirmado") confirmed++;
-      else if (status === "cancelada") canceled++;
-    });
-
-    // Estadísticas de Negocio (Ingresos Admin/Owner)
-    businessReservations.forEach(res => {
-      const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
-      const resPlate = res.vehiculoId || res.vehiculoPlaca || res.vehicleId || res.plate;
-      const isOwned = userType === 'ADMIN' || ownedPlates.includes(resPlate);
-
-      if ((userType === 'ADMIN' || userType === 'OWNER') && isOwned && (status === "confirmada" || status === "completada")) {
-        totalRev += Number(res.precio || res.price || 0);
-      }
-    });
 
     // 5. Estadísticas de Rutas y Horarios con Mezcla de Datos
     let lpRes = 0, lpSeats = 0, ntRes = 0, ntSeats = 0, totalResHoy = 0;
@@ -211,25 +187,27 @@ export const useRealtimeData = (user, role) => {
       const resCount = Math.max(0, total - avail);
 
       const isMine = userType === 'DRIVER' && s.conductorId === user.uid;
-      const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(s.placaVehiculo || s.vehiculoId));
+      const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(vId));
 
       if (isOwned || isMine) {
-        // 🧠 Motor de Inteligencia de Rutas v1.8.8 (Detección por Destino)
-        // Normalizamos y extraemos la parte final de la ruta para una clasificación infalible
+        // Clasificación por destino final
         const routeNorm = ruta.replace(/➔|->/g, '>').toLowerCase();
         const destination = routeNorm.split('>')[1]?.trim() || "";
-
         const isToLaPlata = destination.includes("la plata");
         const isToNataga = destination.includes("nataga") || destination.includes("nátaga");
 
-        if (isToLaPlata) {
-          lpRes += resCount;
-          lpSeats += avail;
-        } else if (isToNataga) {
-          ntRes += resCount;
-          ntSeats += avail;
-        }
+        if (isToLaPlata) { lpRes += resCount; lpSeats += avail; }
+        else if (isToNataga) { ntRes += resCount; ntSeats += avail; }
+
         totalResHoy += resCount;
+
+        // 💰 CÁLCULO DE INGRESOS (Digital + Físico)
+        const parts = routeNorm.split('>');
+        const price = (parts.length === 2)
+          ? (raw.prices[parts[0].trim()]?.[parts[1].trim()] || 12000)
+          : 12000;
+
+        totalRev += (resCount * price);
       }
 
       return {
@@ -240,14 +218,22 @@ export const useRealtimeData = (user, role) => {
       };
     });
 
+    // Estadísticas Personales (Independiente del negocio)
+    personalReservations.forEach(res => {
+      const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
+      totalUserRes++;
+      if (status === "confirmada" || status === "completada" || status === "confirmado") confirmed++;
+      else if (status === "cancelada") canceled++;
+    });
+
     return {
       ...raw,
-      allDrivers: raw.drivers, // Lista completa para lookups (Tiquetes, Tablas)
+      allDrivers: raw.drivers,
       schedules: enrichedSchedules,
-      drivers: filteredDrivers, // Lista filtrada para gestión (Directorios)
+      drivers: filteredDrivers,
       vehicles: filteredVehicles,
-      reservations: businessReservations, // Para Monitor de Despachos
-      personalReservations: personalReservations, // Para Historial Personal
+      reservations: businessReservations,
+      personalReservations: personalReservations,
       stats: {
         totalUsers: raw.users.filter(u => !u.solicitudBorrado).length,
         activeDrivers: filteredDrivers.filter(d => d.status === 'active').length,
