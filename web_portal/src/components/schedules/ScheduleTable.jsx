@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { Clock, MapPin, User, Users as UsersIcon, CheckCircle2, AlertCircle, Plus, ChevronRight, Tag, Bus, Info } from 'lucide-react';
+import { Clock, Info } from 'lucide-react';
+import { ScheduleCard } from './ScheduleCard';
 
 /**
- * 🚌 Componente: ScheduleTable (Totalmente Sincronizado con UI Android v1.5.0)
+ * 🚌 Organism: ScheduleTable
+ * Orquestador de la planilla de horarios.
+ * Implementa lógica de 'Next Trip' y '7 PM Reset'.
+ * Sigue Atomic Design & DRY.
  */
 export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [], hideActions = false }) {
   const nextTripRef = useRef(null);
@@ -16,25 +20,45 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   };
 
   const getNextTripId = () => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    let closestTrip = null;
-    let minDiff = Infinity;
+    if (!schedules || schedules.length === 0) return null;
 
+    const now = new Date();
+    const hAct = now.getHours();
+    const currentMinutes = hAct * 60 + now.getMinutes();
+    const isAfterReset = hAct >= 19;
+
+    if (isAfterReset) {
+      // Regla de Oro: Después de las 7 PM, el próximo viaje es el primero de mañana
+      let firstTrip = schedules[0];
+      let earliest = getTripMinutes(schedules[0].hora);
+      schedules.forEach(s => {
+        const m = getTripMinutes(s.hora);
+        if (m < earliest) {
+          earliest = m;
+          firstTrip = s;
+        }
+      });
+      return firstTrip?.id;
+    }
+
+    let closestTripId = null;
+    let minDiff = Infinity;
     schedules.forEach(s => {
       const tripMinutes = getTripMinutes(s.hora);
       const diff = tripMinutes - currentMinutes;
       if (diff > 0 && diff < minDiff) {
         minDiff = diff;
-        closestTrip = s.id;
+        closestTripId = s.id;
       }
     });
-    return closestTrip;
+    return closestTripId;
   };
 
   const nextTripId = getNextTripId();
   const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const hAct = now.getHours();
+  const currentMinutes = hAct * 60 + now.getMinutes();
+  const isAfterReset = hAct >= 19;
 
   // Auto-scroll al viaje siguiente
   useEffect(() => {
@@ -53,8 +77,11 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     <div className="space-y-4 max-w-5xl mx-auto">
       {schedules.length > 0 ? (
         schedules.map((schedule) => {
-          const hasPassed = getTripMinutes(schedule.hora) < currentMinutes;
+          const tripMinutes = getTripMinutes(schedule.hora);
+          // Un viaje pasó si no hemos llegado a las 7 PM y la hora del viaje ya pasó
+          const hasPassed = !isAfterReset && (tripMinutes < currentMinutes);
           const isNext = schedule.id === nextTripId;
+
           return (
             <ScheduleCard
               key={schedule.id}
@@ -80,144 +107,9 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
       {/* Info Message (Mobile Style) */}
       <div className="mt-10 p-6 bg-blue-50/50 dark:bg-blue-500/5 rounded-[2rem] border border-blue-100 dark:border-blue-500/10 flex items-start gap-4">
          <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
-         <p className="text-[11px] text-blue-800/60 dark:text-blue-400/60 font-medium leading-relaxed italic">
+         <p className="text-[11px] text-blue-800/60 dark:text-blue-400/60 font-medium leading-relaxed italic text-left">
             Los horarios finalizados se habilitarán para el día de mañana tras el reinicio de las 7:00 PM.
          </p>
-      </div>
-    </div>
-  );
-}
-
-function ScheduleCard({ schedule, drivers = [], role, onManage, isNext, hasPassed, vehicles = [], innerRef, hideActions = false }) {
-  const [timeStr, ampm] = schedule.hora.split(' ');
-  const safeDrivers = Array.isArray(drivers) ? drivers : [];
-  const driver = safeDrivers.find(d => d.id === schedule.conductorId);
-
-  // Buscar vehículo: Priorizar el del horario, fallback al vehículo asignado al conductor
-  const vehicleId = schedule.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
-  const vehicle = vehicles.find(v => v.id === vehicleId || v.placa === vehicleId);
-  const totalSeats = vehicle?.capacidad || 13;
-
-  // Lógica Dinámica: Priorizar campos de disponibilidad
-  // Si en la DB totalAsientos es 0, tratamos como si no estuviera inicializado para usar el fallback
-  const dbTotal = schedule.totalAsientos || 0;
-  const dbAvailable = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles : schedule.asientosLibres;
-
-  const available = (dbTotal > 0) ? dbAvailable : totalSeats;
-  const isFull = (dbTotal > 0) && dbAvailable === 0;
-
-  const isMe = schedule.conductorId === role?.uid;
-  const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
-  const isExternal = role?.type === 'OWNER' && !drivers.some(d => d.id === schedule.conductorId);
-
-  return (
-    <div
-      ref={innerRef}
-      className={`card-base rounded-[2.5rem] p-6 md:p-8 transition-all duration-500 group relative ${isNext ? 'ring-2 ring-primary-500 shadow-orange-500/10' : ''} ${hasPassed ? 'opacity-40 grayscale' : ''}`}
-    >
-
-      {/* Badge Siguiente */}
-      {isNext && (
-        <div className="absolute top-0 right-0">
-          <div className="bg-primary-500 text-white text-[10px] font-black uppercase px-6 py-1.5 rounded-bl-3xl rounded-tr-[2.5rem] shadow-lg animate-pulse tracking-widest">
-            Siguiente
-          </div>
-        </div>
-      )}
-
-      <div className="flex items-center gap-8 md:gap-12">
-
-        {/* 🕒 Círculo de Tiempo */}
-        <div className="relative flex-shrink-0">
-           <div className={`w-24 h-24 rounded-full border-[6px] flex flex-col items-center justify-center transition-colors duration-500 shadow-inner ${
-             isNext
-              ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10'
-              : hasPassed
-                ? 'border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5'
-                : 'border-slate-100 dark:border-white/5 bg-white dark:bg-white/5'
-           }`}>
-              <span className={`text-2xl font-black leading-none ${isNext ? 'text-primary-600 dark:text-primary-500' : hasPassed ? 'text-slate-400' : 'text-slate-700 dark:text-white'}`}>{timeStr}</span>
-              <span className={`text-xs font-black uppercase mt-1 ${hasPassed ? 'text-slate-300' : 'text-primary-500'}`}>{ampm}</span>
-           </div>
-        </div>
-
-        {/* ℹ️ Info Central */}
-        <div className="flex-1 min-w-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h4 className="text-sm md:text-lg font-black text-[#061426] dark:text-white tracking-tight truncate uppercase italic">
-              {schedule.ruta}
-            </h4>
-            {!(role?.type === 'OWNER' && isExternal) && driver && (
-              <div className="flex items-center gap-2 text-slate-400 dark:text-white/30 italic">
-                 <User size={12} />
-                 <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[150px]">
-                   {isMe ? 'Tú manejas' : driver.nombre}
-                 </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                 <Bus size={16} className={hasPassed ? 'text-slate-300' : 'text-primary-500'} />
-                 <span className={`text-xs font-bold uppercase tracking-tight ${hasPassed ? 'text-slate-400' : 'text-slate-500 dark:text-[#B5C5CD]'}`}>
-                   {hasPassed ? 'Finalizado' : `${available} Cupos`}
-                 </span>
-              </div>
-
-              <div className={`flex items-center gap-2 font-black ${hasPassed ? 'text-slate-300' : 'text-primary-500'}`}>
-                 <Tag size={16} />
-                 <span className="text-sm tracking-tighter">$ 12.000 COP</span>
-              </div>
-            </div>
-
-            <div className="shrink-0">
-               <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${
-                 hasPassed ? 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40' :
-                 isFull ? 'badge-error' : 'badge-success'
-               }`}>
-                 {hasPassed ? 'Finalizado' : isFull ? 'Completado' : 'Disponible'}
-               </span>
-            </div>
-          </div>
-        </div>
-
-        {/* 🔘 Botón de Acción (Android Style) */}
-        {!hideActions && (
-          <div className="shrink-0">
-             {onManage ? (
-               <button
-                 disabled={hasPassed || (isFull && !isMe && !isManagement)}
-                 onClick={() => !hasPassed && onManage(schedule)}
-                 className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
-                   hasPassed
-                    ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
-                    : (isFull && !isMe && !isManagement)
-                      ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
-                      : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
-                 }`}
-               >
-                 {hasPassed ? (
-                   <Bus size={32} />
-                 ) : (
-                   <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
-                 )}
-               </button>
-             ) : (
-               <button
-                 disabled={true}
-                 className={`w-16 h-16 rounded-full shadow-2xl transition-all flex items-center justify-center ${
-                   hasPassed
-                   ? 'bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-white/10 cursor-not-allowed border border-slate-200 dark:border-white/5'
-                   : 'bg-primary-500 text-white shadow-primary-500/40 opacity-50 cursor-not-allowed'
-                 }`}
-               >
-                 <Plus size={32} />
-               </button>
-             )}
-          </div>
-        )}
       </div>
     </div>
   );
