@@ -146,23 +146,3 @@ function NavItem({ icon, label, active, onClick }) {
     </button>
   );
 }
-
-function NavItem({ icon, label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-200 group
-        ${active
-          ? 'bg-primary-500 text-white shadow-xl shadow-orange-500/30'
-          : 'text-slate-500 dark:text-white/40 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-[#061426] dark:hover:text-white'
-        }
-      `}
-    >
-      <span className={`${active ? 'scale-110' : 'group-hover:scale-110'} transition-transform`}>
-        {icon}
-      </span>
-      <span className="font-bold text-xs uppercase tracking-widest">{label}</span>
-    </button>
-  );
-}

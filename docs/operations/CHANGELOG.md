@@ -8,6 +8,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Añadido
 - **Molécula `SidebarSection.jsx`**: Implementación de secciones colapsables para la barra lateral administrativa, permitiendo una navegación mucho más limpia y organizada.
 - **Refactor Atómico del Sidebar**: Reestructuración completa del `Sidebar.jsx` siguiendo principios de diseño atómico para mejorar la mantenibilidad y consistencia visual.
+- **Auditoría Global de Gestión**: Finalización del barrido DRY y Atomic Design en el 100% de la App de Gestión. Se eliminaron archivos heredados (`StatCard.jsx`, `RouteProgress.jsx`) y se estandarizaron todas las tarjetas y encabezados.
 
 ### Cambiado
 - **UX de Navegación**: Optimización del espacio vertical en el panel de gestión mediante el uso de contenedores expandibles/colapsables con animaciones suaves.

@@ -10,10 +10,11 @@ La plataforma utiliza una arquitectura de **Single Page Application** optimizada
 *   **Core**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/) (Build Engine).
 *   **Diseño**: [Tailwind CSS 3](https://tailwindcss.com/) siguiendo principios de **Atomic Design**.
 *   **Gestión Cloud**: Patrón **Singleton** mediante `FirebaseManager` para centralizar infraestructura.
-*   **Estructura Atómica**:
+*   **Estructura Atómica (Auditada v1.8.3)**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`. Componentes básicos e indivisibles.
-    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`. Combinaciones de átomos con lógica visual.
-    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`. Piezas complejas de UI que orquestan la experiencia del usuario.
+    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `SidebarSection`, `ManualStep`, `PricingCard`, `ContactInfo`, `StatsCard`, `MetricGrid`, `ProfileCard`, `InfoTip`, `RouteProgressCard`.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `TicketModal`, `RatingModal`, `ChatModal`, `ScheduleTable`, `SeatManagementModal`, `Sidebar`, `ManualSection`, `DirectoryHeader`, `HistoryHeader`, `ProfileHeader`.
+*   **Gobernanza DRY**: El 100% de la App de Gestión ha sido auditada para eliminar lógica duplicada y componentes redundantes, centralizando el comportamiento en la Capa de Servicios (`services/`) y Utilidades (`utils/`).
 *   **Gestión de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** en los nodos de disponibilidad.
 *   **Capa de Utilidades**: `FormatUtils.js` y `AnimationUtils.js` para asegurar la paridad de comportamiento con Android (conteo de dinero, formatos moneda COP).
 *   **Gestion de Activos**: Módulo independiente de Vehículos con lógica de vinculación dinámica a conductores y **sincronización automática de capacidad** (13/13) en los nodos de disponibilidad tras la asignación de turnos.
