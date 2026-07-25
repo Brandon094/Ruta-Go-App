@@ -12,6 +12,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ### Cambiado
 - **Refactor de Interacción**: Mejora de la jerarquía visual en los directorios de gestión para evitar la saturación de información en pantallas pequeñas.
 
+## [1.7.7] - 2026-07-24 (Administrative Identity & Global UX Consolidation)
+### Añadido
+- **Unificación de Monitor de Despachos**: Refactorización del encabezado del historial operativo para usar `DirectoryHeader`. Ahora los despachos tienen el mismo "look & feel" que la gestión de vehículos y conductores, distanciándose del estilo de historial personal del pasajero.
+- **Búsqueda Global en Planilla y Tarifas**: Implementación de barras de búsqueda reactivas en las pestañas de 'Planilla Maestra' y 'Gestión de Tarifas' mediante la integración del organismo `DirectoryHeader`.
+
+### Cambiado
+- **Estandarización de Directorios Administrativos**: Finalización del barrido DRY en todas las pestañas de nivel Root y Owner. Todo el sistema administrativo ahora usa componentes unificados para la navegación y el filtrado.
+- **UX en Planilla**: Reposicionamiento del selector de rutas para una mejor jerarquía visual tras la adición del encabezado de directorio.
+
 ## [1.7.6] - 2026-07-24 (Advanced Management UX & Unified History)
 ### Añadido
 - **Historial Expansible (Pasajero/Despacho)**: Implementación de diseño colapsable en `ReservationHistoryCard`. Las tarjetas ahora muestran solo la información vital (Nombre, Ruta, Fecha) por defecto, y se expanden para revelar detalles de contacto, asientos y acciones (Tiquete/Chat).

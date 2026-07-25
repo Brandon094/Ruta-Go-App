@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Search, History, ArrowRight } from 'lucide-react';
+import { Search, History, ArrowRight, Ticket } from 'lucide-react';
 import { ReservationHistoryCard } from './ReservationHistoryCard';
 import { TicketModal } from './TicketModal';
 import { RatingModal } from './RatingModal';
 import { ChatModal } from './ChatModal';
 import { HistoryHeader } from './HistoryHeader';
 import { HistorySummary } from './HistorySummary';
+import { DirectoryHeader } from '../common/DirectoryHeader';
 
 export function HistoryDirectory({ type = 'personal', reservations, role, drivers = [], onNavigate }) {
   const [filter, setFilter] = useState('Todos');
@@ -57,22 +58,50 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
   return (
     <div className="animate-in fade-in duration-700 -m-4 lg:-m-8 flex flex-col min-h-full">
 
-      {/* 🏛️ Organism: HistoryHeader (Atomic Refactor) */}
-      <HistoryHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filter={filter}
-        setFilter={setFilter}
-      />
+      {/* 🏛️ Inteligencia de Encabezado (v1.7.7 Sync) */}
+      {isBusiness ? (
+        <div className="p-4 lg:p-8 pb-0">
+          <DirectoryHeader
+            icon={Ticket}
+            title="Monitor de Despachos"
+            subtitle="Historial operativo de la flota"
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+          {/* Selector de Filtros para modo Business */}
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide py-6 w-full justify-start border-b border-slate-100 dark:border-white/5 mb-10">
+            {['Todos', 'Confirmados', 'Cancelados', 'Este Mes'].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
+                  filter === f
+                  ? 'bg-primary-500 text-[#061426] border-transparent shadow-lg shadow-orange-500/20'
+                  : 'bg-white dark:bg-[#061426] text-slate-400 dark:text-white/20 border-slate-100 dark:border-white/5 hover:border-primary-500/30'
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <HistoryHeader
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filter={filter}
+          setFilter={setFilter}
+        />
+      )}
 
-      <div className="max-w-3xl mx-auto -mt-15 relative z-20 px-4 space-y-10 pb-20 w-full">
+      <div className={`max-w-3xl mx-auto relative z-20 px-4 space-y-10 pb-20 w-full ${!isBusiness ? '-mt-15' : ''}`}>
 
-        {/* ⚛️ Molecule: HistorySummary (Atomic Refactor) */}
+        {/* ⚛️ Molecule: HistorySummary (StatsCard) */}
         <HistorySummary stats={stats} />
 
         <div className="space-y-6">
           <h4 className="text-lg font-black text-slate-800 dark:text-white uppercase italic tracking-tight px-2 transition-colors">
-            {isBusiness ? 'Monitor de Despachos' : 'Historial de Viajes'} ({filteredList.length})
+            {isBusiness ? 'Listado de Reservas confirmadas' : 'Historial de Viajes'} ({filteredList.length})
           </h4>
 
           {filteredList.length > 0 ? (

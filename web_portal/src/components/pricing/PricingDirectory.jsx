@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Settings, Save, MapPin, Tag, ArrowLeftRight } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { DirectoryHeader } from '../common/DirectoryHeader';
 import { pricingService } from '../../services/pricingService';
 
 /**
@@ -10,9 +11,10 @@ import { pricingService } from '../../services/pricingService';
  */
 export function PricingDirectory({ prices = {} }) {
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [editedPrices, setEditedPrices] = useState({});
 
-  // Convertir el objeto anidado en una lista plana para la UI (Evitando duplicados de ida y vuelta)
+  // Convertir el objeto anidado en una lista plana para la UI
   const routes = [];
   const processed = new Set();
 
@@ -20,7 +22,10 @@ export function PricingDirectory({ prices = {} }) {
     Object.entries(destinations).forEach(([dest, price]) => {
       const pair = [origin, dest].sort().join('-');
       if (!processed.has(pair)) {
-        routes.push({ origin, dest, price });
+        const match = searchTerm.toLowerCase();
+        if (!searchTerm || origin.toLowerCase().includes(match) || dest.toLowerCase().includes(match)) {
+          routes.push({ origin, dest, price });
+        }
         processed.add(pair);
       }
     });
@@ -39,12 +44,11 @@ export function PricingDirectory({ prices = {} }) {
     setLoading(true);
     try {
       await pricingService.updatePrice(origin, dest, newPrice);
-      // Limpiar estado temporal de edición tras éxito
       const next = { ...editedPrices };
       delete next[key];
       setEditedPrices(next);
     } catch (error) {
-      alert("❌ Error actualizando tarifa: " + error.message);
+      alert("❌ Error: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -59,18 +63,13 @@ export function PricingDirectory({ prices = {} }) {
   return (
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
-      {/* Header Informativo */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 dark:border-white/5 pb-8">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-primary-500/10 rounded-2xl text-primary-500 shadow-sm">
-            <Settings size={28} />
-          </div>
-          <div>
-            <h3 className="text-2xl font-black uppercase tracking-tighter text-[#061426] dark:text-white italic">Gestión de Tarifas</h3>
-            <p className="text-[10px] font-bold text-slate-400 dark:text-white/20 uppercase tracking-[0.2em]">Configuración de precios del holding</p>
-          </div>
-        </div>
-      </div>
+      <DirectoryHeader
+        icon={Settings}
+        title="Gestión de Tarifas"
+        subtitle="Configuración de precios y cobros del holding"
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       {/* Grid de Rutas Actuales */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
