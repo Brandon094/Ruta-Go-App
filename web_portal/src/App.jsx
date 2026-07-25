@@ -188,7 +188,7 @@ function App() {
           ) : activeTab === 'business_history' ? (
             <HistoryDirectory type="business" reservations={reservations} role={role} drivers={allDrivers} onNavigate={() => setActiveTab('overview')} />
           ) : activeTab === 'profile' ? (
-            <ProfileDirectory user={user} role={role} />
+            <ProfileDirectory user={user} role={role} onNavigate={setActiveTab} />
           ) : activeTab === 'owners' ? (
             <OwnerDirectory owners={owners} users={usersList} />
           ) : activeTab === 'vehicles' ? (

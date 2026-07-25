@@ -215,28 +215,3 @@ export default function UserManual({ role, onBack, isTab = false }) {
     </div>
   );
 }
-
-  if (isTab) return content;
-
-  return (
-    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 text-secondary-900 dark:text-white font-sans overflow-y-auto transition-colors duration-300">
-      <nav className="h-20 flex items-center gap-4 px-6 border-b border-slate-200 dark:border-white/5 sticky top-0 bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md z-50">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          icon={ArrowLeft}
-          className="!p-3 rounded-2xl"
-        >
-        </Button>
-        <div className="flex items-center gap-3">
-          <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-8 h-8 object-contain" />
-          <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase italic tracking-tighter">Manual de Usuario</h1>
-        </div>
-      </nav>
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        {content}
-      </div>
-    </div>
-  );
-}

@@ -12,6 +12,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ### Cambiado
 - **UX de Soporte**: Mejora en la legibilidad y jerarquía visual del manual, utilizando iconos descriptivos y un lenguaje más humano y menos técnico.
+- **Acceso Proactivo a Ayuda**: Integración del botón 'Centro de Ayuda' directamente en el perfil de Pasajeros y Conductores en la web, facilitando el soporte sin depender de barras laterales.
 
 ## [1.8.1] - 2026-07-24 (Fix: Identidad MirrorHeader)
 ### Añadido

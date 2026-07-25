@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   User, Phone, Mail, Lock, Hash, Star, Car, Palette, Users, Calendar,
-  CheckCircle2, X, Pencil, AlertCircle
+  CheckCircle2, X, Pencil, AlertCircle, HelpCircle
 } from 'lucide-react';
 import { ref, update } from "firebase/database";
 import { db } from '../../firebase';
@@ -13,7 +13,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 
-export function ProfileDirectory({ user: currentUser, role }) {
+export function ProfileDirectory({ user: currentUser, role, onNavigate }) {
   const name = role?.name || currentUser?.displayName || 'Usuario Ruta-Go';
   const phone = role?.phone || '---';
   const roleLabel = role?.type === 'ADMIN' ? 'Administrador Maestro' :
@@ -136,6 +136,17 @@ export function ProfileDirectory({ user: currentUser, role }) {
           className="rounded-[2rem] shadow-xl"
         >
           Editar Perfil
+        </Button>
+
+        {/* --- ACCESO AL CENTRO DE AYUDA (SOPORTE) --- */}
+        <Button
+          onClick={() => onNavigate && onNavigate('manual')}
+          variant="ghost"
+          size="full"
+          icon={HelpCircle}
+          className="rounded-[2rem] !text-primary-500 hover:!bg-primary-500/5 font-black uppercase tracking-widest text-xs"
+        >
+          Centro de Ayuda
         </Button>
 
         <div className="text-center pt-4">
