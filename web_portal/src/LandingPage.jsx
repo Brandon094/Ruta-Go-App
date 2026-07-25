@@ -124,6 +124,7 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
                    src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=2069"
                    alt="Ruta-Go App Preview"
                    className="w-full h-64 md:h-96 object-cover opacity-90 dark:opacity-80"
+                   loading="lazy"
                 />
               </div>
             </div>

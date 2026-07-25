@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.2] - 2026-07-24 (Advanced Performance & Code Splitting)
+### Añadido
+- **Implementación de React Lazy & Suspense**: Refactorización profunda de la arquitectura de carga. Ahora el portal web utiliza "Code Splitting" para cargar únicamente los módulos necesarios según la navegación del usuario.
+- **Optimización de Landing Page**: La página principal ahora carga instantáneamente al no tener que descargar todo el bundle administrativo.
+- **Lazy Loading de Imágenes**: Adición del atributo `loading="lazy"` en activos pesados de la landing para mejorar el LCP (Largest Contentful Paint).
+
+### Cambiado
+- **Estrategia de Carga**: Integración del `SplashScreen` como fallback universal de Suspense, garantizando una transición fluida y brandeada mientras se descargan los módulos del dashboard.
+
 ## [1.9.9] - 2026-07-24 (Identity Resolution & SplashScreen Premium)
 ### Añadido
 - **Molécula `SplashScreen.jsx`**: Nueva pantalla de carga con el branding oficial de Ruta-Go. Implementa animaciones orbitales y efectos de iluminación para una experiencia de usuario de alta fidelidad.
