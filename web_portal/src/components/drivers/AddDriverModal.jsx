@@ -26,6 +26,22 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     ownerId: role?.type === 'OWNER' ? currentUser.uid : ''
   });
 
+  // 1. Filtrar Socios Aprobados (ADMIN ONLY) - v1.9.9.5 Fix
+  const approvedOwners = React.useMemo(() => {
+    return (owners || [])
+      .filter(o => o.status === 'approved')
+      .map(o => {
+        const u = (users || []).find(u => u.id === o.id);
+        return { id: o.id, nombre: u?.nombre || 'Socio Desconocido' };
+      });
+  }, [owners, users]);
+
+  // 2. Filtrar Vehículos del Socio seleccionado
+  const myVehicles = React.useMemo(() => {
+    if (!formData.ownerId) return [];
+    return (vehicles || []).filter(v => v.ownerId === formData.ownerId);
+  }, [vehicles, formData.ownerId]);
+
   const isAdmin = role?.type === 'ADMIN';
 
   useEffect(() => {
@@ -131,6 +147,10 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
 
     setLoading(true);
     try {
+      if (!formData.ownerId) {
+        throw new Error("Debes seleccionar un Socio Responsable.");
+      }
+
       const driverData = {
         id: foundUser.id,
         nombre: foundUser.nombre,
@@ -286,7 +306,7 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
 
         <div className="pt-10 border-t border-white/5 flex justify-end gap-4">
           <Button variant="ghost" onClick={onClose} className="text-slate-400 !px-8 hover:bg-white/5">Cancelar</Button>
-          <Button onClick={handleSubmit} isLoading={loading} disabled={!foundUser || !formData.placa} icon={UserPlus} className="!px-12 !py-5 shadow-2xl shadow-primary-500/20">Vincular Operador</Button>
+          <Button onClick={handleSubmit} isLoading={loading} disabled={!foundUser || !formData.placa || !formData.ownerId} icon={UserPlus} className="!px-12 !py-5 shadow-2xl shadow-primary-500/20">Vincular Operador</Button>
         </div>
       </div>
     </Modal>

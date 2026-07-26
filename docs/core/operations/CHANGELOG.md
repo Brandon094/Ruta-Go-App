@@ -16,6 +16,8 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Navegación Blindada**: Helpers `navigateTo` y `changeTab` para eliminando parpadeos y estados inconsistentes.
 
 ### Corregido
+- **Registro de Conductores (ADMIN/OWNER)**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
+- **Persistencia Transaccional**: El registro de conductores ahora actualiza correctamente el rol en `/usuarios/` para sincronización con la App Android y preserva datos técnicos de vehículos existentes.
 - **Eliminación definitiva de Glitches de Dashboard**: Sincronización con el `SplashScreen` para evitar mostrar Dashboards incorrectos durante la resolución de roles.
 
 ## [1.9.9.4] - 2026-07-24 (Accessibility AA & Image Format Optimization)

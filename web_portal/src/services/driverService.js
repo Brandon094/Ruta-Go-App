@@ -91,28 +91,38 @@ export const driverService = {
    */
   registerDriverAndVehicle: async (driverData, vehicleData) => {
     const updates = {};
+    const driverId = driverData.id;
+    const placa = vehicleData.placa;
 
     // 1. Preparar entrada en /conductores/
-    // Nota: El id debe ser el UID del usuario (previamente registrado en Auth)
-    updates[`conductores/${driverData.id}`] = {
+    updates[`conductores/${driverId}`] = {
       ...driverData,
       status: 'active',
       fechaRegistro: Date.now()
     };
 
-    // 2. Preparar entrada en /vehiculos/
-    updates[`vehiculos/${vehicleData.placa}`] = {
+    // 2. Actualizar Rol en /usuarios/ (v1.9.9.5 Fix para sincronización móvil)
+    updates[`usuarios/${driverId}/type`] = 'DRIVER';
+    updates[`usuarios/${driverId}/status`] = 'active';
+
+    // 3. Preparar entrada en /vehiculos/ (Preservando datos existentes si los hay)
+    const vSnap = await get(ref(db, `vehiculos/${placa}`));
+    const existingVehicle = vSnap.exists() ? vSnap.val() : {};
+
+    updates[`vehiculos/${placa}`] = {
+      ...existingVehicle,
       ...vehicleData,
-      conductorId: driverData.id,
+      conductorId: driverId,
+      driverId: driverId, // Soporte dual
       estado: 'activo'
     };
 
-    // 3. ⚡ SINCRONIZACIÓN DE CAPACIDAD INICIAL ⚡
+    // 4. ⚡ SINCRONIZACIÓN DE CAPACIDAD INICIAL ⚡
     const capacity = parseInt(vehicleData.capacidad) || 13;
     if (driverData.horariosAsignados && driverData.horariosAsignados.length > 0) {
       driverData.horariosAsignados.forEach(hId => {
-        updates[`horarios/${hId}/conductorId`] = driverData.id;
-        updates[`horarios/${hId}/vehiculoId`] = vehicleData.placa;
+        updates[`horarios/${hId}/conductorId`] = driverId;
+        updates[`horarios/${hId}/vehiculoId`] = placa;
         updates[`disponibilidadAsientos/${hId}/totalAsientos`] = capacity;
         updates[`disponibilidadAsientos/${hId}/asientosDisponibles`] = capacity;
       });
