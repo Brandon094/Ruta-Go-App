@@ -4,10 +4,12 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Documentation Master Sync)
-*Esta versión erradica los glitches visuales durante la carga de módulos y consolida la excelencia técnica mediante una auditoría masiva de documentación.*
+## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Lead Magnet Integration)
+*Esta versión erradica los glitches visuales durante la carga de módulos y lanza el primer "Lead Magnet" estratégico en la Landing Page para aumentar la conversión de pasajeros.*
 
 ### Añadido
+- **Lead Magnet de Horarios**: Nueva sección `LandingSchedules.jsx` en la página principal que muestra los despachos en tiempo real.
+- **Estrategia de Conversión**: Botones de reserva que redirigen a usuarios no autenticados al flujo de registro, incentivando la creación de cuentas.
 - **Sincronización Total de Documentación**: Auditoría y actualización de más de 40 archivos MD en las carpetas Core, Mobile y Web para reflejar la arquitectura v1.9.9.5.
 - **README Maestro High Fidelity**: Refactorización del archivo principal del proyecto con enlaces corregidos y visión estratégica actualizada.
 - **Motor de Transiciones React 18**: Implementación del hook `useTransition` para gestionar cambios de estado pesados en la web.

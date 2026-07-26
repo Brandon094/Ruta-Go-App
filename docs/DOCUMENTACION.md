@@ -44,7 +44,7 @@ Especificaciones exclusivas de la App desarrollada en Java/Kotlin.
 
 ### 🖥️ Portal Web (React/Vite)
 Arquitectura del portal de gestión y landing page.
-*   [**Arquitectura Web (Atomic)**](./web/WEB_PORTAL_ARCHITECTURE.md): Componentes y Singletons.
+*   [**Arquitectura Web (Atomic)**](./web/WEB_PORTAL_ARCHITECTURE.md): Componentes, Singletons y Lead Magnet.
 *   [**Hub de Control Web**](./web/GO_WEB_HUB.md): Manual operativo del portal.
 *   [**Despliegue y Hosting**](./web/DEPLOYMENT.md): Guía de producción en Firebase.
 

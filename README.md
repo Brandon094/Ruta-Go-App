@@ -5,7 +5,7 @@
 ---
 
 ## 🏆 Hitos de la Suite Integral (v1.9.9.5)
-*   🌐 **Portal Web "Mirror Edition"**: Paridad 1:1 con la App móvil para pasajeros y conductores, permitiendo reservas y gestión desde cualquier dispositivo.
+*   🌐 **Portal Web "Mirror Edition"**: Paridad 1:1 con la App móvil para pasajeros y conductores. Incluye **Lead Magnet** de horarios en la Landing Page para captación reactiva.
 *   ⚡ **Motor de Transiciones React 18**: Navegación fluida y sin parpadeos mediante `useTransition` y Code Splitting.
 *   🎨 **Arquitectura Atómica**: Sistema de diseño modular (Atoms, Molecules, Organisms) que garantiza consistencia y escalabilidad.
 *   📊 **Inteligencia Analítica 360°**: Cálculo de ingresos en tiempo real sumando reservas digitales y ventas físicas en calle.

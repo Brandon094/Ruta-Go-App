@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SolutionCard } from './components/landing/SolutionCard';
 import { RouteBadge } from './components/landing/RouteBadge';
+import { LandingSchedules } from './components/landing/LandingSchedules';
 import { BrandLogo } from './components/ui/BrandLogo';
 
 /**
@@ -199,6 +200,9 @@ export default function LandingPage({ onLogin, onRegisterOwner, onRegisterPassen
             </div>
           </div>
         </section>
+
+        {/* 🕒 SCHEDULES LEAD MAGNET (v1.9.9.5) */}
+        <LandingSchedules onReserve={onRegisterPassenger} />
 
         {/* 🚌 ROUTES SECTION */}
         <section className="py-16 md:py-24 bg-transparent dark:bg-[#061426] transition-colors duration-300">
