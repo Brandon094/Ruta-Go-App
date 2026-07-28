@@ -7,31 +7,34 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ## [1.9.9.6] - 2026-06-03 (Android 16 API 36 Compliance & Fixed Driver Registration)
 *Esta versión asegura el futuro de la aplicación en Google Play mediante la migración a la API 36 y resuelve fallas críticas en el módulo administrativo de conductores.*
 
-### Añadido
+### 📱 Ruta-Go Mobile (Android v1.5.0)
 - **Android 16 (API 36) Ready**: Actualización integral del nivel de API objetivo para cumplir con las políticas de Google Play 2026.
 - **Predictive Back Navigation**: Implementación de `android:enableOnBackInvokedCallback` en el manifiesto para gestos de navegación modernos.
 - **NDK v28 (16 KB Page Size)**: Soporte técnico para dispositivos de próxima generación mediante el uso del NDK más reciente.
 - **Edge-to-Edge Nativo**: Optimización de la experiencia visual para Android 15+ en actividades clave (Login, Splash, Onboarding).
 
-### Corregido
+### 🌐 Ruta-Go Web (Portal v1.1.0)
 - **Bug de Registro de Conductores**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
-- **Persistencia Transaccional de Perfiles**: El registro de conductores ahora actualiza el rol en `/usuarios/` (`type: DRIVER`) asegurando sincronización inmediata con la App Android.
+- **Persistencia de Perfiles**: El registro de conductores ahora actualiza el rol en `/usuarios/` (`type: DRIVER`) asegurando sincronización inmediata.
 - **Preservación de Activos de Vehículo**: El registro dual ahora preserva datos técnicos de vehículos pre-existentes al asignar nuevos conductores.
+
+### 🔧 Go-Core (Backend & Logic)
+- **Sincronización Transaccional**: Optimización de la lógica de servicios para garantizar la integridad de datos entre el portal y la App.
 
 ## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Lead Magnet Integration)
 *Esta versión erradica los glitches visuales durante la carga de módulos y lanza el primer "Lead Magnet" estratégico en la Landing Page para aumentar la conversión de pasajeros.*
 
-### Añadido
-- **Lead Magnet de Horarios**: Nueva sección `LandingSchedules.jsx` en la página principal que muestra los despachos en tiempo real.
-- **Estrategia de Conversión**: Botones de reserva que redirigen a usuarios no autenticados al flujo de registro, incentivando la creación de cuentas.
-- **Sincronización Total de Documentación**: Auditoría y actualización de más de 40 archivos MD en las carpetas Core, Mobile y Web para reflejar la arquitectura v1.9.9.5.
+### 📱 Ruta-Go Mobile (Android v1.4.0)
 - **README Maestro High Fidelity**: Refactorización del archivo principal del proyecto con enlaces corregidos y visión estratégica actualizada.
+- **Sincronización Total de Documentación**: Auditoría y actualización de más de 40 archivos MD en las carpetas Core, Mobile y Web.
+
+### 🌐 Ruta-Go Web (Portal v1.0.0)
+- **Lead Magnet de Horarios**: Nueva sección `LandingSchedules.jsx` en la página principal que muestra los despachos en tiempo real.
+- **Estrategia de Conversión**: Botones de reserva que redirigen a usuarios no autenticados al flujo de registro.
 - **Motor de Transiciones React 18**: Implementación del hook `useTransition` para gestionar cambios de estado pesados en la web.
 - **Navegación Blindada**: Helpers `navigateTo` y `changeTab` para eliminando parpadeos y estados inconsistentes.
 
 ### Corregido
-- **Registro de Conductores (ADMIN/OWNER)**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
-- **Persistencia Transaccional**: El registro de conductores ahora actualiza correctamente el rol en `/usuarios/` para sincronización con la App Android y preserva datos técnicos de vehículos existentes.
 - **Eliminación definitiva de Glitches de Dashboard**: Sincronización con el `SplashScreen` para evitar mostrar Dashboards incorrectos durante la resolución de roles.
 
 ## [1.9.9.4] - 2026-07-24 (Accessibility AA & Image Format Optimization)

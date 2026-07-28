@@ -6,10 +6,13 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 
 ## 🏗️ 1. Identificación de la Suite
 *   **Nombre Comercial:** Ecosistema "Go".
-*   **Plataformas:** Ruta-Go (App & Web), Agro-Go (Flutter), Cargo-Go (Logística).
 *   **Fabricante:** ChopCode Solutions.
-*   **Titular:** Brandon Daza Cerquera.
-*   **Versión Global:** v1.9.9.6 High Fidelity.
+*   **Versión Global de la Suite:** v1.9.9.6 (Sincronización de Ecosistema).
+
+### 🏷️ Versiones por Componente:
+*   **Ruta-Go Android:** v1.5.0 (High Fidelity).
+*   **Ruta-Go Web Portal:** v1.1.0 (Atomic Design).
+*   **Go-Core (Firebase):** v2.0.0 (FCM v1 & Rules v1.9).
 
 ---
 
