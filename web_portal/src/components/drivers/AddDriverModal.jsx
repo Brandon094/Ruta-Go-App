@@ -25,7 +25,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     modelo: '',
     ano: new Date().getFullYear().toString(),
     capacidad: 13,
-    ownerId: role?.type === 'OWNER' ? currentUser.uid : ''
+    ownerId: role?.type === 'OWNER' ? currentUser.uid : '',
+    posicionEscalafon: 0
   });
 
   // 1. Filtrar Socios Aprobados (ADMIN ONLY) - v1.9.9.6 Robust Fix
@@ -53,14 +54,21 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     driverService.getAllSchedules().then(setAllSchedules);
   }, []);
 
-  const toggleSchedulePair = (pair) => {
-    const ids = pair.ids;
+  const toggleSchedulePair = (group) => {
+    const ids = group.ids;
     setSelectedSchedules(prev => {
-      const hasAll = ids.every(id => prev.includes(id));
+      const hasAll = ids.length > 0 && ids.every(id => prev.includes(id));
       if (hasAll) {
         return prev.filter(id => !ids.includes(id));
       } else {
-        return [...new Set([...prev, ...ids])];
+        // 🧠 Lógica de Auto-Calculo de Escalafón (v1.9.9.6)
+        // Si seleccionamos un turno rotativo, calculamos su posición base para hoy
+        if (group.shiftIndex !== undefined && group.shiftIndex !== null) {
+          const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+          const pos = (group.shiftIndex - (dayCounter % 9) + 9) % 9;
+          setFormData(prev => ({ ...prev, posicionEscalafon: pos }));
+        }
+        return [...ids]; // En modo escalafón, solo permitimos un grupo activo
       }
     });
   };
@@ -72,15 +80,15 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     const find = (id) => allSchedules.find(s => s.id === id);
     const groups = [];
 
-    // 1. Turnos Estándar
+    // 1. Turnos Estándar (shiftIndex según index.js)
     const standardPairs = [
-      { ids: ["h001", "h011"], label: "Turno 1" },
-      { ids: ["h002", "h012"], label: "Turno 2" },
-      { ids: ["h003", "h013"], label: "Turno 3" },
-      { ids: ["h004", "h014"], label: "Turno 4" },
-      { ids: ["h005", "h015"], label: "Turno Fijo (Dedicado)" },
-      { ids: ["h006", "h016"], label: "Turno 6" },
-      { ids: ["h007", "h017"], label: "Turno 7" },
+      { ids: ["h001", "h011"], label: "Turno 1", shiftIndex: 7 },
+      { ids: ["h002", "h012"], label: "Turno 2", shiftIndex: 6 },
+      { ids: ["h003", "h013"], label: "Turno 3", shiftIndex: 5 },
+      { ids: ["h004", "h014"], label: "Turno 4", shiftIndex: 4 },
+      { ids: ["h005", "h015"], label: "Turno Fijo (Dedicado)", shiftIndex: null },
+      { ids: ["h006", "h016"], label: "Turno 6", shiftIndex: 3 },
+      { ids: ["h007", "h017"], label: "Turno 7", shiftIndex: 2 },
     ];
 
     standardPairs.forEach(group => {
@@ -89,7 +97,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
         groups.push({
           ids: group.ids,
           label: group.label,
-          display: `${items[0].hora} ➔ ${items[1].hora}`
+          display: `${items[0].hora} ➔ ${items[1].hora}`,
+          shiftIndex: group.shiftIndex
         });
       }
     });
@@ -101,7 +110,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
       groups.push({
         ids: tripleIds,
         label: "Turno 8 (Triple Especial)",
-        display: `${tripleItems[0].hora} ➔ ${tripleItems[1].hora} (+ ${tripleItems[2].hora} AM)`
+        display: `${tripleItems[0].hora} ➔ ${tripleItems[1].hora} (+ ${tripleItems[2].hora} AM)`,
+        shiftIndex: 1
       });
     }
 
@@ -112,9 +122,18 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
       groups.push({
         ids: [soloId],
         label: "Turno 9 (Entrada)",
-        display: `${soloItem.hora} (Trayecto Único)`
+        display: `${soloItem.hora} (Trayecto Único)`,
+        shiftIndex: 0
       });
     }
+
+    // 4. Descanso
+    groups.push({
+      ids: [],
+      label: "Descanso (Día 9)",
+      display: "Mañana fuera de servicio",
+      shiftIndex: 8
+    });
 
     return groups;
   }, [allSchedules]);
@@ -163,7 +182,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
         telefono: foundUser.telefono || 'N/A',
         placaVehiculo: formData.placa,
         vehiculoId: formData.placa,
-        horariosAsignados: selectedSchedules
+        horariosAsignados: selectedSchedules,
+        posicionEscalafon: formData.posicionEscalafon
       };
 
       const vehicleData = {
@@ -225,7 +245,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
                 </h4>
                 <div className="grid grid-cols-1 gap-3 max-h-[260px] overflow-y-auto pr-2 custom-scrollbar shadow-inner bg-black/10 rounded-[1.5rem] p-4">
                   {scheduleGroups.map((group, idx) => {
-                    const isSelected = group.ids.every(id => selectedSchedules.includes(id));
+                    const isSelected = (group.ids.length === 0 && selectedSchedules.length === 0) ||
+                                     (group.ids.length > 0 && group.ids.every(id => selectedSchedules.includes(id)));
                     return (
                       <button
                         key={idx}
@@ -247,13 +268,35 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
                   })}
                 </div>
               </div>
+
+              {/* Ajuste de Escalafón (v1.9.9.6) */}
+              <div className="pt-6 border-t border-white/5 space-y-4">
+                <h4 className="text-[11px] font-black text-primary-500 uppercase tracking-[0.2em] flex items-center gap-3 italic">
+                  <Settings size={16}/> 3. Ajuste de Escalafón
+                </h4>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <Input
+                      label="Posición Base (0-8)"
+                      type="number"
+                      min="0"
+                      max="8"
+                      value={formData.posicionEscalafon}
+                      onChange={(val) => setFormData({...formData, posicionEscalafon: parseInt(val)})}
+                    />
+                  </div>
+                  <div className="p-4 rounded-2xl bg-primary-500/10 border border-primary-500/20 text-[8px] font-bold text-primary-400 max-w-[140px] leading-tight">
+                    CALCULADO AUTOMÁTICAMENTE AL ELEGIR TURNO. AJUSTA MANUALMENTE SOLO SI ES NECESARIO.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Activos */}
           <div className="space-y-8 text-left">
             <h4 className="text-[11px] font-black text-[#061426] dark:text-white uppercase tracking-[0.2em] flex items-center gap-3 italic">
-              <div className="w-2 h-4 bg-primary-500 rounded-full"></div> 3. Datos del Vehículo
+              <div className="w-2 h-4 bg-primary-500 rounded-full"></div> 4. Datos del Vehículo
             </h4>
 
             <div className="space-y-6">
