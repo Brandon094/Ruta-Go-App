@@ -4,6 +4,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.6] - 2026-06-03 (Android 16 API 36 Compliance & Fixed Driver Registration)
+*Esta versión asegura el futuro de la aplicación en Google Play mediante la migración a la API 36 y resuelve fallas críticas en el módulo administrativo de conductores.*
+
+### Añadido
+- **Android 16 (API 36) Ready**: Actualización integral del nivel de API objetivo para cumplir con las políticas de Google Play 2026.
+- **Predictive Back Navigation**: Implementación de `android:enableOnBackInvokedCallback` en el manifiesto para gestos de navegación modernos.
+- **NDK v28 (16 KB Page Size)**: Soporte técnico para dispositivos de próxima generación mediante el uso del NDK más reciente.
+- **Edge-to-Edge Nativo**: Optimización de la experiencia visual para Android 15+ en actividades clave (Login, Splash, Onboarding).
+
+### Corregido
+- **Bug de Registro de Conductores**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
+- **Persistencia Transaccional de Perfiles**: El registro de conductores ahora actualiza el rol en `/usuarios/` (`type: DRIVER`) asegurando sincronización inmediata con la App Android.
+- **Preservación de Activos de Vehículo**: El registro dual ahora preserva datos técnicos de vehículos pre-existentes al asignar nuevos conductores.
+
 ## [1.9.9.5] - 2026-07-24 (Fluid Navigation & Lead Magnet Integration)
 *Esta versión erradica los glitches visuales durante la carga de módulos y lanza el primer "Lead Magnet" estratégico en la Landing Page para aumentar la conversión de pasajeros.*
 

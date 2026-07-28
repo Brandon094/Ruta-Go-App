@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.9.5 Premium
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.9.6 Premium
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura de alto rendimiento.
 
@@ -9,17 +9,17 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 *   **Plataformas:** Ruta-Go (App & Web), Agro-Go (Flutter), Cargo-Go (Logística).
 *   **Fabricante:** ChopCode Solutions.
 *   **Titular:** Brandon Daza Cerquera.
-*   **Versión Global:** v1.9.9.5 High Fidelity.
+*   **Versión Global:** v1.9.9.6 High Fidelity.
 
 ---
 
 ## 💻 2. Stack de Desarrollo
 
 ### 2.1 Ecosistema Móvil (Ruta-Go Android)
-*   **Lenguaje:** Java 17 (Target SDK 35 - Android 15).
+*   **Lenguaje:** Java 17 (Target SDK 36 - Android 16 Ready).
 *   **Arquitectura:** MVVM Reactivo con Repositorios Desacoplados.
-*   **UI/UX:** XML Material Design 3 (Transición a Jetpack Compose iniciada).
-*   **Capacidades:** Edge-to-Edge nativo, WindowUtils para gestión de insets.
+*   **UI/UX:** XML Material Design 3 (Edge-to-Edge Nativo y Predictive Back).
+*   **Capacidades:** Soporte NDK v28 (16 KB pages), WindowUtils para gestión de insets.
 
 ### 2.2 Ecosistema Web (Ruta-Go Portal)
 *   **Framework:** React 18 (Hooks & Transitions).
