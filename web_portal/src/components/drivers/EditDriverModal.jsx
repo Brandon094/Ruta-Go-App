@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Clock, Trash2, AlertCircle, Loader2, User, Briefcase, Bus, RotateCw, CheckCircle2 } from 'lucide-react';
+import { Save, Clock, Trash2, AlertCircle, Loader2, User, Briefcase, Bus, RotateCw, CheckCircle2, Settings } from 'lucide-react';
 import { driverService } from '../../services/driverService';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
