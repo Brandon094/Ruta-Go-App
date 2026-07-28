@@ -11,11 +11,12 @@ export const reservationService = {
    */
   createReservation: async (reservationData, scheduleId, seatNumber) => {
     try {
-      const resRef = push(ref(db, 'reservas'));
-      const finalData = { ...reservationData, idReservation: resRef.key };
+      // Generar UUID idéntico al sistema de Android (v1.9.9.6 Mirror Fix)
+      const uuid = crypto.randomUUID();
+      const finalData = { ...reservationData, idReservation: uuid };
 
       const updates = {};
-      updates[`reservas/${resRef.key}`] = finalData;
+      updates[`reservas/${uuid}`] = finalData;
 
       // 1. Registro del tiquete
       await update(ref(db), updates);
@@ -43,7 +44,7 @@ export const reservationService = {
         return current;
       });
 
-      return { success: true, id: resRef.key };
+      return { success: true, id: uuid };
     } catch (error) {
       console.error("Error creando reserva:", error);
       throw error;

@@ -285,6 +285,7 @@ function App() {
             schedule={managingSchedule}
             onClose={() => setManagingSchedule(null)}
             role={role}
+            user={user}
             drivers={allDrivers} // lookup full list
             vehicles={vehicles}
             activeTab={activeTab} // <-- PASAMOS EL CONTEXTO

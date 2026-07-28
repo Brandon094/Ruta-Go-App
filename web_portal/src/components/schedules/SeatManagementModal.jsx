@@ -15,7 +15,7 @@ import { reservationService } from '../../services/reservationService';
  * 💺 Component: SeatManagementModal
  * UI Espejo 1:1 de la App Móvil (v1.7.3 Robust Mirror & DRY)
  */
-export function SeatManagementModal({ schedule, onClose, role, drivers = [], vehicles = [], activeTab }) {
+export function SeatManagementModal({ schedule, onClose, role, user, drivers = [], vehicles = [], activeTab }) {
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState({ asientosOcupados: {}, totalAsientos: 13, asientosDisponibles: 13 });
   const [reservations, setReservations] = useState([]);
@@ -147,13 +147,59 @@ export function SeatManagementModal({ schedule, onClose, role, drivers = [], veh
     try {
       const parts = schedule.ruta.split(/ -> | ➔ /);
       const reservationData = {
-        userId: role.uid, scheduleId: schedule.id, driverId: schedule.conductorId || "",
-        driver: driver.nombre || "Conductor", phoneC: driver.telefono || "---",
-        vehicleId: schedule.vehiculoId || "", plate: vehicle.placa || schedule.vehiculoId || "",
-        model: vehicle.modelo || "Vehículo", reservedSeat: parseInt(selectedSeat),
-        reservationStatus: 'Por confirmar', origin: parts[0] || "Nátaga",
-        destination: parts[1] || "La Plata", departureTime: schedule.hora,
-        price: routePrice, reservationDate: Date.now(), name: role?.name || "Pasajero Web", phone: role?.phone || ""
+        // IDs Clave (v1.9.9.6 Mirror Fix)
+        userId: role.uid,
+        usuarioId: role.uid,
+        scheduleId: schedule.id,
+        horarioId: schedule.id,
+        driverId: schedule.conductorId || "",
+        conductorId: schedule.conductorId || "",
+        vehicleId: schedule.vehiculoId || "",
+
+        // Conductor & Vehículo
+        driver: driver.nombre || "Conductor",
+        conductor: driver.nombre || "Conductor",
+        phoneC: driver.telefono || "N/A",
+        telefonoC: driver.telefono || "N/A",
+        plate: vehicle.placa || schedule.vehiculoId || "",
+        model: vehicle.modelo || "Vehículo",
+        vehicleModel: vehicle.modelo || "Vehículo",
+        modeloVehiculo: vehicle.modelo || "Vehículo",
+
+        // Detalles de Viaje
+        origin: parts[0] || "Nátaga",
+        origen: parts[0] || "Nátaga",
+        destination: parts[1] || "La Plata",
+        destino: parts[1] || "La Plata",
+        departureTime: schedule.hora,
+        horaSalida: schedule.hora,
+        estimatedTime: "60 min",
+        tiempoEstimado: "60 min",
+
+        // Estado & Pago
+        reservationStatus: 'Por confirmar',
+        estadoReserva: 'Por confirmar',
+        paymentMethod: 'efectivo',
+        metodoPago: 'efectivo',
+        price: routePrice,
+        precio: routePrice,
+        reservationDate: Date.now(),
+        fechaReserva: Date.now(),
+
+        // Usuario
+        name: role?.name || "Pasajero Web",
+        nombre: role?.name || "Pasajero Web",
+        phone: role?.phone || "",
+        telefono: role?.phone || "",
+        email: user?.email || "",
+
+        // Flags de Calificación & Asiento
+        rated: false,
+        calificada: false,
+        rating: 0,
+        calificacion: 0,
+        reservedSeat: parseInt(selectedSeat),
+        puestoReservado: parseInt(selectedSeat)
       };
       await reservationService.createReservation(reservationData, schedule.id, selectedSeat);
       setSuccessReservation(true);
