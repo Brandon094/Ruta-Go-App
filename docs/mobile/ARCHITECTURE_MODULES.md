@@ -1,6 +1,6 @@
-# 📱 Arquitectura de la Aplicación Android - Ruta-Go v1.9.9.5
+# 📱 Arquitectura de la Aplicación Android - Ruta-Go v1.5.0
 
-Este documento detalla la arquitectura de ingeniería de la App nativa de Ruta-Go, diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa (MVVM)**, optimizado para el ecosistema móvil.
+Este documento detalla la arquitectura de ingeniería de la App nativa de Ruta-Go (Sincronizada con Suite v1.9.9.6), diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa (MVVM)**, optimizado para el ecosistema móvil y compatible con las últimas APIs de Google.
 
 ---
 
@@ -10,7 +10,8 @@ La aplicación sigue una separación estricta de responsabilidades para garantiz
 ### 1.1 UI Layer (View)
 *   **Tecnología**: XML (Material Design 3) con transición activa hacia **Jetpack Compose**.
 *   **Responsabilidad**: Observar el estado expuesto por los ViewModels y reaccionar a la entrada del usuario.
-*   **Inmersión**: Uso de `WindowUtils` para una experiencia Edge-to-Edge nativa.
+*   **Inmersión**: Uso de `WindowUtils` para una experiencia Edge-to-Edge nativa (Android 15+).
+*   **Navegación**: Soporte para **Predictive Back** (`enableOnBackInvokedCallback`).
 
 ### 1.2 Presentation Layer (ViewModel)
 *   **Componentes**: Clases que heredan de `ViewModel` de Android.

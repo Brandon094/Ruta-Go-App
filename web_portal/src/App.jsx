@@ -43,7 +43,7 @@ import { useRealtimeStats } from './hooks/useRealtimeStats';
 import { vehicleService } from './services/vehicleService';
 
 /**
- * 🖥️ Ruta-Go Portal - Orquestador Principal (Modularizado v1.7.5)
+ * 🖥️ Ruta-Go Portal - Orquestador Principal (v1.1.0 - Atomic Sync)
  */
 function App() {
   const [user, setUser] = useState(null);

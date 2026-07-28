@@ -1,11 +1,11 @@
-# 🌐 Portal Web Central: Ruta-Go (Ecosistema "Go") v1.9.9.5
+# 🌐 Portal Web Central: Ruta-Go (Web v1.1.0)
 
-Este documento define la estructura, evolución y despliegue del hub web centralizado que sirve como punto de anclaje para la plataforma **Ruta-Go** y la marca corporativa **ChopCode Solutions**.
+Este documento define la estructura, evolución y despliegue del hub web centralizado que sirve como punto de anclaje para la plataforma **Ruta-Go** (Sincronizado con Suite v1.9.9.6).
 
 ---
 
-## ✅ 1. Estado Actual (v1.9.9.5 - High Fidelity)
-El sitio web ha sido elevado a un estándar de alta fidelidad, con una auditoría Lighthouse sobresaliente y paridad total con la aplicación nativa.
+## ✅ 1. Estado Actual (v1.1.0 - High Fidelity)
+El sitio web ha sido elevado a un estándar de alta fidelidad, con una auditoría Lighthouse sobresaliente y paridad total con la aplicación nativa (Android v1.5.0), incluyendo compatibilidad con los esquemas de datos de Android 16.
 
 *   **URL Oficial**: [https://rutago-huila.web.app](https://rutago-huila.web.app)
 *   **Hosting**: Firebase Hosting con despliegue sincronizado de Cloud Functions.
@@ -20,10 +20,11 @@ El sitio web ha sido elevado a un estándar de alta fidelidad, con una auditorí
 *   **Optimización SEO**: Metadatos dinámicos y rendimiento optimizado para indexación en Google.
 *   **Diseño Atómico**: Interfaz construida sobre componentes reutilizables (Atoms, Molecules, Organisms).
 
-### 💼 Go Business: Dashboard Inteligente (v1.9.0+)
+### 💼 Go Business: Dashboard Inteligente (v1.9.6+)
 *   **Inteligencia Analítica 360°**: Visualización de ingresos reales (App + Calle) y porcentaje de ocupación por trayecto.
 *   **Gestión de Flota Pro**: Directorio expansible de vehículos y conductores con vinculación por correo.
 *   **Asignación "Speed Mode"**: Interfaz optimizada para que el Administrador Root asigne turnos en segundos usando grupos lógicos.
+*   **Sincronización Mirror-Dual**: Las reservas creadas en la web ahora utilizan UUIDs y un mapeo de llaves bilingüe (Español/Inglés) idéntico al de Android para prevenir errores de puntero nulo en la App móvil.
 *   **Experiencia Operativa Mirror**: Los pasajeros y conductores cuentan con una interfaz idéntica a la App móvil para reservas y gestión de ruta.
 
 ### ⚖️ Centro Legal & Compliance

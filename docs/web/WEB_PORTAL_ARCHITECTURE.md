@@ -1,4 +1,4 @@
-# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go v1.9.9.5
+# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go v1.1.0
 
 Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal**, la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
 

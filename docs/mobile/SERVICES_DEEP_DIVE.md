@@ -1,4 +1,4 @@
-# 📖 Inmersión Técnica: Repositorios y Servicios (Data Layer) v1.9.9.5
+# 📖 Inmersión Técnica: Repositorios y Servicios (Data Layer) v1.5.0
 
 Este documento detalla la lógica de la capa de datos de la App Android, encargada de la comunicación con Firebase y el cumplimiento de las reglas de negocio del Holding.
 
@@ -8,7 +8,7 @@ Este documento detalla la lógica de la capa de datos de la App Android, encarga
 Los servicios actúan como Repositorios que abstraen la complejidad de Firebase RTDB. Siguen estos principios:
 *   **Encapsulamiento**: Los ViewModels delegan toda la persistencia al servicio correspondiente.
 *   **Gestión de Hilos**: Las operaciones de red se realizan fuera del hilo principal (Main Thread) para evitar congelamientos de UI.
-*   **Sincronización Híbrida**: Los servicios están diseñados para reconocer tanto el esquema de datos móvil como el web (ej. mapeo `userId` vs `usuarioId`).
+*   **Sincronización Híbrida Mirror-Dual**: Los servicios y modelos (como `Reservation.java`) utilizan un sistema de mapeo bilingüe que reconoce tanto el esquema de datos móvil como el web (ej. `userId` vs `usuarioId`) de forma simultánea, garantizando la paridad total del ecosistema.
 
 ---
 
