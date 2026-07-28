@@ -17,6 +17,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
   const [allSchedules, setAllSchedules] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState([]);
 
+  const isAdmin = role?.type === 'ADMIN';
+
   const [formData, setFormData] = useState({
     email: '',
     placa: '',
@@ -26,13 +28,18 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     ownerId: role?.type === 'OWNER' ? currentUser.uid : ''
   });
 
-  // 1. Filtrar Socios Aprobados (ADMIN ONLY) - v1.9.9.5 Fix
+  // 1. Filtrar Socios Aprobados (ADMIN ONLY) - v1.9.9.6 Robust Fix
   const approvedOwners = React.useMemo(() => {
     return (owners || [])
-      .filter(o => o.status === 'approved')
+      .filter(o => {
+        // Ser extremadamente permisivos para el Admin Root
+        if (o.status === true || o.status === 'approved' || o.status === 'active') return true;
+        if (typeof o.status === 'object' && o.status !== null) return true;
+        return false;
+      })
       .map(o => {
         const u = (users || []).find(u => u.id === o.id);
-        return { id: o.id, nombre: u?.nombre || 'Socio Desconocido' };
+        return { id: o.id, nombre: u?.nombre || u?.email || `Socio (${o.id.substring(0, 8)})` };
       });
   }, [owners, users]);
 
@@ -41,8 +48,6 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     if (!formData.ownerId) return [];
     return (vehicles || []).filter(v => v.ownerId === formData.ownerId);
   }, [vehicles, formData.ownerId]);
-
-  const isAdmin = role?.type === 'ADMIN';
 
   useEffect(() => {
     driverService.getAllSchedules().then(setAllSchedules);

@@ -24,17 +24,30 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
 
   const isAdmin = role?.type === 'ADMIN';
 
-  // Obtener perfiles de dueños aprobados
-  const approvedOwners = owners
-    .filter(o => o.status === true)
-    .map(o => ({
-      id: o.id,
-      nombre: users.find(u => u.id === o.id)?.nombre || 'Socio sin nombre'
-    }));
+  // 1. Obtener perfiles de dueños aprobados (v1.9.9.6 Robust Fix)
+  const approvedOwners = React.useMemo(() => {
+    return (owners || [])
+      .filter(o => {
+        if (o.status === true || o.status === 'approved' || o.status === 'active') return true;
+        if (typeof o.status === 'object' && o.status !== null) return true;
+        return false;
+      })
+      .map(o => {
+        const u = (users || []).find(u => u.id === o.id);
+        return {
+          id: o.id,
+          nombre: u?.nombre || u?.email || `Socio (${o.id.substring(0, 8)})`
+        };
+      });
+  }, [owners, users]);
 
-  const myVehicles = formData.ownerId
-    ? vehicles.filter(v => v.ownerId === formData.ownerId)
-    : (isAdmin ? [] : vehicles.filter(v => v.ownerId === role?.uid));
+  // 2. Filtrar Vehículos por dueño
+  const myVehicles = React.useMemo(() => {
+    if (formData.ownerId) {
+      return vehicles.filter(v => v.ownerId === formData.ownerId);
+    }
+    return isAdmin ? [] : vehicles.filter(v => v.ownerId === role?.uid);
+  }, [vehicles, formData.ownerId, isAdmin, role?.uid]);
 
   useEffect(() => {
     let isMounted = true;
