@@ -14,9 +14,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Edge-to-Edge Nativo**: Optimización de la experiencia visual para Android 15+ en actividades clave (Login, Splash, Onboarding).
 
 ### 🌐 Ruta-Go Web (Portal v1.1.0)
+- **Sincronización de Reservas (Mirror Fix)**: Se ha implementado la generación de UUIDs para reservas, igualando el sistema de la App Android para evitar colisiones y errores de parseo.
+- **Payload Robusto**: Las reservas creadas desde la web ahora incluyen todos los campos obligatorios (Dual Mapping: Español/Inglés) requeridos por el tiquete digital de Android, eliminando el Crash (NullPointerException).
 - **Bug de Registro de Conductores**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
-- **Persistencia de Perfiles**: El registro de conductores ahora actualiza el rol en `/usuarios/` (`type: DRIVER`) asegurando sincronización inmediata.
-- **Preservación de Activos de Vehículo**: El registro dual ahora preserva datos técnicos de vehículos pre-existentes al asignar nuevos conductores.
 
 ### 🔧 Go-Core (Backend & Logic)
 - **Sincronización Transaccional**: Optimización de la lógica de servicios para garantizar la integridad de datos entre el portal y la App.

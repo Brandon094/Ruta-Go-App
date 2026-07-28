@@ -39,7 +39,8 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 
 ## 🛰️ 3. Capacidades y Rendimiento
 1.  **Sincronización Atómica**: Motor de reservas con `runTransaction()` para inventario 100% preciso.
-2.  **Inteligencia Analítica**: Cálculo automático de ingresos y ocupación cruzada (Venta App + Física).
+2.  **Espejo de Datos (Mirror Mapping)**: Paridad total en estructuras JSON entre Web y Mobile (Mapeo Dual Español/Inglés) para evitar errores de puntero nulo.
+3.  **Inteligencia Analítica**: Cálculo automático de ingresos y ocupación cruzada (Venta App + Física).
 3.  **Navegación Fluida**: Motor de transiciones de React 18 para evitar bloqueos de interfaz.
 4.  **Accesibilidad AA**: Cumplimiento de estándares internacionales para lectores de pantalla y contraste.
 
