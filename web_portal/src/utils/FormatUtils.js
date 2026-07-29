@@ -70,14 +70,14 @@ export const FormatUtils = {
   filterSchedulesByRoute: (schedules, direction = 'toLaPlata') => {
     const list = Array.isArray(schedules) ? schedules : [];
     return list.filter(s => {
-      const ruta = (s.ruta || "").toLowerCase();
-      const nIdx = ruta.indexOf('nátaga');
-      const lIdx = ruta.indexOf('la plata');
+      const ruta = FormatUtils.normalizeText(s.ruta || "");
+      const nIdx = ruta.indexOf('nataga');
+      const lpIdx = ruta.indexOf('la plata');
 
       if (direction === 'toLaPlata') {
-        return ruta.includes('nátaga -> la plata') || (nIdx !== -1 && lIdx !== -1 && nIdx < lIdx);
+        return (nIdx !== -1 && lpIdx !== -1 && nIdx < lpIdx);
       } else {
-        return ruta.includes('la plata -> nátaga') || (nIdx !== -1 && lIdx !== -1 && lIdx < nIdx);
+        return (nIdx !== -1 && lpIdx !== -1 && lpIdx < nIdx);
       }
     });
   }

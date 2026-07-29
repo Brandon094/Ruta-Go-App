@@ -3,6 +3,7 @@ import { onValue } from 'firebase/database';
 import { Clock, Bus, ChevronRight, Info, Zap } from 'lucide-react';
 import firebaseManager from '../../firebase';
 import { Button } from '../ui/Button';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 🚌 Component: LandingSchedules (Lead Magnet)
@@ -38,13 +39,13 @@ export function LandingSchedules({ onReserve }) {
     return () => unsub();
   }, []);
 
-  const filterRoute = (from, to) => schedules.filter(s => {
-    const r = s.ruta?.toLowerCase() || "";
-    return r.includes(from) && r.includes(to) && r.split(/➔|->/)[1]?.includes(to);
-  });
+  const routeA = React.useMemo(() => {
+    return FormatUtils.filterSchedulesByRoute(schedules, 'toLaPlata');
+  }, [schedules]);
 
-  const routeA = filterRoute('nataga', 'la plata');
-  const routeB = filterRoute('la plata', 'nataga');
+  const routeB = React.useMemo(() => {
+    return FormatUtils.filterSchedulesByRoute(schedules, 'toNataga');
+  }, [schedules]);
 
   // Fallbacks si no hay datos vivos
   const fallbackA = [{ hora: "05:00 AM" }, { hora: "08:00 AM" }, { hora: "10:30 AM" }, { hora: "01:00 PM" }, { hora: "03:00 PM" }];
@@ -58,7 +59,12 @@ export function LandingSchedules({ onReserve }) {
       </div>
 
       <div className="grid gap-3">
-        {(list.length > 0 ? list : (isReverse ? fallbackB : fallbackA)).map((s, idx) => (
+        {loading ? (
+          // Skeleton/Loading state
+          [1, 2, 3].map((i) => (
+            <div key={i} className="h-24 bg-slate-100 dark:bg-white/5 animate-pulse rounded-[2rem]"></div>
+          ))
+        ) : (list.length > 0 ? list : (isReverse ? fallbackB : fallbackA)).map((s, idx) => (
           <div
             key={s.id || idx}
             className="flex items-center justify-between p-4 md:p-5 bg-white dark:bg-white/5 rounded-[2rem] border border-slate-100 dark:border-white/5 hover:border-primary-500/50 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-500/5"

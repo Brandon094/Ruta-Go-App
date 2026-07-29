@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { onValue } from "firebase/database";
 import firebaseManager from '../../firebase';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 🛰️ Hook: useRealtimeData
@@ -173,7 +174,6 @@ export const useRealtimeData = (user, role) => {
     let lpRes = 0, lpSeats = 0, ntRes = 0, ntSeats = 0, totalResHoy = 0;
 
     const enrichedSchedules = raw.schedules.map(s => {
-      const ruta = s.ruta.toLowerCase();
       const driver = raw.drivers.find(d => d.id === s.conductorId);
       const vId = s.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
       const vehicle = raw.vehicles.find(v => v.id === vId || v.placa === vId);
@@ -189,12 +189,14 @@ export const useRealtimeData = (user, role) => {
       const isMine = userType === 'DRIVER' && s.conductorId === user.uid;
       const isOwned = userType === 'ADMIN' || (userType === 'OWNER' && ownedPlates.includes(vId));
 
+      const rutaNorm = FormatUtils.normalizeText(s.ruta || "").replace(/➔/g, '->');
+      const parts = rutaNorm.split('->');
+
       if (isOwned || isMine) {
-        // Clasificación por destino final
-        const routeNorm = ruta.replace(/➔|->/g, '>').toLowerCase();
-        const destination = routeNorm.split('>')[1]?.trim() || "";
+        // Clasificación por destino final (v1.9.9.6)
+        const destination = parts[1]?.trim() || "";
         const isToLaPlata = destination.includes("la plata");
-        const isToNataga = destination.includes("nataga") || destination.includes("nátaga");
+        const isToNataga = destination.includes("nataga");
 
         if (isToLaPlata) { lpRes += resCount; lpSeats += avail; }
         else if (isToNataga) { ntRes += resCount; ntSeats += avail; }
@@ -202,7 +204,6 @@ export const useRealtimeData = (user, role) => {
         totalResHoy += resCount;
 
         // 💰 CÁLCULO DE INGRESOS (Digital + Físico)
-        const parts = routeNorm.split('>');
         const price = (parts.length === 2)
           ? (raw.prices[parts[0].trim()]?.[parts[1].trim()] || 12000)
           : 12000;

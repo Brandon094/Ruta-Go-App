@@ -10,6 +10,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { reservationService } from '../../services/reservationService';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 💺 Component: SeatManagementModal
@@ -54,7 +55,8 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
 
     // 3. Obtener Precio de la Ruta
     const fetchPrice = async () => {
-      const parts = schedule.ruta.toLowerCase().split(/ -> | ➔ /);
+      const rutaNorm = FormatUtils.normalizeText(schedule.ruta || "").replace(/➔/g, '->');
+      const parts = rutaNorm.split('->');
       if (parts.length === 2) {
         const pSnap = await get(ref(db, `precios/${parts[0].trim()}/${parts[1].trim()}`));
         if (pSnap.exists()) setRoutePrice(pSnap.val());
@@ -145,7 +147,8 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
     if (!selectedSeat || updating) return;
     setUpdating(true);
     try {
-      const parts = schedule.ruta.split(/ -> | ➔ /);
+      const rutaNorm = FormatUtils.normalizeText(schedule.ruta || "").replace(/➔/g, '->');
+      const parts = rutaNorm.split('->');
       const reservationData = {
         // IDs Clave (v1.9.9.6 Mirror Fix)
         userId: role.uid,

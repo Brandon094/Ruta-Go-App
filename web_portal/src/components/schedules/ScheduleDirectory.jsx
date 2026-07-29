@@ -3,6 +3,7 @@ import { Clock } from 'lucide-react';
 import { ScheduleTable } from './ScheduleTable';
 import { Button } from '../ui/Button';
 import { DirectoryHeader } from '../common/DirectoryHeader';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 export function ScheduleDirectory({ schedules = [], drivers, role, onManage, vehicles = [] }) {
   const [activeRoute, setActiveRoute] = useState('toLaPlata');
@@ -16,8 +17,8 @@ export function ScheduleDirectory({ schedules = [], drivers, role, onManage, veh
     return conductor.includes(search) || placa.includes(search) || hora.includes(search);
   });
 
-  const natagaToLaPlata = filteredBySearch.filter(s => s.ruta.toLowerCase().includes('nátaga -> la plata') || (s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().indexOf('nátaga') < s.ruta.toLowerCase().indexOf('plata')));
-  const laPlataToNataga = filteredBySearch.filter(s => s.ruta.toLowerCase().includes('la plata -> nátaga') || (s.ruta.toLowerCase().includes('plata') && s.ruta.toLowerCase().includes('nátaga') && s.ruta.toLowerCase().indexOf('plata') < s.ruta.toLowerCase().indexOf('nátaga')));
+  const natagaToLaPlata = FormatUtils.filterSchedulesByRoute(filteredBySearch, 'toLaPlata');
+  const laPlataToNataga = FormatUtils.filterSchedulesByRoute(filteredBySearch, 'toNataga');
 
   const currentSchedules = activeRoute === 'toLaPlata' ? natagaToLaPlata : laPlataToNataga;
 
