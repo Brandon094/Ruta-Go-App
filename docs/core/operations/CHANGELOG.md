@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.10] - 2026-06-07 (UI Parity & Dynamic Driver Identity)
+*Esta versión alcanza la paridad visual absoluta entre Web y Mobile al integrar la identidad del conductor en las tarjetas de horarios de la App Android.*
+
+### 📱 Ruta-Go Mobile (Android v1.5.3)
+- **Paridad UI (Schedules)**: Implementación de visualización del nombre del conductor en las tarjetas de horarios disponibles (`item_horario.xml`).
+- **Hidratación de Datos**: Mejora del `ScheduleService` para resolver nombres de conductores en tiempo real cruzando datos de Firebase.
+- **Modelado Robusto**: Actualización del modelo `Schedule.java` con soporte para metadatos del operador.
+- **Visibilidad Inteligente**: Lógica dinámica en el adaptador para ocultar campos de conductor en turnos no asignados.
+
 ## [1.9.9.9] - 2026-06-06 (Centralized Driver Onboarding & Legacy Cleanup)
 *Esta versión elimina definitivamente el auto-registro de conductores en Android, consolidando el flujo de afiliación administrativa exclusiva desde el Portal Web.*
 

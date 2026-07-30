@@ -1,6 +1,6 @@
-# 📱 Arquitectura de la Aplicación Android - Ruta-Go v1.5.2
+# 📱 Arquitectura de la Aplicación Android - Ruta-Go v1.5.3
 
-Este documento detalla la arquitectura de ingeniería de la App nativa de Ruta-Go (Sincronizada con Suite v1.9.9.9), diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa (MVVM)**, optimizado para el ecosistema móvil y compatible con las últimas APIs de Google.
+Este documento detalla la arquitectura de ingeniería de la App nativa de Ruta-Go (Sincronizada con Suite v1.9.10), diseñada bajo un paradigma **Reactivo, Transaccional y Multicapa (MVVM)**, optimizado para el ecosistema móvil y compatible con las últimas APIs de Google.
 
 ---
 

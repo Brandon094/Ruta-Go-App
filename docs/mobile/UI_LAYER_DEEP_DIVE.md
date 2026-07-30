@@ -1,4 +1,4 @@
-# 🎨 Inmersión Técnica: Capa de Interfaz de Usuario (UI) v1.9.9.5
+# 🎨 Inmersión Técnica: Capa de Interfaz de Usuario (UI) v1.5.3
 
 Este documento detalla la arquitectura de las vistas en la App Android, explicando la transición desde el sistema de Views tradicional hacia el paradigma declarativo de Jetpack Compose.
 
@@ -23,7 +23,9 @@ Estamos migrando gradualmente la interfaz para lograr una paridad de código con
 
 ## 🔄 3. Adaptadores y Listas (Legacy XML)
 Para las pantallas que aún utilizan `RecyclerView`, implementamos lógica visual avanzada:
-*   **`ScheduleAdapter`**: Resalta el próximo viaje disponible y gestiona la animación de salida del bus.
+*   **`ScheduleAdapter` (v1.5.3)**: 
+    - Resalta el próximo viaje disponible y gestiona la animación de salida del bus.
+    - **Paridad Web**: Incorpora la visualización del nombre del conductor debajo de la ruta para mayor transparencia operativa.
 *   **`ChatAdapter`**: Burbujas de mensaje direccionales con soporte para estados de envío en tiempo real.
 
 ---

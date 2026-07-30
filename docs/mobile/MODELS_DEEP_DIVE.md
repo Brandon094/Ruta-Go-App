@@ -1,4 +1,4 @@
-# 📖 Inmersión Técnica: Modelos de Datos (POJOs) v1.9.9.5
+# 📖 Inmersión Técnica: Modelos de Datos (POJOs) v1.5.3
 
 Este documento detalla la estructura, jerarquía y propósito de los modelos de datos en la App Android, diseñados para una sincronización eficiente con Firebase Realtime Database y paridad con el Portal Web.
 
@@ -21,7 +21,8 @@ El sistema implementa un modelo de herencia para la gestión de identidades bajo
 ---
 
 ## 🕒 3. Planificación y Logística
-*   **`Schedule`**: Representa un despacho. Conecta una ruta, hora, precio, conductor y ahora también el `vehiculoId` para una trazabilidad total.
+*   **`Schedule`**: Representa un despacho. Conecta una ruta, hora, precio y conductor.
+    *   **Hidratación (v1.5.3)**: Incluye el campo `driverName` para la visualización inmediata del operador en las tarjetas de horarios, logrando paridad visual con la web.
 *   **`SeatAvailability`**: Modelo reactivo que monitorea el inventario de puestos (libres vs ocupados).
 
 ---
