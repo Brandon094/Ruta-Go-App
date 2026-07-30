@@ -1,5 +1,6 @@
-import React from 'react';
-import { Share2, MessageSquare, MapPin, Clock, Armchair, Tag, User, Bus, Info } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Share2, MessageSquare, MapPin, Clock, Armchair, Tag, User, Bus, Info, Loader2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -10,9 +11,12 @@ import { IconRow } from '../ui/IconRow';
  * UI Espejo 1:1 de la App Nativa para el tiquete digital (v1.6.1 Mirror & DRY)
  */
 export function TicketModal({ reservation, role, drivers = [], onClose, onChat }) {
+  const ticketRef = useRef(null);
+  const [sharing, setSharing] = useState(false);
+
   if (!reservation) return null;
 
-  // --- 🧠 Resolución de Nombres (Fix: Datos faltantes) ---
+  // ... (Resolución de Nombres logic remains the same)
   const driverData = drivers.find(d => d.id === reservation.driverId || d.id === reservation.conductorId);
   const resolvedDriverName = driverData?.nombre || reservation.driver || 'Conductor';
   const resolvedPassengerName = reservation.name || reservation.nombre || 'Pasajero';
@@ -38,11 +42,51 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
     return new Date(d).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
+  // --- 📸 Lógica de Compartir (Capture & Web Share) ---
+  const handleShareTicket = async () => {
+    if (!ticketRef.current || sharing) return;
+
+    setSharing(true);
+    try {
+      // 1. Capturar el componente como imagen
+      const canvas = await html2canvas(ticketRef.current, {
+        backgroundColor: '#061426', // Color de fondo del ecosistema para el recorte
+        scale: 2, // Mejor calidad
+        logging: false,
+        useCORS: true,
+        borderRadius: 32
+      });
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], `tiquete_rutago_${reservation.idReservation?.substring(0, 8)}.png`, { type: 'image/png' });
+
+      // 2. Intentar usar Web Share API si el navegador lo permite con archivos
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Mi Tiquete Ruta-Go',
+          text: `Reserva para ${origin} ➔ ${destination} (${reservation.departureTime || formatTime(date)})`
+        });
+      } else {
+        // 3. Fallback: Descarga directa
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = `tiquete_rutago_${reservation.idReservation?.substring(0, 8)}.png`;
+        link.click();
+      }
+    } catch (error) {
+      console.error("Error al compartir tiquete:", error);
+      alert("No se pudo generar la imagen del tiquete.");
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <Modal isOpen={true} onClose={onClose} showClose={false} className="!bg-transparent !border-none !shadow-none">
       <div className="p-0 space-y-6">
         {/* TICKET CARD MAIN */}
-        <div className="bg-white rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
+        <div ref={ticketRef} className="bg-white rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
 
            {/* HEADER NARANJA */}
            <div className="bg-primary-500 p-8 flex flex-col items-center gap-4 text-white">
@@ -138,10 +182,11 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
               variant="ghost"
               size="md"
               className={`${isConfirmed ? 'col-span-3' : 'col-span-5'} !bg-white/5 hover:!bg-white/10 text-white !rounded-2xl border border-white/5`}
-              icon={Share2}
-              onClick={() => alert("Compartir en desarrollo")}
+              icon={sharing ? Loader2 : Share2}
+              isLoading={sharing}
+              onClick={handleShareTicket}
            >
-              Compartir Tiquete
+              {sharing ? 'Procesando...' : 'Compartir Tiquete'}
            </Button>
         </div>
       </div>
