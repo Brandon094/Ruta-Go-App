@@ -1,11 +1,11 @@
-# 🌐 Portal Web Central: Ruta-Go (Web v1.1.5)
+# 🌐 Portal Web Central: Ruta-Go (Web v1.1.6)
 
-Este documento define la estructura, evolución y despliegue del hub web centralizado que sirve como punto de anclaje para la plataforma **Ruta-Go** (Sincronizado con Suite v1.9.9.6).
+Este documento define la estructura, evolución y despliegue del hub web centralizado que sirve como punto de anclaje para la plataforma **Ruta-Go** (Sincronizado con Suite v1.9.9.8).
 
 ---
 
-## ✅ 1. Estado Actual (v1.1.5 - High Fidelity)
-El sitio web ha sido elevado a un estándar de alta fidelidad, con una auditoría Lighthouse sobresaliente y paridad total con la aplicación nativa (Android v1.5.0), incluyendo la función de compartir tiquetes digitales como imagen.
+## ✅ 1. Estado Actual (v1.1.6 - High Fidelity)
+El sitio web ha sido elevado a un estándar de alta fidelidad, con una auditoría Lighthouse sobresaliente y paridad total con la aplicación nativa (Android v1.5.1), incluyendo seguridad condicional en perfiles.
 
 *   **URL Oficial**: [https://rutago-huila.web.app](https://rutago-huila.web.app)
 *   **Hosting**: Firebase Hosting con despliegue sincronizado de Cloud Functions.

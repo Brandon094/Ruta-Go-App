@@ -4,17 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.9.8] - 2026-06-05 (Read-Only Vehicle for Drivers & Profile Refactor)
+*Esta versión centraliza la gestión de activos en roles administrativos y optimiza el rendimiento de la pantalla de perfil.*
+
+### 🌐 Ruta-Go Web (Portal v1.1.6)
+- **Seguridad en Perfil**: Implementación de renderizado condicional para ocultar la edición de vehículos a conductores.
+- **UX Optimizada**: Reducción de disparos accidentales de errores de permiso en Firebase.
+
+### 📱 Ruta-Go Mobile (Android v1.5.1)
+- **Refactor de Perfil**: Eliminación de entrada de datos técnicos del vehículo en la edición de perfil del conductor.
+- **Sincronización SSO**: El motor de actualización ahora replica cambios de identidad simultáneamente en los nodos `/conductores` y `/usuarios`.
+- **Limpieza de Código**: Purgado de lógica muerta y referencias a vistas obsoletas en `EditDriverProfileActivity`.
+
 ## [1.9.9.7] - 2026-06-04 (Share Ticket Feature & Real-time Landing Fixes)
-*Esta versión alcanza la paridad total en la gestión de tiquetes y corrige la visualización de datos vivos en la página principal.*
-
-### 🌐 Ruta-Go Web (Portal v1.1.5)
-- **Función Compartir Tiquete**: Implementación de captura visual de alta fidelidad (html2canvas) con soporte para Web Share API y descarga automática.
-- **Tiquete Digital Dinámico**: Rediseño integral con soporte para Temas Claro/Oscuro y optimización de resolución (Escala 3x).
-- **Fix de Horarios en Landing**: Corrección de la lógica de filtrado mediante normalización de tildes y caracteres especiales (Nátaga vs nataga).
-- **Arquitectura DRY**: Centralización de la lógica de normalización de rutas en `FormatUtils.js`.
-
-### 📱 Ruta-Go Mobile (Android v1.5.0)
-- **Sincronización de Identidad**: Alineación de estilos visuales en el tiquete digital para garantizar una experiencia de marca coherente entre plataformas.
 
 ## [1.9.9.6] - 2026-06-03 (Android 16 API 36 Compliance & Fixed Driver Registration)
 

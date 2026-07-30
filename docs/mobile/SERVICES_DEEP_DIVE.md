@@ -1,4 +1,4 @@
-# 📖 Inmersión Técnica: Repositorios y Servicios (Data Layer) v1.5.0
+# 📖 Inmersión Técnica: Repositorios y Servicios (Data Layer) v1.5.1
 
 Este documento detalla la lógica de la capa de datos de la App Android, encargada de la comunicación con Firebase y el cumplimiento de las reglas de negocio del Holding.
 
