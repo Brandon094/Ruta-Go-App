@@ -1,4 +1,4 @@
-# 📖 Inmersión Técnica: Gestión de Estado (ViewModels) v1.9.9.5
+# 📖 Inmersión Técnica: Gestión de Estado (ViewModels) v1.5.3
 
 Este documento detalla la arquitectura de la capa de presentación del Ecosistema Go, basada en el patrón MVVM y la programación reactiva para Android.
 

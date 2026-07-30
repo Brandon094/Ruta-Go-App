@@ -36,6 +36,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ### 🛠️ 1. Motor de Reservas & Notificaciones
 *   [x] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone (Payload 1:1 con Android).
+*   [x] **📸 Función Compartir Tiquete (v1.1.5)**: Implementación de captura visual (html2canvas) y Web Share API para paridad total con la experiencia móvil.
 *   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web. (Próximamente)
 
 ### 👑 2. Gobernanza Root Pro & Analítica Avanzada
@@ -46,7 +47,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
     *   Cálculo de ingresos basado en ocupación real (Digital + Venta Física).
     *   Detección inteligente de trayecto por destino final (Nátaga <-> La Plata).
 
-### 🎫 3. Experiencia de Usuario "Premium" & Rendimiento (v1.9.9.5)
+### 🎫 3. Experiencia de Usuario "Premium" & Rendimiento (v1.9.10)
 *   [x] **⚛️ Arquitectura Atómica & DRY**: Refactorización total del 100% del portal en Atoms, Molecules y Organisms.
 *   [x] **🚀 Optimización Extreme Performance**:
     *   **React Lazy & Suspense**: Code splitting para carga instantánea de la Landing Page.
@@ -56,6 +57,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
     *   **SplashScreen Premium**: Experiencia de carga de alta fidelidad.
     *   **Átomo BrandLogo**: Centralización total de la imagen corporativa.
 *   [x] **👨‍✈️ Upgrade Dashboard Conductor**: Visualización de progreso y porcentajes unificada con el panel de socios.
+*   [x] **💎 Paridad Visual 1:1 (v1.9.10)**: Sincronización de tarjetas de horarios, resaltado de próximo viaje y estados de finalización entre plataformas.
 
 ---
 
