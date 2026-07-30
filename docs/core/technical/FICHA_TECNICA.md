@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.9.8 Premium
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.9.9 Premium
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura de alto rendimiento.
 
@@ -7,10 +7,10 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 ## 🏗️ 1. Identificación de la Suite
 *   **Nombre Comercial:** Ecosistema "Go".
 *   **Fabricante:** ChopCode Solutions.
-*   **Versión Global de la Suite:** v1.9.9.8 (Seguridad & Perfil Refactor).
+*   **Versión Global de la Suite:** v1.9.9.9 (Limpieza Legacy & Afiliación Centralizada).
 
 ### 🏷️ Versiones por Componente:
-*   **Ruta-Go Android:** v1.5.1 (Personal Profile Sync).
+*   **Ruta-Go Android:** v1.5.2 (Passenger Focus).
 *   **Ruta-Go Web Portal:** v1.1.6 (Conditional Security).
 *   **Go-Core (Firebase):** v2.0.0 (FCM v1 & Rules v1.9).
 

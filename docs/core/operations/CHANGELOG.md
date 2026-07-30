@@ -4,17 +4,18 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.9.8] - 2026-06-05 (Read-Only Vehicle for Drivers & Profile Refactor)
-*Esta versión centraliza la gestión de activos en roles administrativos y optimiza el rendimiento de la pantalla de perfil.*
+## [1.9.9.9] - 2026-06-06 (Centralized Driver Onboarding & Legacy Cleanup)
+*Esta versión elimina definitivamente el auto-registro de conductores en Android, consolidando el flujo de afiliación administrativa exclusiva desde el Portal Web.*
+
+### 📱 Ruta-Go Mobile (Android v1.5.2)
+- **Deprecación de Registro Autónomo**: Eliminación completa de la interfaz y lógica de registro para conductores en la App.
+- **Purgado de Deuda Técnica**: Borrado físico de `DriverRegistrationActivity`, `DriverRegistrationViewModel` y layouts asociados.
+- **Login Optimizado**: Rediseño de la pantalla de inicio de sesión para un flujo de entrada más limpio.
 
 ### 🌐 Ruta-Go Web (Portal v1.1.6)
-- **Seguridad en Perfil**: Implementación de renderizado condicional para ocultar la edición de vehículos a conductores.
-- **UX Optimizada**: Reducción de disparos accidentales de errores de permiso en Firebase.
+- **Hito de Paridad**: Consolidación como el único canal oficial para el alta de operadores en el ecosistema.
 
-### 📱 Ruta-Go Mobile (Android v1.5.1)
-- **Refactor de Perfil**: Eliminación de entrada de datos técnicos del vehículo en la edición de perfil del conductor.
-- **Sincronización SSO**: El motor de actualización ahora replica cambios de identidad simultáneamente en los nodos `/conductores` y `/usuarios`.
-- **Limpieza de Código**: Purgado de lógica muerta y referencias a vistas obsoletas en `EditDriverProfileActivity`.
+## [1.9.9.8] - 2026-06-05 (Read-Only Vehicle for Drivers & Profile Refactor)
 
 ## [1.9.9.7] - 2026-06-04 (Share Ticket Feature & Real-time Landing Fixes)
 
