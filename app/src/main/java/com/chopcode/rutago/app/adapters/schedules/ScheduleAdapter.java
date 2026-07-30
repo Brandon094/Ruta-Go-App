@@ -111,9 +111,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         nextTripIndex = -1;
         if (schedules.isEmpty()) return;
 
-        for (int i = 0; i < schedules.size(); i++) {
-            if (!FormatUtils.esHorarioPasado(schedules.get(i).getTime())) {
-                nextTripIndex = i;
+        for (int j = 0; j < schedules.size(); j++) {
+            if (!FormatUtils.esHorarioPasado(schedules.get(j).getTime())) {
+                nextTripIndex = j;
                 break;
             }
         }
@@ -128,7 +128,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext, tvDriverName;
-        public View layoutDriverInfo;
+        public View layoutDriverInfo, layoutTimeIndicator;
         public FloatingActionButton btnReserve;
 
         public ViewHolder(@NonNull View itemView) {
@@ -142,6 +142,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximo);
             tvDriverName = itemView.findViewById(R.id.tvNombreConductor);
             layoutDriverInfo = itemView.findViewById(R.id.layoutConductorInfo);
+            layoutTimeIndicator = itemView.findViewById(R.id.layoutTimeIndicator);
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
@@ -149,26 +150,57 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
          * Enlaza los datos del modelo con los componentes UI, aplicando lógica de estados.
          */
         public void bind(Schedule schedule, boolean isNextTrip, boolean animationsEnabled, OnReservarClickListener listener) {
+            boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
+            int available = schedule.getAvailableSeats();
+            boolean hasDriver = schedule.getConductorId() != null && !schedule.getConductorId().isEmpty();
+
+            // 🎨 Paridad Web v1.9.10: Resaltar viaje siguiente y aplicar opacidad si ya pasó
+            itemView.setAlpha(isPast ? 0.5f : 1.0f);
+            
+            if (itemView instanceof com.google.android.material.card.MaterialCardView) {
+                com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) itemView;
+                if (isNextTrip && !isPast) {
+                    card.setStrokeColor(itemView.getContext().getColor(R.color.primary_500));
+                    card.setStrokeWidth(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 2));
+                    card.setCardElevation(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 8));
+                    if (layoutTimeIndicator != null) layoutTimeIndicator.setBackgroundResource(R.drawable.bg_time_circle);
+                } else {
+                    card.setStrokeColor(itemView.getContext().getColor(R.color.surface_variant));
+                    card.setStrokeWidth(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 1));
+                    card.setCardElevation(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 2));
+                    // Si no es el siguiente o ya pasó, podemos usar un drawable más tenue o solo el fondo si quisieras
+                    if (layoutTimeIndicator != null) layoutTimeIndicator.setBackgroundResource(R.drawable.bg_time_circle);
+                }
+            }
+
             // Segmentación visual de la hora
             String[] timeParts = FormatUtils.separarHoraYAmPm(schedule.getTime());
-            if (tvTime != null) tvTime.setText(timeParts[0]);
-            if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
+            if (tvTime != null) {
+                tvTime.setText(timeParts[0]);
+                tvTime.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.primary_500));
+            }
+            if (tvAmPm != null) {
+                tvAmPm.setText(timeParts[1]);
+                tvAmPm.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.primary_500));
+            }
 
-            if (tvRoute != null) tvRoute.setText(schedule.getRoute());
+            if (tvRoute != null) {
+                tvRoute.setText(schedule.getRoute());
+                tvRoute.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.text_primary));
+            }
 
             // 👨‍✈️ Sincronización de Identidad (v1.9.9.9 Paridad Web)
             if (layoutDriverInfo != null) {
                 if (schedule.getDriverName() != null && !schedule.getDriverName().isEmpty()) {
                     layoutDriverInfo.setVisibility(View.VISIBLE);
-                    if (tvDriverName != null) tvDriverName.setText(schedule.getDriverName());
+                    if (tvDriverName != null) {
+                        tvDriverName.setText(schedule.getDriverName());
+                        tvDriverName.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.text_secondary));
+                    }
                 } else {
                     layoutDriverInfo.setVisibility(View.GONE);
                 }
             }
-
-            int available = schedule.getAvailableSeats();
-            boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
-            boolean hasDriver = schedule.getConductorId() != null && !schedule.getConductorId().isEmpty();
 
             // Animación reactiva de contadores
             if (tvSeats != null) {
@@ -256,7 +288,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 badgeText = "Últimos cupos";
             } else {
                 textColor = itemView.getContext().getColor(R.color.primary_200); 
-                badgeRes = isNextTrip ? R.drawable.bg_status_next : R.drawable.bg_estado_confirmado;
+                badgeRes = R.drawable.bg_estado_confirmado;
                 badgeText = "Disponible";
             }
 

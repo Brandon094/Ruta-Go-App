@@ -12,203 +12,217 @@
     app:strokeColor="?attr/colorSurfaceVariant"
     app:strokeWidth="1dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="14dp"
-        android:gravity="center_vertical"
-        android:minHeight="80dp">
+        android:layout_height="wrap_content">
 
-        <!-- Indicador de tiempo -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/layoutMainContent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_time_circle"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:elevation="2dp"
-            android:padding="4dp"
-            android:minWidth="50dp">
+            android:orientation="horizontal"
+            android:padding="14dp"
+            android:gravity="center_vertical"
+            android:minHeight="80dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <TextView
-                android:id="@+id/tvHora"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary_500"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                tools:text="06:00" />
-
-            <TextView
-                android:id="@+id/tvAmPm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary_500"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                tools:text="AM" />
-        </LinearLayout>
-
-        <!-- Separador -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="32dp"
-            android:background="?attr/colorSurfaceVariant"
-            android:layout_marginHorizontal="12dp"
-            android:alpha="0.5" />
-
-        <!-- Contenedor principal de información -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="8dp">
-
-            <!-- Ruta -->
-            <TextView
-                android:id="@+id/tvRuta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:lineSpacingExtra="2dp"
-                tools:text="Natagá → La Plata" />
-
-            <!-- Conductor (Añadido v1.9.9.9 Paridad Web) -->
+            <!-- Indicador de tiempo -->
             <LinearLayout
-                android:id="@+id/layoutConductorInfo"
-                android:layout_width="match_parent"
+                android:id="@+id/layoutTimeIndicator"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="2dp">
-
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:src="@drawable/ic_person"
-                    app:tint="?attr/android:textColorSecondary"
-                    android:alpha="0.6"
-                    android:layout_marginEnd="4dp" />
+                android:background="@drawable/bg_time_circle"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:elevation="2dp"
+                android:padding="4dp"
+                android:minWidth="50dp">
 
                 <TextView
-                    android:id="@+id/tvNombreConductor"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvHora"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="?attr/android:textColorSecondary"
-                    android:textSize="10sp"
+                    android:textColor="@color/primary_500"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textAllCaps="true"
-                    android:alpha="0.8"
-                    tools:text="ONIAS PEREZ" />
+                    tools:text="06:00" />
+
+                <TextView
+                    android:id="@+id/tvAmPm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_500"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    tools:text="AM" />
             </LinearLayout>
 
-            <!-- Información de asientos y precio en vertical -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="6dp">
+            <!-- Separador -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="32dp"
+                android:background="?attr/colorSurfaceVariant"
+                android:layout_marginHorizontal="12dp"
+                android:alpha="0.5" />
 
-                <!-- Fila de asientos -->
-                <LinearLayout
+            <!-- Contenedor principal de información -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <!-- Ruta -->
+                <TextView
+                    android:id="@+id/tvRuta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:lineSpacingExtra="2dp"
+                    tools:text="Natagá → La Plata" />
 
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@drawable/ic_seat"
-                        app:tint="@color/primary_300"
-                        android:layout_marginEnd="6dp" />
-
-                    <TextView
-                        android:id="@+id/tvAsientos"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="?attr/android:textColorSecondary"
-                        android:textSize="11sp"
-                        tools:text="13 asientos disponibles" />
-                </LinearLayout>
-
-                <!-- Fila de precio -->
+                <!-- Conductor (Añadido v1.9.9.9 Paridad Web) -->
                 <LinearLayout
+                    android:id="@+id/layoutConductorInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="3dp">
+                    android:layout_marginTop="2dp">
 
                     <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@drawable/ic_price"
-                        app:tint="@color/primary_300"
-                        android:layout_marginEnd="6dp" />
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/ic_person"
+                        app:tint="?attr/android:textColorSecondary"
+                        android:alpha="0.6"
+                        android:layout_marginEnd="4dp" />
 
                     <TextView
-                        android:id="@+id/tvPrecio"
+                        android:id="@+id/tvNombreConductor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/primary_500"
-                        android:textSize="12sp"
+                        android:textColor="?attr/android:textColorSecondary"
+                        android:textSize="10sp"
                         android:textStyle="bold"
-                        tools:text="$12.000" />
+                        android:textAllCaps="true"
+                        android:alpha="0.8"
+                        tools:text="ONIAS PEREZ" />
                 </LinearLayout>
 
+                <!-- Información de asientos y precio en vertical -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="6dp">
+
+                    <!-- Fila de asientos -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_seat"
+                            app:tint="@color/primary_300"
+                            android:layout_marginEnd="6dp" />
+
+                        <TextView
+                            android:id="@+id/tvAsientos"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/android:textColorSecondary"
+                            android:textSize="11sp"
+                            tools:text="13 asientos disponibles" />
+                    </LinearLayout>
+
+                    <!-- Fila de precio -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="3dp">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_price"
+                            app:tint="@color/primary_300"
+                            android:layout_marginEnd="6dp" />
+
+                        <TextView
+                            android:id="@+id/tvPrecio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/primary_500"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            tools:text="$12.000" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Estado de disponibilidad -->
+                <TextView
+                    android:id="@+id/tvEstadoDisponibilidad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_badge_status"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:text="Disponible"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Estado de disponibilidad -->
-            <TextView
-                android:id="@+id/tvEstadoDisponibilidad"
+            <!-- Contenedor de Acción -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_badge_status"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
-                android:text="Disponible"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnReservar"
+                    style="@style/FabStyle.Mini"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add"
+                    app:fabSize="mini" />
+            </LinearLayout>
+
         </LinearLayout>
 
-        <!-- Contenedor de Acción y Badge Siguiente -->
-        <LinearLayout
+        <!-- 🏷️ Badge Siguiente (v1.9.10 Paridad Web) -->
+        <TextView
+            android:id="@+id/tvBadgeProximo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:background="@drawable/bg_badge_next"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="4dp"
+            android:text="@string/badge_siguiente"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:elevation="4dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnReservar"
-                style="@style/FabStyle.Mini"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_add"
-                app:fabSize="mini" />
-
-            <TextView
-                android:id="@+id/tvBadgeProximo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/bg_badge_status"
-                android:backgroundTint="@color/secondary_400"
-                android:paddingHorizontal="6dp"
-                android:paddingVertical="2dp"
-                android:text="@string/badge_siguiente"
-                android:textColor="@color/white"
-                android:textSize="9sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                tools:visibility="visible" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

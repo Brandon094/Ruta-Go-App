@@ -135,4 +135,13 @@ public class WindowUtils {
             return insets;
         });
     }
+
+    /**
+     * Convierte valores de DP a Píxeles según la densidad de la pantalla del dispositivo.
+     */
+    public static int dpToPx(android.content.Context context, int dp) {
+        if (context == null) return dp;
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
+    }
 }

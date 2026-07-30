@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Clock, Info } from 'lucide-react';
 import { ScheduleCard } from './ScheduleCard';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 🚌 Organism: ScheduleTable
@@ -12,11 +13,15 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   const nextTripRef = useRef(null);
 
   const getTripMinutes = (horaStr) => {
-    const [time, ampm] = horaStr.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-    if (ampm === 'PM' && hours < 12) hours += 12;
-    if (ampm === 'AM' && hours === 12) hours = 0;
-    return hours * 60 + minutes;
+    try {
+      const [time, ampm] = horaStr.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (ampm === 'PM' && hours < 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    } catch (e) {
+      return 0;
+    }
   };
 
   const getNextTripId = () => {
@@ -46,6 +51,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     schedules.forEach(s => {
       const tripMinutes = getTripMinutes(s.hora);
       const diff = tripMinutes - currentMinutes;
+      // Solo consideramos viajes que no han pasado
       if (diff > 0 && diff < minDiff) {
         minDiff = diff;
         closestTripId = s.id;
@@ -55,10 +61,6 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
   };
 
   const nextTripId = getNextTripId();
-  const now = new Date();
-  const hAct = now.getHours();
-  const currentMinutes = hAct * 60 + now.getMinutes();
-  const isAfterReset = hAct >= 19;
 
   // Auto-scroll al viaje siguiente
   useEffect(() => {
@@ -77,9 +79,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     <div className="space-y-4 max-w-5xl mx-auto">
       {schedules.length > 0 ? (
         schedules.map((schedule) => {
-          const tripMinutes = getTripMinutes(schedule.hora);
-          // Un viaje pasó si no hemos llegado a las 7 PM y la hora del viaje ya pasó
-          const hasPassed = !isAfterReset && (tripMinutes < currentMinutes);
+          const hasPassed = FormatUtils.isPastSchedule(schedule.hora);
           const isNext = schedule.id === nextTripId;
 
           return (

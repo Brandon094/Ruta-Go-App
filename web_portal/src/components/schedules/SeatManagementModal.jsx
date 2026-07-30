@@ -145,6 +145,14 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
   // --- 🎫 Reserva Pasajero ---
   const handlePassengerReserve = async () => {
     if (!selectedSeat || updating) return;
+
+    // 🛡️ PROTECCIÓN v1.9.10: Evitar reservas en horarios pasados
+    if (FormatUtils.isPastSchedule(schedule.hora)) {
+      alert("Este horario ya no está disponible para reservas.");
+      onClose();
+      return;
+    }
+
     setUpdating(true);
     try {
       const rutaNorm = FormatUtils.normalizeText(schedule.ruta || "").replace(/➔/g, '->');

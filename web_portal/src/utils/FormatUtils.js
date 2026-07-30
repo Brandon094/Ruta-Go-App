@@ -65,6 +65,41 @@ export const FormatUtils = {
   },
 
   /**
+   * Determina si un horario ya pasó basándose en la hora actual y la regla de las 7 PM.
+   * Mirror de esHorarioPasado en Java.
+   */
+  isPastSchedule: (horaStr) => {
+    if (!horaStr) return false;
+
+    const now = new Date();
+    const hAct = now.getHours();
+
+    // Regla de Oro: Tras la rotación de las 7 PM, la planilla es para mañana.
+    if (hAct >= 19) return false;
+
+    try {
+      const cleanHora = horaStr.trim().toUpperCase().replace(/\s+/g, ' ');
+      const parts = cleanHora.split(' ');
+      if (parts.length < 2) return false;
+
+      const time = parts[0];
+      const ampm = parts[1];
+
+      let [hours, minutes] = time.split(':').map(Number);
+
+      if (ampm === 'PM' && hours < 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+
+      const tripMinutes = hours * 60 + (minutes || 0);
+      const currentMinutes = hAct * 60 + now.getMinutes();
+
+      return tripMinutes <= currentMinutes;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  /**
    * Filtra horarios por dirección de ruta (Natagá -> La Plata o viceversa).
    */
   filterSchedulesByRoute: (schedules, direction = 'toLaPlata') => {

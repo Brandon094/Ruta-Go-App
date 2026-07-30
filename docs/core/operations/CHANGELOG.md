@@ -4,14 +4,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.10] - 2026-06-07 (UI Parity & Dynamic Driver Identity)
-*Esta versión alcanza la paridad visual absoluta entre Web y Mobile al integrar la identidad del conductor en las tarjetas de horarios de la App Android.*
+## [1.9.10] - 2026-06-07 (UI Parity 1:1 & High-Fidelity Schedules)
+*Esta versión alcanza la paridad visual absoluta entre Web y Mobile, optimizando la jerarquía de información y la experiencia de reserva en Android.*
 
 ### 📱 Ruta-Go Mobile (Android v1.5.3)
-- **Paridad UI (Schedules)**: Implementación de visualización del nombre del conductor en las tarjetas de horarios disponibles (`item_horario.xml`).
-- **Hidratación de Datos**: Mejora del `ScheduleService` para resolver nombres de conductores en tiempo real cruzando datos de Firebase.
-- **Modelado Robusto**: Actualización del modelo `Schedule.java` con soporte para metadatos del operador.
-- **Visibilidad Inteligente**: Lógica dinámica en el adaptador para ocultar campos de conductor en turnos no asignados.
+- **Resaltado de Próximo Viaje**: Implementación de borde naranja (`primary_500`) de 2dp y elevación de 8dp para destacar el turno vigente.
+- **Estados de Horarios**: Aplicación de opacidad (0.5) y paleta de colores atenuada para turnos finalizados, mejorando el enfoque visual.
+- **Rediseño de Badge "Siguiente"**: Migración a un formato de esquina flotante con bordes asimétricos, calcando el diseño premium del portal web.
+- **Paridad UI (Conductores)**: Visualización del nombre del operador en las tarjetas de horarios y lógica de hidratación dinámica desde Firebase.
+
+### 🌐 Ruta-Go Web (Portal v1.1.6)
+- **Bloqueo Universal de Jornada**: Sincronización de la lógica de expiración para inhabilitar reservas en horarios pasados para todos los roles administrativos.
 
 ## [1.9.9.9] - 2026-06-06 (Centralized Driver Onboarding & Legacy Cleanup)
 *Esta versión elimina definitivamente el auto-registro de conductores en Android, consolidando el flujo de afiliación administrativa exclusiva desde el Portal Web.*
