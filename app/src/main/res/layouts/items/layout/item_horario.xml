@@ -77,6 +77,35 @@
                 android:lineSpacingExtra="2dp"
                 tools:text="Natagá → La Plata" />
 
+            <!-- Conductor (Añadido v1.9.9.9 Paridad Web) -->
+            <LinearLayout
+                android:id="@+id/layoutConductorInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="2dp">
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/ic_person"
+                    app:tint="?attr/android:textColorSecondary"
+                    android:alpha="0.6"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/tvNombreConductor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?attr/android:textColorSecondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:alpha="0.8"
+                    tools:text="ONIAS PEREZ" />
+            </LinearLayout>
+
             <!-- Información de asientos y precio en vertical -->
             <LinearLayout
                 android:layout_width="match_parent"

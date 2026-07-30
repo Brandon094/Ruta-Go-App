@@ -20,11 +20,15 @@ public class Schedule implements Serializable {
     public int availableSeats; 
     public int totalCapacity;      
     private String conductorId;
+    private String driverName;
 
     /**
      * Constructor vacío requerido por Firebase.
      */
     public Schedule() { }
+
+    public String getDriverName() { return driverName; }
+    public void setDriverName(String driverName) { this.driverName = driverName; }
 
     /**
      * @return UID del conductor asignado a este turno.

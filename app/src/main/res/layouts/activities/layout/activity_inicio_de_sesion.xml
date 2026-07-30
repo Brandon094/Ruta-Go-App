@@ -267,20 +267,6 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"/>
-
-                <TextView
-                    android:id="@+id/btnRegisterAsDriver"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/eres_conductor_registrate"
-                    android:textColor="?attr/android:textColorSecondary"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
-                    android:padding="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

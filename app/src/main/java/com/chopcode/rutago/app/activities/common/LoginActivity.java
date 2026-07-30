@@ -12,7 +12,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -60,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     // Componentes de Interfaz
     private TextInputEditText editTextUser, editTextPassword;
     private Button buttonLogin, btnGoogleSignIn;
-    private TextView buttonRegistration, forgotPassword, btnRegisterAsDriver;
+    private TextView buttonRegistration, forgotPassword;
     private View overlay;
     private ProgressBar progressBar;
 
@@ -101,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
         buttonRegistration = findViewById(R.id.buttonRegistro);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
         forgotPassword = findViewById(R.id.olvidasteContraseña);
-        btnRegisterAsDriver = findViewById(R.id.btnRegisterAsDriver);
         overlay = findViewById(R.id.overlay);
         progressBar = findViewById(R.id.progressBar);
 
@@ -109,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         UIAnimationUtils.setClickAnimation(btnGoogleSignIn);
         UIAnimationUtils.setClickAnimation(buttonRegistration);
         UIAnimationUtils.setClickAnimation(forgotPassword);
-        UIAnimationUtils.setClickAnimation(btnRegisterAsDriver);
 
         View logoCard = findViewById(R.id.loginCardLogo);
         if (logoCard != null) UIAnimationUtils.startLogoTiltAnimation(logoCard);
@@ -156,9 +153,6 @@ public class LoginActivity extends AppCompatActivity {
         btnGoogleSignIn.setOnClickListener(v -> viewModel.loginWithGoogle());
 
         buttonRegistration.setOnClickListener(v -> startActivity(new Intent(this, RegistrationActivity.class)));
-
-        btnRegisterAsDriver.setOnClickListener(v -> 
-            startActivity(new Intent(this, com.chopcode.rutago.app.activities.driver.DriverRegistrationActivity.class)));
 
         forgotPassword.setOnClickListener(v -> startActivity(new Intent(this, ForgotPasswordActivity.class)));
     }

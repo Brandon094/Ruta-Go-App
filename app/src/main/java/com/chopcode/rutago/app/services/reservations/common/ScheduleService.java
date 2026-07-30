@@ -88,8 +88,12 @@ public class ScheduleService {
                 MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
-                        Set<String> validDrivers = new HashSet<>();
-                        for (DataSnapshot d : driversSnapshot.getChildren()) validDrivers.add(d.getKey());
+                        Map<String, String> driverNames = new java.util.HashMap<>();
+                        for (DataSnapshot d : driversSnapshot.getChildren()) {
+                            String name = d.child("nombre").getValue(String.class);
+                            if (name != null) driverNames.put(d.getKey(), name);
+                            else driverNames.put(d.getKey(), "Conductor"); // Fallback
+                        }
 
                         // Fase 2: Cargar y filtrar la planilla maestra
                         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -110,10 +114,12 @@ public class ScheduleService {
                                     s.setRoute(routeStr != null ? routeStr : "Ruta no disponible");
                                     
                                     // 🛡️ Filtro de Integridad: El conductor asignado debe ser real
-                                    if (condId != null && validDrivers.contains(condId)) {
+                                    if (condId != null && driverNames.containsKey(condId)) {
                                         s.setConductorId(condId);
+                                        s.setDriverName(driverNames.get(condId));
                                     } else {
                                         s.setConductorId(null);
+                                        s.setDriverName(null);
                                     }
 
                                     processPriceAndAddToList(s, routeStr, allPrices, natagaList, laPlataList);

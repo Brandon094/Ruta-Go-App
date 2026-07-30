@@ -127,7 +127,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      * ViewHolder especializado en la representación visual del despacho.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext;
+        public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext, tvDriverName;
+        public View layoutDriverInfo;
         public FloatingActionButton btnReserve;
 
         public ViewHolder(@NonNull View itemView) {
@@ -139,6 +140,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvPrice = itemView.findViewById(R.id.tvPrecio);
             tvAvailabilityBadge = itemView.findViewById(R.id.tvEstadoDisponibilidad);
             tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximo);
+            tvDriverName = itemView.findViewById(R.id.tvNombreConductor);
+            layoutDriverInfo = itemView.findViewById(R.id.layoutConductorInfo);
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
@@ -152,6 +155,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
 
             if (tvRoute != null) tvRoute.setText(schedule.getRoute());
+
+            // 👨‍✈️ Sincronización de Identidad (v1.9.9.9 Paridad Web)
+            if (layoutDriverInfo != null) {
+                if (schedule.getDriverName() != null && !schedule.getDriverName().isEmpty()) {
+                    layoutDriverInfo.setVisibility(View.VISIBLE);
+                    if (tvDriverName != null) tvDriverName.setText(schedule.getDriverName());
+                } else {
+                    layoutDriverInfo.setVisibility(View.GONE);
+                }
+            }
 
             int available = schedule.getAvailableSeats();
             boolean isPast = FormatUtils.esHorarioPasado(schedule.getTime());
