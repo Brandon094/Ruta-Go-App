@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.models.Driver;
-import com.chopcode.rutago.app.models.Vehicle;
 import com.chopcode.rutago.app.utils.ui.WindowUtils;
 import com.chopcode.rutago.app.viewmodels.driver.EditDriverProfileViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -37,14 +36,13 @@ public class EditDriverProfileActivity extends AppCompatActivity {
     private static final String TAG = "EditDriverProfileActivity";
 
     // Views - Current Data
-    private TextView tvCorreoActual, tvNombreActual, tvTelefonoActual, tvPlacaActual, tvMarcaActual, tvModeloActual, tvColorActual, tvCapacidadActual, tvAnioActual;
+    private TextView tvCorreoActual, tvNombreActual, tvTelefonoActual;
     
     // Views - Inputs
-    private TextInputEditText etNombre, etTelefono, etPlaca, etMarca, etModelo, etColor, etCapacidad, etAnio;
+    private TextInputEditText etNombre, etTelefono;
     
     private MaterialToolbar topAppBar;
     private TabLayout tabLayout;
-    private View containerPersonal, containerVehiculo;
     private Button btnCancelar, btnGuardarCambios;
     private ProgressBar progressBar;
 
@@ -79,26 +77,12 @@ public class EditDriverProfileActivity extends AppCompatActivity {
         tvCorreoActual = findViewById(R.id.tvCorreoActual);
         tvNombreActual = findViewById(R.id.tvNombreActual);
         tvTelefonoActual = findViewById(R.id.tvTelefonoActual);
-        tvPlacaActual = findViewById(R.id.tvPlacaActual);
-        tvMarcaActual = findViewById(R.id.tvMarcaActual);
-        tvModeloActual = findViewById(R.id.tvModeloActual);
-        tvColorActual = findViewById(R.id.tvColorActual);
-        tvCapacidadActual = findViewById(R.id.tvCapacidadActual);
-        tvAnioActual = findViewById(R.id.tvAnioActual);
 
         etNombre = findViewById(R.id.etNombre);
         etTelefono = findViewById(R.id.etTelefono);
-        etPlaca = findViewById(R.id.etPlaca);
-        etMarca = findViewById(R.id.etMarca);
-        etModelo = findViewById(R.id.etModelo);
-        etColor = findViewById(R.id.etColor);
-        etCapacidad = findViewById(R.id.etCapacidad);
-        etAnio = findViewById(R.id.etAnio);
 
         topAppBar = findViewById(R.id.topAppBar);
         tabLayout = findViewById(R.id.tabLayoutEditar);
-        containerPersonal = findViewById(R.id.containerPersonal);
-        containerVehiculo = findViewById(R.id.containerVehiculo);
         btnCancelar = findViewById(R.id.btnCancelar);
         btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
         progressBar = findViewById(R.id.progressBar);
@@ -114,21 +98,6 @@ public class EditDriverProfileActivity extends AppCompatActivity {
                 tvNombreActual.setText(getString(R.string.nombreCompleto) + ": " + driver.getNombre());
                 tvTelefonoActual.setText(getString(R.string.telefono) + ": " + driver.getTelefono());
                 tvCorreoActual.setText(getString(R.string.correo) + ": " + driver.getEmail());
-            }
-        });
-
-        viewModel.getVehiculoData().observe(this, vehicle -> {
-            if (vehicle != null) {
-                tvPlacaActual.setText(getString(R.string.placa_label_format, vehicle.getPlate() != null ? vehicle.getPlate() : "--"));
-                tvMarcaActual.setText(getString(R.string.marca) + ": " + (vehicle.getBrand() != null ? vehicle.getBrand() : "--"));
-                tvModeloActual.setText(getString(R.string.modelo, vehicle.getModel() != null ? vehicle.getModel() : "--"));
-                tvColorActual.setText(getString(R.string.color) + ": " + (vehicle.getColor() != null ? vehicle.getColor() : "--"));
-                
-                int cap = 0;
-                try { cap = vehicle.getCapacity(); } catch (Exception ignored) {}
-                tvCapacidadActual.setText(getString(R.string.capacidad, cap));
-                
-                tvAnioActual.setText(getString(R.string.anio_label) + ": " + (vehicle.getYear() != null ? vehicle.getYear() : "--"));
             }
         });
 
@@ -150,16 +119,8 @@ public class EditDriverProfileActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                boolean isPersonal = tab.getPosition() == 0;
-                containerPersonal.setVisibility(isPersonal ? View.VISIBLE : View.GONE);
-                containerVehiculo.setVisibility(isPersonal ? View.GONE : View.VISIBLE);
-            }
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
-        });
+        // 🛡️ REFACTOR v1.9.9.8: Deshabilitar navegación a pestaña vehículo para conductores
+        tabLayout.setVisibility(View.GONE);
 
         if (topAppBar != null) topAppBar.setNavigationOnClickListener(v -> onBackPressed());
 
@@ -177,29 +138,15 @@ public class EditDriverProfileActivity extends AppCompatActivity {
 
     private void procesarGuardado() {
         Driver d = viewModel.getConductorData().getValue();
-        Vehicle v = viewModel.getVehiculoData().getValue();
-
         if (d == null) d = new Driver();
-        if (v == null) v = new Vehicle();
 
         String nNombre = etNombre.getText() != null ? etNombre.getText().toString().trim() : "";
         String nTelef = etTelefono.getText() != null ? etTelefono.getText().toString().trim() : "";
         if (!nNombre.isEmpty()) d.setNombre(nNombre);
         if (!nTelef.isEmpty()) d.setTelefono(nTelef);
 
-        String nPlaca = etPlaca.getText() != null ? etPlaca.getText().toString().trim() : "";
-        String nMarca = etMarca.getText() != null ? etMarca.getText().toString().trim() : "";
-        String nMod = etModelo.getText() != null ? etModelo.getText().toString().trim() : "";
-        String nCap = etCapacidad.getText() != null ? etCapacidad.getText().toString().trim() : "";
-        
-        if (!nPlaca.isEmpty()) v.setPlate(nPlaca);
-        if (!nMarca.isEmpty()) v.setBrand(nMarca);
-        if (!nMod.isEmpty()) v.setModel(nMod);
-        if (!nCap.isEmpty()) v.setCapacity(Integer.parseInt(nCap));
-        
-        if (etColor.getText() != null && !etColor.getText().toString().isEmpty()) v.setColor(etColor.getText().toString());
-        if (etAnio.getText() != null && !etAnio.getText().toString().isEmpty()) v.setYear(etAnio.getText().toString());
-
-        viewModel.updateProfile(userId, d, v);
+        // 🛡️ REFACTOR v1.9.9.8: Solo guardar datos personales. 
+        // La gestión del vehículo es exclusiva de Dueños y Admin.
+        viewModel.updateProfile(userId, d, null);
     }
 }

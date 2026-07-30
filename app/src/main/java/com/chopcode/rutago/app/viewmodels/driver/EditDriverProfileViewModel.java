@@ -129,42 +129,62 @@ public class EditDriverProfileViewModel extends ViewModel {
     }
 
     /**
-     * Ejecuta una transacción coordinada para actualizar los datos en múltiples nodos.
-     * Si la capacidad cambia, se propaga a los horarios del día.
+     * Ejecuta una actualización de perfil.
+     * Soporta actualización parcial (solo conductor) si el vehículo es null.
      */
     public void updateProfile(String userId, Driver driver, Vehicle vehicle) {
         isLoading.setValue(true);
-        Log.d(TAG, "🔄 Iniciando actualización masiva para conductor: " + userId);
+        Log.d(TAG, "🔄 Iniciando actualización de perfil para conductor: " + userId);
 
-        vehicle.setDriverId(userId);
-        if (vehicle.getId() == null || vehicle.getId().isEmpty()) {
-            vehicle.setId(vehicle.getPlate());
-        }
-
-        // 1. Actualizar nodo /vehiculos/
-        DatabaseReference vehicleRef = MyApp.getDatabaseReference("vehiculos/" + vehicle.getId());
-        vehicleRef.setValue(vehicle).addOnSuccessListener(aVoid -> {
-            
-            driver.setVehicleId(vehicle.getId());
-            driver.setVehiclePlate(vehicle.getPlate());
-            
-            // Sincronización de capacidad en los despachos activos
-            if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty()) {
-                seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), vehicle.getCapacity());
+        if (vehicle != null) {
+            // FLUJO COMPLETO (Conductor + Vehículo) - Mantener para compatibilidad futura
+            vehicle.setDriverId(userId);
+            if (vehicle.getId() == null || vehicle.getId().isEmpty()) {
+                vehicle.setId(vehicle.getPlate());
             }
 
-            // 2. Actualizar nodo /conductores/
-            DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
-            conductorRef.setValue(driver).addOnSuccessListener(aVoid2 -> {
-                isLoading.postValue(false);
-                updateSuccess.postValue(true);
+            DatabaseReference vehicleRef = MyApp.getDatabaseReference("vehiculos/" + vehicle.getId());
+            vehicleRef.setValue(vehicle).addOnSuccessListener(aVoid -> {
+                driver.setVehicleId(vehicle.getId());
+                driver.setVehiclePlate(vehicle.getPlate());
+                
+                if (driver.getAssignedSchedules() != null && !driver.getAssignedSchedules().isEmpty()) {
+                    seatsDataProcessor.syncVehicleCapacityToSchedules(driver.getAssignedSchedules(), vehicle.getCapacity());
+                }
+
+                saveConductorData(userId, driver);
             }).addOnFailureListener(e -> {
-                error.postValue(MyApp.getAppContext().getString(R.string.error_node_drivers, e.getMessage()));
+                error.postValue(MyApp.getAppContext().getString(R.string.error_node_vehicles, e.getMessage()));
                 isLoading.postValue(false);
             });
+        } else {
+            // 🛡️ REFACTOR v1.9.9.8: Solo actualizar datos del conductor (Personal)
+            saveConductorData(userId, driver);
+        }
+    }
+
+    private void saveConductorData(String userId, Driver driver) {
+        // 1. Actualizar en /conductores/
+        DatabaseReference conductorRef = MyApp.getDatabaseReference("conductores/" + userId);
+        conductorRef.setValue(driver).addOnSuccessListener(aVoid -> {
+            
+            // 2. Sincronizar nombre y teléfono en /usuarios/ (SSO)
+            Map<String, Object> userUpdates = new HashMap<>();
+            userUpdates.put("nombre", driver.getNombre());
+            userUpdates.put("telefono", driver.getTelefono());
+            
+            MyApp.getDatabaseReference("usuarios/" + userId).updateChildren(userUpdates)
+                .addOnSuccessListener(aVoid2 -> {
+                    isLoading.postValue(false);
+                    updateSuccess.postValue(true);
+                })
+                .addOnFailureListener(e -> {
+                    error.postValue("Perfil sincronizado en conductores, pero falló en usuarios: " + e.getMessage());
+                    isLoading.postValue(false);
+                });
 
         }).addOnFailureListener(e -> {
-            error.postValue(MyApp.getAppContext().getString(R.string.error_node_vehicles, e.getMessage()));
+            error.postValue(MyApp.getAppContext().getString(R.string.error_node_drivers, e.getMessage()));
             isLoading.postValue(false);
         });
     }

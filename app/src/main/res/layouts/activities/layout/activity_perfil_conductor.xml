@@ -345,30 +345,31 @@
                                 </LinearLayout>
                             </LinearLayout>
                         </androidx.gridlayout.widget.GridLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnEditarPerfil"
-                            style="@style/ButtonStyleSecondary"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
-                            android:text="Editar Perfil"
-                            android:textSize="14sp"
-                            app:icon="@drawable/ic_edit"
-                        app:iconGravity="textStart" />
+                <!-- BOTÓN EDITAR PERFIL (Stand-alone) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditarPerfil"
+                    style="@style/ButtonStyleSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Editar Perfil"
+                    android:textSize="14sp"
+                    app:icon="@drawable/ic_edit"
+                    app:iconGravity="textStart" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCancelDeletion"
-                        style="@style/ButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Cancelar solicitud de borrado"
-                        android:visibility="gone"
-                        app:backgroundTint="@color/success_500"
-                        tools:visibility="visible" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancelDeletion"
+                    style="@style/ButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Cancelar solicitud de borrado"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/success_500"
+                    tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteAccount"

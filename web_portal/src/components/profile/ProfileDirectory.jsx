@@ -170,12 +170,14 @@ export function ProfileDirectory({ user: currentUser, role, onNavigate }) {
             >
               Personal
             </button>
-            <button
-              onClick={() => setEditTab('VEHICULO')}
-              className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${editTab === 'VEHICULO' ? 'bg-primary-500 text-white' : 'text-white/40 hover:text-white/60'}`}
-            >
-              Vehículo
-            </button>
+            {(role.type === 'ADMIN' || role.type === 'OWNER') && (
+              <button
+                onClick={() => setEditTab('VEHICULO')}
+                className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${editTab === 'VEHICULO' ? 'bg-primary-500 text-white' : 'text-white/40 hover:text-white/60'}`}
+              >
+                Vehículo
+              </button>
+            )}
           </div>
         )}
 
