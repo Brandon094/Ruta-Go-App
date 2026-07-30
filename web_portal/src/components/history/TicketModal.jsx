@@ -48,29 +48,35 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
 
     setSharing(true);
     try {
-      // 1. Capturar el componente como imagen
+      const isDarkMode = document.documentElement.classList.contains('dark');
+
+      // 1. Capturar el componente como imagen (Optimizado para modo actual)
       const canvas = await html2canvas(ticketRef.current, {
-        backgroundColor: '#061426', // Color de fondo del ecosistema para el recorte
-        scale: 2, // Mejor calidad
+        backgroundColor: isDarkMode ? '#061426' : '#FFFFFF',
+        scale: 3, // Mayor resolución para WhatsApp
         logging: false,
         useCORS: true,
-        borderRadius: 32
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.getElementById('ticket-capture-area');
+          if (el) el.style.borderRadius = '0px';
+        }
       });
 
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
       const file = new File([blob], `tiquete_rutago_${reservation.idReservation?.substring(0, 8)}.png`, { type: 'image/png' });
 
-      // 2. Intentar usar Web Share API si el navegador lo permite con archivos
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: 'Mi Tiquete Ruta-Go',
-          text: `Reserva para ${origin} ➔ ${destination} (${reservation.departureTime || formatTime(date)})`
+          text: `Tiquete Digital: ${origin} ➔ ${destination}`
         });
       } else {
-        // 3. Fallback: Descarga directa
         const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
+        link.href = canvas.toDataURL('image/png', 1.0);
         link.download = `tiquete_rutago_${reservation.idReservation?.substring(0, 8)}.png`;
         link.click();
       }
@@ -85,93 +91,91 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
   return (
     <Modal isOpen={true} onClose={onClose} showClose={false} className="!bg-transparent !border-none !shadow-none">
       <div className="p-0 space-y-6">
-        {/* TICKET CARD MAIN */}
-        <div ref={ticketRef} className="bg-white rounded-[2rem] overflow-hidden flex flex-col shadow-2xl">
 
-           {/* HEADER NARANJA */}
-           <div className="bg-primary-500 p-8 flex flex-col items-center gap-4 text-white">
-              <div className="w-20 h-20 bg-secondary-900 rounded-full flex items-center justify-center shadow-lg border-4 border-white/20">
-                 <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-10 h-10 object-contain" />
+        {/* AREA DE CAPTURA (Estilo App Nativa Dinámico) */}
+        <div
+          ref={ticketRef}
+          id="ticket-capture-area"
+          className="bg-white dark:bg-[#061426] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border border-slate-100 dark:border-white/5"
+          style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}
+        >
+
+           {/* HEADER NARANJA NATIVO */}
+           <div className="bg-primary-500 p-10 flex flex-col items-center gap-4 text-white relative">
+              <div className="w-24 h-24 bg-[#061426] rounded-full flex items-center justify-center shadow-2xl border-4 border-white/10">
+                 <img src="/assets/logo_icon.png" alt="Ruta-Go" className="w-12 h-12 object-contain" />
               </div>
-              <div className="text-center">
-                 <h3 className="text-2xl font-black uppercase tracking-tighter italic">E-Ticket</h3>
-                 <p className="text-[10px] font-bold opacity-80 uppercase tracking-[0.2em] mb-3">Comprobante de viaje</p>
-                 <Badge variant={isConfirmed ? 'success' : isCanceled ? 'error' : 'warning'} className="!bg-secondary-900/40 !text-white !border-white/20 !px-6 !py-1.5 shadow-xl">
-                    {reservation.estadoReserva || reservation.reservationStatus || 'Pendiente'}
-                 </Badge>
+              <div className="text-center space-y-1">
+                 <h3 className="text-3xl font-black uppercase tracking-widest italic leading-none">Ruta-Go</h3>
+                 <div className="pt-2 flex justify-center">
+                    <span className="inline-block bg-secondary-900/90 text-white text-[10px] font-black px-6 py-2 rounded-full border border-white/10 uppercase tracking-widest shadow-xl whitespace-nowrap">
+                      {reservation.estadoReserva || reservation.reservationStatus || 'Confirmada'}
+                    </span>
+                 </div>
               </div>
            </div>
 
-           {/* TICKET BODY */}
-           <div className="p-8 space-y-6 bg-white text-secondary-900">
+           {/* TICKET BODY (DINÁMICO) */}
+           <div className="p-10 space-y-8 bg-white dark:bg-[#061426] text-slate-900 dark:text-white">
 
               {/* Route Section */}
-              <div className="space-y-1">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Trayecto</p>
-                 <h4 className="text-xl font-black uppercase italic leading-tight">{origin} ➔ {destination}</h4>
+              <div className="space-y-1.5">
+                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Trayecto</p>
+                 <h4 className="text-2xl font-black uppercase italic leading-tight tracking-tighter text-slate-900 dark:text-white">{origin} ➔ {destination}</h4>
               </div>
 
-              <div className="h-px bg-slate-100" />
+              <div className="h-px bg-slate-100 dark:bg-white/5" />
 
               {/* Grid Info */}
-              <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fecha</p>
-                    <p className="text-sm font-black uppercase">{formatDate(date)}</p>
+              <div className="grid grid-cols-2 gap-y-10 gap-x-6">
+                 <div className="space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Fecha</p>
+                    <p className="text-base font-black uppercase tracking-tight text-slate-900 dark:text-white">{formatDate(date)}</p>
                  </div>
-                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hora Salida</p>
-                    <p className="text-sm font-black uppercase">{reservation.departureTime || formatTime(date)}</p>
-                    <p className="text-[9px] font-bold text-slate-400 italic">Est.: 60 min</p>
+                 <div className="space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Hora</p>
+                    <p className="text-base font-black uppercase tracking-tight text-slate-900 dark:text-white">{reservation.departureTime || formatTime(date)}</p>
+                    <p className="text-[9px] font-bold text-slate-500 italic">60 min</p>
                  </div>
-                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Asiento</p>
-                    <p className="text-3xl font-black text-primary-500 italic leading-none">A{seat}</p>
+                 <div className="space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Asiento</p>
+                    <p className="text-4xl font-black text-primary-500 italic leading-none">A{seat}</p>
                  </div>
-                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Valor Pagado</p>
-                    <p className="text-xl font-black uppercase italic leading-none">$ {new Intl.NumberFormat('es-CO').format(reservation.price || 12000)}</p>
+                 <div className="space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Valor</p>
+                    <p className="text-xl font-black uppercase italic leading-none text-slate-900 dark:text-white">$ {new Intl.NumberFormat('es-CO').format(reservation.price || 12000)} <span className="text-[10px] opacity-60">COP</span></p>
                  </div>
               </div>
 
-              <div className="h-px bg-slate-100" />
+              <div className="h-px bg-slate-100 dark:bg-white/5" />
 
                 {/* Detailed Info */}
-                <div className="space-y-3 text-left">
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Información del Viaje</p>
-                   <IconRow icon={User} variant="ghost" className="text-slate-600">
-                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Pasajero:</span> {resolvedPassengerName}</p>
-                   </IconRow>
-                   <IconRow icon={Info} variant="ghost" className="text-slate-600">
-                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Conductor:</span> {resolvedDriverName}</p>
-                   </IconRow>
-                   <IconRow icon={Bus} variant="ghost" className="text-slate-600">
-                      <p className="text-xs font-medium truncate"><span className="font-bold opacity-60 mr-1">Vehículo:</span> {`${reservation.plate || reservation.vehicleId || '---'} (${reservation.model || reservation.vehicleModel || 'N/A'})`}</p>
-                   </IconRow>
+                <div className="space-y-4 text-left">
+                   <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4">Información del Viaje</p>
+                   <div className="space-y-3">
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Pasajero:</span> {resolvedPassengerName}</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Conductor:</span> {resolvedDriverName}</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Vehículo:</span> {`${reservation.plate || reservation.vehicleId || '---'} (${reservation.model || reservation.vehicleModel || 'N/A'})`}</p>
+                   </div>
                 </div>
            </div>
 
-           {/* DOTTED DIVIDER */}
-           <div className="relative h-6 bg-white overflow-hidden flex items-center">
-              <div className="absolute -left-3 w-6 h-6 bg-[#0A1F30] rounded-full shadow-inner" />
-              <div className="flex-1 border-t-4 border-dotted border-slate-100 mx-4" />
-              <div className="absolute -right-3 w-6 h-6 bg-[#0A1F30] rounded-full shadow-inner" />
-           </div>
-
-           {/* TICKET ID FOOTER */}
-           <div className="bg-slate-50 p-6 flex flex-col items-center gap-1 text-slate-400">
-              <span className="text-[8px] font-black uppercase tracking-[0.3em]">ID de Transacción</span>
-              <span className="text-[10px] font-bold font-mono uppercase opacity-60">#{reservation.idReservation?.substring(0, 13).toUpperCase() || '---'}</span>
+           {/* FOOTER DINÁMICO */}
+           <div className="bg-slate-50 dark:bg-[#040D1A] p-8 flex flex-col items-center gap-2 border-t border-slate-100 dark:border-white/5">
+              <span className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em]">ID de Reserva:</span>
+              <span className="text-[10px] font-bold font-mono text-slate-500 dark:text-slate-400 uppercase opacity-80 break-all text-center">
+                {reservation.idReservation || '---'}
+              </span>
            </div>
         </div>
 
-        {/* ACTIONS FOOTER (Screenshot Mirror) */}
-        <div className="grid grid-cols-5 gap-3">
+        {/* ACTIONS FOOTER (Mirror Nativo) */}
+        <div className="grid grid-cols-5 gap-4">
            {isConfirmed && (
              <Button
                 variant="primary"
                 size="md"
-                className="col-span-2 !bg-[#0A1F30] border border-white/10 hover:!bg-white/5 !rounded-2xl"
+                className="col-span-2 !bg-primary-500 !text-white !rounded-[1.2rem] shadow-lg shadow-primary-500/20"
                 icon={MessageSquare}
                 onClick={onChat}
              >
@@ -179,14 +183,14 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
              </Button>
            )}
            <Button
-              variant="ghost"
+              variant="outline"
               size="md"
-              className={`${isConfirmed ? 'col-span-3' : 'col-span-5'} !bg-white/5 hover:!bg-white/10 text-white !rounded-2xl border border-white/5`}
+              className={`${isConfirmed ? 'col-span-3' : 'col-span-5'} !rounded-[1.2rem] !border-primary-500 !text-primary-500 hover:!bg-primary-500/5`}
               icon={sharing ? Loader2 : Share2}
               isLoading={sharing}
               onClick={handleShareTicket}
            >
-              {sharing ? 'Procesando...' : 'Compartir Tiquete'}
+              {sharing ? 'Procesando...' : 'Compartir'}
            </Button>
         </div>
       </div>
