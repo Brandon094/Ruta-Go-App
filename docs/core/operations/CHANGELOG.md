@@ -4,19 +4,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.9.6] - 2026-06-03 (Android 16 API 36 Compliance & Fixed Driver Registration)
-*Esta versión asegura el futuro de la aplicación en Google Play mediante la migración a la API 36 y resuelve fallas críticas en el módulo administrativo de conductores.*
+## [1.9.9.7] - 2026-06-04 (Share Ticket Feature & Real-time Landing Fixes)
+*Esta versión alcanza la paridad total en la gestión de tiquetes y corrige la visualización de datos vivos en la página principal.*
+
+### 🌐 Ruta-Go Web (Portal v1.1.5)
+- **Función Compartir Tiquete**: Implementación de captura visual de alta fidelidad (html2canvas) con soporte para Web Share API y descarga automática.
+- **Tiquete Digital Dinámico**: Rediseño integral con soporte para Temas Claro/Oscuro y optimización de resolución (Escala 3x).
+- **Fix de Horarios en Landing**: Corrección de la lógica de filtrado mediante normalización de tildes y caracteres especiales (Nátaga vs nataga).
+- **Arquitectura DRY**: Centralización de la lógica de normalización de rutas en `FormatUtils.js`.
 
 ### 📱 Ruta-Go Mobile (Android v1.5.0)
-- **Android 16 (API 36) Ready**: Actualización integral del nivel de API objetivo para cumplir con las políticas de Google Play 2026.
-- **Predictive Back Navigation**: Implementación de `android:enableOnBackInvokedCallback` en el manifiesto para gestos de navegación modernos.
-- **NDK v28 (16 KB Page Size)**: Soporte técnico para dispositivos de próxima generación mediante el uso del NDK más reciente.
-- **Edge-to-Edge Nativo**: Optimización de la experiencia visual para Android 15+ en actividades clave (Login, Splash, Onboarding).
+- **Sincronización de Identidad**: Alineación de estilos visuales en el tiquete digital para garantizar una experiencia de marca coherente entre plataformas.
 
-### 🌐 Ruta-Go Web (Portal v1.1.0)
-- **Sincronización de Reservas (Mirror Fix)**: Se ha implementado la generación de UUIDs para reservas, igualando el sistema de la App Android para evitar colisiones y errores de parseo.
-- **Payload Robusto**: Las reservas creadas desde la web ahora incluyen todos los campos obligatorios (Dual Mapping: Español/Inglés) requeridos por el tiquete digital de Android, eliminando el Crash (NullPointerException).
-- **Bug de Registro de Conductores**: Solucionado error de ejecución en `AddDriverModal` mediante la inyección de las variables `approvedOwners` y `myVehicles`.
+## [1.9.9.6] - 2026-06-03 (Android 16 API 36 Compliance & Fixed Driver Registration)
 
 ### 🔧 Go-Core (Backend & Logic)
 - **Sincronización Transaccional**: Optimización de la lógica de servicios para garantizar la integridad de datos entre el portal y la App.
