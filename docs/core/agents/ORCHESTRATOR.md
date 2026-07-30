@@ -1,4 +1,4 @@
-# 🧠 Agente Orquestador Maestro - Ecosistema Go v1.9.9.5
+# 🧠 Agente Orquestador Maestro - Ecosistema Go v1.9.9.7
 
 **Misión**: Coordinar la evolución técnica y de negocio de RutaGo, AgroGo y CargoGo, asegurando la integridad del Master Plan y la cohesión entre los agentes especializados.
 
@@ -15,11 +15,11 @@
 ---
 
 ## 🧭 Responsabilidades Estratégicas
-1.  **Vigilancia del Roadmap**: Supervisar la Fase 3 (Paridad Web & Monetización). La Fase 2 (Portal de Dueños) ha sido expandida con éxito hacia la operación total. ✅
+1.  **Vigilancia del Roadmap**: Supervisar la Fase 3 (Paridad Web & Monetización). La paridad 1:1 en tiquetes digitales y compartición de archivos ha sido alcanzada con éxito. ✅
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única soporte los roles de `ADMIN` y `OWNER` en web y móvil con paridad funcional 1:1.
 3.  **Gestión de Ramas (Branching)**: 
-    *   `v1.9.9.5` (Tag): Fluid Navigation & Transition Engine (Estable actual). ✅
-    *   `master`: Código estable Suite Integral (v1.9.9.5).
+    *   `v1.9.9.7` (Tag): Share Ticket & Dynamic Identity (Estable actual). ✅
+    *   `master`: Código estable Suite Integral (v1.9.9.7).
     *   `feature/loyalty`: Desarrollo del motor de Puntos Go y niveles de estatus.
 4.  **Consistencia del Holding**: Verificar que la identidad visual (Naranja/Navy) se mantenga en Android y React.
 
@@ -45,18 +45,18 @@ Para operar con eficacia, todos los agentes deben consultar y sincronizar con la
 ## 🚨 Bitácora de Crisis y Hotfixes (Julio 2026)
 Registro de eventos críticos que amenazaron la estabilidad de la Suite v1.5.0:
 
-1.  **Bug de Roles Web (Acceso Denegado)**:
-    *   *Problema*: Reglas duplicadas en Firebase bloqueaban la lectura del nodo `/admins`.
-    *   *Solución*: Refactor de reglas NoSQL para permitir lectura abierta de roles a usuarios autenticados. ✅
-2.  **Silencio de Notificaciones en Release**:
-    *   *Problema*: ProGuard eliminaba librerías de Google Auth en AAB/APK.
-    *   *Solución*: Inyección de reglas de preservación (`-keep`) para OAuth2 y OkHttp3. ✅
-3.  **Inconsistencia Ortográfica**:
-    *   *Problema*: Uso de "Natagá" en lugar de "Nátaga" en la interfaz pública.
-    *   *Solución*: Barrido ortográfico 360° en Web y Metadatos. ✅
-4.  **Fallo de Búsqueda de Operadores**:
-    *   *Problema*: Dueños no podían buscar conductores por Email por falta de permisos de lectura en `/usuarios`.
-    *   *Solución*: Actualización de reglas de seguridad para permitir búsqueda operativa protegida. ✅
+1.  **Crash por Reservas Web (NPE)**:
+    *   *Problema*: La App Android cerraba al abrir tiquetes creados en web por falta de IDs UUID y mapeo dual.
+    *   *Solución*: Refactor del motor de reservas web para inyectar payloads espejo (ES/EN) y UUIDs nativos. ✅
+2.  **Silencio de Horarios en Landing**:
+    *   *Problema*: El filtrado fallaba por falta de normalización de tildes (Nátaga vs nataga).
+    *   *Solución*: Centralización de `normalizeText` en `FormatUtils.js` y refactor de filtros en la Landing Page. ✅
+3.  **Inconsistencia en Registro de Operadores**:
+    *   *Problema*: Variables `approvedOwners` y `myVehicles` no inyectadas bloqueaban el registro de conductores.
+    *   *Solución*: Inyección de estados reactivos y corrección de lógica de lookups en el modal. ✅
+4.  **Cumplimiento Google Play 2026**:
+    *   *Problema*: Advertencia de Target SDK obsoleto (API 35).
+    *   *Solución*: Migración total a API 36 (Android 16 Ready) y soporte para Predictive Back. ✅
 
 ---
 **ChopCode Solutions - Inteligencia de Gestión 2026**
