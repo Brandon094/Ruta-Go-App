@@ -4,6 +4,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.11] - 2026-06-08 (Atomic Polish & Filter Synchronization)
+*Esta versión refina la arquitectura de componentes web y sincroniza la estética de los sistemas de filtrado entre plataformas.*
+
+### 🌐 Ruta-Go Web (Portal v1.1.7)
+- **Refactor Atómico**: Extracción de la pantalla de jornada completada a la molécula `ScheduleFinishedState.jsx`, mejorando la mantenibilidad y cumpliendo con Atomic Design.
+- **UI Responsiva**: Optimización de la visualización de estados de espera para aprovechar el ancho total del portal en pantallas grandes.
+
+### 📱 Ruta-Go Mobile (Android v1.5.4)
+- **Sincronización de Filtros**: Rediseño de los chips de filtro en el historial para usar la paleta Navy/Naranja sobre fondos de marca, logrando paridad 1:1 con la web.
+- **Detalle de Marca (AM/PM)**: Sincronización del color naranja en el periodo horario para todos los turnos activos, unificando la identidad visual.
+
 ## [1.9.10] - 2026-06-07 (UI Parity 1:1 & High-Fidelity Schedules)
 *Esta versión alcanza la paridad visual absoluta entre Web y Mobile, optimizando la jerarquía de información y la experiencia de reserva en Android.*
 
