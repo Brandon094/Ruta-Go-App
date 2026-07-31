@@ -28,35 +28,44 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <!-- Indicador de tiempo -->
-            <LinearLayout
-                android:id="@+id/layoutTimeIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_time_circle"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:elevation="2dp"
-                android:padding="4dp"
-                android:minWidth="50dp">
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTimeIndicator"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/primary_500"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-                <TextView
-                    android:id="@+id/tvHora"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/primary_500"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="06:00" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvAmPm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/primary_500"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    tools:text="AM" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvHora"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_500"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="06:00" />
+
+                    <TextView
+                        android:id="@+id/tvAmPm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_500"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        tools:text="AM" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Separador -->
             <View

@@ -1,6 +1,5 @@
 package com.chopcode.rutago.app.adapters.schedules;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,7 +127,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTime, tvAmPm, tvRoute, tvSeats, tvPrice, tvAvailabilityBadge, tvBadgeNext, tvDriverName;
-        public View layoutDriverInfo, layoutTimeIndicator;
+        public View layoutDriverInfo;
+        public com.google.android.material.card.MaterialCardView cardTimeIndicator;
         public FloatingActionButton btnReserve;
 
         public ViewHolder(@NonNull View itemView) {
@@ -142,7 +142,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvBadgeNext = itemView.findViewById(R.id.tvBadgeProximo);
             tvDriverName = itemView.findViewById(R.id.tvNombreConductor);
             layoutDriverInfo = itemView.findViewById(R.id.layoutConductorInfo);
-            layoutTimeIndicator = itemView.findViewById(R.id.layoutTimeIndicator);
+            cardTimeIndicator = itemView.findViewById(R.id.cardTimeIndicator);
             btnReserve = itemView.findViewById(R.id.btnReservar);
         }
 
@@ -157,32 +157,52 @@ public class ScheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             // 🎨 Paridad Web v1.9.10: Resaltar viaje siguiente y aplicar opacidad si ya pasó
             itemView.setAlpha(isPast ? 0.5f : 1.0f);
             
-            if (itemView instanceof com.google.android.material.card.MaterialCardView) {
-                com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) itemView;
+            if (itemView instanceof com.google.android.material.card.MaterialCardView card) {
                 if (isNextTrip && !isPast) {
                     card.setStrokeColor(itemView.getContext().getColor(R.color.primary_500));
                     card.setStrokeWidth(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 2));
                     card.setCardElevation(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 8));
-                    if (layoutTimeIndicator != null) layoutTimeIndicator.setBackgroundResource(R.drawable.bg_time_circle);
                 } else {
                     card.setStrokeColor(itemView.getContext().getColor(R.color.surface_variant));
                     card.setStrokeWidth(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 1));
                     card.setCardElevation(com.chopcode.rutago.app.utils.ui.WindowUtils.dpToPx(itemView.getContext(), 2));
-                    // Si no es el siguiente o ya pasó, podemos usar un drawable más tenue o solo el fondo si quisieras
-                    if (layoutTimeIndicator != null) layoutTimeIndicator.setBackgroundResource(R.drawable.bg_time_circle);
                 }
+            }
+
+            // 🕒 Configuración del Círculo de Tiempo (Paridad Mirror v1.9.10)
+            if (cardTimeIndicator != null) {
+                int timeColor;
+                int strokeColor;
+                int bgColor;
+
+                if (isPast) {
+                    timeColor = itemView.getContext().getColor(R.color.text_tertiary);
+                    strokeColor = itemView.getContext().getColor(R.color.surface_variant);
+                    bgColor = itemView.getContext().getColor(R.color.surface);
+                } else if (isNextTrip) {
+                    timeColor = itemView.getContext().getColor(R.color.primary_500);
+                    strokeColor = itemView.getContext().getColor(R.color.primary_500);
+                    // Para el fondo usamos un tono sutil (10% alpha del primario si es oscuro)
+                    bgColor = itemView.getContext().getColor(R.color.secondary_800); 
+                } else {
+                    timeColor = itemView.getContext().getColor(R.color.text_primary);
+                    strokeColor = itemView.getContext().getColor(R.color.surface_variant);
+                    bgColor = itemView.getContext().getColor(R.color.surface);
+                }
+
+                if (tvTime != null) tvTime.setTextColor(timeColor);
+                if (tvAmPm != null) {
+                    tvAmPm.setTextColor(isPast ? timeColor : itemView.getContext().getColor(R.color.primary_500));
+                }
+                
+                cardTimeIndicator.setStrokeColor(strokeColor);
+                cardTimeIndicator.setCardBackgroundColor(bgColor);
             }
 
             // Segmentación visual de la hora
             String[] timeParts = FormatUtils.separarHoraYAmPm(schedule.getTime());
-            if (tvTime != null) {
-                tvTime.setText(timeParts[0]);
-                tvTime.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.primary_500));
-            }
-            if (tvAmPm != null) {
-                tvAmPm.setText(timeParts[1]);
-                tvAmPm.setTextColor(itemView.getContext().getColor(isPast ? R.color.text_tertiary : R.color.primary_500));
-            }
+            if (tvTime != null) tvTime.setText(timeParts[0]);
+            if (tvAmPm != null) tvAmPm.setText(timeParts[1]);
 
             if (tvRoute != null) {
                 tvRoute.setText(schedule.getRoute());
