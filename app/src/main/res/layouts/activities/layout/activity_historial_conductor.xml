@@ -39,43 +39,31 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipTodas"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Todas"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Todas" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipConfirmadas"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Confirmadas"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Confirmadas" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCanceladas"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Canceladas"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Canceladas" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipHoy"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hoy"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Hoy" />
 
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>

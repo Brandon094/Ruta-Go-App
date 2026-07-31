@@ -255,12 +255,21 @@
         <item name="chipStartPadding">12dp</item>
         <item name="chipEndPadding">12dp</item>
         <item name="chipMinHeight">32dp</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="checkedIcon">@null</item>
         <item name="checkedIconVisible">false</item>
         <item name="chipStrokeWidth">1dp</item>
         <item name="chipStrokeColor">?attr/colorSurfaceVariant</item>
+    </style>
+
+    <!-- Estilo de Chip para fondos Naranjas (Paridad Web v1.9.10) -->
+    <style name="FilterChip.OnOrange">
+        <item name="chipBackgroundColor">@drawable/sl_chip_background_on_orange</item>
+        <item name="android:textColor">@drawable/sl_chip_text_on_orange</item>
+        <item name="chipStrokeColor">#33FFFFFF</item>
+        <item name="rippleColor">#33FFFFFF</item>
     </style>
 
     <style name="FilterChipSelected" parent="FilterChip">

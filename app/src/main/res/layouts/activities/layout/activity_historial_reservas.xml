@@ -39,43 +39,31 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipTodos"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Todos"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Todos" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipConfirmados"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Confirmados"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Confirmados" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipCancelados"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancelados"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Cancelados" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipEsteMes"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/FilterChip.OnOrange"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Este Mes"
-                    app:chipBackgroundColor="?attr/colorSurface"
-                    android:textColor="?attr/colorOnSurface"
-                    app:checkedIconVisible="false" />
+                    android:text="Este Mes" />
 
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
