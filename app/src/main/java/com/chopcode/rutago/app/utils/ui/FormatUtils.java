@@ -123,12 +123,8 @@ public class FormatUtils {
         return formatearFechaLarga(calendar.getTime());
     }
 
-    /**
-     * Compara una hora de despacho contra el tiempo real.
-     * Incorpora la excepción de las 7:00 PM (Reset Global): tras esta hora, todos los turnos se marcan 
-     * como vigentes (para el día siguiente).
-     */
     public static boolean esHorarioPasado(String horario) {
+        if (horario == null || horario.isEmpty()) return false;
         try {
             Calendar ahora = Calendar.getInstance();
             int hAct = ahora.get(Calendar.HOUR_OF_DAY);
@@ -138,8 +134,8 @@ public class FormatUtils {
                 return false;
             }
 
-            String limpia = horario.trim().toUpperCase().replace(" 0", " ");
-            if (limpia.startsWith("0")) limpia = limpia.substring(1);
+            // Limpieza robusta similar a la Web (v1.9.11)
+            String limpia = horario.trim().toUpperCase().replaceAll("\\s+", " ");
             
             SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", Locale.US);
             Date horaDate = sdf.parse(limpia);
@@ -154,6 +150,7 @@ public class FormatUtils {
 
             return (hSel < hAct) || (hSel == hAct && mSel <= mAct);
         } catch (Exception e) {
+            Log.e(TAG, "Error al evaluar horario pasado: " + e.getMessage());
             return false;
         }
     }

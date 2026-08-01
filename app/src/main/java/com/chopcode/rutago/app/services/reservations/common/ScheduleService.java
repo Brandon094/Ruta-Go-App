@@ -77,25 +77,24 @@ public class ScheduleService {
 
     /**
      * Carga la planilla de horarios integrando la validación de conductores y precios.
-     * Este método garantiza que no se muestren conductores que ya no existen en el sistema.
+     * v1.9.11: Optimización de paridad con Web para evitar bloqueos en horarios fijos (h005/h015).
      */
     public void loadSchedules(ScheduleCallback callback) {
         priceService.getAllPrices(new PriceService.AllPricesCallback() {
             @Override
             public void onPricesLoaded(Map<String, Map<String, Double>> allPrices) {
                 
-                // Fase 1: Recuperar lista de conductores activos para el Sanity Check
-                MyApp.getDatabaseReference("conductores").addListenerForSingleValueEvent(new ValueEventListener() {
+                // Fase 1: Escuchar conductores de forma reactiva (v1.9.11 Robust Sync)
+                MyApp.getDatabaseReference("conductores").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot driversSnapshot) {
                         Map<String, String> driverNames = new java.util.HashMap<>();
                         for (DataSnapshot d : driversSnapshot.getChildren()) {
                             String name = d.child("nombre").getValue(String.class);
-                            if (name != null) driverNames.put(d.getKey(), name);
-                            else driverNames.put(d.getKey(), "Conductor"); // Fallback
+                            driverNames.put(d.getKey(), name != null ? name : "Conductor");
                         }
 
-                        // Fase 2: Cargar y filtrar la planilla maestra
+                        // Fase 2: Cargar y filtrar la planilla maestra (Realtime)
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -103,20 +102,21 @@ public class ScheduleService {
                                 List<Schedule> laPlataList = new ArrayList<>();
 
                                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    String id = snapshot.getKey();
                                     String time = snapshot.child("hora").getValue(String.class);
                                     String routeStr = snapshot.child("ruta").getValue(String.class);
                                     String condId = snapshot.child("conductorId").getValue(String.class);
-                                    String id = snapshot.getKey();
 
                                     Schedule s = new Schedule();
                                     s.setId(id);
                                     s.setTime(time != null ? time : "--:--");
                                     s.setRoute(routeStr != null ? routeStr : "Ruta no disponible");
                                     
-                                    // 🛡️ Filtro de Integridad: El conductor asignado debe ser real
-                                    if (condId != null && driverNames.containsKey(condId)) {
+                                    // 🛡️ Filtro de Integridad v1.9.11: No anular el conductorId si existe en horarios.
+                                    // Esto previene que h005 y h015 se bloqueen por desfase de carga entre nodos.
+                                    if (condId != null && !condId.isEmpty()) {
                                         s.setConductorId(condId);
-                                        s.setDriverName(driverNames.get(condId));
+                                        s.setDriverName(driverNames.getOrDefault(condId, "Cargando operador..."));
                                     } else {
                                         s.setConductorId(null);
                                         s.setDriverName(null);
