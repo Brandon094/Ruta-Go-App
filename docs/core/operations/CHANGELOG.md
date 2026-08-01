@@ -4,15 +4,22 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [1.9.11] - 2026-06-08 (Atomic Polish & Filter Synchronization)
-*Esta versión refina la arquitectura de componentes web y sincroniza la estética de los sistemas de filtrado entre plataformas.*
+## [1.9.11] - 2026-06-08 (Unified Notifications & UI Polish)
+*Esta versión repara el motor de notificaciones en Android, implementa alertas Push en la Web y refina la arquitectura de componentes.*
+
+### 📱 Ruta-Go Mobile (Android v1.5.5)
+- **Reparación de Push**: Solucionado el bug de "tokens muertos" mediante una sincronización forzada al iniciar la App.
+- **Seguridad de Notificaciones**: Migración de la solicitud de permisos a la SplashActivity para garantizar cobertura en auto-login (Android 13+).
+- **Sincronización de Filtros**: Rediseño de los chips de filtro en el historial para usar la paleta Navy/Naranja sobre fondos de marca, logrando paridad 1:1 con la web.
+- **Detalle de Marca (AM/PM)**: Sincronización del color naranja en el periodo horario para todos los turnos activos, unificando la identidad visual.
 
 ### 🌐 Ruta-Go Web (Portal v1.1.7)
-- **Refactor Atómico**: Extracción de la pantalla de jornada completada a la molécula `ScheduleFinishedState.jsx`, mejorando la mantenibilidad y cumpliendo con Atomic Design.
-- **UI Responsiva**: Optimización de la visualización de estados de espera para aprovechar el ancho total del portal en pantallas grandes.
+- **Motor FCM Web**: Implementación de notificaciones push en tiempo real mediante Service Worker (`firebase-messaging-sw.js`).
+- **Hook useNotifications**: Nuevo sistema de gestión de permisos y registro de tokens web (`tokenFCM_Web`).
+- **Refactor Atómico**: Extracción de la pantalla de jornada completada a la molécula `ScheduleFinishedState.jsx`.
 
-### 📱 Ruta-Go Mobile (Android v1.5.4)
-- **Sincronización de Filtros**: Rediseño de los chips de filtro en el historial para usar la paleta Navy/Naranja sobre fondos de marca, logrando paridad 1:1 con la web.
+### 🔧 Go-Core (Cloud Functions)
+- **Soporte Multi-Token**: Actualización del algoritmo de rotación para enviar notificaciones simultáneas a dispositivos móviles y navegadores web.
 - **Detalle de Marca (AM/PM)**: Sincronización del color naranja en el periodo horario para todos los turnos activos, unificando la identidad visual.
 
 ## [1.9.10] - 2026-06-07 (UI Parity 1:1 & High-Fidelity Schedules)

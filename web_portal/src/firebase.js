@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, logEvent as fbLogEvent } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyM1bZvabUpqINlIyF66DEaiHSePhzrB0",
@@ -27,6 +28,7 @@ class FirebaseManager {
       this.firestore = getFirestore(this.app);
       this.storage = getStorage(this.app);
       this.analytics = getAnalytics(this.app);
+      this.messaging = getMessaging(this.app);
       FirebaseManager.instance = this;
       console.log("✅ Firebase Ecosystem (Singleton) initialized.");
     }
@@ -39,6 +41,7 @@ class FirebaseManager {
   getDb() { return this.db; }
   getFirestore() { return this.firestore; }
   getStorage() { return this.storage; }
+  getMessaging() { return this.messaging; }
 
   // --- Utilities ---
 
@@ -79,5 +82,6 @@ export const db = firebaseManager.db;
 export const firestore = firebaseManager.firestore;
 export const storage = firebaseManager.storage;
 export const analytics = firebaseManager.analytics;
+export const messaging = firebaseManager.messaging;
 
 export default firebaseManager;

@@ -10,8 +10,8 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 *   **Versión Global de la Suite:** v1.9.11 (Atomic Polish & Sync).
 
 ### 🏷️ Versiones por Componente:
-*   **Ruta-Go Android:** v1.5.4 (Polished History).
-*   **Ruta-Go Web Portal:** v1.1.7 (Atomic Refactor).
+*   **Ruta-Go Android:** v1.5.5 (Unified Push Ready).
+*   **Ruta-Go Web Portal:** v1.1.7 (FCM Integrated).
 *   **Go-Core (Firebase):** v2.0.0 (FCM v1 & Rules v1.9).
 
 ---

@@ -15,10 +15,10 @@
 ---
 
 ## 🧭 Responsabilidades Estratégicas
-1.  **Vigilancia del Roadmap**: Supervisar la Fase 3 (Paridad Web & Monetización). Se ha alcanzado la paridad 1:1 en la visualización de identidad operativa en todas las plataformas. ✅
+1.  **Vigilancia del Roadmap**: Supervisar la Fase 3 (Paridad Web & Monetización). La paridad 1:1 en notificaciones push y tiquetes digitales ha sido alcanzada. ✅
 2.  **Gobernanza del SSO**: Garantizar que el sistema de Identidad Única soporte los roles de `ADMIN` y `OWNER` en web y móvil con paridad funcional 1:1.
 3.  **Gestión de Ramas (Branching)**: 
-    *   `v1.9.11` (Tag): Atomic Polish & Filter Sync (Estable actual). ✅
+    *   `v1.9.11` (Tag): Unified Notifications & UI Polish (Estable actual). ✅
     *   `master`: Código estable Suite Integral (v1.9.11).
     *   `feature/loyalty`: Desarrollo del motor de Puntos Go y niveles de estatus.
 4.  **Consistencia del Holding**: Verificar que la identidad visual (Naranja/Navy) se mantenga en Android y React.

@@ -40,6 +40,7 @@ const SeatManagementModal = lazy(() => import('./components/schedules/SeatManage
 
 // Hooks
 import { useRealtimeStats } from './hooks/useRealtimeStats';
+import { useNotifications } from './hooks/useNotifications';
 import { vehicleService } from './services/vehicleService';
 
 /**
@@ -80,6 +81,9 @@ function App() {
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routeStats, vehicles } = useRealtimeStats(user);
+
+  // 🔔 Inicializar Motor de Notificaciones (FCM Web)
+  useNotifications(user, role);
 
   // Helper para cambios de vista seguros con transiciones (v1.9.9.5)
   const navigateTo = (nextView) => {

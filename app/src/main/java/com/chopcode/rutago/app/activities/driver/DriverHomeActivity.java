@@ -26,6 +26,7 @@ import com.chopcode.rutago.app.activities.driver.manager.ManageSeatsActivity;
 import com.chopcode.rutago.app.adapters.reservations.ReservationAdapter;
 import com.chopcode.rutago.app.adapters.routes.RouteAdapter;
 import com.chopcode.rutago.app.adapters.routes.SelectRouteAdapter;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.managers.core.auth.AuthManager;
@@ -487,6 +488,13 @@ public class DriverHomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() { 
         super.onResume(); 
+        
+        // 🛡️ REPARACIÓN v1.9.11: Forzar actualización de token FCM al entrar al Home
+        String uid = MyApp.getCurrentUserId();
+        if (uid != null) {
+            NotificationManager.getInstance(this).saveFCMTokenToRealtimeDatabase(uid, "conductor");
+        }
+
         reservasViewModel.reanudarActualizacionesTiempoReal(); 
         if (isDataLoaded) {
             currentConfirmed = 0;

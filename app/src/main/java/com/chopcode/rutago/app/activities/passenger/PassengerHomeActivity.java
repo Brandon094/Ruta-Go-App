@@ -23,6 +23,7 @@ import com.chopcode.rutago.app.adapters.schedules.SchedulePagerAdapter;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.core.analytics.DashboardAnalyticsHelper;
 import com.chopcode.rutago.app.managers.ui.dashboard.passenger.DashboardUIManager;
+import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
 import com.chopcode.rutago.app.fragments.BottomNavFragment;
 import com.chopcode.rutago.app.fragments.HorarioFragment;
 import com.chopcode.rutago.app.models.User;
@@ -285,6 +286,13 @@ public class PassengerHomeActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        
+        // 🛡️ REPARACIÓN v1.9.11: Forzar actualización de token FCM al entrar al Home
+        String uid = MyApp.getCurrentUserId();
+        if (uid != null) {
+            NotificationManager.getInstance(this).saveFCMTokenToRealtimeDatabase(uid, "usuario");
+        }
+
         if (uiManager != null) {
             uiManager.updateCounters(0, 0, 0);
             updateCounters();

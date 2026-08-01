@@ -48,7 +48,11 @@ exports.automatedRotation = onSchedule({
 
         const tokenMap = {};
         usuariosSnap.forEach(uSnap => {
-            if (uSnap.val().tokenFCM) tokenMap[uSnap.key] = uSnap.val().tokenFCM;
+            const val = uSnap.val();
+            tokenMap[uSnap.key] = {
+                mobile: val.tokenFCM || null,
+                web: val.tokenFCM_Web || null
+            };
         });
 
         const vehiculosMap = {};
@@ -57,27 +61,30 @@ exports.automatedRotation = onSchedule({
         });
 
         const conductoresParaRotar = [];
-        const tokensPasajeros = [];
+        const tokensMulticast = []; // Para pasajeros (Web + Mobile)
 
         // 🧠 Identificación Dinámica del Conductor Fijo (Ancla: h005)
-        // Ya no dependemos del nombre "Brayan", sino de quién ocupe el cargo en la planilla
         const fixedConductorId = horariosSnap.child('h005').child('conductorId').val();
-        let brayanId = null; // Mantenemos el nombre de variable para no romper el resto del script
+        let brayanId = null;
 
-        // Clasificación de conductores y captura de tokens de notificación
         conductoresSnap.forEach((snap) => {
             const data = snap.val();
             const uid = snap.key;
-            const token = data.tokenFCM || tokenMap[uid];
+            const profileTokens = tokenMap[uid] || {};
 
-            // Si el UID coincide con el asignado a h005, se marca como conductor fijo
+            const tokens = [];
+            if (data.tokenFCM) tokens.push(data.tokenFCM);
+            if (data.tokenFCM_Web) tokens.push(data.tokenFCM_Web);
+            if (profileTokens.mobile && !tokens.includes(profileTokens.mobile)) tokens.push(profileTokens.mobile);
+            if (profileTokens.web && !tokens.includes(profileTokens.web)) tokens.push(profileTokens.web);
+
             if (uid === fixedConductorId) {
                 brayanId = uid;
             } else {
                 conductoresParaRotar.push({
                     id: uid,
                     nombre: data.nombre,
-                    token: token,
+                    tokens: tokens,
                     vehiculoId: data.vehiculoId,
                     posicionEscalafon: data.posicionEscalafon
                 });
@@ -87,7 +94,10 @@ exports.automatedRotation = onSchedule({
         // Recopilación de tokens para notificación masiva a pasajeros
         usuariosSnap.forEach((uSnap) => {
             const uData = uSnap.val();
-            if (uData.rol === "usuario" && uData.tokenFCM) tokensPasajeros.push(uData.tokenFCM);
+            if (uData.rol === "usuario" || uData.rol === "pasajero") {
+                if (uData.tokenFCM) tokensMulticast.push(uData.tokenFCM);
+                if (uData.tokenFCM_Web) tokensMulticast.push(uData.tokenFCM_Web);
+            }
         });
 
         const updates = {};
@@ -136,18 +146,20 @@ exports.automatedRotation = onSchedule({
                 dispUpdates[`${hId}/totalAsientos`] = capacidadReal;
             });
 
-            // Despacho de notificación personalizada al conductor
-            if (c.token) {
-                notificationPromises.push(
-                    messaging.send({
-                        token: c.token,
-                        notification: {
-                            title: esDescanso ? "Mañana Descansas" : "Turnos Actualizados",
-                            body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app."
-                        },
-                        data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
-                    }).catch(e => console.error(`Error notif ${c.nombre}:`, e))
-                );
+            // Despacho de notificación personalizada al conductor (Multi-Token)
+            if (c.tokens && c.tokens.length > 0) {
+                c.tokens.forEach(t => {
+                    notificationPromises.push(
+                        messaging.send({
+                            token: t,
+                            notification: {
+                                title: esDescanso ? "Mañana Descansas" : "Turnos Actualizados",
+                                body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app."
+                            },
+                            data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
+                        }).catch(e => console.error(`Error notif ${c.nombre} (Token: ${t}):`, e))
+                    );
+                });
             }
         });
 
@@ -163,9 +175,9 @@ exports.automatedRotation = onSchedule({
         });
 
         // 5. NOTIFICACIÓN MASIVA A PASAJEROS (Por lotes de 500 para cumplir cuotas FCM)
-        if (tokensPasajeros.length > 0) {
-            for (let i = 0; i < tokensPasajeros.length; i += 500) {
-                const chunk = tokensPasajeros.slice(i, i + 500);
+        if (tokensMulticast.length > 0) {
+            for (let i = 0; i < tokensMulticast.length; i += 500) {
+                const chunk = tokensMulticast.slice(i, i + 500);
                 notificationPromises.push(
                     messaging.sendEachForMulticast({
                         tokens: chunk,

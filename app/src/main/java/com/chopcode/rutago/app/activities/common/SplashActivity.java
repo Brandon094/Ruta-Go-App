@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.chopcode.rutago.app.R;
 import com.chopcode.rutago.app.activities.driver.DriverHomeActivity;
 import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
+import com.chopcode.rutago.app.managers.core.permissions.PermissionManager;
 import com.chopcode.rutago.app.viewmodels.common.SplashViewModel;
 
 /**
@@ -40,6 +41,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "🚀 Iniciando Splash Screen");
         setContentView(R.layout.activity_splash);
+
+        // 🛡️ REPARACIÓN v1.9.11: Asegurar permisos de notificación incluso en auto-login
+        PermissionManager.requestNotificationPermission(this);
 
         viewModel = new ViewModelProvider(this).get(SplashViewModel.class);
         setupBrandingAnimation();
