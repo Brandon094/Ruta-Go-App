@@ -166,8 +166,8 @@ public class ChatViewModel extends ViewModel {
                 return;
             }
             
-            String name = (senderName != null && !senderName.isEmpty()) ? senderName : "Usuario";
-            chatService.sendMessage(currentReservationId, uid, name, receiverId, text);
+
+            chatService.sendMessage(currentReservationId, uid, text);
         } else {
             Log.e(TAG, "❌ No se puede enviar: Faltan metadatos críticos de sesión o destino.");
             if (currentReservationId != null) loadMissingData(currentReservationId);

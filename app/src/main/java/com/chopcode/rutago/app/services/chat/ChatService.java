@@ -3,7 +3,7 @@ package com.chopcode.rutago.app.services.chat;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.chopcode.rutago.app.config.MyApp;
-import com.chopcode.rutago.app.managers.core.notifications.NotificationManager;
+
 import com.chopcode.rutago.app.models.ChatMessage;
 import com.google.firebase.database.*;
 import java.util.ArrayList;
@@ -38,11 +38,9 @@ public class ChatService {
      * Persiste un mensaje en Firebase y dispara la notificación push correspondiente.
      * @param reservationId Identificador de la reserva (contexto de la charla).
      * @param senderId UID del emisor.
-     * @param senderName Nombre visible del emisor para la notificación.
-     * @param receiverId UID del destinatario.
      * @param text Contenido textual del mensaje.
      */
-    public void sendMessage(String reservationId, String senderId, String senderName, String receiverId, String text) {
+    public void sendMessage(String reservationId, String senderId, String text) {
         if (reservationId == null || text.trim().isEmpty()) {
             Log.e(TAG, "❌ No se puede enviar: Faltan metadatos críticos o el texto es nulo.");
             return;
@@ -54,13 +52,7 @@ public class ChatService {
         ChatMessage message = new ChatMessage(messageId, senderId, text, System.currentTimeMillis());
 
         ref.setValue(message).addOnSuccessListener(aVoid -> {
-            Log.d(TAG, "✅ Mensaje persistido exitosamente.");
-            
-            // Disparar aviso push mediante el NotificationManager
-            if (receiverId != null && !receiverId.isEmpty()) {
-                NotificationManager.getInstance(MyApp.getAppContext())
-                        .notificarNuevoMensaje(receiverId, senderId, senderName, text, reservationId, null);
-            }
+            Log.d(TAG, "✅ Mensaje persistido exitosamente (La Cloud Function se encargará de la notificación).");
         }).addOnFailureListener(e -> {
             Log.e(TAG, "❌ Fallo en la persistencia del mensaje: " + e.getMessage());
         });
