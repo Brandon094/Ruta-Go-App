@@ -37,7 +37,7 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 ### 🛠️ 1. Motor de Reservas & Notificaciones
 *   [x] **🎟️ Motor de Reservas Web (v1.6.0)**: Selección de asientos interactiva y generación de reserva oficial para usuarios de iPhone (Payload 1:1 con Android).
 *   [x] **📸 Función Compartir Tiquete (v1.1.5)**: Implementación de captura visual (html2canvas) y Web Share API para paridad total con la experiencia móvil.
-*   [ ] **🔔 Centro de Notificaciones Web**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho y confirmaciones desde la web. (Próximamente)
+*   [x] **🔔 Centro de Notificaciones Web & Chat**: Implementación de Firebase Cloud Messaging (FCM) para enviar avisos de despacho, confirmaciones y mensajes de chat desde la web mediante Cloud Functions.
 
 ### 👑 2. Gobernanza Root Pro & Analítica Avanzada
 *   [x] **👨‍💼 Vínculo Dueño-Conductor**: Interfaz para asignar jefes de flota a los conductores desde el panel Root.

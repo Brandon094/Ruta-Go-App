@@ -1,4 +1,4 @@
-# 🔔 Guía de Integración: Firebase Cloud Messaging (FCM) v1.9.9.5
+# 🔔 Guía de Integración: Firebase Cloud Messaging (FCM) v1.9.12
 
 Este documento detalla la implementación del sistema de notificaciones push del Ecosistema Go, utilizando el estándar **FCM v1** para una comunicación segura y reactiva entre pasajeros, conductores y el servidor.
 
@@ -6,9 +6,9 @@ Este documento detalla la implementación del sistema de notificaciones push del
 
 ## 🏗️ 1. Arquitectura de Notificaciones
 El sistema utiliza un modelo híbrido de despacho de mensajes:
-1.  **Client-to-Client (C2C)**: Utilizado para notificaciones de Chat y Solicitudes de Reserva entre el App Nativa.
-2.  **Server-to-Client (S2C)**: Cloud Functions en Node.js despachan mensajes masivos (ej: Apertura de jornada a las 7:00 PM).
-3.  **Web-to-Client**: El Portal Web (v1.9.0+) tiene la capacidad de disparar notificaciones de confirmación de reserva directamente a los dispositivos móviles.
+1.  **Client-to-Client (C2C)**: Utilizado para notificaciones de Solicitudes de Reserva entre el App Nativa.
+2.  **Server-to-Client (S2C)**: Cloud Functions en Node.js despachan mensajes masivos y notificaciones de Chat en tiempo real de forma centralizada.
+3.  **Web-to-Client**: El Portal Web (v1.1.8+) tiene la capacidad de disparar notificaciones de confirmación de reserva y mensajes de chat a través de la lógica de servidor.
 
 ### Componentes Clave:
 *   **`NotificationManager`**: Clase en la App Android encargada de orquestar los Access Tokens y el Payload JSON.

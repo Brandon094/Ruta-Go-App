@@ -1,11 +1,7 @@
-# 📖 Inmersión Técnica: Firebase Cloud Functions
-
-Este documento detalla la lógica de servidor (Serverless) que automatiza los procesos críticos del Ecosistema Go, garantizando la integridad de los datos y el cumplimiento legal.
-
 ---
 
 ## 🛠️ 1. Arquitectura de Funciones
-Las funciones están implementadas en **Node.js 18+** utilizando el SDK de **Firebase Functions v2**. Se ejecutan en un entorno gestionado por Google Cloud, lo que garantiza alta disponibilidad y escalabilidad automática.
+Las funciones están implementadas en **Node.js 22** utilizando el SDK de **Firebase Functions v2**. Se ejecutan en un entorno gestionado por Google Cloud, lo que garantiza alta disponibilidad y escalabilidad automática.
 
 *   **Entorno**: `/firebase_functions`
 *   **Lenguaje**: JavaScript (CommonJS).
@@ -40,7 +36,19 @@ Garantiza el cumplimiento de la Ley de Protección de Datos (Habeas Data) y las 
 
 ---
 
-## 🛡️ 4. Seguridad y Rendimiento
+## 💬 4. Notificaciones de Chat (`onChatMessageCreated`)
+Garantiza que la mensajería instantánea sea reactiva en todo el ecosistema.
+
+*   **Trigger**: Creación de un nuevo mensaje en `/chats/{reservationId}/mensajes/{messageId}`.
+*   **Lógica de Despacho**:
+    1.  Identifica al emisor y consulta los datos de la reserva para determinar el receptor.
+    2.  Busca todos los tokens FCM registrados (móvil y web) del usuario receptor.
+    3.  Envía la notificación push con el texto del mensaje y metadatos de navegación para que la App abra la pantalla de chat correcta.
+*   **Beneficio**: Elimina la necesidad de que el cliente (Android o Web) envíe la notificación manualmente, ahorrando recursos y asegurando la entrega.
+
+---
+
+## 🛡️ 5. Seguridad y Rendimiento
 *   **Permisos Administrativos**: Las funciones utilizan `firebase-admin`, lo que les permite saltarse las reglas de seguridad NoSQL para realizar tareas de mantenimiento.
 *   **Optimización de Memoria**: Configurado con **256MiB** para manejar el procesamiento de listas de usuarios sin incurrir en costos elevados.
 *   **Timezone**: Todas las ejecuciones están ancladas a `America/Bogota` para coincidir con la operación física de los buses.
