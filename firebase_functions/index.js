@@ -5,15 +5,37 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 /**
+ * 🎨 HELPER: Genera un payload con la identidad visual de Ruta-Go
+ */
+const getBrandedPayload = (title, body, data = {}) => {
+    return {
+        notification: {
+            title: title,
+            body: body
+        },
+        android: {
+            notification: {
+                color: "#FF7A1A",
+                icon: "ic_notification"
+            }
+        },
+        webpush: {
+            notification: {
+                icon: "/assets/logo_icon.png",
+                badge: "/assets/logo_icon.png",
+                vibrate: [200, 100, 200]
+            }
+        },
+        data: {
+            ...data,
+            timestamp: String(Date.now())
+        }
+    };
+};
+
+/**
  * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go
- *
- * EJECUCIÓN: Todos los días a las 7:00 PM (Hora Bogotá).
- * PROPÓSITO:
- * 1. Implementar el algoritmo de escalafón para conductores (Rotación de turnos).
- * 2. Resetear la disponibilidad técnica de asientos basada en la capacidad real de cada bus.
- * 3. Gestionar estados de actividad (Active/Inactive) para perfiles operativos.
- * 4. Despachar notificaciones Push masivas (FCM) a conductores y pasajeros sobre la nueva jornada.
- * 5. Realizar limpieza de horarios huérfanos sin conductor asignado.
+ * Ejecución: 7:00 PM (Hora Bogotá).
  */
 exports.automatedRotation = onSchedule({
     schedule: "0 19 * * *",
@@ -26,20 +48,12 @@ exports.automatedRotation = onSchedule({
     try {
         console.log("🔄 Iniciando ciclo de rotación nocturna...");
 
-        // Definición del escalafón cíclico de 9 días (Día 9 es descanso)
         const ROTATING_SHIFTS = [
-            ["h009"],                 // Día 1: ENTRADA
-            ["h010", "h008", "h018"], // Día 2
-            ["h007", "h017"],         // Día 3
-            ["h006", "h016"],         // Día 4
-            ["h004", "h014"],         // Día 5
-            ["h003", "h013"],         // Día 6
-            ["h002", "h012"],         // Día 7
-            ["h001", "h011"],         // Día 8
-            []                        // Día 9: DESCANSO
+            ["h009"], ["h010", "h008", "h018"], ["h007", "h017"],
+            ["h006", "h016"], ["h004", "h014"], ["h003", "h013"],
+            ["h002", "h012"], ["h001", "h011"], []
         ];
 
-        // 1. CARGA DE DATOS COMPLETA (Sync Total para evitar condiciones de carrera)
         const [conductoresSnap, horariosSnap, usuariosSnap, vehiculosSnap] = await Promise.all([
             db.ref('conductores').once('value'),
             db.ref('horarios').once('value'),
@@ -50,21 +64,15 @@ exports.automatedRotation = onSchedule({
         const tokenMap = {};
         usuariosSnap.forEach(uSnap => {
             const val = uSnap.val();
-            tokenMap[uSnap.key] = {
-                mobile: val.tokenFCM || null,
-                web: val.tokenFCM_Web || null
-            };
+            tokenMap[uSnap.key] = { mobile: val.tokenFCM || null, web: val.tokenFCM_Web || null };
         });
 
         const vehiculosMap = {};
-        vehiculosSnap.forEach(vSnap => {
-            vehiculosMap[vSnap.key] = vSnap.val();
-        });
+        vehiculosSnap.forEach(vSnap => { vehiculosMap[vSnap.key] = vSnap.val(); });
 
         const conductoresParaRotar = [];
-        const tokensMulticast = []; // Para pasajeros (Web + Mobile)
+        const tokensMulticast = [];
 
-        // 🧠 Identificación Dinámica del Conductor Fijo (Ancla: h005)
         const fixedConductorId = horariosSnap.child('h005').child('conductorId').val();
         let brayanId = null;
 
@@ -72,27 +80,18 @@ exports.automatedRotation = onSchedule({
             const data = snap.val();
             const uid = snap.key;
             const profileTokens = tokenMap[uid] || {};
-
             const tokens = [];
             if (data.tokenFCM) tokens.push(data.tokenFCM);
             if (data.tokenFCM_Web) tokens.push(data.tokenFCM_Web);
-            if (profileTokens.mobile && !tokens.includes(profileTokens.mobile)) tokens.push(profileTokens.mobile);
-            if (profileTokens.web && !tokens.includes(profileTokens.web)) tokens.push(profileTokens.web);
+            if (profileTokens.mobile) tokens.push(profileTokens.mobile);
+            if (profileTokens.web) tokens.push(profileTokens.web);
 
-            if (uid === fixedConductorId) {
-                brayanId = uid;
-            } else {
-                conductoresParaRotar.push({
-                    id: uid,
-                    nombre: data.nombre,
-                    tokens: tokens,
-                    vehiculoId: data.vehiculoId,
-                    posicionEscalafon: data.posicionEscalafon
-                });
+            if (uid === fixedConductorId) { brayanId = uid; }
+            else {
+                conductoresParaRotar.push({ id: uid, nombre: data.nombre, tokens: [...new Set(tokens)], vehiculoId: data.vehiculoId, posicionEscalafon: data.posicionEscalafon });
             }
         });
 
-        // Recopilación de tokens para notificación masiva a pasajeros
         usuariosSnap.forEach((uSnap) => {
             const uData = uSnap.val();
             if (uData.rol === "usuario" || uData.rol === "pasajero") {
@@ -107,64 +106,41 @@ exports.automatedRotation = onSchedule({
         const notificationPromises = [];
         const dispUpdates = {};
 
-        // 2. ASIGNACIÓN FIJA (Dedicada - Horarios h005, h015)
         if (brayanId) {
             const horariosFijos = ["h005", "h015"];
             updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
             updates[`conductores/${brayanId}/status`] = "active";
-            horariosFijos.forEach(hId => {
-                updates[`horarios/${hId}/conductorId`] = brayanId;
-                horariosAsignadosSet.add(hId);
-            });
+            horariosFijos.forEach(hId => { updates[`horarios/${hId}/conductorId`] = brayanId; horariosAsignadosSet.add(hId); });
         }
 
-        // 3. ALGORITMO DE ESCALAFÓN Y RESET DE CAPACIDAD DINÁMICO
         conductoresParaRotar.forEach((c) => {
-            // Leemos el número de escalafón fijo asignado en la web (por defecto 0)
             const posicionFija = c.posicionEscalafon || 0;
-
-            // Reemplazamos el 'index' por 'posicionFija' en la fórmula matemática
             const shiftIndex = (posicionFija + dayCounter) % ROTATING_SHIFTS.length;
             const misHorarios = ROTATING_SHIFTS[shiftIndex];
             const esDescanso = misHorarios.length === 0;
 
-            // Actualización de estado y agenda en el perfil del conductor
             updates[`conductores/${c.id}/horariosAsignados`] = misHorarios;
             updates[`conductores/${c.id}/status`] = esDescanso ? "inactive" : "active";
 
-            // Recuperación de la capacidad técnica del bus asignado
             let capacidadReal = 13;
-            if (c.vehiculoId && vehiculosMap[c.vehiculoId]) {
-                capacidadReal = vehiculosMap[c.vehiculoId].capacidad || 13;
-            }
+            if (c.vehiculoId && vehiculosMap[c.vehiculoId]) { capacidadReal = vehiculosMap[c.vehiculoId].capacidad || 13; }
 
             misHorarios.forEach(hId => {
                 updates[`horarios/${hId}/conductorId`] = c.id;
                 horariosAsignadosSet.add(hId);
-                // Reset atómico de la disponibilidad de asientos
                 dispUpdates[`${hId}/asientosOcupados`] = null;
                 dispUpdates[`${hId}/asientosDisponibles`] = capacidadReal;
                 dispUpdates[`${hId}/totalAsientos`] = capacidadReal;
             });
 
-            // Despacho de notificación personalizada al conductor (Multi-Token)
             if (c.tokens && c.tokens.length > 0) {
-                c.tokens.forEach(t => {
-                    notificationPromises.push(
-                        messaging.send({
-                            token: t,
-                            notification: {
-                                title: esDescanso ? "Mañana Descansas" : "Turnos Actualizados",
-                                body: esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app."
-                            },
-                            data: { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" }
-                        }).catch(e => console.error(`Error notif ${c.nombre} (Token: ${t}):`, e))
-                    );
-                });
+                const title = esDescanso ? "Mañana Descansas" : "Turnos Actualizados";
+                const body = esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app.";
+                const payload = getBrandedPayload(title, body, { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" });
+                c.tokens.forEach(t => { notificationPromises.push(messaging.send({ token: t, ...payload }).catch(e => console.error(`Error notif ${c.nombre}:`, e))); });
             }
         });
 
-        // 4. LIMPIEZA DE HORARIOS SIN CONDUCTOR (Turnos sobrantes)
         horariosSnap.forEach(hSnap => {
             const hId = hSnap.key;
             if (!horariosAsignadosSet.has(hId)) {
@@ -175,42 +151,22 @@ exports.automatedRotation = onSchedule({
             }
         });
 
-        // 5. NOTIFICACIÓN MASIVA A PASAJEROS (Por lotes de 500 para cumplir cuotas FCM)
         if (tokensMulticast.length > 0) {
-            for (let i = 0; i < tokensMulticast.length; i += 500) {
-                const chunk = tokensMulticast.slice(i, i + 500);
-                notificationPromises.push(
-                    messaging.sendEachForMulticast({
-                        tokens: chunk,
-                        notification: { title: "Horarios Listos", body: "Ya puedes reservar tu viaje para mañana en RutaGo." },
-                        data: { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" }
-                    }).catch(e => console.error("Error notif masiva:", e))
-                );
+            const basePayload = getBrandedPayload("Horarios Listos", "Ya puedes reservar tu viaje para mañana.", { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" });
+            const uniquePassTokens = [...new Set(tokensMulticast)];
+            for (let i = 0; i < uniquePassTokens.length; i += 500) {
+                const chunk = uniquePassTokens.slice(i, i + 500);
+                notificationPromises.push(messaging.sendEachForMulticast({ tokens: chunk, ...basePayload }).catch(e => console.error("Error notif masiva:", e)));
             }
         }
 
-        // 6. EJECUCIÓN ATÓMICA FINAL
-        await Promise.all([
-            db.ref().update(updates),
-            db.ref('disponibilidadAsientos').update(dispUpdates),
-            ...notificationPromises
-        ]);
-
-        console.log(`✅ Ciclo completado exitosamente.`);
-
-    } catch (error) {
-        console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
-    }
+        await Promise.all([db.ref().update(updates), db.ref('disponibilidadAsientos').update(dispUpdates), ...notificationPromises]);
+        console.log(`✅ Ciclo completado.`);
+    } catch (error) { console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error); }
 });
 
 /**
- * 🧹 LIMPIEZA SEMANAL DE CUENTAS (Derecho al Olvido)
- *
- * EJECUCIÓN: Todos los domingos a las 3:00 AM (Hora Bogotá).
- * PROPÓSITO:
- * 1. Localizar cuentas marcadas con 'solicitudBorrado: true'.
- * 2. Validar que el periodo de gracia de 30 días se haya cumplido.
- * 3. Ejecutar borrado en cascada: Vehículo -> Perfil DB -> Firebase Auth.
+ * 🧹 LIMPIEZA SEMANAL DE CUENTAS
  */
 exports.cleanupMarkedAccounts = onSchedule({
     schedule: "0 3 * * 0",
@@ -223,54 +179,33 @@ exports.cleanupMarkedAccounts = onSchedule({
     const GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000;
     const limitTimestamp = now - GRACE_PERIOD;
 
-    console.log("🧹 Iniciando mantenimiento de cuentas marcadas...");
-
     const performDeletion = async (uid, node) => {
         try {
-            // Borrado del activo vehicular si es conductor
             if (node === 'conductores') {
                 const driverSnap = await db.ref(`conductores/${uid}`).once('value');
                 const plate = driverSnap.val()?.placaVehiculo;
                 if (plate) await db.ref(`vehiculos/${plate}`).remove();
             }
-            // Borrado del perfil en Realtime Database
             await db.ref(`${node}/${uid}`).remove();
-            // Borrado de la identidad en Firebase Auth (Definitivo)
             await auth.deleteUser(uid);
-            return `✅ ${uid} eliminado permanentemente.`;
-        } catch (e) {
-            return `❌ Fallo al eliminar ${uid}: ${e.message}`;
-        }
+            return `✅ ${uid} eliminado.`;
+        } catch (e) { return `❌ Fallo al eliminar ${uid}: ${e.message}`; }
     };
 
     try {
-        // Búsqueda indexada de solicitudes pendientes
         const [uSnap, cSnap] = await Promise.all([
             db.ref('usuarios').orderByChild('solicitudBorrado').equalTo(true).once('value'),
             db.ref('conductores').orderByChild('solicitudBorrado').equalTo(true).once('value')
         ]);
-
         const deletionPromises = [];
-        uSnap.forEach(snap => {
-            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'usuarios'));
-        });
-        cSnap.forEach(snap => {
-            if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'conductores'));
-        });
-
-        // Ejecución en paralelo de todas las eliminaciones calificadas
-        const results = await Promise.all(deletionPromises);
-        console.log("📊 Resumen de limpieza semanal:", results);
-
-    } catch (error) {
-        console.error('❌ ERROR CRÍTICO EN PROCESO DE LIMPIEZA:', error);
-    }
+        uSnap.forEach(snap => { if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'usuarios')); });
+        cSnap.forEach(snap => { if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'conductores')); });
+        await Promise.all(deletionPromises);
+    } catch (error) { console.error('❌ ERROR EN LIMPIEZA:', error); }
 });
 
 /**
  * 💬 NOTIFICACIÓN DE CHAT EN TIEMPO REAL
- *
- * Se activa cuando se crea un nuevo mensaje en /chats/{reservationId}/mensajes/{messageId}
  */
 exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{messageId}", async (event) => {
     const { reservationId } = event.params;
@@ -279,81 +214,36 @@ exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{
     const messaging = admin.messaging();
 
     try {
-        console.log(`📩 Nuevo mensaje detectado en reserva: ${reservationId}`);
-
-        // 1. Obtener datos de la reserva para saber quién es el receptor
         const resSnap = await db.ref(`reservas/${reservationId}`).once('value');
-        if (!resSnap.exists()) {
-            console.log("❌ Reserva no encontrada. Abortando notificación.");
-            return;
-        }
+        if (!resSnap.exists()) return;
 
         const resData = resSnap.val();
         const senderId = messageData.senderId;
+        const isPassengerSender = (senderId === (resData.userId || resData.usuarioId));
+        const receptorId = isPassengerSender ? (resData.driverId || resData.conductorId) : (resData.userId || resData.usuarioId);
+        const senderName = isPassengerSender ? (resData.name || resData.nombre || "Pasajero") : (resData.conductorNombre || resData.driver || "Conductor");
 
-        // Identificar quién debe recibir el mensaje (si el emisor es el pasajero, recibe el conductor y viceversa)
-        const isPassengerSender = (senderId === resData.userId);
-        const receptorId = isPassengerSender ? resData.driverId : resData.userId;
-        const senderName = isPassengerSender ? (resData.name || "Pasajero") : (resData.conductorNombre || "Conductor");
+        if (!receptorId) return;
 
-        if (!receptorId) {
-            console.log("❌ No se pudo determinar el receptorId.");
-            return;
-        }
-
-        // 2. Buscar tokens del receptor (Mobile + Web)
-        const [uSnap, cSnap] = await Promise.all([
-            db.ref(`usuarios/${receptorId}`).once('value'),
-            db.ref(`conductores/${receptorId}`).once('value')
-        ]);
-
+        const [uSnap, cSnap] = await Promise.all([db.ref(`usuarios/${receptorId}`).once('value'), db.ref(`conductores/${receptorId}`).once('value')]);
         const tokens = [];
-        const uData = uSnap.val();
-        const cData = cSnap.val();
+        if (uSnap.val()?.tokenFCM) tokens.push(uSnap.val().tokenFCM);
+        if (uSnap.val()?.tokenFCM_Web) tokens.push(uSnap.val().tokenFCM_Web);
+        if (cSnap.val()?.tokenFCM) tokens.push(cSnap.val().tokenFCM);
+        if (cSnap.val()?.tokenFCM_Web) tokens.push(cSnap.val().tokenFCM_Web);
 
-        if (uData?.tokenFCM) tokens.push(uData.tokenFCM);
-        if (uData?.tokenFCM_Web) tokens.push(uData.tokenFCM_Web);
-        if (cData?.tokenFCM) tokens.push(cData.tokenFCM);
-        if (cData?.tokenFCM_Web) tokens.push(cData.tokenFCM_Web);
-
-        // Eliminar duplicados y nulos
         const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        if (uniqueTokens.length === 0) return;
 
-        if (uniqueTokens.length === 0) {
-            console.log(`⚠️ No hay tokens registrados para el receptor ${receptorId}`);
-            return;
-        }
+        const body = messageData.text.length > 50 ? messageData.text.substring(0, 47) + "..." : messageData.text;
+        const payload = getBrandedPayload(`Mensaje de ${senderName}`, body, { type: "chat_message", reservationId, target_activity: "chat" });
 
-        // 3. Enviar notificación push
-        const payload = {
-            notification: {
-                title: `Mensaje de ${senderName}`,
-                body: messageData.text.length > 50 ? messageData.text.substring(0, 47) + "..." : messageData.text
-            },
-            data: {
-                type: "chat_message",
-                reservationId: reservationId,
-                target_activity: "chat",
-                timestamp: String(Date.now())
-            }
-        };
-
-        const notificationPromises = uniqueTokens.map(token =>
-            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
-        );
-
-        await Promise.all(notificationPromises);
-        console.log(`✅ Notificación de chat enviada a ${uniqueTokens.length} dispositivos del usuario ${receptorId}`);
-
-    } catch (error) {
-        console.error("❌ Error en onChatMessageCreated:", error);
-    }
+        await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
+    } catch (error) { console.error("❌ Error en chat:", error); }
 });
 
 /**
- * 🔔 NOTIFICACIÓN DE NUEVA RESERVA
- *
- * Se activa cuando se crea una reserva en /reservas/{id}
+ * 🔔 MODO ESPEJO: SINCRO Y NOTIFICACIÓN DE RESERVA
  */
 exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) => {
     const resData = event.data.val();
@@ -362,63 +252,42 @@ exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) =>
     const messaging = admin.messaging();
 
     try {
-        console.log(`🆕 Nueva reserva creada: ${id}`);
-
         const driverId = resData.driverId || resData.conductorId;
         const passengerName = resData.name || resData.nombre || "Pasajero";
-        const origin = resData.origin || resData.origen || "";
-        const destination = resData.destination || resData.destino || "";
-        const route = `${origin} -> ${destination}`;
 
-        if (!driverId) {
-            console.log("❌ No se encontró driverId/conductorId en la reserva.");
-            return;
+        // --- 🛠 MODO ESPEJO: Auto-reparar llaves bilingües ---
+        const repairUpdates = {};
+        if (resData.driverId && !resData.conductorId) repairUpdates.conductorId = resData.driverId;
+        if (resData.conductorId && !resData.driverId) repairUpdates.driverId = resData.conductorId;
+        if (resData.userId && !resData.usuarioId) repairUpdates.usuarioId = resData.userId;
+        if (resData.usuarioId && !resData.userId) repairUpdates.userId = resData.usuarioId;
+        if (resData.reservationStatus && !resData.estadoReserva) repairUpdates.estadoReserva = resData.reservationStatus;
+        if (resData.estadoReserva && !resData.reservationStatus) repairUpdates.reservationStatus = resData.estadoReserva;
+
+        if (Object.keys(repairUpdates).length > 0) {
+            await db.ref(`reservas/${id}`).update(repairUpdates);
         }
+        // ----------------------------------------------------
 
-        // Buscar tokens del conductor (Mobile + Web)
+        if (!driverId) return;
+
         const cSnap = await db.ref(`conductores/${driverId}`).once('value');
-        const cData = cSnap.val();
-
         const tokens = [];
-        if (cData?.tokenFCM) tokens.push(cData.tokenFCM);
-        if (cData?.tokenFCM_Web) tokens.push(cData.tokenFCM_Web);
+        if (cSnap.val()?.tokenFCM) tokens.push(cSnap.val().tokenFCM);
+        if (cSnap.val()?.tokenFCM_Web) tokens.push(cSnap.val().tokenFCM_Web);
 
         const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        if (uniqueTokens.length === 0) return;
 
-        if (uniqueTokens.length === 0) {
-            console.log(`⚠️ No hay tokens para el conductor ${driverId}`);
-            return;
-        }
+        const route = `${resData.origin || resData.origen || ""} -> ${resData.destination || resData.destino || ""}`;
+        const payload = getBrandedPayload("¡Nueva Reserva Recibida!", `${passengerName} ha reservado para la ruta ${route}.`, { type: "new_reservation", reservationId: id, target_activity: "driver_reservations" });
 
-        const payload = {
-            notification: {
-                title: "¡Nueva Reserva Recibida!",
-                body: `${passengerName} ha reservado para la ruta ${route}.`
-            },
-            data: {
-                type: "new_reservation",
-                reservationId: id,
-                target_activity: "driver_reservations",
-                timestamp: String(Date.now())
-            }
-        };
-
-        const notificationPromises = uniqueTokens.map(token =>
-            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
-        );
-
-        await Promise.all(notificationPromises);
-        console.log(`✅ Notificación de nueva reserva enviada al conductor ${driverId} (${uniqueTokens.length} dispositivos)`);
-
-    } catch (error) {
-        console.error("❌ Error en onReservationCreated:", error);
-    }
+        await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
+    } catch (error) { console.error("❌ Error en reserva:", error); }
 });
 
 /**
- * 🔔 NOTIFICACIÓN DE CAMBIO DE ESTADO
- *
- * Se activa cuando cambia el estado de una reserva (Confirmada o Cancelada)
+ * 🔔 MODO ESPEJO: SINCRO Y NOTIFICACIÓN DE CAMBIO DE ESTADO
  */
 exports.onReservationStatusChanged = onValueUpdated("/reservas/{id}", async (event) => {
     const beforeData = event.data.before.val();
@@ -430,60 +299,37 @@ exports.onReservationStatusChanged = onValueUpdated("/reservas/{id}", async (eve
     const oldStatus = beforeData.reservationStatus || beforeData.estadoReserva;
     const newStatus = afterData.reservationStatus || afterData.estadoReserva;
 
-    // Solo actuar si el estado de la reserva ha cambiado
     if (oldStatus === newStatus) return;
 
-    // Solo notificar estados finales específicos
-    if (newStatus !== "Confirmada" && newStatus !== "Cancelada") return;
-
     try {
-        console.log(`📝 Estado de reserva ${id} cambió a: ${newStatus}`);
+        // --- 🛠 MODO ESPEJO: Sincronizar llaves de estado ---
+        const syncUpdates = {};
+        if (afterData.reservationStatus !== afterData.estadoReserva) {
+            // Si cambió en inglés (Web), actualizar español (Android)
+            if (afterData.reservationStatus !== beforeData.reservationStatus) syncUpdates.estadoReserva = afterData.reservationStatus;
+            // Si cambió en español (Android), actualizar inglés (Web)
+            else syncUpdates.reservationStatus = afterData.estadoReserva;
+
+            await db.ref(`reservas/${id}`).update(syncUpdates);
+        }
+        // ----------------------------------------------------
+
+        if (newStatus !== "Confirmada" && newStatus !== "Cancelada") return;
 
         const userId = afterData.userId || afterData.usuarioId;
-        if (!userId) {
-            console.log("❌ No se encontró userId/usuarioId en la reserva.");
-            return;
-        }
+        if (!userId) return;
 
-        // Buscar tokens del pasajero (Mobile + Web)
         const uSnap = await db.ref(`usuarios/${userId}`).once('value');
-        const uData = uSnap.val();
-
         const tokens = [];
-        if (uData?.tokenFCM) tokens.push(uData.tokenFCM);
-        if (uData?.tokenFCM_Web) tokens.push(uData.tokenFCM_Web);
+        if (uSnap.val()?.tokenFCM) tokens.push(uSnap.val().tokenFCM);
+        if (uSnap.val()?.tokenFCM_Web) tokens.push(uSnap.val().tokenFCM_Web);
 
         const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        if (uniqueTokens.length === 0) return;
 
-        if (uniqueTokens.length === 0) {
-            console.log(`⚠️ No hay tokens registrados para el pasajero ${userId}`);
-            return;
-        }
+        const body = newStatus === "Confirmada" ? "¡Tu viaje ha sido confirmado! Revisa los detalles en la app." : "Lamentamos informarte que tu reserva ha sido cancelada.";
+        const payload = getBrandedPayload(`Tu reserva ha sido ${newStatus}`, body, { type: "reservation_status_update", reservationId: id, status: newStatus, target_activity: "passenger_reservations" });
 
-        const payload = {
-            notification: {
-                title: `Tu reserva ha sido ${newStatus}`,
-                body: newStatus === "Confirmada"
-                    ? "¡Tu viaje ha sido confirmado! Revisa los detalles en la app."
-                    : "Lamentamos informarte que tu reserva ha sido cancelada."
-            },
-            data: {
-                type: "reservation_status_update",
-                reservationId: id,
-                status: newStatus,
-                target_activity: "passenger_reservations",
-                timestamp: String(Date.now())
-            }
-        };
-
-        const notificationPromises = uniqueTokens.map(token =>
-            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
-        );
-
-        await Promise.all(notificationPromises);
-        console.log(`✅ Notificación de cambio de estado (${newStatus}) enviada al usuario ${userId} (${uniqueTokens.length} dispositivos)`);
-
-    } catch (error) {
-        console.error("❌ Error en onReservationStatusChanged:", error);
-    }
+        await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
+    } catch (error) { console.error("❌ Error en status change:", error); }
 });

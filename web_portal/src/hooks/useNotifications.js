@@ -52,7 +52,8 @@ export const useNotifications = (user, role) => {
       if (payload.notification) {
         new Notification(payload.notification.title, {
           body: payload.notification.body,
-          icon: '/assets/logo_icon.png'
+          icon: payload.notification.icon || '/assets/logo_icon.png',
+          badge: payload.notification.badge || '/assets/logo_icon.png'
         });
       }
     });

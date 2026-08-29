@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.12 Premium
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.13 Premium
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura de alto rendimiento.
 
@@ -7,12 +7,12 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 ## 🏗️ 1. Identificación de la Suite
 *   **Nombre Comercial:** Ecosistema "Go".
 *   **Fabricante:** ChopCode Solutions.
-*   **Versión Global de la Suite:** v1.9.12 (Cloud Automation & API 36).
+*   **Versión Global de la Suite:** v1.9.13 (Mirror Engine & Full Sync).
 
 ### 🏷️ Versiones por Componente:
 *   **Ruta-Go Android:** v1.6.0 (API 36 Ready).
-*   **Ruta-Go Web Portal:** v1.1.8 (Sync Config).
-*   **Go-Core (Firebase):** v2.1.0 (Cloud Chat Notifications).
+*   **Ruta-Go Web Portal:** v1.2.0 (FCM Ready).
+*   **Go-Core (Firebase):** v2.2.0 (Cloud Chat & Sync).
 
 ---
 

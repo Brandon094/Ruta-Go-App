@@ -4,13 +4,38 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [1.9.13] - 2026-08-29 (Release Candidate - Full Parity)
+*Esta versión finaliza la integración del Motor Espejo en la nube y prepara el despliegue oficial de la v1.6.0 en Android.*
+
+### 📱 Ruta-Go Mobile (Android v1.6.0 - Final Build)
+- **Generación de AAB**: Preparación de binarios para la Google Play Console bajo el nivel de API 36.
+- **Validación de Notificaciones**: Sincronización final del `NotificationService` con los nuevos payloads de Cloud Functions.
+
+### 🌐 Ruta-Go Web (Portal v1.2.0)
+- **Versión de Producción**: Incremento a v1.2.0 con soporte nativo para notificaciones de chat y reservas.
+- **Optimización de Hosting**: Configuración final para despliegue en Firebase Hosting.
+
+### 🔧 Go-Core (Cloud Functions v2.2.0)
+- **Motor Espejo (Mirror Engine)**: Implementación de la auto-reparación de llaves bilingües en tiempo real para garantizar paridad entre plataformas.
+- **Identidad Visual Premium**: Unificación de iconos y colores corporativos en todas las notificaciones push.
+
 ## [1.9.12] - 2026-08-29 (FCM Cloud Automation & API 36 Release)
 *Esta versión automatiza las notificaciones de chat mediante Cloud Functions, unifica el motor de mensajería y cumple con los estándares finales de Google para Android 16.*
 
-### 📱 Ruta-Go Mobile (Android v1.6.0)
-- **Cumplimiento API 36**: Actualización del SDK a Android 16 (Nivel 36) para cumplir con las políticas de Google Play (Deadline 30 de agosto).
-- **Refactor de Chat**: Eliminación del envío manual de notificaciones desde el cliente. El flujo ahora es 100% pasivo, delegando el disparo de alertas al backend para ahorrar batería y datos.
-- **Versión de Release**: Incremento a versionCode 15 y versionName 1.6.0 preparado para producción.
+### 📱 Ruta-Go Mobile (Android v1.6.0 - Release Oficial)
+> ¡Ruta-Go v1.6.0: Sincronización Total! 🚀✨
+>
+> • 🚀 Soporte oficial Android 16 (API 36).
+> • 🛠️ Fix Crítico: Corregido error en tiquetes web.
+> • 👨‍✈️ Identidad: Nombre del conductor en horarios.
+> • 🎨 Paridad 1:1 con el Portal Web.
+> • 🎫 Reservas seguras con tecnología UUID.
+> • 🏁 Rotación de turnos optimizada.
+>
+> ¡Conectando el Huila! 🚌💨🎯🏁
+
+- **Cumplimiento API 36**: Actualización del SDK a Android 16 (Nivel 36) para cumplir con las políticas de Google Play.
+- **Refactor de Chat**: Automatización 100% mediante Cloud Functions (v2.1.0).
 
 ### 🌐 Ruta-Go Web (Portal v1.1.8)
 - **Configuración de Firebase**: Sincronización de API Keys con el nuevo ecosistema del proyecto.

@@ -59,7 +59,16 @@ public class NotificationService extends FirebaseMessagingService {
 
         // Prioridad 1: Payloads de Datos (Lógica personalizada)
         if (remoteMessage.getData().size() > 0) {
-            handleDataMessage(remoteMessage.getData());
+            Map<String, String> data = new java.util.HashMap<>(remoteMessage.getData());
+            
+            // Si el mensaje trae objeto 'notification', inyectar sus valores en el mapa de datos 
+            // como fallback para asegurar que handleDataMessage tenga algo que mostrar.
+            if (remoteMessage.getNotification() != null) {
+                if (!data.containsKey("title")) data.put("title", remoteMessage.getNotification().getTitle());
+                if (!data.containsKey("body")) data.put("body", remoteMessage.getNotification().getBody());
+            }
+            
+            handleDataMessage(data);
             return; 
         }
 
@@ -90,6 +99,9 @@ public class NotificationService extends FirebaseMessagingService {
             String type = data.get("type");
             String title = data.get("title");
             String message = data.get("message");
+            
+            // Soporte para llave "body" (estándar FCM) si "message" está vacío
+            if (message == null) message = data.get("body");
 
             if (type != null) {
                 switch (type) {
@@ -99,9 +111,23 @@ public class NotificationService extends FirebaseMessagingService {
                                 data.get("ruta_nombre"), data.get("conductor_nombre"));
                         break;
                     case "nueva_reserva":
-                        title = getString(R.string.notif_nueva_reserva_driver_title);
-                        message = getString(R.string.notif_nueva_reserva_body, 
-                                data.get("pasajero_nombre"), data.get("asiento_nombre"), data.get("ruta_nombre"));
+                    case "new_reservation":
+                        if (title == null) title = getString(R.string.notif_nueva_reserva_driver_title);
+                        if (message == null || message.isEmpty()) {
+                            message = getString(R.string.notif_nueva_reserva_body, 
+                                    data.get("pasajero_nombre"), data.get("asiento_nombre"), data.get("ruta_nombre"));
+                        }
+                        break;
+                    case "reservation_status_update":
+                        String status = data.get("status");
+                        if (status != null) {
+                            title = getString(R.string.notif_generic_status_title, status);
+                            if ("Confirmada".equals(status)) {
+                                title = getString(R.string.notif_confirmada_title);
+                            } else if ("Cancelada".equals(status)) {
+                                title = getString(R.string.notif_cancelada_title);
+                            }
+                        }
                         break;
                     case "promotion":
                         title = getString(R.string.notif_promotion_title);
@@ -138,7 +164,11 @@ public class NotificationService extends FirebaseMessagingService {
                         case "driver_home":
                             targetClass = com.chopcode.rutago.app.activities.driver.DriverHomeActivity.class;
                             break;
+                        case "driver_reservations":
+                            targetClass = com.chopcode.rutago.app.activities.driver.history.DriverHistoryActivity.class;
+                            break;
                         case "passenger_history":
+                        case "passenger_reservations":
                             targetClass = com.chopcode.rutago.app.activities.passenger.history.ReservationHistoryActivity.class;
                             break;
                         case "passenger_home":

@@ -351,6 +351,7 @@
     <string name="notif_confirmada_body">¡Tu viaje en %1$s ha sido confirmado por %2$s! Entra para ver los detalles.</string>
     <string name="notif_cancelada_title">Reserva Cancelada</string>
     <string name="notif_cancelada_body">Lo sentimos, tu reserva para %s fue cancelada</string>
+    <string name="notif_generic_status_title">Tu reserva está %s</string>
     <string name="notif_promotion_title">¡Mira esto!</string>
     <string name="notif_promotion_body">Tenemos algo nuevo para ti en RutaGo. ¡Ven a verlo!</string>
     <string name="notif_nueva_reserva_driver_title">¡Nueva Reserva Recibida!</string>
