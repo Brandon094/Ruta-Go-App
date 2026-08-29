@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chopcode.rutago.app.R
-import com.chopcode.rutago.app.ui.theme.RutaGoNavy
 
 /**
  * ⚛️ ATOM: AuthLogo
@@ -29,7 +29,7 @@ fun AuthLogo(
         modifier = modifier
             .size(size)
             .clip(CircleShape),
-        color = RutaGoNavy,
+        color = if (androidx.compose.foundation.isSystemInDarkTheme()) com.chopcode.rutago.app.ui.theme.RutaGoNavy else MaterialTheme.colorScheme.primary,
         tonalElevation = 4.dp
     ) {
         Box(

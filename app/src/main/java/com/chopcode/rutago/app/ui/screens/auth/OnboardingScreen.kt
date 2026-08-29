@@ -52,7 +52,7 @@ fun OnboardingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(RutaGoNavyDark)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         HorizontalPager(
             state = pagerState,
@@ -80,7 +80,7 @@ fun OnboardingScreen(
                     TextButton(onClick = onSkipClick) {
                         Text(
                             text = "SALTAR",
-                            color = Color.White.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                         )
                     }
                 }

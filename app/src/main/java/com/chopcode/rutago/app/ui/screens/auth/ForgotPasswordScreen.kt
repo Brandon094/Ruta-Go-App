@@ -51,13 +51,13 @@ fun ForgotPasswordScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = RutaGoNavyDark,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                 )
             )
         },
-        containerColor = RutaGoNavyDark
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Crossfade(targetState = uiState.isSuccess, label = "ScreenState") { success ->
             if (success) {
@@ -162,7 +162,7 @@ private fun SuccessContent(
 
                 Text(
                     text = stringResource(R.string.correo_enviado),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -172,7 +172,7 @@ private fun SuccessContent(
 
                 Text(
                     text = stringResource(R.string.correo_enviado_detalle),
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center
                 )

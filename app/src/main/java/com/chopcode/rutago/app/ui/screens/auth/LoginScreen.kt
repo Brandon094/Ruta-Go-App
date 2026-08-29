@@ -49,7 +49,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(RutaGoNavyDark)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,7 +103,7 @@ fun LoginScreen(
 
             Text(
                 text = stringResource(id = R.string.forgot_password),
-                color = RutaGoOrange,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
@@ -129,14 +129,14 @@ fun LoginScreen(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Divider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.1f))
+            Divider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
             Text(
                 text = stringResource(id = R.string.or),
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = Color.White.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 fontSize = 14.sp
             )
-            Divider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.1f))
+            Divider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
         }
 
         GoogleButton(onClick = onGoogleLoginClick)
