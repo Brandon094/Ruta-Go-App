@@ -1,4 +1,5 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onValueCreated } = require("firebase-functions/v2/database");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -263,5 +264,88 @@ exports.cleanupMarkedAccounts = onSchedule({
 
     } catch (error) {
         console.error('❌ ERROR CRÍTICO EN PROCESO DE LIMPIEZA:', error);
+    }
+});
+
+/**
+ * 💬 NOTIFICACIÓN DE CHAT EN TIEMPO REAL
+ *
+ * Se activa cuando se crea un nuevo mensaje en /chats/{reservationId}/mensajes/{messageId}
+ */
+exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{messageId}", async (event) => {
+    const { reservationId } = event.params;
+    const messageData = event.data.val();
+    const db = admin.database();
+    const messaging = admin.messaging();
+
+    try {
+        console.log(`📩 Nuevo mensaje detectado en reserva: ${reservationId}`);
+
+        // 1. Obtener datos de la reserva para saber quién es el receptor
+        const resSnap = await db.ref(`reservas/${reservationId}`).once('value');
+        if (!resSnap.exists()) {
+            console.log("❌ Reserva no encontrada. Abortando notificación.");
+            return;
+        }
+
+        const resData = resSnap.val();
+        const senderId = messageData.senderId;
+
+        // Identificar quién debe recibir el mensaje (si el emisor es el pasajero, recibe el conductor y viceversa)
+        const isPassengerSender = (senderId === resData.userId);
+        const receptorId = isPassengerSender ? resData.driverId : resData.userId;
+        const senderName = isPassengerSender ? (resData.name || "Pasajero") : (resData.conductorNombre || "Conductor");
+
+        if (!receptorId) {
+            console.log("❌ No se pudo determinar el receptorId.");
+            return;
+        }
+
+        // 2. Buscar tokens del receptor (Mobile + Web)
+        const [uSnap, cSnap] = await Promise.all([
+            db.ref(`usuarios/${receptorId}`).once('value'),
+            db.ref(`conductores/${receptorId}`).once('value')
+        ]);
+
+        const tokens = [];
+        const uData = uSnap.val();
+        const cData = cSnap.val();
+
+        if (uData?.tokenFCM) tokens.push(uData.tokenFCM);
+        if (uData?.tokenFCM_Web) tokens.push(uData.tokenFCM_Web);
+        if (cData?.tokenFCM) tokens.push(cData.tokenFCM);
+        if (cData?.tokenFCM_Web) tokens.push(cData.tokenFCM_Web);
+
+        // Eliminar duplicados y nulos
+        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+
+        if (uniqueTokens.length === 0) {
+            console.log(`⚠️ No hay tokens registrados para el receptor ${receptorId}`);
+            return;
+        }
+
+        // 3. Enviar notificación push
+        const payload = {
+            notification: {
+                title: `Mensaje de ${senderName}`,
+                body: messageData.text.length > 50 ? messageData.text.substring(0, 47) + "..." : messageData.text
+            },
+            data: {
+                type: "chat_message",
+                reservationId: reservationId,
+                target_activity: "chat",
+                timestamp: String(Date.now())
+            }
+        };
+
+        const notificationPromises = uniqueTokens.map(token =>
+            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
+        );
+
+        await Promise.all(notificationPromises);
+        console.log(`✅ Notificación de chat enviada a ${uniqueTokens.length} dispositivos del usuario ${receptorId}`);
+
+    } catch (error) {
+        console.error("❌ Error en onChatMessageCreated:", error);
     }
 });
