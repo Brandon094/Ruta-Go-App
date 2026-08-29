@@ -24,7 +24,7 @@ export const useNotifications = (user, role) => {
           // Obtener el token de FCM
           // NOTA: Reemplazar con la VAPID KEY real desde la consola de Firebase
           const token = await getToken(messaging, {
-            validKey: 'BAq-S8bthzR18EdgK6lzrZhdSxMqaJhON_EZ-FkbfK9LGjQRl6oJMTdSc87RfE0uKQqBJYkZWK0RWzGoxfL5l6I' // Placeholder
+            validKey: 'BAq-S8bthzR18EdgK6lzrZhdSxMqaJhON_EZ-FkbfK9LGjQRl6oJMTdSc87RfE0uKQqBJYkZWK0RWzGoxfL5l6I'
           });
 
           if (token) {

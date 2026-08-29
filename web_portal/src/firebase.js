@@ -7,7 +7,7 @@ import { getStorage } from "firebase/storage";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDyM1bZvabUpqINlIyF66DEaiHSePhzrB0",
+  apiKey: "AIzaSyBpxgTKGvh3jJYylT6Qr6p2amgHmMzCTZQ",
   authDomain: "trasnporte-nataga---la-plata.firebaseapp.com",
   databaseURL: "https://trasnporte-nataga---la-plata-default-rtdb.firebaseio.com",
   projectId: "trasnporte-nataga---la-plata",
