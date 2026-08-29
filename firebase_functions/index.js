@@ -1,5 +1,5 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
-const { onValueCreated } = require("firebase-functions/v2/database");
+const { onValueCreated, onValueUpdated } = require("firebase-functions/v2/database");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -347,5 +347,143 @@ exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{
 
     } catch (error) {
         console.error("❌ Error en onChatMessageCreated:", error);
+    }
+});
+
+/**
+ * 🔔 NOTIFICACIÓN DE NUEVA RESERVA
+ *
+ * Se activa cuando se crea una reserva en /reservas/{id}
+ */
+exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) => {
+    const resData = event.data.val();
+    const { id } = event.params;
+    const db = admin.database();
+    const messaging = admin.messaging();
+
+    try {
+        console.log(`🆕 Nueva reserva creada: ${id}`);
+
+        const driverId = resData.driverId || resData.conductorId;
+        const passengerName = resData.name || resData.nombre || "Pasajero";
+        const origin = resData.origin || resData.origen || "";
+        const destination = resData.destination || resData.destino || "";
+        const route = `${origin} -> ${destination}`;
+
+        if (!driverId) {
+            console.log("❌ No se encontró driverId/conductorId en la reserva.");
+            return;
+        }
+
+        // Buscar tokens del conductor (Mobile + Web)
+        const cSnap = await db.ref(`conductores/${driverId}`).once('value');
+        const cData = cSnap.val();
+
+        const tokens = [];
+        if (cData?.tokenFCM) tokens.push(cData.tokenFCM);
+        if (cData?.tokenFCM_Web) tokens.push(cData.tokenFCM_Web);
+
+        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+
+        if (uniqueTokens.length === 0) {
+            console.log(`⚠️ No hay tokens para el conductor ${driverId}`);
+            return;
+        }
+
+        const payload = {
+            notification: {
+                title: "¡Nueva Reserva Recibida!",
+                body: `${passengerName} ha reservado para la ruta ${route}.`
+            },
+            data: {
+                type: "new_reservation",
+                reservationId: id,
+                target_activity: "driver_reservations",
+                timestamp: String(Date.now())
+            }
+        };
+
+        const notificationPromises = uniqueTokens.map(token =>
+            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
+        );
+
+        await Promise.all(notificationPromises);
+        console.log(`✅ Notificación de nueva reserva enviada al conductor ${driverId} (${uniqueTokens.length} dispositivos)`);
+
+    } catch (error) {
+        console.error("❌ Error en onReservationCreated:", error);
+    }
+});
+
+/**
+ * 🔔 NOTIFICACIÓN DE CAMBIO DE ESTADO
+ *
+ * Se activa cuando cambia el estado de una reserva (Confirmada o Cancelada)
+ */
+exports.onReservationStatusChanged = onValueUpdated("/reservas/{id}", async (event) => {
+    const beforeData = event.data.before.val();
+    const afterData = event.data.after.val();
+    const { id } = event.params;
+    const db = admin.database();
+    const messaging = admin.messaging();
+
+    const oldStatus = beforeData.reservationStatus || beforeData.estadoReserva;
+    const newStatus = afterData.reservationStatus || afterData.estadoReserva;
+
+    // Solo actuar si el estado de la reserva ha cambiado
+    if (oldStatus === newStatus) return;
+
+    // Solo notificar estados finales específicos
+    if (newStatus !== "Confirmada" && newStatus !== "Cancelada") return;
+
+    try {
+        console.log(`📝 Estado de reserva ${id} cambió a: ${newStatus}`);
+
+        const userId = afterData.userId || afterData.usuarioId;
+        if (!userId) {
+            console.log("❌ No se encontró userId/usuarioId en la reserva.");
+            return;
+        }
+
+        // Buscar tokens del pasajero (Mobile + Web)
+        const uSnap = await db.ref(`usuarios/${userId}`).once('value');
+        const uData = uSnap.val();
+
+        const tokens = [];
+        if (uData?.tokenFCM) tokens.push(uData.tokenFCM);
+        if (uData?.tokenFCM_Web) tokens.push(uData.tokenFCM_Web);
+
+        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+
+        if (uniqueTokens.length === 0) {
+            console.log(`⚠️ No hay tokens registrados para el pasajero ${userId}`);
+            return;
+        }
+
+        const payload = {
+            notification: {
+                title: `Tu reserva ha sido ${newStatus}`,
+                body: newStatus === "Confirmada"
+                    ? "¡Tu viaje ha sido confirmado! Revisa los detalles en la app."
+                    : "Lamentamos informarte que tu reserva ha sido cancelada."
+            },
+            data: {
+                type: "reservation_status_update",
+                reservationId: id,
+                status: newStatus,
+                target_activity: "passenger_reservations",
+                timestamp: String(Date.now())
+            }
+        };
+
+        const notificationPromises = uniqueTokens.map(token =>
+            messaging.send({ token, ...payload }).catch(e => console.error(`Error enviando a ${token}:`, e))
+        );
+
+        await Promise.all(notificationPromises);
+        console.log(`✅ Notificación de cambio de estado (${newStatus}) enviada al usuario ${userId} (${uniqueTokens.length} dispositivos)`);
+
+    } catch (error) {
+        console.error("❌ Error en onReservationStatusChanged:", error);
     }
 });

@@ -303,10 +303,13 @@ public class DriverReservationService {
                 if (snapshot.exists()) {
                     Reservation r = snapshot.getValue(Reservation.class);
                     if (r != null && r.getUserId() != null) {
+                        // Notificación proactiva al pasajero (Ahora gestionada por Cloud Functions para soporte multi-dispositivo)
+                        /*
                         NotificationManager nm = NotificationManager.getInstance(context);
                         String route = r.getOrigin() + " -> " + r.getDestination();
                         if ("confirmed".equals(type)) nm.notificarReservaConfirmadaAlPasajero(r.getUserId(), r.getDriver(), route, r.getEstimatedTime(), r.getReservedSeat(), r.getVehicleId(), "", null);
                         else nm.notificarReservaCanceladaAlPasajero(r.getUserId(), r.getDriver(), route, "Cancelada por el conductor.", null);
+                        */
                     }
                 }
             }

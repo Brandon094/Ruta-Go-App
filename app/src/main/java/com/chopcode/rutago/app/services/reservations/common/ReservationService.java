@@ -163,7 +163,8 @@ public class ReservationService {
             if (context != null) {
                 Toast.makeText(context, R.string.reserva_exitosa, Toast.LENGTH_SHORT).show();
             }
-            // Notificación proactiva al conductor
+            // Notificación proactiva al conductor (Ahora gestionada por Cloud Functions para soporte multi-dispositivo)
+            /*
             if (driverId != null && !driverId.isEmpty()) {
                 NotificationManager.getInstance(context != null ? context : MyApp.getAppContext())
                         .notificarNuevaReservaAlConductor(driverId, name, origin + " -> " + destination, "Today", selectedSeat, price, paymentMethod, new NotificationManager.NotificationCallback() {
@@ -171,6 +172,7 @@ public class ReservationService {
                             @Override public void onError(String error) { Log.e(TAG, "❌ Error al enviar notificación Push: " + error); }
                         });
             }
+            */
             callback.onSuccess();
         }).addOnFailureListener(e -> {
             // Rollback de integridad

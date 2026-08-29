@@ -2,7 +2,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey: "AIzaSyBpxgTKGvh3jJYylT6Qr6p2amgHmMzCTZQ",
+  apiKey: "AIzaSyDyM1bZvabUpqINlIyF66DEaiHSePhzrB0",
   authDomain: "trasnporte-nataga---la-plata.firebaseapp.com",
   databaseURL: "https://trasnporte-nataga---la-plata-default-rtdb.firebaseio.com",
   projectId: "trasnporte-nataga---la-plata",
