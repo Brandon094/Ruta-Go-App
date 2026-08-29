@@ -4,6 +4,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [2.0.0-ALPHA] - 2026-08-29 (Premium Refactor Phase 1)
+*Inicio de la gran refactorización a Kotlin + Jetpack Compose para llevar la fluidez y mantenibilidad al estándar Silicon Valley.*
+
+### 📱 Ruta-Go Mobile (Kotlin/Compose)
+- **Migración de Lenguaje**: Preparación del ecosistema para soporte de Kotlin 1.9.
+- **UI Declarativa**: Activación de Jetpack Compose en el módulo `app`.
+- **Atomic Design Foundation**: Implementación del paquete `ui.theme` y creación de los primeros Átomos (`RutaGoButton`, `RutaGoTextField`).
+- **Nueva Rama**: Apertura de la rama `feature/premium-refactor-compose` para desarrollo experimental.
+
 ## [1.9.13] - 2026-08-29 (Release Candidate - Full Parity)
 *Esta versión finaliza la integración del Motor Espejo en la nube y prepara el despliegue oficial de la v1.6.0 en Android.*
 

@@ -70,17 +70,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <!-- Tema para Splash Screen -->
-    <style name="Theme.TrasnporteNatagaLaPlata.Splash" parent="Theme.TrasnporteNatagaLaPlata">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:statusBarColor">?android:attr/colorBackground</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:windowTitleSize">0dp</item>
+    <!-- Tema para Splash Screen (Legacy) -->
+    <style name="Theme.TrasnporteNatagaLaPlata.Splash" parent="Theme.App.Starting">
+    </style>
+
+    <!-- 🚀 MODERN ANDROID SPLASH API THEME -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/secondary_900</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_main</item>
+        <item name="postSplashScreenTheme">@style/Theme.TrasnporteNatagaLaPlata</item>
     </style>
 
     <!-- Button estilo ServiCarga (Orange) -->
