@@ -21,22 +21,24 @@ import java.util.*
 /**
  * 🧪 MOLECULE: ReservationItem
  * Representa un tiquete de viaje en el historial con acciones rápidas.
+ * Adaptable por rol para mostrar conductor o pasajero.
  */
 @Composable
 fun ReservationItem(
     reservation: Reservation,
     modifier: Modifier = Modifier,
+    role: String = "usuario",
     onTicketClick: () -> Unit = {},
     onChatClick: () -> Unit = {},
     onRateClick: () -> Unit = {}
 ) {
-    val status = reservation.reservationStatus?.lowercase() ?: ""
-    val isConfirmed = status == "confirmada" || status == "confirmado" || status == "completada"
+    val status = reservation.status.lowercase()
+    val isConfirmed = status.contains("confirmad") || status == "completada"
     val isRated = reservation.isRated
     
-    val statusColor = when (status) {
-        "confirmada", "confirmado", "completada" -> SuccessGreen
-        "cancelada", "cancelado" -> MaterialTheme.colorScheme.error
+    val statusColor = when {
+        status.contains("confirmad") || status == "completada" -> SuccessGreen
+        status.contains("cancelad") -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.primary
     }
 
@@ -68,7 +70,7 @@ fun ReservationItem(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = (reservation.reservationStatus ?: "Pendiente").uppercase(),
+                        text = reservation.status.uppercase(),
                         color = statusColor,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -112,7 +114,7 @@ fun ReservationItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = reservation.departureTime ?: "--:--",
+                        text = reservation.departureTime.ifEmpty { "--:--" },
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
@@ -127,7 +129,8 @@ fun ReservationItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = reservation.driver ?: "Sin asignar",
+                        text = if (role == "usuario") reservation.driverName.ifEmpty { "Sin asignar" } 
+                               else reservation.passengerName.ifEmpty { "Pasajero" },
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         maxLines = 1
@@ -155,7 +158,8 @@ fun ReservationItem(
                 ) {
                     if (isRated) {
                         RatingStars(rating = reservation.rating)
-                    } else {
+                    } else if (role == "usuario") {
+                        // Solo el pasajero califica al conductor
                         TextButton(onClick = onRateClick) {
                             Icon(Icons.Default.Star, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
@@ -163,7 +167,7 @@ fun ReservationItem(
                         }
                     }
 
-                    Row {
+                    Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                         TextButton(onClick = onChatClick) {
                             Icon(Icons.Default.Chat, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))

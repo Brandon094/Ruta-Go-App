@@ -12,7 +12,10 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import com.chopcode.rutago.app.activities.common.HomeActivity;
 import com.chopcode.rutago.app.activities.common.LoginActivity;
+import com.chopcode.rutago.app.activities.common.history.HistoryActivity;
+import com.chopcode.rutago.app.activities.common.ChatActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.chopcode.rutago.app.R;
@@ -162,20 +165,16 @@ public class NotificationService extends FirebaseMessagingService {
                 if (target != null) {
                     switch (target) {
                         case "driver_home":
-                            targetClass = com.chopcode.rutago.app.activities.driver.DriverHomeActivity.class;
+                        case "passenger_home":
+                            targetClass = HomeActivity.class;
                             break;
                         case "driver_reservations":
-                            targetClass = com.chopcode.rutago.app.activities.driver.history.DriverHistoryActivity.class;
-                            break;
                         case "passenger_history":
                         case "passenger_reservations":
-                            targetClass = com.chopcode.rutago.app.activities.passenger.history.ReservationHistoryActivity.class;
-                            break;
-                        case "passenger_home":
-                            targetClass = com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity.class;
+                            targetClass = HistoryActivity.class;
                             break;
                         case "chat":
-                            targetClass = com.chopcode.rutago.app.activities.common.ChatActivity.class;
+                            targetClass = ChatActivity.class;
                             break;
                     }
                 }

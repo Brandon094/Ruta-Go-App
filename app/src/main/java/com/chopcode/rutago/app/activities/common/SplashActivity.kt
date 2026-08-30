@@ -3,11 +3,11 @@ package com.chopcode.rutago.app.activities.common
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.chopcode.rutago.app.activities.driver.DriverHomeActivity
-import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity
+import com.chopcode.rutago.app.activities.common.HomeActivity
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.managers.core.settings.SessionManager
 import com.google.firebase.database.DataSnapshot
@@ -17,64 +17,47 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * 🚀 SplashActivity (Kotlin + Splash API)
- * Punto de entrada premium del ecosistema Ruta-Go.
+ * 🚀 SplashActivity (Kotlin)
+ * Punto de entrada frío de la aplicación. Gestiona la lógica de sesión y onboarding inicial.
  */
 @SuppressLint("CustomSplashScreen")
-class SplashActivity : ComponentActivity() {
+class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. Instalar el Splash Oficial de Android
-        val splashScreen = installSplashScreen()
+        installSplashScreen()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // 2. Mantenerlo visible un poco para branding si es necesario
-        // O dejarlo hasta que se cargue la data
-        
-        checkSession()
-    }
-
-    private fun checkSession() {
-        val user = MyApp.getCurrentUser()
-        val sessionManager = SessionManager(this)
-
         lifecycleScope.launch {
-            delay(1000) // Branding delay
-
-            if (user == null) {
-                if (sessionManager.isFirstTimeLaunch) {
-                    startActivity(Intent(this@SplashActivity, OnboardingActivity::class.java))
-                } else {
-                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
-                }
-                finish()
-            } else {
-                resolveUserRole(user.uid)
-            }
+            delay(1500) // Animación mínima del logo
+            checkSession()
         }
     }
 
-    private fun resolveUserRole(uid: String) {
-        val db = MyApp.getDatabaseReference("")
+    private fun checkSession() {
+        val sessionManager = SessionManager(this)
         
-        // Verificar en conductores
-        db.child("conductores").child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    navigateTo(DriverHomeActivity::class.java)
-                } else {
-                    // Si no es conductor, asumimos pasajero
-                    navigateTo(PassengerHomeActivity::class.java)
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                navigateTo(LoginActivity::class.java)
-            }
-        })
+        if (sessionManager.isFirstTimeLaunch) {
+            navigateTo(OnboardingActivity::class.java)
+        } else {
+            checkAuthAndNavigate()
+        }
     }
 
-    private fun navigateTo(activityClass: Class<*>) {
-        startActivity(Intent(this, activityClass))
+    private fun checkAuthAndNavigate() {
+        val auth = MyApp.getFirebaseAuthInstance()
+        if (auth.currentUser != null) {
+            // El Home unificado se encarga de resolver el rol internamente
+            navigateTo(HomeActivity::class.java)
+        } else {
+            navigateTo(LoginActivity::class.java)
+        }
+    }
+
+    private fun navigateTo(destination: Class<*>) {
+        val intent = Intent(this, destination)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
 }

@@ -3,6 +3,7 @@ package com.chopcode.rutago.app.ui.viewmodels.passenger
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.chopcode.rutago.app.config.MyApp
+import com.chopcode.rutago.app.models.Reservation
 import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
@@ -92,29 +93,33 @@ class ConfirmReservationViewModel : ViewModel() {
 
     fun confirmReservation() {
         val state = _uiState.value
-        if (state.currentUser == null) {
+        val user = state.currentUser
+        if (user == null) {
             _uiState.update { it.copy(error = "Datos de usuario incompletos") }
             return
         }
 
         _uiState.update { it.copy(isProcessing = true) }
 
-        reservationService.updateSeatAvailability(
-            null,
-            state.scheduleId,
-            state.selectedSeat,
-            state.origin,
-            state.destination,
-            state.estimatedTime,
-            state.scheduleTime,
-            state.paymentMethod,
-            "Por confirmar",
-            state.vehiclePlate,
-            state.vehicleModel,
-            state.price,
-            state.driverName,
-            state.driverId,
-            state.driverPhone,
+        val reservation = Reservation().apply {
+            userId = user.id
+            passengerName = user.nombre
+            passengerPhone = user.telefono
+            driverId = state.driverId
+            driverName = state.driverName
+            scheduleId = state.scheduleId
+            origin = state.origin
+            destination = state.destination
+            departureTime = state.scheduleTime
+            estimatedDuration = state.estimatedTime
+            price = state.price
+            reservedSeat = state.selectedSeat
+            status = "Por confirmar"
+        }
+
+        reservationService.createReservation(
+            MyApp.getAppContext(),
+            reservation,
             object : ReservationService.ReservationCallback {
                 override fun onSuccess() {
                     _uiState.update { it.copy(isProcessing = false, confirmationSuccess = true) }

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
  */
 @Composable
 fun StatItem(
-    icon: Painter,
+    icon: ImageVector,
     value: String,
     label: String,
     iconColor: Color,
@@ -31,7 +31,7 @@ fun StatItem(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            painter = icon,
+            imageVector = icon,
             contentDescription = null,
             tint = iconColor,
             modifier = Modifier.size(22.dp)

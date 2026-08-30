@@ -19,13 +19,15 @@ import com.chopcode.rutago.app.ui.components.molecules.SeatItem
 
 /**
  * 🧬 ORGANISM: SeatGrid
- * Rediseño premium con silueta de vehículo, llantas y distribución real.
+ * Distribución visual premium inspirada en Pinbus con silueta detallada del vehículo.
+ * Soporta discriminación de asientos por tipo de ocupación (App vs Física).
  */
 @Composable
 fun SeatGrid(
     capacity: Int,
     occupiedSeats: Set<Int>,
-    selectedSeat: Int?,
+    physicalOccupiedSeats: Set<Int> = emptySet(),
+    selectedSeat: Int? = null,
     onSeatClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -33,27 +35,27 @@ fun SeatGrid(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        // --- LLANTAS (Más visibles y reales) ---
-        Wheel(Modifier.align(Alignment.TopStart).offset(x = 35.dp, y = 60.dp))
-        Wheel(Modifier.align(Alignment.TopEnd).offset(x = (-35).dp, y = 60.dp))
-        Wheel(Modifier.align(Alignment.BottomStart).offset(x = 35.dp, y = (-80).dp))
-        Wheel(Modifier.align(Alignment.BottomEnd).offset(x = (-35).dp, y = (-80).dp))
+        // --- RUEDAS SUTILES ---
+        Wheel(Modifier.align(Alignment.TopStart).offset(x = 55.dp, y = 80.dp))
+        Wheel(Modifier.align(Alignment.TopEnd).offset(x = (-55).dp, y = 80.dp))
+        Wheel(Modifier.align(Alignment.BottomStart).offset(x = 55.dp, y = (-120).dp))
+        Wheel(Modifier.align(Alignment.BottomEnd).offset(x = (-55).dp, y = (-120).dp))
 
-        // --- CUERPO DE LA CAMIONETA ---
+        // --- SILUETA DEL VEHÍCULO (Minimalista) ---
         Surface(
             modifier = Modifier
-                .width(260.dp)
-                .padding(vertical = 8.dp),
-            shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp, bottomStart = 32.dp, bottomEnd = 32.dp),
+                .width(250.dp)
+                .padding(vertical = 4.dp),
+            shape = RoundedCornerShape(topStart = 100.dp, topEnd = 100.dp, bottomStart = 40.dp, bottomEnd = 40.dp),
             color = MaterialTheme.colorScheme.surface,
-            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
-            shadowElevation = 3.dp
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
+            shadowElevation = 2.dp
         ) {
             Column(
-                modifier = Modifier.padding(top = 40.dp, bottom = 32.dp, start = 16.dp, end = 16.dp),
+                modifier = Modifier.padding(top = 48.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Cabina Frontal...
+                // --- CABINA FRONTAL ---
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -64,8 +66,8 @@ fun SeatGrid(
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        if (capacity >= 1) SeatItemWrapper(1, occupiedSeats, selectedSeat, onSeatClick)
-                        if (capacity >= 2) SeatItemWrapper(2, occupiedSeats, selectedSeat, onSeatClick)
+                        if (capacity >= 1) SeatItemWrapper(1, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                        if (capacity >= 2) SeatItemWrapper(2, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                     }
                 }
 
@@ -76,9 +78,9 @@ fun SeatGrid(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    if (capacity >= 3) SeatItemWrapper(3, occupiedSeats, selectedSeat, onSeatClick)
-                    if (capacity >= 4) SeatItemWrapper(4, occupiedSeats, selectedSeat, onSeatClick)
-                    if (capacity >= 5) SeatItemWrapper(5, occupiedSeats, selectedSeat, onSeatClick)
+                    if (capacity >= 3) SeatItemWrapper(3, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                    if (capacity >= 4) SeatItemWrapper(4, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                    if (capacity >= 5) SeatItemWrapper(5, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                 }
 
                 // Pasillo visual sutil
@@ -99,15 +101,15 @@ fun SeatGrid(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (capacity >= 6) SeatItemWrapper(6, occupiedSeats, selectedSeat, onSeatClick)
-                            if (capacity >= 7) SeatItemWrapper(7, occupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 6) SeatItemWrapper(6, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 7) SeatItemWrapper(7, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                         }
                         
                         Spacer(modifier = Modifier.width(32.dp)) // PASILLO
                         
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (capacity >= 10) SeatItemWrapper(10, occupiedSeats, selectedSeat, onSeatClick)
-                            if (capacity >= 11) SeatItemWrapper(11, occupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 10) SeatItemWrapper(10, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 11) SeatItemWrapper(11, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                         }
                     }
 
@@ -117,15 +119,15 @@ fun SeatGrid(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (capacity >= 8) SeatItemWrapper(8, occupiedSeats, selectedSeat, onSeatClick)
-                            if (capacity >= 9) SeatItemWrapper(9, occupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 8) SeatItemWrapper(8, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 9) SeatItemWrapper(9, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                         }
                         
                         Spacer(modifier = Modifier.width(32.dp)) // PASILLO
                         
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (capacity >= 12) SeatItemWrapper(12, occupiedSeats, selectedSeat, onSeatClick)
-                            if (capacity >= 13) SeatItemWrapper(13, occupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 12) SeatItemWrapper(12, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
+                            if (capacity >= 13) SeatItemWrapper(13, occupiedSeats, physicalOccupiedSeats, selectedSeat, onSeatClick)
                         }
                     }
                 }
@@ -138,12 +140,11 @@ fun SeatGrid(
 private fun Wheel(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .size(width = 14.dp, height = 32.dp)
+            .size(width = 10.dp, height = 24.dp)
             .background(
-                color = Color(0xFF1A1C1E), // Negro caucho real
-                shape = RoundedCornerShape(4.dp)
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(3.dp)
             )
-            .border(0.5.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(4.dp))
     )
 }
 
@@ -151,12 +152,14 @@ private fun Wheel(modifier: Modifier = Modifier) {
 private fun SeatItemWrapper(
     number: Int,
     occupiedSeats: Set<Int>,
+    physicalOccupiedSeats: Set<Int>,
     selectedSeat: Int?,
     onSeatClick: (Int) -> Unit
 ) {
     SeatItem(
         number = number,
-        isOccupied = occupiedSeats.contains(number),
+        isOccupied = occupiedSeats.contains(number) || physicalOccupiedSeats.contains(number),
+        isPhysicalSale = physicalOccupiedSeats.contains(number),
         isSelected = selectedSeat == number,
         onClick = { onSeatClick(number) }
     )

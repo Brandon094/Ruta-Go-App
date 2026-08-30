@@ -7,21 +7,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.ui.components.molecules.StatItem
-import com.chopcode.rutago.app.ui.theme.RutaGoOrange
 
 /**
  * 🧬 ORGANISM: StatsCard
@@ -50,21 +47,21 @@ fun StatsCard(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 StatItem(
-                    icon = painterResource(R.drawable.ic_check),
+                    icon = Icons.Default.CheckCircle,
                     value = confirmed.toString(),
                     label = stringResource(R.string.confirmadas),
                     iconColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.weight(1f)
                 )
                 StatItem(
-                    icon = painterResource(R.drawable.ic_cancel),
+                    icon = Icons.Default.Cancel,
                     value = cancelled.toString(),
                     label = stringResource(R.string.canceladas),
                     iconColor = MaterialTheme.colorScheme.error,
                     modifier = Modifier.weight(1f)
                 )
                 StatItem(
-                    icon = painterResource(R.drawable.ic_checklist),
+                    icon = Icons.Default.History,
                     value = total.toString(),
                     label = stringResource(R.string.total),
                     iconColor = com.chopcode.rutago.app.ui.theme.SuccessGreen,

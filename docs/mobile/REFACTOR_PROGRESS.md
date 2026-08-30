@@ -168,15 +168,33 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 
 ---
 
-## 🚀 Phase 3: Driver Experience & Specialized Flows
-- [ ] **[DriverHomeScreen]**: Panel de control para conductores.
-- [ ] **[ManageSeatsScreen]**: Gestión dinámica de cupos.
+## 🚀 Phase 3: Driver Experience & Unified Dashboards
+- [x] **Unified Dashboard**: Implementación de `HomeScreen` dinámico que conmuta entre Pasajero y Conductor según el rol de Firebase.
+- [x] **[HomeActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/HomeActivity.kt)**: Punto de entrada único que elimina la necesidad de `PassengerHome` y `DriverHome` por separado.
+- [x] **Driver Modules**:
+    - [x] **Real-time Stats**: Agregación de ingresos y cupos libres para conductores.
+    - [x] **Pending Management**: Confirmación y cancelación rápida de reservas desde el Home.
+    - [x] **Route Breakdown**: Visualización de ocupación por turno asignado.
+- [x] **[ManageSeatsScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/driver/ManageSeatsScreen.kt)**: Interfaz para bloqueo de asientos (Venta Física).
+- [x] **[ManageSeatsActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/driver/manager/ManageSeatsActivity.kt)**: Orquestador de gestión táctica de cupos.
+- [x] **Role Management Logic**: Inyección de lógica condicional en `HomeViewModel`.
 
 ---
 
-## 📊 8. Ingeniería de Datos (Normalización)
-- [ ] **Database Standardization**: (Planeado) Migración de llaves bilingües a Inglés estándar (Ver [Plan de Normalización](file:///home/brandond/Datos_Proyectos/Documentos/Desarrollo/Desarrollo%20Movil/Ruta-Go-App/docs/mobile/DATABASE_NORMALIZATION.artifact.md)).
+## 📊 8. Ingeniería de Datos & Motores (Normalización)
+- [x] **Model Migration**: Migración completa de `User`, `Driver`, `Reservation`, `Schedule`, `Vehicle`, `Rating` y `ChatMessage` a Kotlin.
+- [x] **Legacy Bridge**: Implementación de getters/setters y `@PropertyName` para compatibilidad 100% con código Java y Firebase actual.
+- [x] **Service Migration**: Refactorización de todos los servicios (`Reservation`, `Schedule`, `User`, `Price`, `Vehicle`, `Chat`) a Kotlin.
+- [x] **Manager Migration**: Migración de `RatingManager` y `SharingUtils` a Kotlin.
+- [ ] **Database Physical Normalization**: (Pendiente) Script de migración para renombrar llaves en Firebase (Ver [Plan](file:///home/brandond/Datos_Proyectos/Documentos/Desarrollo/Desarrollo%20Movil/Ruta-Go-App/docs/mobile/DATABASE_NORMALIZATION.artifact.md)).
+- [ ] **Logic Engine Optimization**: (Pendiente) Refactorizar la lógica pesada de validación de asientos a Motores de Estado puros en Kotlin.
 
 ---
+
+## 🚀 Phase 4: Owner Panel & Final Polish
+- [ ] **[OwnerDashboard]**: Panel para dueños de flotas (Gestión de conductores y vehículos).
+- [ ] **[AdminTools]**: Herramientas de administración global.
+- [ ] **Legacy Cleanup**: Eliminación definitiva de puentes de compatibilidad tras normalización de DB.
+
 **ChopCode Solutions - Mobile Refactor 2026**
 

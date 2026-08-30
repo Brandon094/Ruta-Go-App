@@ -73,17 +73,17 @@ class TicketActivity : AppCompatActivity() {
                             )
                             shareView.layout(0, 0, shareView.measuredWidth, shareView.measuredHeight)
 
-                            SharingUtils.shareView(this, shareView, "Ticket_${reservation.idReservation}")
+                            SharingUtils.shareView(this, shareView, "Ticket_${reservation.id}")
                         }
                     },
                     onChatClick = {
                         val reservation = uiState.reservation
                         if (reservation != null) {
                             val intent = Intent(this, ChatActivity::class.java).apply {
-                                putExtra("reservationId", reservation.idReservation)
+                                putExtra("reservationId", reservation.id)
                                 putExtra("receiverId", reservation.driverId)
-                                putExtra("receiverName", reservation.driver)
-                                putExtra("senderName", reservation.name)
+                                putExtra("receiverName", reservation.driverName)
+                                putExtra("senderName", reservation.passengerName)
                                 putExtra("scheduleTime", reservation.departureTime)
                             }
                             startActivity(intent)

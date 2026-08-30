@@ -30,7 +30,7 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="31">
 
-        <!-- 🔹 SPLASH ACTIVITY - PUNTO DE ENTRADA PRINCIPAL (NUEVO) -->
+        <!-- 🔹 SPLASH ACTIVITY - PUNTO DE ENTRADA PRINCIPAL -->
         <activity
             android:name=".activities.common.SplashActivity"
             android:exported="true"
@@ -42,8 +42,19 @@
             </intent-filter>
         </activity>
 
+        <!-- 🔹 AUTHENTICATION -->
         <activity
             android:name=".activities.common.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.RegistrationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.ForgotPasswordActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
@@ -52,13 +63,60 @@
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
+        <!-- 🔹 CORE UNIFIED ACTIVITIES -->
         <activity
-            android:name=".activities.driver.DriverOnboardingActivity"
+            android:name=".activities.common.HomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.history.HistoryActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <activity
-            android:name=".activities.common.ForgotPasswordActivity"
+            android:name=".activities.common.profile.ProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.profile.EditProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <!-- 🔹 RESERVATION FLOW -->
+        <activity
+            android:name=".activities.passenger.reservation.createReservation.CreateReservationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.passenger.reservation.confirmReservation.ConfirmReservationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.TicketActivity"
+            android:exported="false"
+            android:label="Tiquete de Viaje"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.common.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <!-- 🔹 DRIVER SPECIFIC -->
+        <activity
+            android:name=".activities.driver.manager.ManageSeatsActivity"
+            android:exported="false"
+            android:label="Gestionar Asientos"
+            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
+
+        <activity
+            android:name=".activities.driver.DriverOnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
@@ -87,82 +145,6 @@
         <meta-data
             android:name="google_analytics_adid_collection_enabled"
             android:value="false" />
-
-        <!-- 🔹 RESTO DE ACTIVIDADES (sin cambios) -->
-        <activity
-            android:name=".activities.passenger.reservation.confirmReservation.ConfirmReservationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.passenger.reservation.createReservation.CreateReservationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.passenger.editProfile.EditProfileActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.driver.editProfile.EditDriverProfileActivity"
-            android:exported="false"
-            android:label="Editar Perfil Conductor"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.driver.history.DriverHistoryActivity"
-            android:exported="false"
-            android:label="@string/historial_reservas"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.passenger.history.ReservationHistoryActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.driver.DriverHomeActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.passenger.PassengerHomeActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.driver.manager.ManageSeatsActivity"
-            android:exported="false"
-            android:label="Gestionar Asientos"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.driver.profile.DriverProfileActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.passenger.profile.UserProfileActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.common.RegistrationActivity"
-            android:exported="false"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.common.TicketActivity"
-            android:exported="false"
-            android:label="Tiquete de Viaje"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
-
-        <activity
-            android:name=".activities.common.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.TrasnporteNatagaLaPlata.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

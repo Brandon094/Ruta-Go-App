@@ -8,15 +8,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.models.Reservation
 import com.chopcode.rutago.app.ui.components.atoms.AuthLogo
 import com.chopcode.rutago.app.ui.components.molecules.TicketInfoItem
@@ -27,14 +24,15 @@ import java.util.*
 /**
  * 🧬 ORGANISM: TicketCard
  * Comprobante digital con diseño premium y efecto de tiquete.
+ * Normalizado para usar las nuevas propiedades de Reservation.
  */
 @Composable
 fun TicketCard(
     reservation: Reservation,
     modifier: Modifier = Modifier
 ) {
-    val statusColor = when (reservation.reservationStatus?.lowercase()) {
-        "confirmada", "completada" -> SuccessGreen
+    val statusColor = when (reservation.status.lowercase()) {
+        "confirmada", "confirmado", "completada" -> SuccessGreen
         "cancelada" -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.primary
     }
@@ -67,7 +65,7 @@ fun TicketCard(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = (reservation.reservationStatus ?: "PENDIENTE").uppercase(),
+                        text = reservation.status.uppercase(),
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold,
@@ -98,7 +96,7 @@ fun TicketCard(
                     val date = Date(reservation.reservationDate)
                     val format = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
                     TicketInfoItem(label = "Fecha", value = format.format(date), modifier = Modifier.weight(1f))
-                    TicketInfoItem(label = "Hora", value = reservation.departureTime ?: "--:--", modifier = Modifier.weight(1f))
+                    TicketInfoItem(label = "Hora", value = reservation.departureTime.ifEmpty { "--:--" }, modifier = Modifier.weight(1f))
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -123,9 +121,9 @@ fun TicketCard(
                 )
 
                 // Viaje Details
-                TicketDetailRow("Pasajero", reservation.name ?: "N/A")
-                TicketDetailRow("Conductor", reservation.driver ?: "Por asignar")
-                TicketDetailRow("Vehículo", "${reservation.vehicleId ?: "---"} (${reservation.vehicleModel ?: "---"})")
+                TicketDetailRow("Pasajero", reservation.passengerName.ifEmpty { "N/A" })
+                TicketDetailRow("Conductor", reservation.driverName.ifEmpty { "Por asignar" })
+                TicketDetailRow("Vehículo", "${reservation.vehiclePlate.ifEmpty { "---" }} (${reservation.vehicleModel.ifEmpty { "---" }})")
             }
 
             // 3. Separator (Punched Effect)
@@ -146,7 +144,7 @@ fun TicketCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = (reservation.idReservation ?: "---").uppercase(),
+                    text = reservation.id.uppercase(),
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     fontWeight = FontWeight.Bold

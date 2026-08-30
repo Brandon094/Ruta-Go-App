@@ -2,7 +2,6 @@ package com.chopcode.rutago.app.activities.passenger.reservation.confirmReservat
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity
+import com.chopcode.rutago.app.activities.common.HomeActivity
 import com.chopcode.rutago.app.ui.screens.passenger.ConfirmReservationScreen
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.viewmodels.passenger.ConfirmReservationViewModel
@@ -42,7 +41,7 @@ class ConfirmReservationActivity : AppCompatActivity() {
                     onBackClick = { finish() },
                     onTutorialDismiss = { viewModel.onTutorialDismiss() },
                     onSuccessDismiss = {
-                        val intent = Intent(this@ConfirmReservationActivity, PassengerHomeActivity::class.java).apply {
+                        val intent = Intent(this@ConfirmReservationActivity, HomeActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         startActivity(intent)

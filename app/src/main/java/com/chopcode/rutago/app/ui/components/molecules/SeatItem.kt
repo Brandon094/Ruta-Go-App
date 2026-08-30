@@ -17,12 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.chopcode.rutago.app.ui.theme.RutaGoNavy
 import com.chopcode.rutago.app.ui.theme.RutaGoOrange
 
 /**
  * 🧪 MOLECULE: SeatItem
  * Representación visual premium de un asiento basada en los colores de Ruta-Go.
+ * Soporta estados de Pasajero (Reserva) y Conductor (Venta Física).
  */
 @Composable
 fun SeatItem(
@@ -31,11 +31,13 @@ fun SeatItem(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isDriver: Boolean = false
+    isDriver: Boolean = false,
+    isPhysicalSale: Boolean = false
 ) {
     // 🎨 Paleta de Colores Inteligente (Theme Aware)
     val backgroundColor = when {
         isDriver -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f)
+        isPhysicalSale -> RutaGoOrange.copy(alpha = 0.15f) // Estilo Conductor: Bloqueo Manual
         isOccupied -> MaterialTheme.colorScheme.error.copy(alpha = 0.08f)
         isSelected -> RutaGoOrange
         else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f)
@@ -43,6 +45,7 @@ fun SeatItem(
 
     val contentColor = when {
         isDriver -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
+        isPhysicalSale -> RutaGoOrange
         isOccupied -> MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
         isSelected -> Color.White
         else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
@@ -50,6 +53,7 @@ fun SeatItem(
 
     val borderColor = when {
         isDriver -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+        isPhysicalSale -> RutaGoOrange.copy(alpha = 0.4f)
         isOccupied -> MaterialTheme.colorScheme.error.copy(alpha = 0.2f)
         isSelected -> RutaGoOrange
         else -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
@@ -62,7 +66,7 @@ fun SeatItem(
             .clip(RoundedCornerShape(10.dp))
             .background(backgroundColor)
             .then(
-                if (isDriver || isOccupied) Modifier 
+                if (isDriver || (isOccupied && !isPhysicalSale)) Modifier 
                 else Modifier.clickable { onClick() }
             )
             .border(1.dp, borderColor, RoundedCornerShape(10.dp)),
@@ -77,7 +81,7 @@ fun SeatItem(
                     tint = contentColor.copy(alpha = 0.15f),
                     modifier = Modifier.size(24.dp)
                 )
-                // Volante superpuesto (Más contrastado para visibilidad)
+                // Volante superpuesto
                 Icon(
                     imageVector = Icons.Default.RadioButtonChecked,
                     contentDescription = "Volante",

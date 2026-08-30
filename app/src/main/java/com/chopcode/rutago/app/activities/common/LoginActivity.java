@@ -27,9 +27,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.chopcode.rutago.app.R;
-import com.chopcode.rutago.app.activities.driver.DriverHomeActivity;
-import com.chopcode.rutago.app.activities.passenger.PassengerHomeActivity;
-import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CreateReservationActivity;
 import com.chopcode.rutago.app.config.MyApp;
 import com.chopcode.rutago.app.managers.core.permissions.PermissionManager;
 import com.chopcode.rutago.app.services.auth.GoogleLoginService;
@@ -216,13 +213,7 @@ public class LoginActivity extends AppCompatActivity {
      * Ejecuta el salto final de navegación basándose en los privilegios del perfil.
      */
     private void redirectByUserType(String userType) {
-        if ("driver".equalsIgnoreCase(userType) || "conductor".equalsIgnoreCase(userType)) {
-            startActivity(new Intent(this, DriverHomeActivity.class));
-        } else {
-            boolean backToReservation = getIntent().getBooleanExtra("volverAReserva", false);
-            Intent intent = new Intent(this, backToReservation ? CreateReservationActivity.class : PassengerHomeActivity.class);
-            startActivity(intent);
-        }
+        startActivity(new Intent(this, HomeActivity.class));
         finish();
     }
 
