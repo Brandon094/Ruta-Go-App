@@ -8,6 +8,7 @@ import com.chopcode.rutago.app.models.Schedule
 import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.services.reservations.common.ScheduleService
 import com.chopcode.rutago.app.services.user.UserService
+import com.chopcode.rutago.app.utils.ui.FormatUtils
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -53,11 +54,15 @@ class PassengerHomeViewModel : ViewModel() {
 
         scheduleService.loadSchedules(object : ScheduleService.ScheduleCallback {
             override fun onSchedulesLoaded(nataga: List<Schedule>?, laPlata: List<Schedule>?) {
+                val natagaList = nataga ?: emptyList()
+                val laPlataList = laPlata ?: emptyList()
+                
                 _uiState.update { 
                     it.copy(
-                        natagaSchedules = nataga ?: emptyList(),
-                        laPlataSchedules = laPlata ?: emptyList(),
-                        isSchedulesLoading = false
+                        natagaSchedules = natagaList,
+                        laPlataSchedules = laPlataList,
+                        isSchedulesLoading = false,
+                        nextScheduleId = findNextScheduleId(natagaList, laPlataList, it.selectedTab)
                     )
                 }
                 if (availabilityListener == null) setupAvailabilityListener()
@@ -67,6 +72,12 @@ class PassengerHomeViewModel : ViewModel() {
                 _uiState.update { it.copy(isSchedulesLoading = false, error = error) }
             }
         })
+    }
+
+    private fun findNextScheduleId(nataga: List<Schedule>, laPlata: List<Schedule>, selectedTab: Int): String? {
+        val currentSchedules = if (selectedTab == 0) nataga else laPlata
+        // Encontrar el primer horario que no ha pasado
+        return currentSchedules.firstOrNull { !FormatUtils.esHorarioPasado(it.time) }?.id
     }
 
     private fun setupAvailabilityListener() {
@@ -159,7 +170,12 @@ class PassengerHomeViewModel : ViewModel() {
     }
 
     fun onTabSelected(index: Int) {
-        _uiState.update { it.copy(selectedTab = index) }
+        _uiState.update { 
+            it.copy(
+                selectedTab = index,
+                nextScheduleId = findNextScheduleId(it.natagaSchedules, it.laPlataSchedules, index)
+            )
+        }
     }
 
     fun onNavigate(route: String) {

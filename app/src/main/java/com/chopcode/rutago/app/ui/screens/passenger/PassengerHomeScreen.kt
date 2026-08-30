@@ -6,11 +6,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
+import com.chopcode.rutago.app.ui.components.molecules.JornadaCompletadaCard
 import com.chopcode.rutago.app.ui.components.molecules.LogoutDialog
 import com.chopcode.rutago.app.ui.components.molecules.RutaGoBottomBar
 import com.chopcode.rutago.app.ui.components.molecules.WelcomeHeader
@@ -28,10 +31,11 @@ import com.chopcode.rutago.app.ui.components.molecules.ScheduleItem
 import com.chopcode.rutago.app.ui.components.organisms.StatsCard
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.viewmodels.passenger.PassengerHomeUiState
+import com.chopcode.rutago.app.utils.ui.FormatUtils
 
 /**
  * 📱 SCREEN: PassengerHomeScreen
- * Dashboard principal del pasajero en Jetpack Compose.
+ * Dashboard principal del pasajero en Jetpack Compose con feedback inteligente.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -44,6 +48,36 @@ fun PassengerHomeScreen(
     onLogoutDismiss: () -> Unit,
     onReserveClick: (com.chopcode.rutago.app.models.Schedule) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    val schedules = if (uiState.selectedTab == 0) uiState.natagaSchedules else uiState.laPlataSchedules
+    
+    // Bandera para evitar el scroll en el primer renderizado y priorizar el Header
+    val isInitialComposition = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(true) }
+
+    // Efecto de Scroll Inteligente: SOLO se activa al cambiar de Tab manualmente
+    LaunchedEffect(uiState.selectedTab) {
+        if (isInitialComposition.value) {
+            isInitialComposition.value = false
+            return@LaunchedEffect
+        }
+
+        if (uiState.nextScheduleId != null && !uiState.isSchedulesLoading) {
+            val index = schedules.indexOfFirst { it.id == uiState.nextScheduleId }
+            if (index != -1) {
+                kotlinx.coroutines.delay(50)
+                // Animación suave al cambiar de ruta, respetando el sticky header
+                if (index == 0) {
+                    listState.animateScrollToItem(1)
+                } else {
+                    listState.animateScrollToItem(index + 2, scrollOffset = -180)
+                }
+            } else {
+                // Si no hay próximo (todos pasados), vamos al inicio de la lista
+                listState.animateScrollToItem(1)
+            }
+        }
+    }
+
     if (uiState.showLogoutDialog) {
         LogoutDialog(
             onConfirm = onLogoutConfirm,
@@ -75,9 +109,10 @@ fun PassengerHomeScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        val schedules = if (uiState.selectedTab == 0) uiState.natagaSchedules else uiState.laPlataSchedules
+        val allSchedulesPast = schedules.isNotEmpty() && schedules.all { FormatUtils.esHorarioPasado(it.time) }
 
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -141,10 +176,12 @@ fun PassengerHomeScreen(
                         contentColor = MaterialTheme.colorScheme.primary,
                         divider = {},
                         indicator = { tabPositions ->
-                            TabRowDefaults.Indicator(
-                                Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            if (uiState.selectedTab < tabPositions.size) {
+                                TabRowDefaults.Indicator(
+                                    Modifier.tabIndicatorOffset(tabPositions[uiState.selectedTab]),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     ) {
                         Tab(
@@ -173,52 +210,31 @@ fun PassengerHomeScreen(
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }
-            } else if (schedules.isEmpty()) {
+            } else if (schedules.isEmpty() || allSchedulesPast) {
                 item {
-                    EmptySchedulesContent()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        JornadaCompletadaCard()
+                    }
                 }
             } else {
-                items(schedules) { schedule ->
+                items(schedules, key = { it.id ?: "" }) { schedule ->
+                    val isPast = FormatUtils.esHorarioPasado(schedule.time)
+                    val isNext = schedule.id == uiState.nextScheduleId
+                    
                     ScheduleItem(
                         schedule = schedule,
+                        isHighlighted = isNext,
+                        isDisabled = isPast && !isNext,
                         onReserveClick = onReserveClick,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun EmptySchedulesContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_time),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(64.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.titulo_jornada_completada),
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-        Text(
-            text = stringResource(R.string.desc_jornada_completada),
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-            fontSize = 14.sp,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
     }
 }
 
@@ -240,41 +256,6 @@ fun PassengerHomeScreenLightPreview() {
         PassengerHomeScreen(
             uiState = PassengerHomeUiState(
                 userName = "Brandon Light",
-                confirmedTrips = 12,
-                cancelledTrips = 2,
-                totalTrips = 14,
-                isLoading = false,
-                isSchedulesLoading = false,
-                natagaSchedules = dummySchedules
-            ),
-            onExpandLegend = {},
-            onTabSelected = {},
-            onNavigate = {},
-            onLogoutConfirm = {},
-            onLogoutDismiss = {},
-            onReserveClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Dark Mode", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun PassengerHomeScreenDarkPreview() {
-    val dummySchedules = listOf(
-        com.chopcode.rutago.app.models.Schedule().apply {
-            id = "1"
-            route = "Natagá -> La Plata"
-            time = "06:00 AM"
-            price = "$12.000"
-            availableSeats = 13
-            setDriverName("ONIAS PEREZ")
-        }
-    )
-    
-    RutaGoTheme(darkTheme = true) {
-        PassengerHomeScreen(
-            uiState = PassengerHomeUiState(
-                userName = "Brandon Dark",
                 confirmedTrips = 12,
                 cancelledTrips = 2,
                 totalTrips = 14,

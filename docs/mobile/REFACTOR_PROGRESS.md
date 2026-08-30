@@ -35,16 +35,20 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **[TicketInfoItem](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/TicketInfoItem.kt)**: Detalle clave del tiquete.
 - [x] **[ChatMessageItem](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/ChatMessageItem.kt)**: Burbuja de mensaje estilizada.
 - [x] **[RutaGoBottomBar](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/RutaGoBottomBar.kt)**: Barra de navegación inferior compartida.
+- [x] **[JornadaCompletadaCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/JornadaCompletadaCard.kt)**: Feedback visual de fin de día (Paridad Web).
 - [x] **[LogoutDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/LogoutDialog.kt)**: Diálogo de confirmación de salida.
 - [x] **[DeleteAccountDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/DeleteAccountDialog.kt)**: Diálogo de advertencia para borrado de cuenta.
 - [x] **[RatingDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/RatingDialog.kt)**: Diálogo de feedback para conductores.
+- [x] **[SeatItem](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/SeatItem.kt)**: Representación visual de un asiento.
+- [x] **[TravelInfoCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/TravelInfoCard.kt)**: Resumen del trayecto seleccionado.
+- [x] **[VehicleInfoCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/VehicleInfoCard.kt)**: Datos del conductor y vehículo.
 
-### 🧬 Organismos (Organisms)
+### 🧬 Organisms (Organisms)
 - [x] **[AuthCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/AuthCard.kt)**: Contenedor tipo tarjeta para formularios.
 - [x] **[StatsCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/StatsCard.kt)**: Tarjeta de estadísticas con indicadores y leyenda expandible.
 - [x] **[ScheduleList](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/ScheduleList.kt)**: Listado reactivo de horarios con estados de carga.
 - [x] **[TicketCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/TicketCard.kt)**: Comprobante digital con efecto de perforación.
-- [x] **[TicketCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/TicketCard.kt)**: Comprobante digital con efecto de perforación.
+- [x] **[SeatGrid](../../app/src/main/java/com/chopcode/rutago/app/ui/components/organisms/SeatGrid.kt)**: Distribución visual del bus para selección.
 
 ### 📱 Pantallas (Screens)
 - [x] **[LoginScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/auth/LoginScreen.kt)**: Interfaz premium de inicio de sesión con soporte para Google Login.
@@ -55,12 +59,16 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **[ReservationHistoryScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/ReservationHistoryScreen.kt)**: Listado de viajes con filtros por estado y búsqueda.
 - [x] **[UserProfileScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/UserProfileScreen.kt)**: Gestión de perfil, foto y estadísticas de fidelización.
 - [x] **[EditProfileScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/EditProfileScreen.kt)**: Formulario de actualización de datos con validación reactiva.
+- [x] **[CreateReservationScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/CreateReservationScreen.kt)**: Selección de asientos interactiva.
+- [x] **[ConfirmReservationScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/ConfirmReservationScreen.kt)**: Pasarela de confirmación final.
 - [x] **[TicketScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/common/TicketScreen.kt)**: Visualización premium del tiquete con animaciones de entrada.
 - [x] **[ChatScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/common/ChatScreen.kt)**: Mensajería en tiempo real con soporte IME.
 - [x] **[PassengerHomeActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/PassengerHomeActivity.kt)**: Migración completa a Kotlin/Compose.
 - [x] **[ReservationHistoryActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/history/ReservationHistoryActivity.kt)**: Orquestador del historial.
 - [x] **[UserProfileActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/profile/UserProfileActivity.kt)**: Gestión de identidad del usuario.
 - [x] **[EditProfileActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/editProfile/EditProfileActivity.kt)**: Formulario de edición de contacto.
+- [x] **[CreateReservationActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/reservation/createReservation/CreateReservationActivity.kt)**: Selección de asientos.
+- [x] **[ConfirmReservationActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/passenger/reservation/confirmReservation/ConfirmReservationActivity.kt)**: Confirmación de tiquete.
 - [x] **[TicketActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/TicketActivity.kt)**: Punto de entrada para tiquetes digitales.
 - [x] **[ChatActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/ChatActivity.kt)**: Puente de comunicación contextual.
 - [x] **[OnboardingActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/OnboardingActivity.kt)**: Migración completa a Kotlin/Compose.
@@ -88,7 +96,15 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **[EditProfileViewModel](../../app/src/main/java/com/chopcode/rutago/app/ui/viewmodels/passenger/EditProfileViewModel.kt)**: Lógica de actualización de datos personales.
 - [x] **[TicketViewModel](../../app/src/main/java/com/chopcode/rutago/app/ui/viewmodels/common/TicketViewModel.kt)**: Lógica para generación y validación de tiquetes digitales.
 - [x] **[ChatViewModel](../../app/src/main/java/com/chopcode/rutago/app/ui/viewmodels/common/ChatViewModel.kt)**: Comunicación bidireccional reactiva.
+- [x] **[CreateReservationViewModel](../../app/src/main/java/com/chopcode/rutago/app/ui/viewmodels/passenger/CreateReservationViewModel.kt)**: Motor de orquestación de asientos.
+- [x] **[ConfirmReservationViewModel](../../app/src/main/java/com/chopcode/rutago/app/ui/viewmodels/passenger/ConfirmReservationViewModel.kt)**: Cierre transaccional de reservas.
 - [x] **UI State Driven**: Las pantallas ahora son componentes puros que reaccionan al estado del ViewModel.
+
+---
+
+## 📅 9. Flujo de Reservas (UI) - COMPLETADO
+- [x] **Seat Selector**: Cuadrícula dinámica adaptada a la capacidad del vehículo.
+- [x] **Transactional Summary**: Pantalla de revisión final antes de la persistencia.
 
 ---
 
@@ -122,6 +138,7 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **Componentes Semánticos**: Todos los átomos y moléculas consumen colores desde el sistema de Material 3, eliminando hardcoding de colores Navy.
 - [x] **Auto-Detección**: La app ahora respeta la configuración global del sistema operativo del usuario.
 - [x] **Sticky Headers**: Implementación de cabeceras fijas en el scroll para una navegación fluida en el Dashboard.
+- [x] **UX Feedback**: Implementación de la "Regla de Oro" (7 PM Reset), banner "Siguiente" estilo web y autoscroll animado.
 - [x] **Rating System**: Integración de calificaciones nativas vinculadas a reservas de Firebase.
 - [x] **Navigation Cleanup**: Eliminación de barras de navegación duplicadas y unificación de flujo Compose.
 
@@ -134,12 +151,23 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 
 ---
 
-## 🚀 Phase 2: Driver Experience & Profiles
-- [x] **[ReservationHistoryScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/ReservationHistoryScreen.kt)**: Listado de viajes con filtros por estado y búsqueda.
-- [x] **[UserProfileScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/passenger/UserProfileScreen.kt)**: Gestión de perfil, foto y estadísticas de fidelización.
-- [x] **[TicketScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/common/TicketScreen.kt)**: Detalle del tiquete con acciones premium.
-- [x] **[ChatScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/common/ChatScreen.kt)**: Chat nativo en tiempo real.
+## 📅 9. Flujo de Reservas (UI)
+- [ ] **[CreateReservationScreen]**: Interfaz interactiva para selección de asientos y ruta.
+- [ ] **[ConfirmReservationScreen]**: Resumen premium antes de la persistencia en Firebase.
+
+---
+
+## 🚀 Phase 2: Core Application & Profiles (COMPLETED)
+- [x] **[ReservationHistoryScreen]**: Historial de viajes.
+- [x] **[UserProfileScreen]**: Gestión de perfil.
+- [x] **[TicketScreen]**: Detalle de tiquete.
+- [x] **[ChatScreen]**: Mensajería.
+
+---
+
+## 🚀 Phase 3: Driver Experience & Specialized Flows
 - [ ] **[DriverHomeScreen]**: Panel de control para conductores.
+- [ ] **[ManageSeatsScreen]**: Gestión dinámica de cupos.
 
 ---
 

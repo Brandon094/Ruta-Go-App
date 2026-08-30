@@ -1,10 +1,9 @@
 package com.chopcode.rutago.app.ui.components.organisms
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +19,7 @@ import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.models.Schedule
 import com.chopcode.rutago.app.ui.components.molecules.ScheduleItem
 import com.chopcode.rutago.app.ui.theme.RutaGoOrange
+import com.chopcode.rutago.app.utils.ui.FormatUtils
 
 /**
  * 🧬 ORGANISM: ScheduleList
@@ -29,6 +29,7 @@ import com.chopcode.rutago.app.ui.theme.RutaGoOrange
 fun ScheduleList(
     schedules: List<Schedule>,
     isLoading: Boolean,
+    nextScheduleId: String?,
     onReserveClick: (Schedule) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,23 +62,24 @@ fun ScheduleList(
             )
             Text(
                 text = stringResource(R.string.desc_jornada_completada),
-                color = Color.White.copy(alpha = 0.6f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
         }
     } else {
-        // Usamos Column en lugar de LazyColumn aquí porque la pantalla ya tiene un verticalScroll
-        // Para evitar problemas de scroll anidado, si la lista es corta. 
-        // Pero si es larga, es mejor usar un Modifier.heightIn o similar.
-        // Por simplicidad en este Dashboard, lo pondremos directo en la Column del Screen.
         Column(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             schedules.forEach { schedule ->
+                val isPast = FormatUtils.esHorarioPasado(schedule.time)
+                val isNext = schedule.id == nextScheduleId
+                
                 ScheduleItem(
                     schedule = schedule,
+                    isHighlighted = isNext,
+                    isDisabled = isPast && !isNext,
                     onReserveClick = onReserveClick
                 )
             }

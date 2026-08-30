@@ -18,7 +18,15 @@ private val DarkColorScheme = darkColorScheme(
     onTertiary = White,
     onBackground = White,
     onSurface = White,
-    outline = Gray600
+    outline = Gray600,
+    primaryContainer = RutaGoOrange.copy(alpha = 0.2f),
+    onPrimaryContainer = White,
+    secondaryContainer = RutaGoNavyDark,
+    onSecondaryContainer = White,
+    surfaceVariant = RutaGoNavySurface,
+    onSurfaceVariant = Gray400,
+    error = ErrorRed,
+    onError = White
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -32,7 +40,15 @@ private val LightColorScheme = lightColorScheme(
     onTertiary = White,
     onBackground = LightTextPrimary,
     onSurface = LightTextPrimary,
-    outline = LightBorder
+    outline = LightBorder,
+    primaryContainer = RutaGoOrange.copy(alpha = 0.1f),
+    onPrimaryContainer = RutaGoOrange,
+    secondaryContainer = Color(0xFFF1F5F9),
+    onSecondaryContainer = RutaGoNavy,
+    surfaceVariant = Color(0xFFF1F5F9),
+    onSurfaceVariant = LightTextSecondary,
+    error = ErrorRed,
+    onError = White
 )
 
 @Composable

@@ -22,6 +22,7 @@ data class PassengerHomeUiState(
     // Horarios
     val natagaSchedules: List<Schedule> = emptyList(),
     val laPlataSchedules: List<Schedule> = emptyList(),
+    val nextScheduleId: String? = null,
     val selectedTab: Int = 0,
     val currentRoute: String = "home",
     val showLogoutDialog: Boolean = false,

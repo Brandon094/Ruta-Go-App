@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chopcode.rutago.app.activities.common.LoginActivity
 import com.chopcode.rutago.app.activities.passenger.history.ReservationHistoryActivity
 import com.chopcode.rutago.app.activities.passenger.profile.UserProfileActivity
+import com.chopcode.rutago.app.activities.passenger.reservation.createReservation.CreateReservationActivity
 import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.ui.screens.passenger.PassengerHomeScreen
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
@@ -61,7 +62,13 @@ class PassengerHomeActivity : AppCompatActivity() {
                     },
                     onLogoutDismiss = { viewModel.dismissLogoutDialog() },
                     onReserveClick = { schedule ->
-                        Log.d("PassengerHome", "Reservar turno: ${schedule.id}")
+                        val intent = Intent(this, CreateReservationActivity::class.java).apply {
+                            putExtra("horarioId", schedule.id)
+                            putExtra("horarioHora", schedule.time)
+                            putExtra("rutaSeleccionada", schedule.route)
+                            putExtra("precioSeleccionado", schedule.price?.toDoubleOrNull() ?: 12000.0)
+                        }
+                        startActivity(intent)
                     }
                 )
             }
