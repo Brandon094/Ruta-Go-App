@@ -65,6 +65,18 @@ class LoginViewModel(
         }
     }
 
+    fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            val result = repository.loginWithGoogle(idToken)
+            result.onSuccess { userType ->
+                _uiState.update { it.copy(isLoading = false, isSuccess = true, userType = userType) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Error con Google") }
+            }
+        }
+    }
+
     fun resetError() {
         _uiState.update { it.copy(error = null) }
     }

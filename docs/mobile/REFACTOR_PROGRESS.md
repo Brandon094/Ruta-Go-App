@@ -160,6 +160,15 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 
 ---
 
+## 🚀 Phase 1: Authentication & Onboarding (COMPLETED)
+- [x] **[LoginActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/LoginActivity.kt)**: Migrado a Kotlin + Compose con soporte One Tap.
+- [x] **[RegistrationActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/RegistrationActivity.kt)**: Registro de usuarios con validaciones reactivas.
+- [x] **[ForgotPasswordActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/ForgotPasswordActivity.kt)**: Recuperación de cuenta con estados de éxito.
+- [x] **[OnboardingActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/OnboardingActivity.kt)**: Tutorial premium inicial.
+- [x] **Auth Repository**: Centralización de lógica en `AuthRepositoryImpl.kt`.
+
+---
+
 ## 🚀 Phase 2: Core Application & Profiles (COMPLETED)
 - [x] **[ReservationHistoryScreen]**: Historial de viajes.
 - [x] **[UserProfileScreen]**: Gestión de perfil.
@@ -170,24 +179,24 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 
 ## 🚀 Phase 3: Driver Experience & Unified Dashboards
 - [x] **Unified Dashboard**: Implementación de `HomeScreen` dinámico que conmuta entre Pasajero y Conductor según el rol de Firebase.
-- [x] **[HomeActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/HomeActivity.kt)**: Punto de entrada único que elimina la necesidad de `PassengerHome` y `DriverHome` por separado.
+- [x] **Unified History**: Pantalla de `HistoryActivity` compartida con lógica de filtrado por rol.
+- [x] **Unified Profile**: Pantalla de `ProfileActivity` y `EditProfileActivity` unificadas (gestión de vehículos para conductores).
+- [x] **[HomeActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/HomeActivity.kt)**: Punto de entrada único.
 - [x] **Driver Modules**:
     - [x] **Real-time Stats**: Agregación de ingresos y cupos libres para conductores.
     - [x] **Pending Management**: Confirmación y cancelación rápida de reservas desde el Home.
     - [x] **Route Breakdown**: Visualización de ocupación por turno asignado.
 - [x] **[ManageSeatsScreen](../../app/src/main/java/com/chopcode/rutago/app/ui/screens/driver/ManageSeatsScreen.kt)**: Interfaz para bloqueo de asientos (Venta Física).
 - [x] **[ManageSeatsActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/driver/manager/ManageSeatsActivity.kt)**: Orquestador de gestión táctica de cupos.
-- [x] **Role Management Logic**: Inyección de lógica condicional en `HomeViewModel`.
+- [x] **Role Management Logic**: Inyección de lógica condicional en ViewModels centralizados.
 
 ---
 
 ## 📊 8. Ingeniería de Datos & Motores (Normalización)
-- [x] **Model Migration**: Migración completa de `User`, `Driver`, `Reservation`, `Schedule`, `Vehicle`, `Rating` y `ChatMessage` a Kotlin.
-- [x] **Legacy Bridge**: Implementación de getters/setters y `@PropertyName` para compatibilidad 100% con código Java y Firebase actual.
-- [x] **Service Migration**: Refactorización de todos los servicios (`Reservation`, `Schedule`, `User`, `Price`, `Vehicle`, `Chat`) a Kotlin.
-- [x] **Manager Migration**: Migración de `RatingManager` y `SharingUtils` a Kotlin.
-- [ ] **Database Physical Normalization**: (Pendiente) Script de migración para renombrar llaves en Firebase (Ver [Plan](file:///home/brandond/Datos_Proyectos/Documentos/Desarrollo/Desarrollo%20Movil/Ruta-Go-App/docs/mobile/DATABASE_NORMALIZATION.artifact.md)).
-- [ ] **Logic Engine Optimization**: (Pendiente) Refactorizar la lógica pesada de validación de asientos a Motores de Estado puros en Kotlin.
+- [x] **Model Migration**: Migración completa de todos los modelos a Kotlin con **Legacy Bridge** (Paridad Java/Firebase).
+- [x] **Service Migration**: Todos los servicios operativos migrados a Kotlin con Corrutinas.
+- [x] **Architecture Cleanup**: Eliminación de +20 archivos legacy (Adapters, ViewModels y Activities duplicadas).
+- [ ] **Database Physical Normalization**: (Pendiente) Script de migración para renombrar llaves en Firebase.
 
 ---
 
