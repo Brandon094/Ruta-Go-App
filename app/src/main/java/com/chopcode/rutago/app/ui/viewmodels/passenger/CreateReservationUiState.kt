@@ -25,6 +25,7 @@ data class CreateReservationUiState(
     val occupiedSeats: Set<Int> = emptySet(),
     val selectedSeat: Int? = null,
     
+    val showTutorial: Boolean = false,
     val error: String? = null
 ) {
     val isReadyToConfirm: Boolean = selectedSeat != null && driver != null && vehicle != null

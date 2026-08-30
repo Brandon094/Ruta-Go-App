@@ -9,6 +9,8 @@ import com.chopcode.rutago.app.models.Vehicle
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.services.reservations.common.VehicleService
 import com.chopcode.rutago.app.services.user.UserService
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.chopcode.rutago.app.utils.ui.FormatUtils
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -30,6 +32,7 @@ class CreateReservationViewModel : ViewModel() {
     private val userService = UserService()
     private val vehicleService = VehicleService()
     private val priceService = PriceService()
+    private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
     
     private var seatsListener: ValueEventListener? = null
     private var driverListener: ValueEventListener? = null
@@ -50,6 +53,7 @@ class CreateReservationViewModel : ViewModel() {
         loadUserData()
         loadDriverAndVehicleInfo(scheduleId)
         startListeningSeats(scheduleId)
+        checkTutorial()
         
         // Cargar precio real si es posible
         route?.let { r ->
@@ -200,6 +204,17 @@ class CreateReservationViewModel : ViewModel() {
             val newSelection = if (it.selectedSeat == seatNumber) null else seatNumber
             it.copy(selectedSeat = newSelection)
         }
+    }
+
+    private fun checkTutorial() {
+        if (settingsRepository.shouldShowTutorial("tut_seats")) {
+            _uiState.update { it.copy(showTutorial = true) }
+        }
+    }
+
+    fun onTutorialDismiss() {
+        settingsRepository.markTutorialAsSeen("tut_seats")
+        _uiState.update { it.copy(showTutorial = false) }
     }
 
     private fun stopListeningSeats() {

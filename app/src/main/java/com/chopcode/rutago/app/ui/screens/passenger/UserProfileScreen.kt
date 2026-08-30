@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.ui.components.molecules.DeleteAccountDialog
 import com.chopcode.rutago.app.ui.components.molecules.LogoutDialog
+import com.chopcode.rutago.app.ui.components.molecules.TutorialDialog
 import com.chopcode.rutago.app.ui.components.molecules.ProfileInfoRow
 import com.chopcode.rutago.app.ui.components.molecules.RutaGoBottomBar
 import com.chopcode.rutago.app.ui.components.organisms.ProfileHeader
@@ -42,8 +45,18 @@ fun UserProfileScreen(
     onLogoutConfirm: () -> Unit,
     onLogoutDismiss: () -> Unit,
     onDeleteConfirm: () -> Unit,
-    onDeleteDismiss: () -> Unit
+    onDeleteDismiss: () -> Unit,
+    onTutorialDismiss: () -> Unit
 ) {
+    if (uiState.showTutorial) {
+        TutorialDialog(
+            title = stringResource(R.string.tut_profile_title),
+            message = stringResource(R.string.tut_profile_msg),
+            iconRes = R.drawable.ic_driver,
+            onUnderstandClick = onTutorialDismiss
+        )
+    }
+
     if (uiState.showLogoutDialog) {
         LogoutDialog(
             onConfirm = onLogoutConfirm,
@@ -196,7 +209,8 @@ fun UserProfileScreenPreview() {
             onLogoutConfirm = {},
             onLogoutDismiss = {},
             onDeleteConfirm = {},
-            onDeleteDismiss = {}
+            onDeleteDismiss = {},
+            onTutorialDismiss = {}
         )
     }
 }

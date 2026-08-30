@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.models.Reservation
 import com.chopcode.rutago.app.services.reservations.common.ReservationService
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,7 @@ class ReservationHistoryViewModel : ViewModel() {
     val uiState: StateFlow<ReservationHistoryUiState> = _uiState.asStateFlow()
 
     private val reservationService = ReservationService()
+    private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
     private var historyListener: ValueEventListener? = null
     private var allReservations: List<Reservation> = emptyList()
     private var currentUserId: String? = null
@@ -29,6 +32,18 @@ class ReservationHistoryViewModel : ViewModel() {
     init {
         val userId = MyApp.getCurrentUserId()
         userId?.let { loadHistory(it) }
+        checkTutorial()
+    }
+
+    private fun checkTutorial() {
+        if (settingsRepository.shouldShowTutorial("tut_history")) {
+            _uiState.update { it.copy(showTutorial = true) }
+        }
+    }
+
+    fun onTutorialDismiss() {
+        settingsRepository.markTutorialAsSeen("tut_history")
+        _uiState.update { it.copy(showTutorial = false) }
     }
 
     fun loadHistory(userId: String) {

@@ -26,5 +26,6 @@ data class PassengerHomeUiState(
     val selectedTab: Int = 0,
     val currentRoute: String = "home",
     val showLogoutDialog: Boolean = false,
+    val showTutorial: Boolean = false,
     val error: String? = null
 )

@@ -8,6 +8,8 @@ import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService
 import com.chopcode.rutago.app.services.storage.StorageService
 import com.chopcode.rutago.app.services.user.UserService
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,10 +29,23 @@ class UserProfileViewModel : ViewModel() {
     private val storageService = StorageService()
     private val reservationService = PassengerReservationService()
     private val authManager = AuthManager.getInstance()
+    private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
     private var userListener: ValueEventListener? = null
 
     init {
         loadProfile()
+        checkTutorial()
+    }
+
+    private fun checkTutorial() {
+        if (settingsRepository.shouldShowTutorial("tut_profile")) {
+            _uiState.update { it.copy(showTutorial = true) }
+        }
+    }
+
+    fun onTutorialDismiss() {
+        settingsRepository.markTutorialAsSeen("tut_profile")
+        _uiState.update { it.copy(showTutorial = false) }
     }
 
     fun loadProfile() {

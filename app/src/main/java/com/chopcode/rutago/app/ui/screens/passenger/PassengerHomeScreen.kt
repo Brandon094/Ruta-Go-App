@@ -26,6 +26,7 @@ import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.ui.components.molecules.JornadaCompletadaCard
 import com.chopcode.rutago.app.ui.components.molecules.LogoutDialog
 import com.chopcode.rutago.app.ui.components.molecules.RutaGoBottomBar
+import com.chopcode.rutago.app.ui.components.molecules.TutorialDialog
 import com.chopcode.rutago.app.ui.components.molecules.WelcomeHeader
 import com.chopcode.rutago.app.ui.components.molecules.ScheduleItem
 import com.chopcode.rutago.app.ui.components.organisms.StatsCard
@@ -46,8 +47,18 @@ fun PassengerHomeScreen(
     onNavigate: (String) -> Unit,
     onLogoutConfirm: () -> Unit,
     onLogoutDismiss: () -> Unit,
+    onTutorialDismiss: () -> Unit,
     onReserveClick: (com.chopcode.rutago.app.models.Schedule) -> Unit
 ) {
+    if (uiState.showTutorial) {
+        TutorialDialog(
+            title = stringResource(R.string.tut_home_title),
+            message = stringResource(R.string.tut_home_msg),
+            iconRes = R.drawable.ic_bolt,
+            onUnderstandClick = onTutorialDismiss
+        )
+    }
+
     val listState = rememberLazyListState()
     val schedules = if (uiState.selectedTab == 0) uiState.natagaSchedules else uiState.laPlataSchedules
     
@@ -268,6 +279,7 @@ fun PassengerHomeScreenLightPreview() {
             onNavigate = {},
             onLogoutConfirm = {},
             onLogoutDismiss = {},
+            onTutorialDismiss = {},
             onReserveClick = {}
         )
     }

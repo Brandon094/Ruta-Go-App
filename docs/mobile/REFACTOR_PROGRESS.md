@@ -37,6 +37,8 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **[RutaGoBottomBar](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/RutaGoBottomBar.kt)**: Barra de navegación inferior compartida.
 - [x] **[JornadaCompletadaCard](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/JornadaCompletadaCard.kt)**: Feedback visual de fin de día (Paridad Web).
 - [x] **[LogoutDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/LogoutDialog.kt)**: Diálogo de confirmación de salida.
+- [x] **[TutorialDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/TutorialDialog.kt)**: Guías interactivas para nuevos usuarios (MVVM Driven).
+- [x] **[ReservationSuccessDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/ReservationSuccessDialog.kt)**: Feedback premium de reserva exitosa (Pendiente).
 - [x] **[DeleteAccountDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/DeleteAccountDialog.kt)**: Diálogo de advertencia para borrado de cuenta.
 - [x] **[RatingDialog](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/RatingDialog.kt)**: Diálogo de feedback para conductores.
 - [x] **[SeatItem](../../app/src/main/java/com/chopcode/rutago/app/ui/components/molecules/SeatItem.kt)**: Representación visual de un asiento.
@@ -139,6 +141,7 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **Auto-Detección**: La app ahora respeta la configuración global del sistema operativo del usuario.
 - [x] **Sticky Headers**: Implementación de cabeceras fijas en el scroll para una navegación fluida en el Dashboard.
 - [x] **UX Feedback**: Implementación de la "Regla de Oro" (7 PM Reset), banner "Siguiente" estilo web y autoscroll animado.
+- [x] **Tutorial System**: Guías interactivas persistentes para cada fase de la reserva y gestión de perfil.
 - [x] **Rating System**: Integración de calificaciones nativas vinculadas a reservas de Firebase.
 - [x] **Navigation Cleanup**: Eliminación de barras de navegación duplicadas y unificación de flujo Compose.
 

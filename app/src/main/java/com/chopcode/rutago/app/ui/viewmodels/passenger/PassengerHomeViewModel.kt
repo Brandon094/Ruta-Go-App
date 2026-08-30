@@ -8,6 +8,8 @@ import com.chopcode.rutago.app.models.Schedule
 import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.services.reservations.common.ScheduleService
 import com.chopcode.rutago.app.services.user.UserService
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.chopcode.rutago.app.utils.ui.FormatUtils
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -29,6 +31,8 @@ class PassengerHomeViewModel : ViewModel() {
 
     private val userService = UserService()
     private val scheduleService = ScheduleService()
+    private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
+    
     private var profileListener: ValueEventListener? = null
     private var countersListener: ValueEventListener? = null
     private var availabilityListener: ValueEventListener? = null
@@ -37,6 +41,18 @@ class PassengerHomeViewModel : ViewModel() {
     init {
         loadData()
         loadSchedules()
+        checkTutorial()
+    }
+
+    private fun checkTutorial() {
+        if (settingsRepository.shouldShowTutorial("tut_home")) {
+            _uiState.update { it.copy(showTutorial = true) }
+        }
+    }
+
+    fun onTutorialDismiss() {
+        settingsRepository.markTutorialAsSeen("tut_home")
+        _uiState.update { it.copy(showTutorial = false) }
     }
 
     fun loadData() {

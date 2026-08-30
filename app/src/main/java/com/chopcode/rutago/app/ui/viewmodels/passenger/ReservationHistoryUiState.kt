@@ -17,6 +17,7 @@ data class ReservationHistoryUiState(
     val ratingReservation: Reservation? = null,
     val showLogoutDialog: Boolean = false,
     val logoutSuccess: Boolean = false,
+    val showTutorial: Boolean = false,
     val error: String? = null
 )
 

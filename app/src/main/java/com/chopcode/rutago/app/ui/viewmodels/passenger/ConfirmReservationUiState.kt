@@ -31,6 +31,7 @@ data class ConfirmReservationUiState(
     // Pago
     val paymentMethod: String = "efectivo",
     
+    val showTutorial: Boolean = false,
     val confirmationSuccess: Boolean = false,
     val error: String? = null
 )

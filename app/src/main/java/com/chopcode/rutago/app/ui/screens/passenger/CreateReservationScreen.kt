@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.ui.components.atoms.RutaGoButton
 import com.chopcode.rutago.app.ui.components.molecules.SeatLegend
+import com.chopcode.rutago.app.ui.components.molecules.TutorialDialog
 import com.chopcode.rutago.app.ui.components.molecules.TravelInfoCard
 import com.chopcode.rutago.app.ui.components.molecules.VehicleInfoCard
 import com.chopcode.rutago.app.ui.components.organisms.SeatGrid
@@ -35,8 +38,18 @@ fun CreateReservationScreen(
     uiState: CreateReservationUiState,
     onSeatClick: (Int) -> Unit,
     onConfirmClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onTutorialDismiss: () -> Unit
 ) {
+    if (uiState.showTutorial) {
+        TutorialDialog(
+            title = stringResource(R.string.tut_seats_title),
+            message = stringResource(R.string.tut_seats_msg),
+            iconRes = R.drawable.ic_seat,
+            onUnderstandClick = onTutorialDismiss
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -325,7 +338,8 @@ fun CreateReservationScreenPreview() {
             ),
             onSeatClick = {},
             onConfirmClick = {},
-            onBackClick = {}
+            onBackClick = {},
+            onTutorialDismiss = {}
         )
     }
 }

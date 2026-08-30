@@ -61,6 +61,7 @@ class PassengerHomeActivity : AppCompatActivity() {
                         finish()
                     },
                     onLogoutDismiss = { viewModel.dismissLogoutDialog() },
+                    onTutorialDismiss = { viewModel.onTutorialDismiss() },
                     onReserveClick = { schedule ->
                         val intent = Intent(this, CreateReservationActivity::class.java).apply {
                             putExtra("horarioId", schedule.id)

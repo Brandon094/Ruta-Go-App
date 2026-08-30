@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.models.User
 import com.chopcode.rutago.app.services.prices.PriceService
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.chopcode.rutago.app.services.reservations.common.ReservationService
 import com.chopcode.rutago.app.services.user.UserService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ class ConfirmReservationViewModel : ViewModel() {
     private val reservationService = ReservationService()
     private val userService = UserService()
     private val priceService = PriceService()
+    private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
 
     fun processIntent(intent: Intent?) {
         if (intent == null) return
@@ -48,6 +51,18 @@ class ConfirmReservationViewModel : ViewModel() {
 
         loadUserData()
         fetchUpdatedPrice(_uiState.value.origin, _uiState.value.destination)
+        checkTutorial()
+    }
+
+    private fun checkTutorial() {
+        if (settingsRepository.shouldShowTutorial("tut_confirm")) {
+            _uiState.update { it.copy(showTutorial = true) }
+        }
+    }
+
+    fun onTutorialDismiss() {
+        settingsRepository.markTutorialAsSeen("tut_confirm")
+        _uiState.update { it.copy(showTutorial = false) }
     }
 
     private fun loadUserData() {

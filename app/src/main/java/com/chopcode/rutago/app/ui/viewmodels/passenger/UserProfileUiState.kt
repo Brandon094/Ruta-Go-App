@@ -24,5 +24,6 @@ data class UserProfileUiState(
     // Diálogos
     val showDeleteConfirmation: Boolean = false,
     val showLogoutDialog: Boolean = false,
+    val showTutorial: Boolean = false,
     val logoutSuccess: Boolean = false
 )

@@ -35,22 +35,19 @@ class ConfirmReservationActivity : AppCompatActivity() {
                     viewModel.processIntent(intent)
                 }
 
-                if (uiState.confirmationSuccess) {
-                    LaunchedEffect(Unit) {
-                        Toast.makeText(this@ConfirmReservationActivity, "Reserva exitosa", Toast.LENGTH_SHORT).show()
+                ConfirmReservationScreen(
+                    uiState = uiState,
+                    onPaymentMethodChange = { viewModel.setPaymentMethod(it) },
+                    onConfirmClick = { viewModel.confirmReservation() },
+                    onBackClick = { finish() },
+                    onTutorialDismiss = { viewModel.onTutorialDismiss() },
+                    onSuccessDismiss = {
                         val intent = Intent(this@ConfirmReservationActivity, PassengerHomeActivity::class.java).apply {
                             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         }
                         startActivity(intent)
                         finish()
                     }
-                }
-
-                ConfirmReservationScreen(
-                    uiState = uiState,
-                    onPaymentMethodChange = { viewModel.setPaymentMethod(it) },
-                    onConfirmClick = { viewModel.confirmReservation() },
-                    onBackClick = { finish() }
                 )
             }
         }

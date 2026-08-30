@@ -74,6 +74,7 @@ class UserProfileActivity : AppCompatActivity() {
                         finish()
                     },
                     onLogoutDismiss = { viewModel.dismissLogoutDialog() },
+                    onTutorialDismiss = { viewModel.onTutorialDismiss() },
                     onDeleteConfirm = {
                         viewModel.requestAccountDeletion()
                         viewModel.showDeleteConfirmation(false)

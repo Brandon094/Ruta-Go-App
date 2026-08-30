@@ -41,6 +41,7 @@ class CreateReservationActivity : AppCompatActivity() {
                 CreateReservationScreen(
                     uiState = uiState,
                     onSeatClick = { viewModel.onSeatSelected(it) },
+                    onTutorialDismiss = { viewModel.onTutorialDismiss() },
                     onConfirmClick = {
                         val reservation = uiState
                         val intent = Intent(this, ConfirmReservationActivity::class.java).apply {

@@ -26,6 +26,7 @@ import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.ui.components.molecules.LogoutDialog
 import com.chopcode.rutago.app.ui.components.molecules.RatingDialog
 import com.chopcode.rutago.app.ui.components.molecules.RutaGoBottomBar
+import com.chopcode.rutago.app.ui.components.molecules.TutorialDialog
 import com.chopcode.rutago.app.ui.components.molecules.ReservationItem
 import com.chopcode.rutago.app.ui.components.molecules.StatItem
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
@@ -53,8 +54,18 @@ fun ReservationHistoryScreen(
     onRatingDismiss: () -> Unit,
     onLogoutConfirm: () -> Unit,
     onLogoutDismiss: () -> Unit,
+    onTutorialDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (uiState.showTutorial) {
+        TutorialDialog(
+            title = stringResource(R.string.tut_history_title),
+            message = stringResource(R.string.tut_history_msg),
+            iconRes = R.drawable.ic_history,
+            onUnderstandClick = onTutorialDismiss
+        )
+    }
+
     if (uiState.showLogoutDialog) {
         LogoutDialog(
             onConfirm = onLogoutConfirm,
@@ -323,7 +334,8 @@ fun ReservationHistoryScreenPreview() {
             onRatingConfirm = { _, _ -> },
             onRatingDismiss = {},
             onLogoutConfirm = {},
-            onLogoutDismiss = {}
+            onLogoutDismiss = {},
+            onTutorialDismiss = {}
         )
     }
 }

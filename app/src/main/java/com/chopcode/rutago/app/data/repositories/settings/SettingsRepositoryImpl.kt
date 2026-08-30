@@ -19,6 +19,12 @@ class SettingsRepositoryImpl(context: Context) : SettingsRepository {
         prefs.edit().putBoolean(KEY_FIRST_TIME, isFirstTime).apply()
     }
 
+    override fun shouldShowTutorial(key: String): Boolean = prefs.getBoolean(key, true)
+
+    override fun markTutorialAsSeen(key: String) {
+        prefs.edit().putBoolean(key, false).apply()
+    }
+
     override fun clearAll() {
         prefs.edit().clear().apply()
     }
