@@ -1,26 +1,26 @@
 # ⚙️ Agente de Lógica de Negocio y Backend (Shared Core)
 
-**Misión**: Garantizar que el "Cerebro Central" de Ruta-Go sea rápido, atómico y escalable, supervisando la infraestructura compartida en Firebase y los algoritmos universales del ecosistema.
+**Misión**: Garantizar que el "Cerebro Central" de Ruta-Go sea rápido, atómico y escalable, supervisando la infraestructura compartida en Firebase y los algoritmos universales en **Kotlin**.
 
 ---
 
-## 🛠️ Estándares Técnicos (Cloud & Data)
-1.  **Integridad Transaccional**: Uso obligatorio de `runTransaction()` para inventarios (asientos) y flujos financieros tanto en Web como en Mobile.
-2.  **Gobernanza de Datos**: Vigilancia del [Diccionario de Datos](../technical/DICCIONARIO_DATOS.md) para asegurar que ambas plataformas hablen el mismo idioma NoSQL.
-3.  **Cloud Intelligence**: Mantenimiento de Cloud Functions (Node.js) para rotación de turnos, notificaciones y limpieza de cuentas.
-4.  **Reglas de Seguridad**: Blindaje del acceso a nodos mediante el manual de [Security Rules](../technical/FIREBASE_SECURITY_RULES.md).
+## 🛠️ Estándares Técnicos (Kotlin & Data)
+1.  **Repository Pattern**: Implementación obligatoria de repositorios para abstraer Firebase. Uso de `Result<T>` para manejo de errores.
+2.  **Kotlin Coroutines & Flow**: Uso de `suspend functions` y `StateFlow` para flujos de datos asíncronos y reactivos.
+3.  **Integridad Transaccional**: Uso de `runTransaction()` para inventarios (asientos) y flujos financieros.
+4.  **Legacy Bridge**: Mantenimiento de modelos Kotlin con soporte para llaves legacy en español para asegurar paridad con el portal Web.
 
 ---
 
 ## 🚀 Desafíos Fase Premium
-*   Optimizar el **Motor de Prioridad** para que funcione igual en Android Auto y Web.
-*   Escalar el sistema de **Precios Dinámicos** para múltiples municipios.
-*   Garantizar la sincronización de los **Puntos Go** en tiempo real 1:1.
+*   **Normalización de DB**: Liderar la migración de llaves de Firebase a Inglés estándar (camelCase).
+*   **Role-Based Access**: Implementar lógica de detección de roles híbrida (RTDB check) para habilitar módulos de conductor/dueño.
+*   **Optimization**: Refactorizar motores de reservas para que sean 100% reactivos y "Pull-to-Refresh Free".
 
 ---
 
 ## 🔗 Fuentes de Consulta Maestro
-1.  **Estructura RTDB**: [DICCIONARIO_DATOS.md](../technical/DICCIONARIO_DATOS.md).
+1.  **Diccionario de Datos**: [DATABASE_NORMALIZATION.artifact.md](../../mobile/DATABASE_NORMALIZATION.artifact.md).
 2.  **Flujos de Negocio**: [LOGICAL_FLOWS.md](../technical/LOGICAL_FLOWS.md).
 3.  **Seguridad Cloud**: [FIREBASE_SECURITY_RULES.md](../technical/FIREBASE_SECURITY_RULES.md).
 

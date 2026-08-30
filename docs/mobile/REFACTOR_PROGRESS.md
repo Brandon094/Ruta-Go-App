@@ -200,9 +200,11 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 
 ---
 
-## 🚀 Phase 4: Owner Panel & Final Polish
+## 🚀 Phase 4: Navigation, Owner Panel & Final Polish
+- [ ] **Navigation Compose**: Implementación del motor de navegación nativo de Kotlin para eliminar el manejo manual de Intents en Activities base.
 - [ ] **[OwnerDashboard]**: Panel para dueños de flotas (Gestión de conductores y vehículos).
 - [ ] **[AdminTools]**: Herramientas de administración global.
+- [ ] **Business Logic Tuning**: Restricción de edición de vehículos para conductores (Asignación exclusiva por Propietario).
 - [ ] **Legacy Cleanup**: Eliminación definitiva de puentes de compatibilidad tras normalización de DB.
 
 **ChopCode Solutions - Mobile Refactor 2026**
