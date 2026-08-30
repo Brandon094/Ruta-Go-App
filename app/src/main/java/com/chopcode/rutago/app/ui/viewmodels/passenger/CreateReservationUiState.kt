@@ -29,4 +29,11 @@ data class CreateReservationUiState(
     val error: String? = null
 ) {
     val isReadyToConfirm: Boolean = selectedSeat != null && driver != null && vehicle != null
+
+    val origin: String get() = selectedRoute.split(if (selectedRoute.contains(" → ")) " → " else " -> ").getOrNull(0) ?: ""
+    val destination: String get() = selectedRoute.split(if (selectedRoute.contains(" → ")) " → " else " -> ").getOrNull(1) ?: ""
+    val driverName: String get() = driver?.nombre ?: ""
+    val driverId: String get() = driver?.id ?: ""
+    val vehiclePlate: String get() = vehicle?.plate ?: ""
+    val vehicleModel: String get() = vehicle?.model ?: ""
 }

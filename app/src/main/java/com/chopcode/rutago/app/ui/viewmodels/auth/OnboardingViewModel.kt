@@ -6,13 +6,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import com.chopcode.rutago.app.R
+import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 
 /**
  * 🧠 VIEWMODEL: OnboardingViewModel (Kotlin)
  */
 class OnboardingViewModel(
-    private val repository: SettingsRepository
+    private val repository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())

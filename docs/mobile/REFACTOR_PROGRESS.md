@@ -181,7 +181,7 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - [x] **Unified Dashboard**: Implementación de `HomeScreen` dinámico que conmuta entre Pasajero y Conductor según el rol de Firebase.
 - [x] **Unified History**: Pantalla de `HistoryActivity` compartida con lógica de filtrado por rol.
 - [x] **Unified Profile**: Pantalla de `ProfileActivity` y `EditProfileActivity` unificadas (gestión de vehículos para conductores).
-- [x] **[HomeActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/HomeActivity.kt)**: Punto de entrada único.
+- [x] **[MainActivity](../../app/src/main/java/com/chopcode/rutago/app/activities/common/MainActivity.kt)**: Punto de entrada único.
 - [x] **Driver Modules**:
     - [x] **Real-time Stats**: Agregación de ingresos y cupos libres para conductores.
     - [x] **Pending Management**: Confirmación y cancelación rápida de reservas desde el Home.
@@ -201,10 +201,10 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 ---
 
 ## 🚀 Phase 4: Navigation, Owner Panel & Final Polish
-- [ ] **Navigation Compose**: Implementación del motor de navegación nativo de Kotlin para eliminar el manejo manual de Intents en Activities base.
+- [x] **Navigation Compose**: Implementación del motor de navegación nativo de Kotlin. Se eliminaron +10 Activities duplicadas.
 - [ ] **[OwnerDashboard]**: Panel para dueños de flotas (Gestión de conductores y vehículos).
 - [ ] **[AdminTools]**: Herramientas de administración global.
-- [ ] **Business Logic Tuning**: Restricción de edición de vehículos para conductores (Asignación exclusiva por Propietario).
+- [x] **Business Logic Tuning**: Restricción de edición de vehículos para conductores.
 - [ ] **Legacy Cleanup**: Eliminación definitiva de puentes de compatibilidad tras normalización de DB.
 
 **ChopCode Solutions - Mobile Refactor 2026**
