@@ -5,7 +5,6 @@ import com.google.firebase.database.PropertyName
 
 /**
  * 📦 MODEL: Reservation
- * Normalizado a Inglés con compatibilidad total para Java y Firebase.
  */
 @IgnoreExtraProperties
 class Reservation {
@@ -68,7 +67,6 @@ class Reservation {
 
     constructor()
 
-    // Constructor completo
     constructor(id: String, userId: String, driverId: String, scheduleId: String, origin: String, destination: String, departureTime: String, estimatedDuration: String, status: String, reservedSeat: Int, price: Double, reservationDate: Long, isRated: Boolean, rating: Float, passengerName: String, passengerPhone: String, vehiclePlate: String, vehicleModel: String, driverName: String) {
         this.id = id
         this.userId = userId
@@ -92,162 +90,146 @@ class Reservation {
     }
 
     // =========================================================================
-    // 🌍 JAVA & FIREBASE LEGACY BRIDGE
+    // 🌍 FIREBASE & JAVA BRIDGE (Legacy Property Support)
     // =========================================================================
 
-    @PropertyName("idReservation")
-    fun getIdReservation(): String = id
-    @PropertyName("idReservation")
-    fun setIdReservation(v: String) { id = v }
+    @get:PropertyName("idReservation") @set:PropertyName("idReservation")
+    var idReservation: String
+        get() = id
+        set(v) { id = v }
 
-    @PropertyName("idReserva")
-    fun getIdReserva(): String = id
-    @PropertyName("idReserva")
-    fun setIdReserva(v: String) { id = v }
+    @get:PropertyName("idReserva") @set:PropertyName("idReserva")
+    var idReserva: String
+        get() = id
+        set(v) { id = v }
 
-    @PropertyName("usuarioId")
-    fun getUsuarioId(): String = userId
-    @PropertyName("usuarioId")
-    fun setUsuarioId(v: String) { userId = v }
+    @get:PropertyName("usuarioId") @set:PropertyName("usuarioId")
+    var usuarioId: String
+        get() = userId
+        set(v) { userId = v }
 
-    @PropertyName("conductorId")
-    fun getConductorId(): String = driverId
-    @PropertyName("conductorId")
-    fun setConductorId(v: String) { driverId = v }
+    @get:PropertyName("conductorId") @set:PropertyName("conductorId")
+    var conductorId: String
+        get() = driverId
+        set(v) { driverId = v }
 
-    @PropertyName("horarioId")
-    fun getHorarioId(): String = scheduleId
-    @PropertyName("horarioId")
-    fun setHorarioId(v: String) { scheduleId = v }
+    @get:PropertyName("horarioId") @set:PropertyName("horarioId")
+    var horarioId: String
+        get() = scheduleId
+        set(v) { scheduleId = v }
 
-    @PropertyName("origen")
-    fun getOrigen(): String = origin
-    @PropertyName("origen")
-    fun setOrigen(v: String) { origin = v }
+    @get:PropertyName("nombre") @set:PropertyName("nombre")
+    var nombre: String
+        get() = passengerName
+        set(v) { passengerName = v }
 
-    @PropertyName("destino")
-    fun getDestino(): String = destination
-    @PropertyName("destino")
-    fun setDestino(v: String) { destination = v }
+    @get:PropertyName("name") @set:PropertyName("name")
+    var name: String
+        get() = passengerName
+        set(v) { passengerName = v }
 
-    @PropertyName("horaSalida")
-    fun getHoraSalida(): String = departureTime
-    @PropertyName("horaSalida")
-    fun setHoraSalida(v: String) { departureTime = v }
+    @get:PropertyName("telefono") @set:PropertyName("telefono")
+    var telefono: String
+        get() = passengerPhone
+        set(v) { passengerPhone = v }
 
-    @PropertyName("estimatedTime")
-    fun getEstimatedTime(): String = estimatedDuration
-    @PropertyName("estimatedTime")
-    fun setEstimatedTime(v: String) { estimatedDuration = v }
+    @get:PropertyName("phone") @set:PropertyName("phone")
+    var phone: String
+        get() = passengerPhone
+        set(v) { passengerPhone = v }
 
-    @PropertyName("tiempoEstimado")
-    fun getTiempoEstimado(): String = estimatedDuration
-    @PropertyName("tiempoEstimado")
-    fun setTiempoEstimado(v: String) { estimatedDuration = v }
+    @get:PropertyName("conductor") @set:PropertyName("conductor")
+    var conductor: String
+        get() = driverName
+        set(v) { driverName = v }
 
-    @PropertyName("reservationStatus")
-    fun getReservationStatus(): String = status
-    @PropertyName("reservationStatus")
-    fun setReservationStatus(v: String) { status = v }
+    @get:PropertyName("driver") @set:PropertyName("driver")
+    var driver: String
+        get() = driverName
+        set(v) { driverName = v }
 
-    @PropertyName("estadoReserva")
-    fun getEstadoReserva(): String = status
-    @PropertyName("estadoReserva")
-    fun setEstadoReserva(v: String) { status = v }
+    @get:PropertyName("estadoReserva") @set:PropertyName("estadoReserva")
+    var estadoReserva: String
+        get() = status
+        set(v) { status = v }
 
-    @PropertyName("puestoReservado")
-    fun getPuestoReservado(): Int = reservedSeat
-    @PropertyName("puestoReservado")
-    fun setPuestoReservado(v: Int) { reservedSeat = v }
+    @get:PropertyName("reservationStatus") @set:PropertyName("reservationStatus")
+    var reservationStatus: String
+        get() = status
+        set(v) { status = v }
 
-    @PropertyName("precio")
-    fun getPrecio(): Double = price
-    @PropertyName("precio")
-    fun setPrecio(v: Double) { price = v }
+    @get:PropertyName("puestoReservado") @set:PropertyName("puestoReservado")
+    var puestoReservado: Int
+        get() = reservedSeat
+        set(v) { reservedSeat = v }
 
-    @PropertyName("fechaReserva")
-    fun getFechaReserva(): Long = reservationDate
-    @PropertyName("fechaReserva")
-    fun setFechaReserva(v: Long) { reservationDate = v }
+    @get:PropertyName("precio") @set:PropertyName("precio")
+    var precio: Double
+        get() = price
+        set(v) { price = v }
 
-    @PropertyName("calificada")
-    fun isCalificada(): Boolean = isRated
-    @PropertyName("calificada")
-    fun setCalificada(v: Boolean) { isRated = v }
+    @get:PropertyName("fechaReserva") @set:PropertyName("fechaReserva")
+    var fechaReserva: Long
+        get() = reservationDate
+        set(v) { reservationDate = v }
 
-    @PropertyName("rated")
-    fun isRatedLegacy(): Boolean = isRated
-    @PropertyName("rated")
-    @JvmName("setRatedLegacy")
-    fun setRated(v: Boolean) { isRated = v }
+    @get:PropertyName("calificada") @set:PropertyName("calificada")
+    var calificadaLegacy: Boolean
+        get() = isRated
+        set(v) { isRated = v }
 
-    @PropertyName("calificacion")
-    fun getCalificacion(): Float = rating
-    @PropertyName("calificacion")
-    fun setCalificacion(v: Float) { rating = v }
+    @get:PropertyName("rated") @set:PropertyName("rated")
+    var ratedLegacy: Boolean
+        get() = isRated
+        set(v) { isRated = v }
 
-    @PropertyName("nombre")
-    fun getNombre(): String = passengerName
-    @PropertyName("nombre")
-    fun setNombre(v: String) { passengerName = v }
+    @get:PropertyName("calificacion") @set:PropertyName("calificacion")
+    var calificacion: Float
+        get() = rating
+        set(v) { rating = v }
 
-    @PropertyName("name")
-    fun getName(): String = passengerName
-    @PropertyName("name")
-    fun setName(v: String) { passengerName = v }
+    @get:PropertyName("modeloVehiculo") @set:PropertyName("modeloVehiculo")
+    var modeloVehiculo: String
+        get() = vehicleModel
+        set(v) { vehicleModel = v }
 
-    @PropertyName("telefono")
-    fun getTelefono(): String = passengerPhone
-    @PropertyName("telefono")
-    fun setTelefono(v: String) { passengerPhone = v }
+    @get:PropertyName("modelo") @set:PropertyName("modelo")
+    var modelo: String
+        get() = vehicleModel
+        set(v) { vehicleModel = v }
 
-    @PropertyName("phone")
-    fun getPhone(): String = passengerPhone
-    @PropertyName("phone")
-    fun setPhone(v: String) { passengerPhone = v }
+    @get:PropertyName("vehiculoId") @set:PropertyName("vehiculoId")
+    var vehiculoId: String
+        get() = vehiclePlate
+        set(v) { vehiclePlate = v }
 
-    @PropertyName("telefonoC")
-    fun getPhoneC(): String = ""
-    @PropertyName("telefonoC")
-    fun setPhoneC(v: String) { }
+    @get:PropertyName("placa") @set:PropertyName("placa")
+    var placa: String
+        get() = vehiclePlate
+        set(v) { vehiclePlate = v }
 
-    @PropertyName("placa")
-    fun getPlaca(): String = vehiclePlate
-    @PropertyName("placa")
-    fun setPlaca(v: String) { vehiclePlate = v }
+    @get:PropertyName("plate") @set:PropertyName("plate")
+    var plate: String
+        get() = vehiclePlate
+        set(v) { vehiclePlate = v }
 
-    @PropertyName("plate")
-    fun getPlate(): String = vehiclePlate
-    @PropertyName("plate")
-    fun setPlate(v: String) { vehiclePlate = v }
+    @get:PropertyName("estimatedTime") @set:PropertyName("estimatedTime")
+    var estimatedTime: String
+        get() = estimatedDuration
+        set(v) { estimatedDuration = v }
 
-    @PropertyName("modeloVehiculo")
-    fun getModeloVehiculo(): String = vehicleModel
-    @PropertyName("modeloVehiculo")
-    fun setModeloVehiculo(v: String) { vehicleModel = v }
+    @get:PropertyName("tiempoEstimado") @set:PropertyName("tiempoEstimado")
+    var tiempoEstimado: String
+        get() = estimatedDuration
+        set(v) { estimatedDuration = v }
 
-    @PropertyName("modelo")
-    fun getModelo(): String = vehicleModel
-    @PropertyName("modelo")
-    fun setModelo(v: String) { vehicleModel = v }
+    @get:PropertyName("origen") @set:PropertyName("origen")
+    var origenLegacy: String
+        get() = origin
+        set(v) { origin = v }
 
-    @PropertyName("conductor")
-    fun getConductor(): String = driverName
-    @PropertyName("conductor")
-    fun setConductor(v: String) { driverName = v }
-
-    @PropertyName("driver")
-    fun getDriver(): String = driverName
-    @PropertyName("driver")
-    fun setDriver(v: String) { driverName = v }
-
-    @PropertyName("routeName")
-    fun getRouteName(): String = "$origin → $destination"
-    @PropertyName("routeName")
-    fun setRouteName(v: String) { }
-    
-    @PropertyName("vehiculoId")
-    fun getVehiculoId(): String = vehiclePlate
-    @PropertyName("vehiculoId")
-    fun setVehiculoId(v: String) { vehiclePlate = v }
+    @get:PropertyName("destino") @set:PropertyName("destino")
+    var destinoLegacy: String
+        get() = destination
+        set(v) { destination = v }
 }

@@ -5,7 +5,6 @@ import com.google.firebase.database.PropertyName
 
 /**
  * 📦 MODEL: User
- * Clase base para representar a cualquier usuario del sistema.
  */
 @IgnoreExtraProperties
 open class User {
@@ -36,25 +35,21 @@ open class User {
     @get:PropertyName("fechaSolicitudBorrado") @set:PropertyName("fechaSolicitudBorrado")
     var fechaSolicitudBorrado: Long? = null
 
-    // =========================================================================
-    // 🌍 JAVA & FIREBASE LEGACY BRIDGE
-    // =========================================================================
-
-    @PropertyName("name")
-    fun getNameLegacy(): String = nombre
-    @PropertyName("name")
-    fun setNameLegacy(value: String) { nombre = value }
-
-    @PropertyName("phone")
-    fun getPhoneLegacy(): String = telefono
-    @PropertyName("phone")
-    fun setPhoneLegacy(value: String) { telefono = value }
-
-    @PropertyName("estado")
-    fun getEstadoLegacy(): String = status
-    @PropertyName("estado")
-    fun setEstadoLegacy(value: String) { status = value }
+    // Getters para Java (Kotlin los genera automáticamente como getName(), etc.)
+    // Pero si Java busca nombres específicos que no coinciden con la propiedad:
     
-    @JvmName("isSolicitudBorrado")
-    fun isSolicitudBorradoJava(): Boolean = solicitudBorrado
+    @PropertyName("name")
+    fun getNameJava(): String = nombre
+    @PropertyName("name")
+    fun setNameJava(v: String) { nombre = v }
+
+    @PropertyName("phone")
+    fun getPhoneJava(): String = telefono
+    @PropertyName("phone")
+    fun setPhoneJava(v: String) { telefono = v }
+
+    @PropertyName("estado")
+    fun getEstadoJava(): String = status
+    @PropertyName("estado")
+    fun setEstadoJava(v: String) { status = v }
 }

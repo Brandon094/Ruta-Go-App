@@ -201,7 +201,7 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 ---
 
 ## 🚀 Phase 4: Navigation, Owner Panel & Final Polish
-- [x] **Navigation Compose**: Implementación del motor de navegación nativo de Kotlin. Se eliminaron +10 Activities duplicadas.
+- [x] **Navigation Compose**: Implementación del motor de navegación nativo de Kotlin. Se eliminaron +15 Activities duplicadas logrando una **Single-Activity Architecture**.
 - [ ] **[OwnerDashboard]**: Panel para dueños de flotas (Gestión de conductores y vehículos).
 - [ ] **[AdminTools]**: Herramientas de administración global.
 - [x] **Business Logic Tuning**: Restricción de edición de vehículos para conductores.
