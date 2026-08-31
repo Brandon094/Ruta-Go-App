@@ -1,7 +1,7 @@
 package com.chopcode.rutago.app.ui.viewmodels.common
 
 import androidx.lifecycle.ViewModel
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 import com.chopcode.rutago.app.services.reservations.common.ReservationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

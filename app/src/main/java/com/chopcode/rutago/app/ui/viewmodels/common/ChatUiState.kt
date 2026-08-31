@@ -1,6 +1,6 @@
 package com.chopcode.rutago.app.ui.viewmodels.common
 
-import com.chopcode.rutago.app.models.ChatMessage
+import com.chopcode.rutago.app.data.models.ChatMessage
 
 /**
  * 📦 UI STATE: ChatUiState

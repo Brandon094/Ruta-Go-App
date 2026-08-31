@@ -1,9 +1,9 @@
 package com.chopcode.rutago.app.services.user
 
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.User
-import com.chopcode.rutago.app.models.Driver
-import com.chopcode.rutago.app.models.Route
+import com.chopcode.rutago.app.data.models.User
+import com.chopcode.rutago.app.data.models.Driver
+import com.chopcode.rutago.app.data.models.Route
 import com.google.firebase.database.*
 
 /**

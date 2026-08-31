@@ -1,12 +1,11 @@
 package com.chopcode.rutago.app.services.reservations.common
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.chopcode.rutago.app.R
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.engines.seats.SeatDataProcessor
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 import com.google.firebase.database.*
 import java.util.*
 

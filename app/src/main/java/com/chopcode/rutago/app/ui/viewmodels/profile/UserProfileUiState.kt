@@ -1,7 +1,7 @@
 package com.chopcode.rutago.app.ui.viewmodels.profile
 
-import com.chopcode.rutago.app.models.Driver
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.Driver
+import com.chopcode.rutago.app.data.models.User
 
 /**
  * 📦 UI STATE: UserProfileUiState

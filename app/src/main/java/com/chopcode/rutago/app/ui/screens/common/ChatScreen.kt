@@ -18,11 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.ChatMessage
+import com.chopcode.rutago.app.data.models.ChatMessage
 import com.chopcode.rutago.app.ui.components.molecules.ChatMessageItem
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.viewmodels.common.ChatUiState
-import kotlinx.coroutines.launch
 
 /**
  * 📱 SCREEN: ChatScreen

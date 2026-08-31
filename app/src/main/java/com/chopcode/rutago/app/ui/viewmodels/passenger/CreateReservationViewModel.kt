@@ -3,9 +3,9 @@ package com.chopcode.rutago.app.ui.viewmodels.passenger
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Driver
-import com.chopcode.rutago.app.models.User
-import com.chopcode.rutago.app.models.Vehicle
+import com.chopcode.rutago.app.data.models.Driver
+import com.chopcode.rutago.app.data.models.User
+import com.chopcode.rutago.app.data.models.Vehicle
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.services.reservations.common.VehicleService
 import com.chopcode.rutago.app.services.user.UserService

@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
-import com.chopcode.rutago.app.models.Reservation
-import com.chopcode.rutago.app.models.Schedule
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.Reservation
+import com.chopcode.rutago.app.data.models.Schedule
+import com.chopcode.rutago.app.data.models.User
 import com.chopcode.rutago.app.services.reservations.common.ScheduleService
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService
 import com.chopcode.rutago.app.services.user.UserService

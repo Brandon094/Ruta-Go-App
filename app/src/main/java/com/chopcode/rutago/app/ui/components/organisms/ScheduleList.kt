@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -16,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
-import com.chopcode.rutago.app.models.Schedule
+import com.chopcode.rutago.app.data.models.Schedule
 import com.chopcode.rutago.app.ui.components.molecules.ScheduleItem
 import com.chopcode.rutago.app.ui.theme.RutaGoOrange
 import com.chopcode.rutago.app.utils.ui.FormatUtils

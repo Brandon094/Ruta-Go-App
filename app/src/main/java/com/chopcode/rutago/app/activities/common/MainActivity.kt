@@ -10,7 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.managers.core.settings.SessionManager
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.chopcode.rutago.app.ui.nav.Destination
 import com.chopcode.rutago.app.ui.nav.RutaGoNavHost
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
@@ -25,11 +26,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         
-        val sessionManager = SessionManager(this)
+        val settingsRepository: SettingsRepository = SettingsRepositoryImpl(this)
         
         // Determinar destino inicial jerárquicamente
         val startDest = when {
-            sessionManager.isFirstTimeLaunch -> Destination.Onboarding
+            settingsRepository.isFirstTimeLaunch() -> Destination.Onboarding
             MyApp.getCurrentUserId() != null -> Destination.Home
             else -> Destination.Login
         }

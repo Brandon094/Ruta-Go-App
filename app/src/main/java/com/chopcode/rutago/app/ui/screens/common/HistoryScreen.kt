@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
+import com.chopcode.rutago.app.data.models.Reservation
 import com.chopcode.rutago.app.ui.components.molecules.*
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.theme.SuccessGreen
@@ -39,9 +40,9 @@ fun HistoryScreen(
     onSearchChange: (String) -> Unit,
     onNavigate: (String) -> Unit,
     onReserveNowClick: () -> Unit,
-    onReservationClick: (com.chopcode.rutago.app.models.Reservation) -> Unit,
-    onChatClick: (com.chopcode.rutago.app.models.Reservation) -> Unit,
-    onRateClick: (com.chopcode.rutago.app.models.Reservation) -> Unit,
+    onReservationClick: (Reservation) -> Unit,
+    onChatClick: (Reservation) -> Unit,
+    onRateClick: (Reservation) -> Unit,
     onRatingConfirm: (Float, String) -> Unit,
     onRatingDismiss: () -> Unit,
     onLogoutConfirm: () -> Unit,

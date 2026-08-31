@@ -1,6 +1,6 @@
 package com.chopcode.rutago.app.ui.viewmodels.passenger
 
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.User
 
 /**
  * 📦 UI STATE: ConfirmReservationUiState

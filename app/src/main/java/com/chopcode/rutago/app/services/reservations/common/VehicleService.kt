@@ -1,7 +1,7 @@
 package com.chopcode.rutago.app.services.reservations.common
 
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Vehicle
+import com.chopcode.rutago.app.data.models.Vehicle
 import com.google.firebase.database.*
 
 /**

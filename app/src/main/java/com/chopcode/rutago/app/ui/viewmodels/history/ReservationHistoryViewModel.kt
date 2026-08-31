@@ -3,7 +3,7 @@ package com.chopcode.rutago.app.ui.viewmodels.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 import com.chopcode.rutago.app.services.reservations.common.ReservationService
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository

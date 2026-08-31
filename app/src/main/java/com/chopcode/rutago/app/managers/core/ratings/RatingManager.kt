@@ -2,8 +2,8 @@ package com.chopcode.rutago.app.managers.core.ratings
 
 import android.util.Log
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Rating
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Rating
+import com.chopcode.rutago.app.data.models.Reservation
 import com.google.firebase.database.DatabaseReference
 
 /**

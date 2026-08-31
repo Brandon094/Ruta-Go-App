@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 import com.chopcode.rutago.app.ui.components.atoms.AuthLogo
 import com.chopcode.rutago.app.ui.components.molecules.TicketInfoItem
 import com.chopcode.rutago.app.ui.theme.SuccessGreen

@@ -5,7 +5,7 @@ import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.chopcode.rutago.app.engines.seats.SeatDataProcessor
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.services.reservations.driver.DriverReservationService
 import com.google.firebase.database.DataSnapshot

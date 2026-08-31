@@ -1,28 +1,34 @@
 package com.chopcode.rutago.app.ui.nav
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.chopcode.rutago.app.ui.screens.common.*
+import com.chopcode.rutago.app.services.auth.GoogleLoginService
 import com.chopcode.rutago.app.ui.screens.auth.*
-import com.chopcode.rutago.app.ui.screens.passenger.*
+import com.chopcode.rutago.app.ui.screens.common.*
 import com.chopcode.rutago.app.ui.screens.driver.*
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.LaunchedEffect
-import com.chopcode.rutago.app.ui.viewmodels.home.HomeViewModel
-import com.chopcode.rutago.app.ui.viewmodels.profile.UserProfileViewModel
-import com.chopcode.rutago.app.ui.viewmodels.history.ReservationHistoryViewModel
+import com.chopcode.rutago.app.ui.screens.passenger.*
 import com.chopcode.rutago.app.ui.viewmodels.auth.*
-import com.chopcode.rutago.app.ui.viewmodels.passenger.*
 import com.chopcode.rutago.app.ui.viewmodels.common.*
 import com.chopcode.rutago.app.ui.viewmodels.driver.*
+import com.chopcode.rutago.app.ui.viewmodels.history.ReservationHistoryViewModel
+import com.chopcode.rutago.app.ui.viewmodels.home.HomeViewModel
+import com.chopcode.rutago.app.ui.viewmodels.passenger.*
 import com.chopcode.rutago.app.ui.viewmodels.profile.EditProfileViewModel
+import com.chopcode.rutago.app.ui.viewmodels.profile.UserProfileViewModel
 
 @Composable
 fun RutaGoNavHost(
@@ -62,7 +68,20 @@ fun RutaGoNavHost(
         composable(Destination.Login) {
             val viewModel: LoginViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsState()
+            val context = LocalContext.current
             
+            val googleLoginService = remember(context) { GoogleLoginService(context) }
+            val googleLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartIntentSenderForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val token = googleLoginService.getGoogleIdTokenFromIntent(result.data)
+                    if (token != null) {
+                        viewModel.loginWithGoogle(token)
+                    }
+                }
+            }
+
             if (uiState.isSuccess) {
                 LaunchedEffect(Unit) {
                     navController.navigate(Destination.Home) {
@@ -76,7 +95,16 @@ fun RutaGoNavHost(
                 onEmailChange = { viewModel.onEmailChanged(it) },
                 onPasswordChange = { viewModel.onPasswordChanged(it) },
                 onLoginClick = { viewModel.login() },
-                onGoogleLoginClick = { /* Handle via MainActivity result launcher if needed */ },
+                onGoogleLoginClick = {
+                    googleLoginService.startSignIn(
+                        onLaunchIntentSender = { intentSenderRequest ->
+                            googleLauncher.launch(intentSenderRequest)
+                        },
+                        onError = { error ->
+                            // En caso de error de conexión con One Tap
+                        }
+                    )
+                },
                 onRegisterClick = { navController.navigate(Destination.Registration) },
                 onForgotPasswordClick = { navController.navigate(Destination.forgotPassword(uiState.email)) }
             )
@@ -280,17 +308,83 @@ fun RutaGoNavHost(
                 uiState = uiState,
                 onSeatClick = { viewModel.onSeatSelected(it) },
                 onConfirmClick = {
-                    // navController.navigate(Destination.ConfirmReservation) 
+                    uiState.selectedSeat?.let { seat ->
+                        val routeParts = uiState.selectedRoute.split(
+                            if (uiState.selectedRoute.contains(" → ")) " → " else " -> "
+                        )
+                        val origin = if (routeParts.isNotEmpty()) routeParts[0].trim() else ""
+                        val dest = if (routeParts.size > 1) routeParts[1].trim() else ""
+                        navController.navigate(
+                            Destination.confirmReservation(
+                                scheduleId = uiState.scheduleId,
+                                origin = origin,
+                                destination = dest,
+                                scheduleTime = uiState.scheduleTime,
+                                travelDate = uiState.travelDate,
+                                selectedSeat = seat,
+                                price = uiState.price,
+                                driverId = uiState.driver?.id ?: "",
+                                driverName = uiState.driver?.nombre ?: "",
+                                vehiclePlate = uiState.vehicle?.plate ?: "",
+                                vehicleModel = uiState.vehicle?.model ?: ""
+                            )
+                        )
+                    }
                 },
                 onBackClick = { navController.popBackStack() },
                 onTutorialDismiss = { viewModel.onTutorialDismiss() }
             )
         }
 
-        composable(Destination.ConfirmReservation) {
+        composable(
+            route = Destination.ConfirmReservation,
+            arguments = listOf(
+                navArgument("scheduleId") { type = NavType.StringType },
+                navArgument("origin") { type = NavType.StringType },
+                navArgument("destination") { type = NavType.StringType },
+                navArgument("scheduleTime") { type = NavType.StringType },
+                navArgument("travelDate") { type = NavType.StringType },
+                navArgument("selectedSeat") { type = NavType.IntType },
+                navArgument("price") { type = NavType.StringType },
+                navArgument("driverId") { type = NavType.StringType },
+                navArgument("driverName") { type = NavType.StringType },
+                navArgument("vehiclePlate") { type = NavType.StringType },
+                navArgument("vehicleModel") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val sId = backStackEntry.arguments?.getString("scheduleId") ?: ""
+            val origin = backStackEntry.arguments?.getString("origin") ?: ""
+            val destination = backStackEntry.arguments?.getString("destination") ?: ""
+            val sTime = backStackEntry.arguments?.getString("scheduleTime") ?: ""
+            val tDate = backStackEntry.arguments?.getString("travelDate") ?: ""
+            val seat = backStackEntry.arguments?.getInt("selectedSeat") ?: 0
+            val price = backStackEntry.arguments?.getString("price")?.toDoubleOrNull() ?: 12000.0
+            val dId = backStackEntry.arguments?.getString("driverId") ?: ""
+            val dName = backStackEntry.arguments?.getString("driverName") ?: ""
+            val vPlate = backStackEntry.arguments?.getString("vehiclePlate") ?: ""
+            val vModel = backStackEntry.arguments?.getString("vehicleModel") ?: ""
+
             val viewModel: ConfirmReservationViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsState()
-            
+
+            LaunchedEffect(sId, seat) {
+                viewModel.initData(
+                    origin = origin,
+                    destination = destination,
+                    scheduleId = sId,
+                    scheduleTime = sTime,
+                    travelDate = tDate,
+                    selectedSeat = seat,
+                    price = price,
+                    driverName = dName,
+                    driverId = dId,
+                    driverPhone = "",
+                    vehiclePlate = vPlate,
+                    vehicleModel = vModel,
+                    estimatedTime = "60 min"
+                )
+            }
+
             ConfirmReservationScreen(
                 uiState = uiState,
                 onPaymentMethodChange = { viewModel.setPaymentMethod(it) },

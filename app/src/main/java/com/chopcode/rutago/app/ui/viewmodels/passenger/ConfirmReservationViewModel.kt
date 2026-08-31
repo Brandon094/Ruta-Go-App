@@ -3,8 +3,8 @@ package com.chopcode.rutago.app.ui.viewmodels.passenger
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Reservation
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.Reservation
+import com.chopcode.rutago.app.data.models.User
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
 import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
@@ -28,6 +28,48 @@ class ConfirmReservationViewModel : ViewModel() {
     private val userService = UserService()
     private val priceService = PriceService()
     private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
+
+    fun initData(
+        origin: String?,
+        destination: String?,
+        scheduleId: String?,
+        scheduleTime: String?,
+        travelDate: String?,
+        selectedSeat: Int,
+        price: Double,
+        driverName: String?,
+        driverId: String?,
+        driverPhone: String?,
+        vehiclePlate: String?,
+        vehicleModel: String?,
+        estimatedTime: String?
+    ) {
+        _uiState.update { 
+            it.copy(
+                origin = if (origin == "N_A") "" else (origin ?: ""),
+                destination = if (destination == "N_A") "" else (destination ?: ""),
+                scheduleId = if (scheduleId == "N_A") "" else (scheduleId ?: ""),
+                scheduleTime = if (scheduleTime == "N_A") "" else (scheduleTime ?: ""),
+                travelDate = if (travelDate == "N_A") "" else (travelDate ?: ""),
+                selectedSeat = selectedSeat,
+                price = if (price > 0) price else PriceService.DEFAULT_PRICE,
+                driverName = if (driverName == "N_A") "" else (driverName ?: ""),
+                driverId = if (driverId == "N_A") "" else (driverId ?: ""),
+                driverPhone = driverPhone ?: "",
+                vehiclePlate = if (vehiclePlate == "N_A") "" else (vehiclePlate ?: ""),
+                vehicleModel = if (vehicleModel == "N_A") "" else (vehicleModel ?: ""),
+                estimatedTime = estimatedTime ?: "60 min"
+            )
+        }
+
+        loadUserData()
+        val orig = _uiState.value.origin
+        val dest = _uiState.value.destination
+        if (orig.isNotEmpty() && dest.isNotEmpty()) {
+            fetchUpdatedPrice(orig, dest)
+        }
+        checkTutorial()
+    }
 
     fun processIntent(intent: Intent?) {
         if (intent == null) return

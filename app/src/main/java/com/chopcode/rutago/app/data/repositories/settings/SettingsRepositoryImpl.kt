@@ -1,31 +1,28 @@
 package com.chopcode.rutago.app.data.repositories.settings
 
 import android.content.Context
-import android.content.SharedPreferences
+import com.chopcode.rutago.app.managers.core.settings.SessionManager
 
 /**
  * ⚙️ IMPLEMENTATION: SettingsRepositoryImpl
+ * Repositorio unificado que delega la persistencia a SessionManager.
  */
 class SettingsRepositoryImpl(context: Context) : SettingsRepository {
-    private val prefs: SharedPreferences = context.getSharedPreferences("RutaGoPrefs", Context.MODE_PRIVATE)
+    private val sessionManager = SessionManager(context)
 
-    companion object {
-        private const val KEY_FIRST_TIME = "is_first_time"
-    }
-
-    override fun isFirstTimeLaunch(): Boolean = prefs.getBoolean(KEY_FIRST_TIME, true)
+    override fun isFirstTimeLaunch(): Boolean = sessionManager.isFirstTimeLaunch
 
     override fun setFirstTimeLaunch(isFirstTime: Boolean) {
-        prefs.edit().putBoolean(KEY_FIRST_TIME, isFirstTime).apply()
+        sessionManager.setFirstTimeLaunch(isFirstTime)
     }
 
-    override fun shouldShowTutorial(key: String): Boolean = prefs.getBoolean(key, true)
+    override fun shouldShowTutorial(key: String): Boolean = sessionManager.shouldShowTutorial(key)
 
     override fun markTutorialAsSeen(key: String) {
-        prefs.edit().putBoolean(key, false).apply()
+        sessionManager.markTutorialAsSeen(key)
     }
 
     override fun clearAll() {
-        prefs.edit().clear().apply()
+        sessionManager.setFirstTimeLaunch(true)
     }
 }

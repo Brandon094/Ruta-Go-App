@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Schedule
@@ -26,12 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
-import com.chopcode.rutago.app.models.Reservation
-import com.chopcode.rutago.app.models.Schedule
+import com.chopcode.rutago.app.data.models.Reservation
+import com.chopcode.rutago.app.data.models.Schedule
 import com.chopcode.rutago.app.ui.components.molecules.*
 import com.chopcode.rutago.app.ui.components.organisms.DriverStatsSection
 import com.chopcode.rutago.app.ui.components.organisms.StatsCard
-import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.viewmodels.home.HomeUiState
 import com.chopcode.rutago.app.utils.ui.FormatUtils
 

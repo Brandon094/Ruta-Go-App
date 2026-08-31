@@ -4,6 +4,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [2.0.0-BETA] - 2026-08-31 (Full Navigation & Auth Flow Integration)
+*Corrección de los flujos principales de reserva, autenticación social y persistencia de sesión en Jetpack Compose.*
+
+### 📱 Ruta-Go Mobile (Kotlin/Compose)
+- **Flujo Reserva -> Confirmación**: Reparada la navegación desde la selección de asientos (`CreateReservationScreen`) hacia la confirmación de la reserva (`ConfirmReservationScreen`), transmitiendo dinámicamente el asiento seleccionado, origen, destino, horario, tarifa y datos del vehículo/conductor.
+- **Autenticación con Google**: Implementado el servicio `GoogleLoginService` compatible con **Google One Tap** e `IntentSenderRequest` en Jetpack Compose, conectándolo con `LoginViewModel` y la autenticación de Firebase.
+- **Persistencia de Sesión & Onboarding**: Unificado el almacenamiento local entre `SessionManager` y `SettingsRepositoryImpl` sobre `"rutago_prefs"`, solucionando la reaparición no deseada del tutorial y garantizando que la sesión de Firebase persista al reiniciar la app.
+- **Navegación Robusta**: Implementada codificación `Uri.encode` en todas las rutas con parámetros dinámicos (`Destination.kt`) para evitar fallos por caracteres especiales o espacios.
+- **Documentación**: Actualización de la bitácora de refactorización (`REFACTOR_PROGRESS.md`).
+
 ## [2.0.0-ALPHA] - 2026-08-29 (Premium Refactor Phase 1)
 *Inicio de la gran refactorización a Kotlin + Jetpack Compose para llevar la fluidez y mantenibilidad al estándar Silicon Valley.*
 

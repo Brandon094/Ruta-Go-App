@@ -2,7 +2,7 @@ package com.chopcode.rutago.app.ui.viewmodels.common
 
 import androidx.lifecycle.ViewModel
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.ChatMessage
+import com.chopcode.rutago.app.data.models.ChatMessage
 import com.chopcode.rutago.app.services.chat.ChatService
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -19,8 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
-import com.chopcode.rutago.app.models.Schedule
-import com.chopcode.rutago.app.ui.theme.RutaGoOrange
+import com.chopcode.rutago.app.data.models.Schedule
 
 /**
  * 🧪 MOLECULE: ScheduleItem

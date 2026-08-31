@@ -2,7 +2,7 @@ package com.chopcode.rutago.app.services.chat
 
 import android.util.Log
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.ChatMessage
+import com.chopcode.rutago.app.data.models.ChatMessage
 import com.google.firebase.database.*
 
 /**

@@ -2,7 +2,7 @@ package com.chopcode.rutago.app.services.reservations.common
 
 import android.util.Log
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.models.Schedule
+import com.chopcode.rutago.app.data.models.Schedule
 import com.chopcode.rutago.app.services.prices.PriceService
 import com.chopcode.rutago.app.utils.ui.FormatUtils
 import com.google.firebase.database.*

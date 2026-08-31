@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.chopcode.rutago.app.R
+import com.chopcode.rutago.app.data.models.User
 import com.chopcode.rutago.app.ui.components.molecules.*
 import com.chopcode.rutago.app.ui.components.organisms.ProfileHeader
 import com.chopcode.rutago.app.ui.components.organisms.ProfileStatsCard
@@ -199,7 +200,7 @@ fun ProfileScreenPreview() {
             uiState = UserProfileUiState(
                 isLoading = false,
                 role = "conductor",
-                user = com.chopcode.rutago.app.models.User().apply {
+                user = User().apply {
                     nombre = "Liye Daza"
                     email = "liyedaza@gmail.com"
                     status = "active"

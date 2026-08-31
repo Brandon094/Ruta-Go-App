@@ -1,8 +1,8 @@
 package com.chopcode.rutago.app.ui.viewmodels.home
 
-import com.chopcode.rutago.app.models.Reservation
-import com.chopcode.rutago.app.models.Schedule
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.Reservation
+import com.chopcode.rutago.app.data.models.Schedule
+import com.chopcode.rutago.app.data.models.User
 
 /**
  * 📦 UI STATE: HomeUiState

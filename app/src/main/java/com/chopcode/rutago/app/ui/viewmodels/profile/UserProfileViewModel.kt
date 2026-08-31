@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chopcode.rutago.app.config.MyApp
 import com.chopcode.rutago.app.managers.core.auth.AuthManager
-import com.chopcode.rutago.app.models.Driver
-import com.chopcode.rutago.app.models.User
+import com.chopcode.rutago.app.data.models.Driver
+import com.chopcode.rutago.app.data.models.User
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService
 import com.chopcode.rutago.app.services.storage.StorageService
 import com.chopcode.rutago.app.services.user.UserService

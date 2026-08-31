@@ -1,6 +1,6 @@
 package com.chopcode.rutago.app.ui.viewmodels.history
 
-import com.chopcode.rutago.app.models.Reservation
+import com.chopcode.rutago.app.data.models.Reservation
 
 /**
  * 📦 UI STATE: ReservationHistoryUiState (Unified)
