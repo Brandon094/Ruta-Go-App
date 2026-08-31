@@ -1,6 +1,5 @@
 package com.chopcode.rutago.app.data.repositories.auth
 
-import com.chopcode.rutago.app.config.MyApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -10,7 +9,7 @@ import java.util.HashMap
 
 /**
  * ⚙️ IMPLEMENTATION: AuthRepositoryImpl
- * Motor real de autenticación usando Firebase SDK.
+ * Motor real de autenticación usando Firebase SDK con soporte NoSQL v2.0 (/users y /usuarios).
  */
 class AuthRepositoryImpl : AuthRepository {
     private val auth = FirebaseAuth.getInstance()
@@ -33,14 +32,19 @@ class AuthRepositoryImpl : AuthRepository {
             val userId = result.user?.uid ?: throw Exception("Error al crear usuario")
             
             val userData = HashMap<String, Any>()
+            userData["id"] = userId
+            userData["name"] = name
             userData["nombre"] = name
             userData["email"] = email
-            userData["id"] = userId
+            userData["phone"] = phone
             userData["telefono"] = phone
+            userData["registrationDate"] = System.currentTimeMillis()
             userData["fechaRegistro"] = System.currentTimeMillis()
+            userData["role"] = "passenger"
             userData["rol"] = "usuario"
             userData["status"] = "active"
             
+            db.child("users").child(userId).setValue(userData).await()
             db.child("usuarios").child(userId).setValue(userData).await()
             Result.success(Unit)
         } catch (e: Exception) {
@@ -76,6 +80,18 @@ class AuthRepositoryImpl : AuthRepository {
     }
 
     private suspend fun resolveUserType(uid: String): String {
+        val userSnap = db.child("users").child(uid).get().await()
+        if (userSnap.exists()) {
+            val role = (userSnap.child("role").getValue(String::class.java) 
+                ?: userSnap.child("rol").getValue(String::class.java) ?: "").toLowerCase()
+            if (role == "driver" || role == "conductor") return "conductor"
+            return "usuario"
+        }
+        val legacyUserSnap = db.child("usuarios").child(uid).get().await()
+        if (legacyUserSnap.exists()) {
+            val role = (legacyUserSnap.child("rol").getValue(String::class.java) ?: "").toLowerCase()
+            if (role == "driver" || role == "conductor") return "conductor"
+        }
         val conductorSnap = db.child("conductores").child(uid).get().await()
         return if (conductorSnap.exists()) "conductor" else "usuario"
     }

@@ -336,8 +336,10 @@ class NotificationManager private constructor(context: Context) {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful && task.result != null) {
                     val token = task.result
+                    val tokenMap = mapOf<String, Any>("fcmToken" to token, "tokenFCM" to token)
+                    realtimeDb.child("users").child(userId).updateChildren(tokenMap)
                     val nodo = if ("conductor" == userType || "conductores" == userType) "conductores" else "usuarios"
-                    realtimeDb.child(nodo).child(userId).child("tokenFCM").setValue(token)
+                    realtimeDb.child(nodo).child(userId).updateChildren(tokenMap)
                 }
             }
     }

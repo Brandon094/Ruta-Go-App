@@ -58,16 +58,24 @@ class HomeViewModel : ViewModel() {
         profileListener = userService.listenToUserData(userId, object : UserService.UserDataCallback {
             override fun onUserDataLoaded(user: User?) {
                 user?.let { u ->
-                    // 🛡️ Resolución de Rol Híbrida (Soporte para data no normalizada)
+                    // 🛡️ Resolución de Rol Híbrida NoSQL v2.0 (/users + /usuarios)
                     viewModelScope.launch {
                         try {
-                            val isDriver = MyApp.getDatabaseReference("conductores").child(userId).get().await().exists()
-                            val isOwner = MyApp.getDatabaseReference("dueños").child(userId).get().await().exists()
-                            
+                            val userRole = (if (u.role.isNotEmpty()) u.role else u.rol).lowercase()
+                            val isDriverByRole = (userRole == "driver" || userRole == "conductor")
+                            val isOwnerByRole = (userRole == "owner" || userRole == "dueño")
+
+                            val isDriverInDb = isDriverByRole || 
+                                MyApp.getDatabaseReference("users/$userId/assignedSchedules").get().await().exists() ||
+                                MyApp.getDatabaseReference("conductores").child(userId).get().await().exists()
+
+                            val isOwnerInDb = isOwnerByRole || 
+                                MyApp.getDatabaseReference("dueños").child(userId).get().await().exists()
+
                             val resolvedRole = when {
-                                isOwner -> "dueño"
-                                isDriver -> "conductor"
-                                else -> u.rol ?: "usuario"
+                                isOwnerInDb -> "dueño"
+                                isDriverInDb -> "conductor"
+                                else -> "usuario"
                             }
 
                             _uiState.update { 
@@ -157,14 +165,27 @@ class HomeViewModel : ViewModel() {
     private fun setupDriverPipelines(userId: String) {
         _uiState.update { it.copy(isDriverDataLoading = true) }
         
-        // 1. Cargar rutas asignadas al conductor
-        val driverRef = MyApp.getDatabaseReference("conductores/$userId/horariosAsignados")
-        driverRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        val processSchedules = { snapshot: DataSnapshot ->
+            val scheduleIds = snapshot.children.mapNotNull { it.value?.toString() }
+            loadDriverSchedules(scheduleIds)
+            setupDriverRealTimeStats(userId, scheduleIds)
+            if (availabilityListener == null) setupGlobalAvailabilityListener()
+        }
+
+        val userRef = MyApp.getDatabaseReference("users/$userId/assignedSchedules")
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val scheduleIds = snapshot.children.mapNotNull { it.value?.toString() }
-                loadDriverSchedules(scheduleIds)
-                setupDriverRealTimeStats(userId, scheduleIds)
-                if (availabilityListener == null) setupGlobalAvailabilityListener()
+                if (snapshot.exists()) {
+                    processSchedules(snapshot)
+                } else {
+                    val driverRef = MyApp.getDatabaseReference("conductores/$userId/horariosAsignados")
+                    driverRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(legSnap: DataSnapshot) {
+                            processSchedules(legSnap)
+                        }
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
+                }
             }
             override fun onCancelled(error: DatabaseError) {}
         })

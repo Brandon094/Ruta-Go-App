@@ -34,8 +34,9 @@ const getBrandedPayload = (title, body, data = {}) => {
 };
 
 /**
- * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go
+ * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go v2.0
  * Ejecución: 7:00 PM (Hora Bogotá).
+ * Soporta esquema unificado NoSQL v2.0 (/users/ con role === "driver", /schedules/, /vehicles/).
  */
 exports.automatedRotation = onSchedule({
     schedule: "0 19 * * *",
@@ -46,7 +47,7 @@ exports.automatedRotation = onSchedule({
     const messaging = admin.messaging();
 
     try {
-        console.log("🔄 Iniciando ciclo de rotación nocturna...");
+        console.log("🔄 Iniciando ciclo de rotación nocturna NoSQL v2.0...");
 
         const ROTATING_SHIFTS = [
             ["h009"], ["h010", "h008", "h018"], ["h007", "h017"],
@@ -54,96 +55,138 @@ exports.automatedRotation = onSchedule({
             ["h002", "h012"], ["h001", "h011"], []
         ];
 
-        const [conductoresSnap, horariosSnap, usuariosSnap, vehiculosSnap] = await Promise.all([
+        const [usersSnap, conductoresSnap, schedulesSnap, horariosSnap, vehiclesSnap, vehiculosSnap] = await Promise.all([
+            db.ref('users').once('value'),
             db.ref('conductores').once('value'),
+            db.ref('schedules').once('value'),
             db.ref('horarios').once('value'),
-            db.ref('usuarios').once('value'),
+            db.ref('vehicles').once('value'),
             db.ref('vehiculos').once('value')
         ]);
 
-        const tokenMap = {};
-        usuariosSnap.forEach(uSnap => {
-            const val = uSnap.val();
-            tokenMap[uSnap.key] = { mobile: val.tokenFCM || null, web: val.tokenFCM_Web || null };
-        });
+        const driversMap = {};
+        const passTokens = [];
 
-        const vehiculosMap = {};
-        vehiculosSnap.forEach(vSnap => { vehiculosMap[vSnap.key] = vSnap.val(); });
-
-        const conductoresParaRotar = [];
-        const tokensMulticast = [];
-
-        const fixedConductorId = horariosSnap.child('h005').child('conductorId').val();
-        let brayanId = null;
-
-        conductoresSnap.forEach((snap) => {
-            const data = snap.val();
+        // 1. Cargar usuarios del nodo unificado /users/
+        usersSnap.forEach(snap => {
+            const val = snap.val();
             const uid = snap.key;
-            const profileTokens = tokenMap[uid] || {};
-            const tokens = [];
-            if (data.tokenFCM) tokens.push(data.tokenFCM);
-            if (data.tokenFCM_Web) tokens.push(data.tokenFCM_Web);
-            if (profileTokens.mobile) tokens.push(profileTokens.mobile);
-            if (profileTokens.web) tokens.push(profileTokens.web);
+            const role = (val.role || val.rol || "").toLowerCase();
 
-            if (uid === fixedConductorId) { brayanId = uid; }
-            else {
-                conductoresParaRotar.push({ id: uid, nombre: data.nombre, tokens: [...new Set(tokens)], vehiculoId: data.vehiculoId, posicionEscalafon: data.posicionEscalafon });
+            if (role === "driver" || role === "conductor") {
+                const tokens = [];
+                if (val.fcmToken || val.tokenFCM) tokens.push(val.fcmToken || val.tokenFCM);
+                if (val.fcmTokenWeb || val.tokenFCM_Web) tokens.push(val.fcmTokenWeb || val.tokenFCM_Web);
+
+                driversMap[uid] = {
+                    id: uid,
+                    name: val.name || val.nombre || "Conductor",
+                    tokens: [...new Set(tokens.filter(Boolean))],
+                    vehicleId: val.vehicleId || val.vehiculoId || val.vehiclePlate || val.placaVehiculo,
+                    rankingPosition: val.rankingPosition ?? val.posicionEscalafon ?? 0
+                };
+            } else if (role === "passenger" || role === "usuario" || role === "pasajero") {
+                if (val.fcmToken || val.tokenFCM) passTokens.push(val.fcmToken || val.tokenFCM);
+                if (val.fcmTokenWeb || val.tokenFCM_Web) passTokens.push(val.fcmTokenWeb || val.tokenFCM_Web);
             }
         });
 
-        usuariosSnap.forEach((uSnap) => {
-            const uData = uSnap.val();
-            if (uData.rol === "usuario" || uData.rol === "pasajero") {
-                if (uData.tokenFCM) tokensMulticast.push(uData.tokenFCM);
-                if (uData.tokenFCM_Web) tokensMulticast.push(uData.tokenFCM_Web);
+        // Fallback a /conductores/ si hay conductores legados
+        conductoresSnap.forEach(snap => {
+            const val = snap.val();
+            const uid = snap.key;
+            if (!driversMap[uid]) {
+                const tokens = [];
+                if (val.tokenFCM) tokens.push(val.tokenFCM);
+                if (val.tokenFCM_Web) tokens.push(val.tokenFCM_Web);
+
+                driversMap[uid] = {
+                    id: uid,
+                    name: val.nombre || "Conductor",
+                    tokens: [...new Set(tokens.filter(Boolean))],
+                    vehicleId: val.vehiculoId || val.placaVehiculo,
+                    rankingPosition: val.posicionEscalafon ?? 0
+                };
+            }
+        });
+
+        // Map de vehículos
+        const vehiclesMap = {};
+        vehiclesSnap.forEach(vSnap => { vehiclesMap[vSnap.key] = vSnap.val(); });
+        vehiculosSnap.forEach(vSnap => { if (!vehiclesMap[vSnap.key]) vehiclesMap[vSnap.key] = vSnap.val(); });
+
+        const driversToRotate = [];
+        const fixedDriverId = schedulesSnap.child('h005').child('driverId').val() || horariosSnap.child('h005').child('conductorId').val();
+        let fixedBrayanId = null;
+
+        Object.values(driversMap).forEach(d => {
+            if (d.id === fixedDriverId) {
+                fixedBrayanId = d.id;
+            } else {
+                driversToRotate.push(d);
             }
         });
 
         const updates = {};
-        const horariosAsignadosSet = new Set();
+        const assignedSchedulesSet = new Set();
         const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
         const notificationPromises = [];
         const dispUpdates = {};
 
-        if (brayanId) {
-            const horariosFijos = ["h005", "h015"];
-            updates[`conductores/${brayanId}/horariosAsignados`] = horariosFijos;
-            updates[`conductores/${brayanId}/status`] = "active";
-            horariosFijos.forEach(hId => { updates[`horarios/${hId}/conductorId`] = brayanId; horariosAsignadosSet.add(hId); });
+        if (fixedBrayanId) {
+            const fixedShifts = ["h005", "h015"];
+            updates[`users/${fixedBrayanId}/assignedSchedules`] = fixedShifts;
+            updates[`users/${fixedBrayanId}/status`] = "active";
+            updates[`conductores/${fixedBrayanId}/horariosAsignados`] = fixedShifts;
+            updates[`conductores/${fixedBrayanId}/status`] = "active";
+
+            fixedShifts.forEach(hId => {
+                updates[`schedules/${hId}/driverId`] = fixedBrayanId;
+                updates[`horarios/${hId}/conductorId`] = fixedBrayanId;
+                assignedSchedulesSet.add(hId);
+            });
         }
 
-        conductoresParaRotar.forEach((c) => {
-            const posicionFija = c.posicionEscalafon || 0;
-            const shiftIndex = (posicionFija + dayCounter) % ROTATING_SHIFTS.length;
-            const misHorarios = ROTATING_SHIFTS[shiftIndex];
-            const esDescanso = misHorarios.length === 0;
+        driversToRotate.forEach(c => {
+            const pos = c.rankingPosition || 0;
+            const shiftIndex = (pos + dayCounter) % ROTATING_SHIFTS.length;
+            const myShifts = ROTATING_SHIFTS[shiftIndex];
+            const isOff = myShifts.length === 0;
 
-            updates[`conductores/${c.id}/horariosAsignados`] = misHorarios;
-            updates[`conductores/${c.id}/status`] = esDescanso ? "inactive" : "active";
+            updates[`users/${c.id}/assignedSchedules`] = myShifts;
+            updates[`users/${c.id}/status`] = isOff ? "inactive" : "active";
+            updates[`conductores/${c.id}/horariosAsignados`] = myShifts;
+            updates[`conductores/${c.id}/status`] = isOff ? "inactive" : "active";
 
-            let capacidadReal = 13;
-            if (c.vehiculoId && vehiculosMap[c.vehiculoId]) { capacidadReal = vehiculosMap[c.vehiculoId].capacidad || 13; }
+            let capacity = 13;
+            if (c.vehicleId && vehiclesMap[c.vehicleId]) {
+                capacity = vehiclesMap[c.vehicleId].capacity || vehiclesMap[c.vehicleId].capacidad || 13;
+            }
 
-            misHorarios.forEach(hId => {
+            myShifts.forEach(hId => {
+                updates[`schedules/${hId}/driverId`] = c.id;
                 updates[`horarios/${hId}/conductorId`] = c.id;
-                horariosAsignadosSet.add(hId);
+                assignedSchedulesSet.add(hId);
                 dispUpdates[`${hId}/asientosOcupados`] = null;
-                dispUpdates[`${hId}/asientosDisponibles`] = capacidadReal;
-                dispUpdates[`${hId}/totalAsientos`] = capacidadReal;
+                dispUpdates[`${hId}/asientosDisponibles`] = capacity;
+                dispUpdates[`${hId}/totalAsientos`] = capacity;
             });
 
             if (c.tokens && c.tokens.length > 0) {
-                const title = esDescanso ? "Mañana Descansas" : "Turnos Actualizados";
-                const body = esDescanso ? `Hola ${c.nombre}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app.";
+                const title = isOff ? "Mañana Descansas" : "Turnos Actualizados";
+                const body = isOff ? `Hola ${c.name}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app.";
                 const payload = getBrandedPayload(title, body, { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" });
-                c.tokens.forEach(t => { notificationPromises.push(messaging.send({ token: t, ...payload }).catch(e => console.error(`Error notif ${c.nombre}:`, e))); });
+                c.tokens.forEach(t => {
+                    notificationPromises.push(messaging.send({ token: t, ...payload }).catch(e => console.error(`Error notif ${c.name}:`, e)));
+                });
             }
         });
 
-        horariosSnap.forEach(hSnap => {
-            const hId = hSnap.key;
-            if (!horariosAsignadosSet.has(hId)) {
+        // Limpiar turnos no asignados
+        schedulesSnap.forEach(sSnap => {
+            const hId = sSnap.key;
+            if (!assignedSchedulesSet.has(hId)) {
+                updates[`schedules/${hId}/driverId`] = "";
                 updates[`horarios/${hId}/conductorId`] = "";
                 dispUpdates[`${hId}/asientosOcupados`] = null;
                 dispUpdates[`${hId}/asientosDisponibles`] = 0;
@@ -151,22 +194,27 @@ exports.automatedRotation = onSchedule({
             }
         });
 
-        if (tokensMulticast.length > 0) {
+        if (passTokens.length > 0) {
             const basePayload = getBrandedPayload("Horarios Listos", "Ya puedes reservar tu viaje para mañana.", { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" });
-            const uniquePassTokens = [...new Set(tokensMulticast)];
+            const uniquePassTokens = [...new Set(passTokens)];
             for (let i = 0; i < uniquePassTokens.length; i += 500) {
                 const chunk = uniquePassTokens.slice(i, i + 500);
                 notificationPromises.push(messaging.sendEachForMulticast({ tokens: chunk, ...basePayload }).catch(e => console.error("Error notif masiva:", e)));
             }
         }
 
-        await Promise.all([db.ref().update(updates), db.ref('disponibilidadAsientos').update(dispUpdates), ...notificationPromises]);
-        console.log(`✅ Ciclo completado.`);
+        await Promise.all([
+            db.ref().update(updates),
+            db.ref('disponibilidadAsientos').update(dispUpdates),
+            db.ref('seatAvailability').update(dispUpdates),
+            ...notificationPromises
+        ]);
+        console.log(`✅ Ciclo NoSQL v2.0 completado.`);
     } catch (error) { console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error); }
 });
 
 /**
- * 🧹 LIMPIEZA SEMANAL DE CUENTAS
+ * 🧹 LIMPIEZA SEMANAL DE CUENTAS MARCADAS PARA BORRADO
  */
 exports.cleanupMarkedAccounts = onSchedule({
     schedule: "0 3 * * 0",
@@ -179,60 +227,73 @@ exports.cleanupMarkedAccounts = onSchedule({
     const GRACE_PERIOD = 30 * 24 * 60 * 60 * 1000;
     const limitTimestamp = now - GRACE_PERIOD;
 
-    const performDeletion = async (uid, node) => {
+    const performDeletion = async (uid) => {
         try {
-            if (node === 'conductores') {
-                const driverSnap = await db.ref(`conductores/${uid}`).once('value');
-                const plate = driverSnap.val()?.placaVehiculo;
-                if (plate) await db.ref(`vehiculos/${plate}`).remove();
+            const uSnap = await db.ref(`users/${uid}`).once('value');
+            const plate = uSnap.val()?.vehiclePlate || uSnap.val()?.placaVehiculo;
+            if (plate) {
+                await db.ref(`vehicles/${plate}`).remove();
+                await db.ref(`vehiculos/${plate}`).remove();
             }
-            await db.ref(`${node}/${uid}`).remove();
+            await db.ref(`users/${uid}`).remove();
+            await db.ref(`usuarios/${uid}`).remove();
+            await db.ref(`conductores/${uid}`).remove();
             await auth.deleteUser(uid);
             return `✅ ${uid} eliminado.`;
         } catch (e) { return `❌ Fallo al eliminar ${uid}: ${e.message}`; }
     };
 
     try {
-        const [uSnap, cSnap] = await Promise.all([
+        const [uSnap, usersSnap] = await Promise.all([
             db.ref('usuarios').orderByChild('solicitudBorrado').equalTo(true).once('value'),
-            db.ref('conductores').orderByChild('solicitudBorrado').equalTo(true).once('value')
+            db.ref('users').orderByChild('deletionRequested').equalTo(true).once('value')
         ]);
         const deletionPromises = [];
-        uSnap.forEach(snap => { if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'usuarios')); });
-        cSnap.forEach(snap => { if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key, 'conductores')); });
+        uSnap.forEach(snap => { if (snap.val().fechaSolicitudBorrado <= limitTimestamp) deletionPromises.push(performDeletion(snap.key)); });
+        usersSnap.forEach(snap => { if (snap.val().deletionRequestedDate <= limitTimestamp) deletionPromises.push(performDeletion(snap.key)); });
         await Promise.all(deletionPromises);
     } catch (error) { console.error('❌ ERROR EN LIMPIEZA:', error); }
 });
 
 /**
- * 💬 NOTIFICACIÓN DE CHAT EN TIEMPO REAL
+ * 💬 NOTIFICACIÓN DE CHAT EN TIEMPO REAL (Compatibilidad dual /chats/{id}/messages y /chats/{id}/mensajes)
  */
-exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{messageId}", async (event) => {
+const handleChatMessageCreated = async (event) => {
     const { reservationId } = event.params;
     const messageData = event.data.val();
     const db = admin.database();
     const messaging = admin.messaging();
 
     try {
-        const resSnap = await db.ref(`reservas/${reservationId}`).once('value');
+        let resSnap = await db.ref(`reservations/${reservationId}`).once('value');
+        if (!resSnap.exists()) {
+            resSnap = await db.ref(`reservas/${reservationId}`).once('value');
+        }
         if (!resSnap.exists()) return;
 
         const resData = resSnap.val();
         const senderId = messageData.senderId;
         const isPassengerSender = (senderId === (resData.userId || resData.usuarioId));
         const receptorId = isPassengerSender ? (resData.driverId || resData.conductorId) : (resData.userId || resData.usuarioId);
-        const senderName = isPassengerSender ? (resData.name || resData.nombre || "Pasajero") : (resData.conductorNombre || resData.driver || "Conductor");
+        const senderName = isPassengerSender ? (resData.passengerName || resData.name || resData.nombre || "Pasajero") : (resData.driverName || resData.driver || resData.conductorNombre || "Conductor");
 
         if (!receptorId) return;
 
-        const [uSnap, cSnap] = await Promise.all([db.ref(`usuarios/${receptorId}`).once('value'), db.ref(`conductores/${receptorId}`).once('value')]);
-        const tokens = [];
-        if (uSnap.val()?.tokenFCM) tokens.push(uSnap.val().tokenFCM);
-        if (uSnap.val()?.tokenFCM_Web) tokens.push(uSnap.val().tokenFCM_Web);
-        if (cSnap.val()?.tokenFCM) tokens.push(cSnap.val().tokenFCM);
-        if (cSnap.val()?.tokenFCM_Web) tokens.push(cSnap.val().tokenFCM_Web);
+        const [uSnap, userSnap] = await Promise.all([
+            db.ref(`usuarios/${receptorId}`).once('value'),
+            db.ref(`users/${receptorId}`).once('value')
+        ]);
 
-        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        const tokens = [];
+        const uVal = uSnap.val() || {};
+        const userVal = userSnap.val() || {};
+
+        if (userVal.fcmToken) tokens.push(userVal.fcmToken);
+        if (userVal.fcmTokenWeb) tokens.push(userVal.fcmTokenWeb);
+        if (uVal.tokenFCM) tokens.push(uVal.tokenFCM);
+        if (uVal.tokenFCM_Web) tokens.push(uVal.tokenFCM_Web);
+
+        const uniqueTokens = [...new Set(tokens.filter(Boolean))];
         if (uniqueTokens.length === 0) return;
 
         const body = messageData.text.length > 50 ? messageData.text.substring(0, 47) + "..." : messageData.text;
@@ -240,12 +301,15 @@ exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/mensajes/{
 
         await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
     } catch (error) { console.error("❌ Error en chat:", error); }
-});
+};
+
+exports.onChatMessageCreatedLegacy = onValueCreated("/chats/{reservationId}/mensajes/{messageId}", handleChatMessageCreated);
+exports.onChatMessageCreated = onValueCreated("/chats/{reservationId}/messages/{messageId}", handleChatMessageCreated);
 
 /**
- * 🔔 MODO ESPEJO: SINCRO Y NOTIFICACIÓN DE RESERVA
+ * 🔔 NOTIFICACIÓN Y REPARACIÓN AL CREAR RESERVA (Soporta /reservations/{id} y /reservas/{id})
  */
-exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) => {
+const handleReservationCreated = async (event) => {
     const resData = event.data.val();
     const { id } = event.params;
     const db = admin.database();
@@ -253,30 +317,23 @@ exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) =>
 
     try {
         const driverId = resData.driverId || resData.conductorId;
-        const passengerName = resData.name || resData.nombre || "Pasajero";
-
-        // --- 🛠 MODO ESPEJO: Auto-reparar llaves bilingües ---
-        const repairUpdates = {};
-        if (resData.driverId && !resData.conductorId) repairUpdates.conductorId = resData.driverId;
-        if (resData.conductorId && !resData.driverId) repairUpdates.driverId = resData.conductorId;
-        if (resData.userId && !resData.usuarioId) repairUpdates.usuarioId = resData.userId;
-        if (resData.usuarioId && !resData.userId) repairUpdates.userId = resData.usuarioId;
-        if (resData.reservationStatus && !resData.estadoReserva) repairUpdates.estadoReserva = resData.reservationStatus;
-        if (resData.estadoReserva && !resData.reservationStatus) repairUpdates.reservationStatus = resData.estadoReserva;
-
-        if (Object.keys(repairUpdates).length > 0) {
-            await db.ref(`reservas/${id}`).update(repairUpdates);
-        }
-        // ----------------------------------------------------
+        const passengerName = resData.passengerName || resData.name || resData.nombre || "Pasajero";
 
         if (!driverId) return;
 
-        const cSnap = await db.ref(`conductores/${driverId}`).once('value');
+        const [uSnap, cSnap] = await Promise.all([
+            db.ref(`users/${driverId}`).once('value'),
+            db.ref(`conductores/${driverId}`).once('value')
+        ]);
+
         const tokens = [];
+        if (uSnap.val()?.fcmToken) tokens.push(uSnap.val().fcmToken);
+        if (uSnap.val()?.fcmTokenWeb) tokens.push(uSnap.val().fcmTokenWeb);
+        if (uSnap.val()?.tokenFCM) tokens.push(uSnap.val().tokenFCM);
         if (cSnap.val()?.tokenFCM) tokens.push(cSnap.val().tokenFCM);
         if (cSnap.val()?.tokenFCM_Web) tokens.push(cSnap.val().tokenFCM_Web);
 
-        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        const uniqueTokens = [...new Set(tokens.filter(Boolean))];
         if (uniqueTokens.length === 0) return;
 
         const route = `${resData.origin || resData.origen || ""} -> ${resData.destination || resData.destino || ""}`;
@@ -284,52 +341,52 @@ exports.onReservationCreated = onValueCreated("/reservas/{id}", async (event) =>
 
         await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
     } catch (error) { console.error("❌ Error en reserva:", error); }
-});
+};
+
+exports.onReservationCreatedLegacy = onValueCreated("/reservas/{id}", handleReservationCreated);
+exports.onReservationCreated = onValueCreated("/reservations/{id}", handleReservationCreated);
 
 /**
- * 🔔 MODO ESPEJO: SINCRO Y NOTIFICACIÓN DE CAMBIO DE ESTADO
+ * 🔔 NOTIFICACIÓN DE CAMBIO DE ESTADO DE RESERVA
  */
-exports.onReservationStatusChanged = onValueUpdated("/reservas/{id}", async (event) => {
+const handleReservationStatusChanged = async (event) => {
     const beforeData = event.data.before.val();
     const afterData = event.data.after.val();
     const { id } = event.params;
     const db = admin.database();
     const messaging = admin.messaging();
 
-    const oldStatus = beforeData.reservationStatus || beforeData.estadoReserva;
-    const newStatus = afterData.reservationStatus || afterData.estadoReserva;
+    const oldStatus = beforeData.status || beforeData.reservationStatus || beforeData.estadoReserva;
+    const newStatus = afterData.status || afterData.reservationStatus || afterData.estadoReserva;
 
     if (oldStatus === newStatus) return;
 
     try {
-        // --- 🛠 MODO ESPEJO: Sincronizar llaves de estado ---
-        const syncUpdates = {};
-        if (afterData.reservationStatus !== afterData.estadoReserva) {
-            // Si cambió en inglés (Web), actualizar español (Android)
-            if (afterData.reservationStatus !== beforeData.reservationStatus) syncUpdates.estadoReserva = afterData.reservationStatus;
-            // Si cambió en español (Android), actualizar inglés (Web)
-            else syncUpdates.reservationStatus = afterData.estadoReserva;
-
-            await db.ref(`reservas/${id}`).update(syncUpdates);
-        }
-        // ----------------------------------------------------
-
-        if (newStatus !== "Confirmada" && newStatus !== "Cancelada") return;
+        if (newStatus !== "confirmed" && newStatus !== "Confirmada" && newStatus !== "cancelled" && newStatus !== "Cancelada") return;
 
         const userId = afterData.userId || afterData.usuarioId;
         if (!userId) return;
 
-        const uSnap = await db.ref(`usuarios/${userId}`).once('value');
-        const tokens = [];
-        if (uSnap.val()?.tokenFCM) tokens.push(uSnap.val().tokenFCM);
-        if (uSnap.val()?.tokenFCM_Web) tokens.push(uSnap.val().tokenFCM_Web);
+        const uSnap = await db.ref(`users/${userId}`).once('value');
+        const legacyUSnap = await db.ref(`usuarios/${userId}`).once('value');
 
-        const uniqueTokens = [...new Set(tokens.filter(t => !!t))];
+        const tokens = [];
+        if (uSnap.val()?.fcmToken) tokens.push(uSnap.val().fcmToken);
+        if (uSnap.val()?.fcmTokenWeb) tokens.push(uSnap.val().fcmTokenWeb);
+        if (legacyUSnap.val()?.tokenFCM) tokens.push(legacyUSnap.val().tokenFCM);
+        if (legacyUSnap.val()?.tokenFCM_Web) tokens.push(legacyUSnap.val().tokenFCM_Web);
+
+        const uniqueTokens = [...new Set(tokens.filter(Boolean))];
         if (uniqueTokens.length === 0) return;
 
-        const body = newStatus === "Confirmada" ? "¡Tu viaje ha sido confirmado! Revisa los detalles en la app." : "Lamentamos informarte que tu reserva ha sido cancelada.";
-        const payload = getBrandedPayload(`Tu reserva ha sido ${newStatus}`, body, { type: "reservation_status_update", reservationId: id, status: newStatus, target_activity: "passenger_reservations" });
+        const isConfirmed = (newStatus === "confirmed" || newStatus === "Confirmada");
+        const body = isConfirmed ? "¡Tu viaje ha sido confirmado! Revisa los detalles en la app." : "Lamentamos informarte que tu reserva ha sido cancelada.";
+        const statusLabel = isConfirmed ? "Confirmada" : "Cancelada";
+        const payload = getBrandedPayload(`Tu reserva ha sido ${statusLabel}`, body, { type: "reservation_status_update", reservationId: id, status: newStatus, target_activity: "passenger_reservations" });
 
         await Promise.all(uniqueTokens.map(token => messaging.send({ token, ...payload }).catch(() => {})));
     } catch (error) { console.error("❌ Error en status change:", error); }
-});
+};
+
+exports.onReservationStatusChangedLegacy = onValueUpdated("/reservas/{id}", handleReservationStatusChanged);
+exports.onReservationStatusChanged = onValueUpdated("/reservations/{id}", handleReservationStatusChanged);

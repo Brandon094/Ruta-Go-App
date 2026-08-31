@@ -151,8 +151,10 @@ class NotificationService : FirebaseMessagingService() {
         if (user != null) {
             val userId = user.uid
             val db = MyApp.getDatabaseReference("")
-            db.child("usuarios").child(userId).child("tokenFCM").setValue(token)
-            db.child("conductores").child(userId).child("tokenFCM").setValue(token)
+            val tokenMap = mapOf<String, Any>("fcmToken" to token, "tokenFCM" to token)
+            db.child("users").child(userId).updateChildren(tokenMap)
+            db.child("usuarios").child(userId).updateChildren(tokenMap)
+            db.child("conductores").child(userId).updateChildren(tokenMap)
         }
     }
 

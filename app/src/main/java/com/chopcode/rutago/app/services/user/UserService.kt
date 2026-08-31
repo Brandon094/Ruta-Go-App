@@ -9,6 +9,7 @@ import com.google.firebase.database.*
 /**
  * 🛰️ SERVICE: UserService (Kotlin)
  * Repositorio central para la gestión de perfiles de identidad.
+ * Soporta esquema NoSQL v2.0 (/users) con fallback a nodos legados.
  */
 class UserService {
 
@@ -30,15 +31,29 @@ class UserService {
     }
 
     /**
-     * Suscripción reactiva a los datos de un usuario.
+     * Suscripción reactiva a los datos de un usuario (/users con fallback a /usuarios).
      */
     fun listenToUserData(userId: String, callback: UserDataCallback): ValueEventListener {
-        val ref = db.child("usuarios").child(userId)
+        val ref = db.child("users").child(userId)
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                user?.id = userId
-                callback.onUserDataLoaded(user)
+                if (snapshot.exists()) {
+                    val user = snapshot.getValue(User::class.java)
+                    user?.id = userId
+                    callback.onUserDataLoaded(user)
+                } else {
+                    // Fallback a /usuarios/
+                    db.child("usuarios").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(legSnap: DataSnapshot) {
+                            val user = legSnap.getValue(User::class.java)
+                            user?.id = userId
+                            callback.onUserDataLoaded(user)
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            callback.onError(error.message)
+                        }
+                    })
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 callback.onError(error.message)
@@ -52,11 +67,24 @@ class UserService {
      * Carga de datos de usuario (Single event).
      */
     fun loadUserData(userId: String, callback: UserDataCallback) {
-        db.child("usuarios").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+        db.child("users").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-                user?.id = userId
-                callback.onUserDataLoaded(user)
+                if (snapshot.exists()) {
+                    val user = snapshot.getValue(User::class.java)
+                    user?.id = userId
+                    callback.onUserDataLoaded(user)
+                } else {
+                    db.child("usuarios").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(legSnap: DataSnapshot) {
+                            val user = legSnap.getValue(User::class.java)
+                            user?.id = userId
+                            callback.onUserDataLoaded(user)
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            callback.onError(error.message)
+                        }
+                    })
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 callback.onError(error.message)
@@ -65,18 +93,35 @@ class UserService {
     }
 
     /**
-     * Carga de datos de conductor.
+     * Carga de datos de conductor desde /users/{uid} o /conductores/{uid}.
      */
     fun loadDriverData(userId: String, callback: DriverDataCallback) {
-        db.child("conductores").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+        db.child("users").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val driver = snapshot.getValue(Driver::class.java)
-                driver?.id = userId
-                // Carga secundaria de capacidad si es necesario
-                if (driver != null && !driver.vehicleId.isNullOrEmpty()) {
-                    fetchVehicleCapacity(driver, callback)
+                if (snapshot.exists()) {
+                    val driver = snapshot.getValue(Driver::class.java)
+                    driver?.id = userId
+                    if (driver != null && !driver.vehicleId.isNullOrEmpty()) {
+                        fetchVehicleCapacity(driver, callback)
+                    } else {
+                        callback.onDriverDataLoaded(driver)
+                    }
                 } else {
-                    callback.onDriverDataLoaded(driver)
+                    // Fallback a /conductores/
+                    db.child("conductores").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(legSnap: DataSnapshot) {
+                            val driver = legSnap.getValue(Driver::class.java)
+                            driver?.id = userId
+                            if (driver != null && !driver.vehicleId.isNullOrEmpty()) {
+                                fetchVehicleCapacity(driver, callback)
+                            } else {
+                                callback.onDriverDataLoaded(driver)
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            callback.onError(error.message)
+                        }
+                    })
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -86,12 +131,25 @@ class UserService {
     }
 
     private fun fetchVehicleCapacity(driver: Driver, callback: DriverDataCallback) {
-        db.child("vehiculos").child(driver.vehicleId ?: "").child("capacidad")
+        val vId = driver.vehicleId ?: ""
+        db.child("vehicles").child(vId).child("capacity")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val capacity = snapshot.getValue(Int::class.java) ?: 13
-                    driver.vehicleCapacity = capacity
-                    callback.onDriverDataLoaded(driver)
+                    if (snapshot.exists()) {
+                        driver.vehicleCapacity = snapshot.getValue(Int::class.java) ?: 13
+                        callback.onDriverDataLoaded(driver)
+                    } else {
+                        db.child("vehiculos").child(vId).child("capacidad")
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(legSnap: DataSnapshot) {
+                                    driver.vehicleCapacity = legSnap.getValue(Int::class.java) ?: 13
+                                    callback.onDriverDataLoaded(driver)
+                                }
+                                override fun onCancelled(error: DatabaseError) {
+                                    callback.onDriverDataLoaded(driver)
+                                }
+                            })
+                    }
                 }
                 override fun onCancelled(error: DatabaseError) {
                     callback.onDriverDataLoaded(driver)
@@ -100,7 +158,13 @@ class UserService {
     }
 
     fun updateUserProfile(userId: String, name: String, phone: String, callback: UserUpdateCallback) {
-        val updates = mapOf("nombre" to name, "telefono" to phone, "name" to name, "phone" to phone)
+        val updates = mapOf(
+            "name" to name,
+            "nombre" to name,
+            "phone" to phone,
+            "telefono" to phone
+        )
+        db.child("users").child(userId).updateChildren(updates)
         db.child("usuarios").child(userId).updateChildren(updates)
             .addOnSuccessListener { callback.onSuccess() }
             .addOnFailureListener { e -> callback.onError(e.message) }
@@ -108,25 +172,37 @@ class UserService {
 
     fun updateDriverProfile(userId: String, name: String, phone: String, plate: String, schedules: List<String>?, callback: UserUpdateCallback) {
         val updates = mutableMapOf<String, Any>(
+            "name" to name,
             "nombre" to name,
+            "phone" to phone,
             "telefono" to phone,
+            "vehiclePlate" to plate,
             "placaVehiculo" to plate,
-            "vehiclePlate" to plate
+            "vehicleId" to plate
         )
-        schedules?.let { updates["horariosAsignados"] = it }
+        schedules?.let { 
+            updates["assignedSchedules"] = it 
+            updates["horariosAsignados"] = it 
+        }
         
+        db.child("users").child(userId).updateChildren(updates)
         db.child("conductores").child(userId).updateChildren(updates)
             .addOnSuccessListener { callback.onSuccess() }
             .addOnFailureListener { e -> callback.onError(e.message) }
     }
 
     fun updateProfilePicture(userId: String, photoUrl: String?, node: String, callback: UserUpdateCallback) {
-        db.child(node).child(userId).child("photoUrl").setValue(photoUrl)
-            .addOnSuccessListener { callback.onSuccess() }
-            .addOnFailureListener { e -> callback.onError(e.message) }
+        val uMap = mapOf("photoUrl" to photoUrl)
+        db.child("users").child(userId).updateChildren(uMap as Map<String, Any?>)
+        db.child("usuarios").child(userId).updateChildren(uMap as Map<String, Any?>)
+        if (node.isNotEmpty()) {
+            db.child(node).child(userId).child("photoUrl").setValue(photoUrl)
+        }
+        callback.onSuccess()
     }
 
     fun updateUserStatus(userId: String, status: String, callback: UserUpdateCallback) {
+        db.child("users").child(userId).child("status").setValue(status)
         db.child("usuarios").child(userId).child("status").setValue(status)
             .addOnSuccessListener { callback.onSuccess() }
             .addOnFailureListener { e -> callback.onError(e.message) }
@@ -143,25 +219,42 @@ class UserService {
             return
         }
         
-        // Esta lógica es compleja, por ahora devolvemos lista vacía para fijar el build
-        // O mejor, implementarla mínimamente
-        val ref = db.child("horarios")
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+        db.child("schedules").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val list = mutableListOf<Route>()
-                for (sId in assignedSchedules) {
-                    val hSnap = snapshot.child(sId)
-                    if (hSnap.exists()) {
-                        val route = Route(
-                            id = sId,
-                            origin = hSnap.child("ruta").getValue(String::class.java)?.split("->")?.getOrNull(0)?.trim() ?: "",
-                            destination = hSnap.child("ruta").getValue(String::class.java)?.split("->")?.getOrNull(1)?.trim() ?: "",
-                            scheduleId = sId
-                        )
-                        list.add(route)
+                val sourceSnap = if (snapshot.exists()) snapshot else null
+                
+                val processSnap = { snap: DataSnapshot ->
+                    val list = mutableListOf<Route>()
+                    for (sId in assignedSchedules) {
+                        val hSnap = snap.child(sId)
+                        if (hSnap.exists()) {
+                            val rStr = hSnap.child("route").getValue(String::class.java) 
+                                ?: hSnap.child("ruta").getValue(String::class.java) ?: ""
+                            val parts = rStr.split(if (rStr.contains("->")) "->" else "→")
+                            val route = Route(
+                                id = sId,
+                                origin = parts.getOrNull(0)?.trim() ?: "",
+                                destination = parts.getOrNull(1)?.trim() ?: "",
+                                scheduleId = sId
+                            )
+                            list.add(route)
+                        }
                     }
+                    callback.onRoutesLoaded(list)
                 }
-                callback.onRoutesLoaded(list)
+
+                if (sourceSnap != null) {
+                    processSnap(sourceSnap)
+                } else {
+                    db.child("horarios").addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(legSnap: DataSnapshot) {
+                            processSnap(legSnap)
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            callback.onError(error.message)
+                        }
+                    })
+                }
             }
             override fun onCancelled(error: DatabaseError) {
                 callback.onError(error.message)
@@ -171,21 +264,27 @@ class UserService {
 
     fun requestAccountDeletion(userId: String, node: String, callback: UserUpdateCallback) {
         val updates = mapOf(
+            "deletionRequested" to true,
             "solicitudBorrado" to true,
+            "deletionRequestedDate" to System.currentTimeMillis(),
             "fechaSolicitudBorrado" to System.currentTimeMillis()
         )
-        db.child(node).child(userId).updateChildren(updates)
-            .addOnSuccessListener { callback.onSuccess() }
-            .addOnFailureListener { e -> callback.onError(e.message) }
+        db.child("users").child(userId).updateChildren(updates)
+        db.child("usuarios").child(userId).updateChildren(updates)
+        if (node.isNotEmpty()) db.child(node).child(userId).updateChildren(updates)
+        callback.onSuccess()
     }
 
     fun cancelAccountDeletion(userId: String, node: String, callback: UserUpdateCallback) {
         val updates = mapOf(
+            "deletionRequested" to false,
             "solicitudBorrado" to false,
+            "deletionRequestedDate" to null,
             "fechaSolicitudBorrado" to null
         )
-        db.child(node).child(userId).updateChildren(updates)
-            .addOnSuccessListener { callback.onSuccess() }
-            .addOnFailureListener { e -> callback.onError(e.message) }
+        db.child("users").child(userId).updateChildren(updates)
+        db.child("usuarios").child(userId).updateChildren(updates)
+        if (node.isNotEmpty()) db.child(node).child(userId).updateChildren(updates)
+        callback.onSuccess()
     }
 }
