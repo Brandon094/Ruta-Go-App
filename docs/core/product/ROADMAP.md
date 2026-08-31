@@ -61,14 +61,25 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## 📱 Fase 4: Modernización Android & Proyectos Especiales (En Desarrollo)
-*Objetivo: Migrar la App Android a Compose e integrar la tecnología en el vehículo mismo.*
+## 📱 Fase 4: Modernización Android & Normalización NoSQL (En Desarrollo)
+*Objetivo: Migrar la App Android a Compose, unificar la base de datos NoSQL y preparar la integración in-vehicle.*
 
-### 🏗️ 1. Modernización Nativa
-*   [ ] **🎨 Transición a Jetpack Compose**: UI declarativa para paridad total con la arquitectura de React.
-*   [ ] **🧩 Unificación de Motores**: Capa de servicios compartida (DRY) entre los desarrollos móvil y web.
+### 🏗️ 1. Modernización Nativa & UI Declarativa (98% Completado)
+*   [x] **🎨 Transición 100% a Jetpack Compose**: UI declarativa en Single-Activity (`MainActivity.kt`) siguiendo Atomic Design y MVVM.
+*   [x] **🔑 Autenticación Social Google One Tap**: Integración con `GoogleLoginService` e `IntentSenderRequest`.
+*   [x] **💾 Persistencia de Sesión & Onboarding**: Almacenamiento local centralizado en `SessionManager` (`rutago_prefs`).
+*   [x] **🗺️ Navegación Robusta de Reservas**: Flujo completo de Selección de Asientos ➔ Confirmación con `Uri.encode`.
 
-### 🚗 2. Ruta-Go In-Car (Android Auto)
+### 📊 2. Unificación NoSQL v2.0 (En Progreso)
+*   [x] **🌐 Esquema Unificado en Inglés**: Normalización de llaves NoSQL (`users`, `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`, `driverRatings`).
+*   [x] **👨‍✈️ Consolidación de Conductores**: Eliminación del nodo `/conductores/` integrando perfiles operativos en `/users/` bajo el atributo `role: "driver"`.
+*   [x] **📄 Carga de JSON Semilla Normalizado en Firebase**: Base de datos de producción actualizada al esquema v2.0.
+*   [ ] **⚙️ Actualización de Consultas Nativas, Web & Cloud Functions (TAREA PROGRAMADA - MAÑANA)**:
+    *   Ajustar `AuthRepositoryImpl`, `UserService`, `ScheduleService`, `NotificationManager` en Android para consumir `/users/` y `/schedules/`.
+    *   Ajustar hooks del Portal Web (`useRealtimeData`, `useRoleResolver`) para consumir `/users/`.
+    *   Ajustar Cloud Functions (`index.js`) para la rotación de turnos sobre `/users/` y `/schedules/`.
+
+### 🚗 3. Ruta-Go In-Car (Android Auto)
 *   [ ] **🎮 Interfaz Android Auto**: Panel de control simplificado para la pantalla del vehículo de la flota.
 *   [ ] **✅ Gestión Manos Libres**: Permitir que el conductor acepte o cancele reservas con un solo toque desde el tablero.
 *   [ ] **📢 Avisos por Voz**: Notificaciones de voz para nuevos pasajeros en tiempo real.
