@@ -1,93 +1,50 @@
-# 📊 Plan de Normalización de Base de Datos: Ruta-Go v2.0
+# 📊 Plan y Estado de Normalización de Base de Datos: Ruta-Go v2.0
 
-Este documento define la estrategia para estandarizar el esquema de Firebase Realtime Database, eliminando inconsistencias bilingües y asegurando la paridad total entre la App Android (Kotlin) y el Portal Web.
-
-## 🎯 Objetivos
-1.  **Estandarización**: Usar únicamente **Inglés** para las llaves (keys) de los objetos (Estándar de industria).
-2.  **Eliminación de Redundancia**: Suprimir campos duplicados (ej: `nombre` vs `name`).
-3.  **Consistencia de Tipos**: Asegurar que fechas sean siempre `Long` (timestamps) y montos sean `Double` o `Long`.
-4.  **CamelCase**: Todas las llaves deben seguir el formato `camelCase`.
+Este documento define la arquitectura y el estado de la estandarización del esquema NoSQL en Firebase Realtime Database, unificando la App Móvil Android (Kotlin) y el Portal Web bajo llaves en **Inglés** con la técnica de **Deserialización Pasiva**.
 
 ---
 
-## 🏗️ Esquema Propuesto (Normalizado)
-
-### 1. `reservations` (Nodo Crítico)
-Anteriormente: Mezcla de `idReserva`, `idReservation`, `conductor`, `driver`, etc.
-```json
-{
-  "id": "uuid",
-  "userId": "string",
-  "driverId": "string",
-  "scheduleId": "string",
-  "origin": "string",
-  "destination": "string",
-  "departureTime": "string", // "08:30 AM"
-  "estimatedDuration": "string", // "60 min"
-  "status": "confirmed | cancelled | pending",
-  "reservedSeat": "int",
-  "price": "double",
-  "reservationDate": "long",
-  "isRated": "boolean",
-  "rating": "float",
-  "vehicleDetails": {
-    "plate": "string",
-    "model": "string"
-  }
-}
-```
-
-### 2. `drivers` (Anteriormente `conductores`)
-```json
-{
-  "uid": {
-    "name": "string",
-    "phone": "string",
-    "vehicleId": "string",
-    "assignedSchedules": ["h001", "h011"],
-    "status": "active | inactive",
-    "rankingPosition": "int",
-    "fcmToken": "string"
-  }
-}
-```
-
-### 3. `schedules` (Anteriormente `horarios`)
-```json
-{
-  "id": {
-    "driverId": "string",
-    "time": "string",
-    "route": "string",
-    "vehicleId": "string"
-  }
-}
-```
-
-### 4. `seatAvailability` (Anteriormente `disponibilidadAsientos`)
-```json
-{
-  "scheduleId": {
-    "availableCount": "int",
-    "totalCount": "int",
-    "occupiedSeats": {
-      "1": true,
-      "5": true
-    }
-  }
-}
-```
+## 🎯 Objetivos de Normalización
+1.  **Estandarización 100% en Inglés**: Usar únicamente **Inglés (camelCase)** para la serialización de llaves NoSQL.
+2.  **Eliminación de Redundancia de Escritura**: Eliminar la duplicidad de campos (ej: guardar `nombre` y `name` en el mismo nodo).
+3.  **Compatibilidad Pasiva Hacia Atrás**: Poder leer registros históricos creados con llaves en español sin alterar la escritura limpia de registros nuevos.
+4.  **Consistencia de Tipos**: Fechas en `Long` (timestamps), montos en `Double`, estados en cadenas normalizadas.
 
 ---
 
-## 🛠️ Ruta de Implementación (Migration Path)
+## 🏗️ Modelos Normalizados (`com.chopcode.rutago.app.data.models`)
 
-> [!WARNING]
-> La migración debe ser gradual para no romper la app en producción.
+### 1. `Reservation` (`reservations`)
+- **Escritura Normalizada**: `id`, `userId`, `driverId`, `scheduleId`, `origin`, `destination`, `departureTime`, `estimatedDuration`, `status`, `reservedSeat`, `price`, `reservationDate`, `isRated`, `rating`, `passengerName`, `passengerPhone`, `vehiclePlate`, `vehicleModel`, `driverName`, `paymentMethod`.
+- **Lectura Legada**: `@PropertyName` setters para `idReservation`, `idReserva`, `usuarioId`, `conductorId`, `horarioId`, `nombre`, `telefono`, `conductor`, `estadoReserva`, `puestoReservado`, `precio`, `fechaReserva`, `calificada`, `calificacion`, `modeloVehiculo`, `vehiculoId`, `placa`, `tiempoEstimado`, `origen`, `destino`, `metodoPago`.
 
-1.  **Fase 1: Escritura Dual (Actual)**: Los modelos ya tienen `@PropertyName` para leer ambos idiomas. Mantendremos esto durante el refactor de la UI.
-2.  **Fase 2: Script de Limpieza**: Crear una Cloud Function o script de Node.js para renombrar llaves antiguas a las nuevas en una ventana de mantenimiento.
-3.  **Fase 3: Depuración de Código**: Eliminar los setters/getters legacy en las clases Java/Kotlin una vez la base de datos esté limpia.
+### 2. `User` (`users` / `usuarios`)
+- **Escritura Normalizada**: `id`, `name`, `phone`, `email`, `photoUrl`, `status`, `role`, `deletionRequested`, `deletionRequestedDate`.
+- **Lectura Legada**: Setters para `nombre`, `telefono`, `rol`, `solicitudBorrado`, `fechaSolicitudBorrado`.
+
+### 3. `Driver` (`drivers` / `conductores`)
+- **Escritura Normalizada**: `vehicleId`, `vehiclePlate`, `vehicleModel`, `vehicleCapacity`, `assignedSchedules`, `rankingPosition`.
+- **Lectura Legada**: Setters para `vehiculoId`, `placaVehiculo`, `modeloVehiculo`, `capacidadVehiculo`, `horariosAsignados`, `posicionEscalafon`.
+
+### 4. `Vehicle` (`vehicles` / `vehiculos`)
+- **Escritura Normalizada**: `id`, `plate`, `model`, `brand`, `color`, `year`, `capacity`, `driverId`, `ownerId`, `status`.
+- **Lectura Legada**: Setters para `placa`, `modelo`, `marca`, `ano`, `año`, `capacidad`, `conductorId`, `estado`.
+
+### 5. `Schedule` (`schedules` / `horarios`)
+- **Escritura Normalizada**: `id`, `route`, `time`, `duration`, `price`, `availableSeats`, `totalCapacity`, `driverId`, `vehicleId`, `driverName`.
+- **Lectura Legada**: Setters para `ruta`, `hora`, `conductorId`, `vehiculoId`.
+
+### 6. `Rating` (`driverRatings` / `calificaciones_conductores`)
+- **Escritura Normalizada**: `id`, `passengerId`, `passengerName`, `driverId`, `reservationId`, `route`, `rating`, `comment`, `date`.
+- **Lectura Legada**: Setters para `pasajeroId`, `pasajeroNombre`, `conductorId`, `reservaId`, `comentario`, `fecha`.
+
+---
+
+## 🛠️ Estado de la Migración
+
+- [x] **Fase 1: Implementación de Deserialización Pasiva en Kotlin (COMPLETADO)**: Eliminados los getters duplicados en español y mantenidos únicamente setters pasivos sin getters. Las escrituras desde Android ahora generan JSONs 100% limpios en inglés.
+- [x] **Fase 2: Unificación de Modelos Android y Web (COMPLETADO)**: Paridad total de nombres de variables entre Kotlin data classes y componentes React Web.
+- [ ] **Fase 3: Script de Limpieza NoSQL (Opcional - Mantenimiento)**: Limpieza batch en Firebase de nodos antiguos para eliminar propiedades obsoletas en español.
 
 ---
 **ChopCode Solutions - Data Engineering 2026**

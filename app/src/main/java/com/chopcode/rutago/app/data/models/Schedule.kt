@@ -1,5 +1,6 @@
 package com.chopcode.rutago.app.data.models
 
+import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.PropertyName
 import java.io.Serializable
@@ -7,6 +8,7 @@ import java.io.Serializable
 /**
  * 🕒 MODEL: Schedule
  * Representa un turno de despacho individual.
+ * Normalizado a Inglés con compatibilidad pasiva para lectura de datos legados.
  */
 @IgnoreExtraProperties
 data class Schedule(
@@ -31,24 +33,38 @@ data class Schedule(
     @get:PropertyName("totalCapacity") @set:PropertyName("totalCapacity")
     var totalCapacity: Int = 13,
 
-    @get:PropertyName("conductorId") @set:PropertyName("conductorId")
-    var conductorId: String? = null,
+    @get:PropertyName("driverId") @set:PropertyName("driverId")
+    var driverId: String? = null,
+
+    @get:PropertyName("vehicleId") @set:PropertyName("vehicleId")
+    var vehicleId: String? = null,
 
     @get:PropertyName("driverName") @set:PropertyName("driverName")
     var driverName: String? = null
 ) : Serializable {
 
     // =========================================================================
-    // 🌍 JAVA & FIREBASE LEGACY BRIDGE
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters)
     // =========================================================================
 
     @PropertyName("ruta")
-    fun getRutaLegacy(): String = route
-    @PropertyName("ruta")
-    fun setRutaLegacy(value: String) { route = value }
+    fun setRutaLegacy(value: String?) { if (!value.isNullOrEmpty()) route = value }
 
     @PropertyName("hora")
-    fun getHoraLegacy(): String = time
-    @PropertyName("hora")
-    fun setHoraLegacy(value: String) { time = value }
+    fun setHoraLegacy(value: String?) { if (!value.isNullOrEmpty()) time = value }
+
+    @PropertyName("conductorId")
+    fun setConductorIdLegacy(value: String?) { if (!value.isNullOrEmpty()) driverId = value }
+
+    @PropertyName("vehiculoId")
+    fun setVehiculoIdLegacy(value: String?) { if (!value.isNullOrEmpty()) vehicleId = value }
+
+    // =========================================================================
+    // 🌉 PROPIEDADES PUENTE PARA CÓDIGO INTERNO (Excluidas de serialización)
+    // =========================================================================
+
+    @get:Exclude @set:Exclude
+    var conductorId: String?
+        get() = driverId
+        set(v) { driverId = v }
 }

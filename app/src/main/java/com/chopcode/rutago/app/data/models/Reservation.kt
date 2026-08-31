@@ -1,10 +1,12 @@
 package com.chopcode.rutago.app.data.models
 
+import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.PropertyName
 
 /**
  * 📦 MODEL: Reservation
+ * Entidad normalizada a Inglés con compatibilidad pasiva para lectura de datos legados.
  */
 @IgnoreExtraProperties
 class Reservation {
@@ -65,9 +67,32 @@ class Reservation {
     @get:PropertyName("driverName") @set:PropertyName("driverName")
     var driverName: String = ""
 
+    @get:PropertyName("paymentMethod") @set:PropertyName("paymentMethod")
+    var paymentMethod: String = "efectivo"
+
     constructor()
 
-    constructor(id: String, userId: String, driverId: String, scheduleId: String, origin: String, destination: String, departureTime: String, estimatedDuration: String, status: String, reservedSeat: Int, price: Double, reservationDate: Long, isRated: Boolean, rating: Float, passengerName: String, passengerPhone: String, vehiclePlate: String, vehicleModel: String, driverName: String) {
+    constructor(
+        id: String,
+        userId: String,
+        driverId: String,
+        scheduleId: String,
+        origin: String,
+        destination: String,
+        departureTime: String,
+        estimatedDuration: String,
+        status: String,
+        reservedSeat: Int,
+        price: Double,
+        reservationDate: Long,
+        isRated: Boolean,
+        rating: Float,
+        passengerName: String,
+        passengerPhone: String,
+        vehiclePlate: String,
+        vehicleModel: String,
+        driverName: String
+    ) {
         this.id = id
         this.userId = userId
         this.driverId = driverId
@@ -90,146 +115,224 @@ class Reservation {
     }
 
     // =========================================================================
-    // 🌍 FIREBASE & JAVA BRIDGE (Legacy Property Support)
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters, sin Exponer Getters para Serialización)
     // =========================================================================
 
-    @get:PropertyName("idReservation") @set:PropertyName("idReservation")
+    @PropertyName("idReservation")
+    fun setIdReservationLegacy(v: String?) { if (!v.isNullOrEmpty()) id = v }
+
+    @PropertyName("idReserva")
+    fun setIdReservaLegacy(v: String?) { if (!v.isNullOrEmpty()) id = v }
+
+    @PropertyName("usuarioId")
+    fun setUsuarioIdLegacy(v: String?) { if (!v.isNullOrEmpty()) userId = v }
+
+    @PropertyName("conductorId")
+    fun setConductorIdLegacy(v: String?) { if (!v.isNullOrEmpty()) driverId = v }
+
+    @PropertyName("horarioId")
+    fun setHorarioIdLegacy(v: String?) { if (!v.isNullOrEmpty()) scheduleId = v }
+
+    @PropertyName("nombre")
+    fun setNombreLegacy(v: String?) { if (!v.isNullOrEmpty()) passengerName = v }
+
+    @PropertyName("name")
+    fun setNameLegacy(v: String?) { if (!v.isNullOrEmpty()) passengerName = v }
+
+    @PropertyName("telefono")
+    fun setTelefonoLegacy(v: String?) { if (!v.isNullOrEmpty()) passengerPhone = v }
+
+    @PropertyName("phone")
+    fun setPhoneLegacy(v: String?) { if (!v.isNullOrEmpty()) passengerPhone = v }
+
+    @PropertyName("conductor")
+    fun setConductorLegacy(v: String?) { if (!v.isNullOrEmpty()) driverName = v }
+
+    @PropertyName("driver")
+    fun setDriverLegacy(v: String?) { if (!v.isNullOrEmpty()) driverName = v }
+
+    @PropertyName("estadoReserva")
+    fun setEstadoReservaLegacy(v: String?) { if (!v.isNullOrEmpty()) status = v }
+
+    @PropertyName("reservationStatus")
+    fun setReservationStatusLegacy(v: String?) { if (!v.isNullOrEmpty()) status = v }
+
+    @PropertyName("puestoReservado")
+    fun setPuestoReservadoLegacy(v: Int) { if (v > 0) reservedSeat = v }
+
+    @PropertyName("precio")
+    fun setPrecioLegacy(v: Double) { if (v > 0) price = v }
+
+    @PropertyName("fechaReserva")
+    fun setFechaReservaLegacy(v: Long) { if (v > 0) reservationDate = v }
+
+    @PropertyName("calificada")
+    fun setCalificadaLegacy(v: Boolean) { isRated = v }
+
+    @PropertyName("rated")
+    fun setRatedLegacy(v: Boolean) { isRated = v }
+
+    @PropertyName("calificacion")
+    fun setCalificacionLegacy(v: Float) { rating = v }
+
+    @PropertyName("modeloVehiculo")
+    fun setModeloVehiculoLegacy(v: String?) { if (!v.isNullOrEmpty()) vehicleModel = v }
+
+    @PropertyName("modelo")
+    fun setModeloLegacy(v: String?) { if (!v.isNullOrEmpty()) vehicleModel = v }
+
+    @PropertyName("vehiculoId")
+    fun setVehiculoIdLegacy(v: String?) { if (!v.isNullOrEmpty()) vehiclePlate = v }
+
+    @PropertyName("placa")
+    fun setPlacaLegacy(v: String?) { if (!v.isNullOrEmpty()) vehiclePlate = v }
+
+    @PropertyName("plate")
+    fun setPlateLegacy(v: String?) { if (!v.isNullOrEmpty()) vehiclePlate = v }
+
+    @PropertyName("tiempoEstimado")
+    fun setTiempoEstimadoLegacy(v: String?) { if (!v.isNullOrEmpty()) estimatedDuration = v }
+
+    @PropertyName("origen")
+    fun setOrigenLegacy(v: String?) { if (!v.isNullOrEmpty()) origin = v }
+
+    @PropertyName("destino")
+    fun setDestinoLegacy(v: String?) { if (!v.isNullOrEmpty()) destination = v }
+
+    @PropertyName("metodoPago")
+    fun setMetodoPagoLegacy(v: String?) { if (!v.isNullOrEmpty()) paymentMethod = v }
+
+    // =========================================================================
+    // 🌉 PROPIEDADES PUENTE PARA CÓDIGO INTERNO (Excluidas de la serialización)
+    // =========================================================================
+
+    @get:Exclude @set:Exclude
     var idReservation: String
         get() = id
         set(v) { id = v }
 
-    @get:PropertyName("idReserva") @set:PropertyName("idReserva")
+    @get:Exclude @set:Exclude
     var idReserva: String
         get() = id
         set(v) { id = v }
 
-    @get:PropertyName("usuarioId") @set:PropertyName("usuarioId")
+    @get:Exclude @set:Exclude
     var usuarioId: String
         get() = userId
         set(v) { userId = v }
 
-    @get:PropertyName("conductorId") @set:PropertyName("conductorId")
+    @get:Exclude @set:Exclude
     var conductorId: String
         get() = driverId
         set(v) { driverId = v }
 
-    @get:PropertyName("horarioId") @set:PropertyName("horarioId")
+    @get:Exclude @set:Exclude
     var horarioId: String
         get() = scheduleId
         set(v) { scheduleId = v }
 
-    @get:PropertyName("nombre") @set:PropertyName("nombre")
+    @get:Exclude @set:Exclude
     var nombre: String
         get() = passengerName
         set(v) { passengerName = v }
 
-    @get:PropertyName("name") @set:PropertyName("name")
+    @get:Exclude @set:Exclude
     var name: String
         get() = passengerName
         set(v) { passengerName = v }
 
-    @get:PropertyName("telefono") @set:PropertyName("telefono")
+    @get:Exclude @set:Exclude
     var telefono: String
         get() = passengerPhone
         set(v) { passengerPhone = v }
 
-    @get:PropertyName("phone") @set:PropertyName("phone")
+    @get:Exclude @set:Exclude
     var phone: String
         get() = passengerPhone
         set(v) { passengerPhone = v }
 
-    @get:PropertyName("conductor") @set:PropertyName("conductor")
+    @get:Exclude @set:Exclude
     var conductor: String
         get() = driverName
         set(v) { driverName = v }
 
-    @get:PropertyName("driver") @set:PropertyName("driver")
+    @get:Exclude @set:Exclude
     var driver: String
         get() = driverName
         set(v) { driverName = v }
 
-    @get:PropertyName("estadoReserva") @set:PropertyName("estadoReserva")
+    @get:Exclude @set:Exclude
     var estadoReserva: String
         get() = status
         set(v) { status = v }
 
-    @get:PropertyName("reservationStatus") @set:PropertyName("reservationStatus")
+    @get:Exclude @set:Exclude
     var reservationStatus: String
         get() = status
         set(v) { status = v }
 
-    @get:PropertyName("puestoReservado") @set:PropertyName("puestoReservado")
+    @get:Exclude @set:Exclude
     var puestoReservado: Int
         get() = reservedSeat
         set(v) { reservedSeat = v }
 
-    @get:PropertyName("precio") @set:PropertyName("precio")
+    @get:Exclude @set:Exclude
     var precio: Double
         get() = price
         set(v) { price = v }
 
-    @get:PropertyName("fechaReserva") @set:PropertyName("fechaReserva")
+    @get:Exclude @set:Exclude
     var fechaReserva: Long
         get() = reservationDate
         set(v) { reservationDate = v }
 
-    @get:PropertyName("calificada") @set:PropertyName("calificada")
-    var calificadaLegacy: Boolean
-        get() = isRated
-        set(v) { isRated = v }
-
-    @get:PropertyName("rated") @set:PropertyName("rated")
-    var ratedLegacy: Boolean
-        get() = isRated
-        set(v) { isRated = v }
-
-    @get:PropertyName("calificacion") @set:PropertyName("calificacion")
+    @get:Exclude @set:Exclude
     var calificacion: Float
         get() = rating
         set(v) { rating = v }
 
-    @get:PropertyName("modeloVehiculo") @set:PropertyName("modeloVehiculo")
+    @get:Exclude @set:Exclude
     var modeloVehiculo: String
         get() = vehicleModel
         set(v) { vehicleModel = v }
 
-    @get:PropertyName("modelo") @set:PropertyName("modelo")
+    @get:Exclude @set:Exclude
     var modelo: String
         get() = vehicleModel
         set(v) { vehicleModel = v }
 
-    @get:PropertyName("vehiculoId") @set:PropertyName("vehiculoId")
+    @get:Exclude @set:Exclude
     var vehiculoId: String
         get() = vehiclePlate
         set(v) { vehiclePlate = v }
 
-    @get:PropertyName("placa") @set:PropertyName("placa")
+    @get:Exclude @set:Exclude
     var placa: String
         get() = vehiclePlate
         set(v) { vehiclePlate = v }
 
-    @get:PropertyName("plate") @set:PropertyName("plate")
+    @get:Exclude @set:Exclude
     var plate: String
         get() = vehiclePlate
         set(v) { vehiclePlate = v }
 
-    @get:PropertyName("estimatedTime") @set:PropertyName("estimatedTime")
+    @get:Exclude @set:Exclude
     var estimatedTime: String
         get() = estimatedDuration
         set(v) { estimatedDuration = v }
 
-    @get:PropertyName("tiempoEstimado") @set:PropertyName("tiempoEstimado")
+    @get:Exclude @set:Exclude
     var tiempoEstimado: String
         get() = estimatedDuration
         set(v) { estimatedDuration = v }
 
-    @get:PropertyName("origen") @set:PropertyName("origen")
-    var origenLegacy: String
+    @get:Exclude @set:Exclude
+    var origen: String
         get() = origin
         set(v) { origin = v }
 
-    @get:PropertyName("destino") @set:PropertyName("destino")
-    var destinoLegacy: String
+    @get:Exclude @set:Exclude
+    var destino: String
         get() = destination
         set(v) { destination = v }
 }

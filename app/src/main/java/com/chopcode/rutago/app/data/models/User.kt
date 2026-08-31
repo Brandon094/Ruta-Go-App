@@ -1,21 +1,23 @@
 package com.chopcode.rutago.app.data.models
 
+import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.PropertyName
 
 /**
  * 📦 MODEL: User
+ * Entidad normalizada a Inglés con compatibilidad pasiva para lectura de datos legados.
  */
 @IgnoreExtraProperties
 open class User {
     @get:PropertyName("id") @set:PropertyName("id")
     var id: String = ""
 
-    @get:PropertyName("nombre") @set:PropertyName("nombre")
-    var nombre: String = ""
+    @get:PropertyName("name") @set:PropertyName("name")
+    var name: String = ""
 
-    @get:PropertyName("telefono") @set:PropertyName("telefono")
-    var telefono: String = ""
+    @get:PropertyName("phone") @set:PropertyName("phone")
+    var phone: String = ""
 
     @get:PropertyName("email") @set:PropertyName("email")
     var email: String = ""
@@ -26,30 +28,60 @@ open class User {
     @get:PropertyName("status") @set:PropertyName("status")
     var status: String = "active"
 
-    @get:PropertyName("rol") @set:PropertyName("rol")
-    var rol: String = "usuario"
+    @get:PropertyName("role") @set:PropertyName("role")
+    var role: String = "usuario"
 
-    @get:PropertyName("solicitudBorrado") @set:PropertyName("solicitudBorrado")
-    var solicitudBorrado: Boolean = false
+    @get:PropertyName("deletionRequested") @set:PropertyName("deletionRequested")
+    var deletionRequested: Boolean = false
 
-    @get:PropertyName("fechaSolicitudBorrado") @set:PropertyName("fechaSolicitudBorrado")
-    var fechaSolicitudBorrado: Long? = null
+    @get:PropertyName("deletionRequestedDate") @set:PropertyName("deletionRequestedDate")
+    var deletionRequestedDate: Long? = null
 
-    // Getters para Java (Kotlin los genera automáticamente como getName(), etc.)
-    // Pero si Java busca nombres específicos que no coinciden con la propiedad:
-    
-    @PropertyName("name")
-    fun getNameJava(): String = nombre
-    @PropertyName("name")
-    fun setNameJava(v: String) { nombre = v }
+    // =========================================================================
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters)
+    // =========================================================================
 
-    @PropertyName("phone")
-    fun getPhoneJava(): String = telefono
-    @PropertyName("phone")
-    fun setPhoneJava(v: String) { telefono = v }
+    @PropertyName("nombre")
+    fun setNombreLegacy(v: String?) { if (!v.isNullOrEmpty()) name = v }
 
-    @PropertyName("estado")
-    fun getEstadoJava(): String = status
-    @PropertyName("estado")
-    fun setEstadoJava(v: String) { status = v }
+    @PropertyName("telefono")
+    fun setTelefonoLegacy(v: String?) { if (!v.isNullOrEmpty()) phone = v }
+
+    @PropertyName("rol")
+    fun setRolLegacy(v: String?) { if (!v.isNullOrEmpty()) role = v }
+
+    @PropertyName("solicitudBorrado")
+    fun setSolicitudBorradoLegacy(v: Boolean) { deletionRequested = v }
+
+    @PropertyName("fechaSolicitudBorrado")
+    fun setFechaSolicitudBorradoLegacy(v: Long?) { deletionRequestedDate = v }
+
+    // =========================================================================
+    // 🌉 PROPIEDADES PUENTE PARA CÓDIGO INTERNO (Excluidas de serialización)
+    // =========================================================================
+
+    @get:Exclude @set:Exclude
+    var nombre: String
+        get() = name
+        set(v) { name = v }
+
+    @get:Exclude @set:Exclude
+    var telefono: String
+        get() = phone
+        set(v) { phone = v }
+
+    @get:Exclude @set:Exclude
+    var rol: String
+        get() = role
+        set(v) { role = v }
+
+    @get:Exclude @set:Exclude
+    var solicitudBorrado: Boolean
+        get() = deletionRequested
+        set(v) { deletionRequested = v }
+
+    @get:Exclude @set:Exclude
+    var fechaSolicitudBorrado: Long?
+        get() = deletionRequestedDate
+        set(v) { deletionRequestedDate = v }
 }

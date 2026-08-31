@@ -38,36 +38,24 @@ data class Rating(
     var id: String? = null
 
     // =========================================================================
-    // 🌍 LEGACY COMPATIBILITY
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters)
     // =========================================================================
 
-    @get:PropertyName("pasajeroId") @set:PropertyName("pasajeroId")
-    var pasajeroIdLegacy: String
-        get() = passengerId
-        set(value) { passengerId = value }
+    @PropertyName("pasajeroId")
+    fun setPasajeroIdLegacy(value: String?) { if (!value.isNullOrEmpty()) passengerId = value }
 
-    @get:PropertyName("pasajeroNombre") @set:PropertyName("pasajeroNombre")
-    var pasajeroNombreLegacy: String
-        get() = passengerName
-        set(value) { passengerName = value }
+    @PropertyName("pasajeroNombre")
+    fun setPasajeroNombreLegacy(value: String?) { if (!value.isNullOrEmpty()) passengerName = value }
 
-    @get:PropertyName("conductorId") @set:PropertyName("conductorId")
-    var conductorIdLegacy: String
-        get() = driverId
-        set(value) { driverId = value }
+    @PropertyName("conductorId")
+    fun setConductorIdLegacy(value: String?) { if (!value.isNullOrEmpty()) driverId = value }
 
-    @get:PropertyName("reservaId") @set:PropertyName("reservaId")
-    var reservaIdLegacy: String
-        get() = reservationId
-        set(value) { reservationId = value }
+    @PropertyName("reservaId")
+    fun setReservaIdLegacy(value: String?) { if (!value.isNullOrEmpty()) reservationId = value }
 
-    @get:PropertyName("comentario") @set:PropertyName("comentario")
-    var comentarioLegacy: String
-        get() = comment
-        set(value) { comment = value }
+    @PropertyName("comentario")
+    fun setComentarioLegacy(value: String?) { if (value != null) comment = value }
 
-    @get:PropertyName("fecha") @set:PropertyName("fecha")
-    var fechaLegacy: Long
-        get() = date
-        set(value) { date = value }
+    @PropertyName("fecha")
+    fun setFechaLegacy(value: Long) { if (value > 0) date = value }
 }

@@ -6,6 +6,7 @@ import com.google.firebase.database.PropertyName
 /**
  * 📦 MODEL: Driver
  * Especialización de la clase User para conductores.
+ * Normalizada a Inglés con compatibilidad pasiva para lectura de datos legados.
  */
 @IgnoreExtraProperties
 class Driver : User() {
@@ -24,32 +25,28 @@ class Driver : User() {
     @get:PropertyName("assignedSchedules") @set:PropertyName("assignedSchedules")
     var assignedSchedules: List<String>? = null
 
+    @get:PropertyName("rankingPosition") @set:PropertyName("rankingPosition")
+    var rankingPosition: Int = 0
+
     // =========================================================================
-    // 🌍 JAVA & FIREBASE LEGACY BRIDGE
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters)
     // =========================================================================
 
     @PropertyName("vehiculoId")
-    fun getVehiculoIdLegacy(): String? = vehicleId
-    @PropertyName("vehiculoId")
-    fun setVehiculoIdLegacy(value: String?) { vehicleId = value }
+    fun setVehiculoIdLegacy(value: String?) { if (!value.isNullOrEmpty()) vehicleId = value }
 
     @PropertyName("placaVehiculo")
-    fun getPlacaVehiculoLegacy(): String? = vehiclePlate
-    @PropertyName("placaVehiculo")
-    fun setPlacaVehiculoLegacy(value: String?) { vehiclePlate = value }
+    fun setPlacaVehiculoLegacy(value: String?) { if (!value.isNullOrEmpty()) vehiclePlate = value }
 
     @PropertyName("modeloVehiculo")
-    fun getModeloVehiculoLegacy(): String? = vehicleModel
-    @PropertyName("modeloVehiculo")
-    fun setModeloVehiculoLegacy(value: String?) { vehicleModel = value }
+    fun setModeloVehiculoLegacy(value: String?) { if (!value.isNullOrEmpty()) vehicleModel = value }
 
     @PropertyName("capacidadVehiculo")
-    fun getCapacidadVehiculoLegacy(): Int = vehicleCapacity
-    @PropertyName("capacidadVehiculo")
-    fun setCapacidadVehiculoLegacy(value: Int) { vehicleCapacity = value }
+    fun setCapacidadVehiculoLegacy(value: Int) { if (value > 0) vehicleCapacity = value }
 
     @PropertyName("horariosAsignados")
-    fun getHorariosAsignadosLegacy(): List<String>? = assignedSchedules
-    @PropertyName("horariosAsignados")
-    fun setHorariosAsignadosLegacy(value: List<String>?) { assignedSchedules = value }
+    fun setHorariosAsignadosLegacy(value: List<String>?) { if (value != null) assignedSchedules = value }
+
+    @PropertyName("posicionEscalafon")
+    fun setPosicionEscalafonLegacy(value: Int) { rankingPosition = value }
 }

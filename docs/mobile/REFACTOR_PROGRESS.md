@@ -8,12 +8,13 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - **Lenguaje**: **100% Kotlin** (0 archivos Java en producción).
 - **UI Framework**: **100% Jetpack Compose (Material 3)**.
 - **Navegación & Flujos**: **100% integrados** (Onboarding → Auth/Google One Tap → Home → Selección de Asientos → Confirmación de Reserva → Tiquete / Chat / Historial).
-- **Persistencia de Sesión**: **Corregida & Centralizada** (Unificación en `SessionManager` + `SettingsRepositoryImpl` sobre `"rutago_prefs"`; soporte para reinicio de app manteniendo sesión activa de Firebase).
+- **Persistencia de Sesión**: **Corregida & Centralizada** (Unificación en `SessionManager` + `SettingsRepositoryImpl` sobre `"rutago_prefs"`).
+- **Normalización NoSQL**: **100% Inglés en Escritura + Deserialización Pasiva** (`Reservation`, `User`, `Driver`, `Vehicle`, `Schedule`, `Rating`).
 - **Arquitectura**: **MVVM + Clean Architecture + Single-Activity Architecture** (`MainActivity.kt`) + Navigation Compose.
-- **Patrón UI**: **Atomic Design puro** (`ui/components/atoms`, `molecules`, `organisms`) con UIs totalmente desacopladas y "tontas" (stateless) impulsadas por `UiState` y `StateFlow`.
+- **Patrón UI**: **Atomic Design puro** (`ui/components/atoms`, `molecules`, `organisms`) con UIs totalmente desacopladas e impulsadas por `UiState` y `StateFlow`.
 - **Adapters**: **0 Adapters de RecyclerView** (removidos en su totalidad al migrar a componentes Composable puros).
 - **Compilación**: ✅ **Verde (`Build finished successfully` - APK assembleDebug)**.
-- **Progreso Estimado del Refactor**: **96% Completado**.
+- **Progreso Estimado del Refactor**: **98% Completado**.
 
 ---
 

@@ -6,6 +6,7 @@ import com.google.firebase.database.PropertyName
 /**
  * 📦 MODEL: Vehicle
  * Representa la ficha técnica de un bus o camioneta.
+ * Normalizado a Inglés con compatibilidad pasiva para lectura de datos legados.
  */
 @IgnoreExtraProperties
 data class Vehicle(
@@ -33,45 +34,37 @@ data class Vehicle(
     @get:PropertyName("driverId") @set:PropertyName("driverId")
     var driverId: String = "",
 
+    @get:PropertyName("ownerId") @set:PropertyName("ownerId")
+    var ownerId: String = "",
+
     @get:PropertyName("status") @set:PropertyName("status")
     var status: String = "active"
 ) {
     // =========================================================================
-    // 🌍 JAVA & FIREBASE LEGACY BRIDGE
+    // 🌍 DESERIALIZACIÓN LEGADO (Solo Setters)
     // =========================================================================
 
     @PropertyName("placa")
-    fun getPlacaLegacy(): String = plate
-    @PropertyName("placa")
-    fun setPlacaLegacy(value: String) { plate = value }
+    fun setPlacaLegacy(value: String?) { if (!value.isNullOrEmpty()) plate = value }
 
     @PropertyName("modelo")
-    fun getModeloLegacy(): String = model
-    @PropertyName("modelo")
-    fun setModeloLegacy(value: String) { model = value }
+    fun setModeloLegacy(value: String?) { if (!value.isNullOrEmpty()) model = value }
 
     @PropertyName("marca")
-    fun getMarcaLegacy(): String = brand
-    @PropertyName("marca")
-    fun setMarcaLegacy(value: String) { brand = value }
+    fun setMarcaLegacy(value: String?) { if (!value.isNullOrEmpty()) brand = value }
 
     @PropertyName("ano")
-    fun getAnoLegacy(): String = year
-    @PropertyName("ano")
-    fun setAnoLegacy(value: String) { year = value }
+    fun setAnoLegacy(value: String?) { if (!value.isNullOrEmpty()) year = value }
+
+    @PropertyName("año")
+    fun setAnioLegacy(value: String?) { if (!value.isNullOrEmpty()) year = value }
 
     @PropertyName("capacidad")
-    fun getCapacidadLegacy(): Int = capacity
-    @PropertyName("capacidad")
-    fun setCapacidadLegacy(value: Int) { capacity = value }
+    fun setCapacidadLegacy(value: Int) { if (value > 0) capacity = value }
 
     @PropertyName("conductorId")
-    fun getConductorIdLegacy(): String = driverId
-    @PropertyName("conductorId")
-    fun setConductorIdLegacy(value: String) { driverId = value }
+    fun setConductorIdLegacy(value: String?) { if (!value.isNullOrEmpty()) driverId = value }
 
     @PropertyName("estado")
-    fun getEstadoLegacy(): String = status
-    @PropertyName("estado")
-    fun setEstadoLegacy(value: String) { status = value }
+    fun setEstadoLegacy(value: String?) { if (!value.isNullOrEmpty()) status = value }
 }
