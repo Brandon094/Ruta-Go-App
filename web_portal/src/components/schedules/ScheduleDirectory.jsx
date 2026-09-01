@@ -54,6 +54,8 @@ export function ScheduleDirectory({ schedules = [], drivers = [], role, onManage
 
   const currentSchedules = FormatUtils.filterSchedulesByRoute(filteredBySearch, activeRoute);
 
+  const isAdmin = role?.type === 'ADMIN';
+
   return (
     <div className="space-y-10 pb-20 animate-in fade-in duration-500">
       <div className="px-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -62,7 +64,7 @@ export function ScheduleDirectory({ schedules = [], drivers = [], role, onManage
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
         />
-        {role?.type === 'ADMIN' && (
+        {isAdmin && (
           <Button
             variant="primary"
             onClick={() => setIsAddModalOpen(true)}
@@ -105,10 +107,10 @@ export function ScheduleDirectory({ schedules = [], drivers = [], role, onManage
           schedules={currentSchedules}
           drivers={drivers}
           role={role}
-          onManage={onManage}
-          onEdit={(schedule) => setEditingSchedule(schedule)}
+          onManage={isAdmin ? onManage : null}
+          onEdit={isAdmin ? (schedule) => setEditingSchedule(schedule) : null}
           vehicles={vehicles}
-          hideActions={false}
+          hideActions={!isAdmin}
         />
       </div>
 

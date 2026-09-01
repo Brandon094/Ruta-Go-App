@@ -23,7 +23,7 @@ Copia y pega este JSON en la sección **Reglas** de tu consola de Firebase Realt
     "users": {
       ".read": "auth != null",
       "$uid": {
-        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('users').child(auth.uid).child('role').val() === 'owner')"
       }
     },
     "routes": {

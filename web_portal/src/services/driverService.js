@@ -10,25 +10,15 @@ export const driverService = {
    * Actualiza la información de un conductor y gestiona el vínculo con el vehículo.
    */
   updateDriver: async (driverId, data, oldVehicleId = null) => {
-    const updates = {};
-
-    // 1. Elevación/Confirmación de rol e información en /users/{driverId}
     const vehiclePlate = data.vehiclePlate || data.placaVehiculo || data.vehiculoId;
-    updates[`users/${driverId}/role`] = 'driver';
-    updates[`users/${driverId}/vehicleId`] = vehiclePlate || "";
-    updates[`users/${driverId}/vehiclePlate`] = vehiclePlate || "";
-    if (data.name || data.nombre) updates[`users/${driverId}/name`] = data.name || data.nombre;
-    if (data.phone || data.telefono) updates[`users/${driverId}/phone`] = data.phone || data.telefono;
-    if (data.horariosAsignados || data.assignedSchedules) {
-      updates[`users/${driverId}/assignedSchedules`] = data.assignedSchedules || data.horariosAsignados;
-    }
 
-    // 2. Gestión de Vínculo de en /vehicles/
+    // 1. Gestión de Vínculo de vehículo e itinerarios (/vehicles/ y /schedules/)
     if (vehiclePlate) {
+      const vehicleUpdates = {};
       if (oldVehicleId && oldVehicleId !== vehiclePlate) {
-        updates[`vehicles/${oldVehicleId}/driverId`] = null;
+        vehicleUpdates[`vehicles/${oldVehicleId}/driverId`] = null;
       }
-      updates[`vehicles/${vehiclePlate}/driverId`] = driverId;
+      vehicleUpdates[`vehicles/${vehiclePlate}/driverId`] = driverId;
 
       const vehicleSnap = await get(ref(db, `vehicles/${vehiclePlate}`));
       if (vehicleSnap.exists()) {
@@ -36,19 +26,37 @@ export const driverService = {
         const schedules = data.assignedSchedules || data.horariosAsignados || [];
 
         schedules.forEach(hId => {
-          updates[`schedules/${hId}/driverId`] = driverId;
-          updates[`schedules/${hId}/vehicleId`] = vehiclePlate;
-          updates[`seatAvailability/${hId}/totalSeats`] = capacity;
-          updates[`seatAvailability/${hId}/availableSeats`] = capacity;
+          vehicleUpdates[`schedules/${hId}/driverId`] = driverId;
+          vehicleUpdates[`schedules/${hId}/vehicleId`] = vehiclePlate;
+          vehicleUpdates[`seatAvailability/${hId}/totalSeats`] = capacity;
+          vehicleUpdates[`seatAvailability/${hId}/availableSeats`] = capacity;
         });
+      }
+
+      try {
+        await update(ref(db), vehicleUpdates);
+      } catch (err) {
+        console.warn("⚠️ Error actualizando vehículos u horarios vinculados:", err.message);
       }
     }
 
+    // 2. Elevación/Confirmación de rol e información en /users/{driverId}
+    const userUpdates = {};
+    userUpdates[`users/${driverId}/role`] = 'driver';
+    userUpdates[`users/${driverId}/status`] = data.status || 'active';
+    userUpdates[`users/${driverId}/vehicleId`] = vehiclePlate || "";
+    userUpdates[`users/${driverId}/vehiclePlate`] = vehiclePlate || "";
+    if (data.name || data.nombre) userUpdates[`users/${driverId}/name`] = data.name || data.nombre;
+    if (data.phone || data.telefono) userUpdates[`users/${driverId}/phone`] = data.phone || data.telefono;
+    if (data.horariosAsignados || data.assignedSchedules) {
+      userUpdates[`users/${driverId}/assignedSchedules`] = data.assignedSchedules || data.horariosAsignados;
+    }
+
     try {
-      await update(ref(db), updates);
+      await update(ref(db), userUpdates);
       return { success: true };
     } catch (error) {
-      console.error("Error actualizando conductor:", error);
+      console.error("Error actualizando perfil de conductor en /users/:", error);
       throw error;
     }
   },
@@ -87,25 +95,18 @@ export const driverService = {
    * Registra/eleva un nuevo conductor y su vehículo en /users/ y /vehicles/
    */
   registerDriverAndVehicle: async (driverData, vehicleData) => {
-    const updates = {};
     const driverId = driverData.id;
     const plate = (vehicleData.plate || vehicleData.placa || driverData.placaVehiculo || "").toUpperCase().trim();
 
-    // 1. Elevar rol de usuario a 'driver' en /users/{driverId}
-    updates[`users/${driverId}/role`] = 'driver';
-    updates[`users/${driverId}/status`] = 'active';
-    updates[`users/${driverId}/vehicleId`] = plate;
-    updates[`users/${driverId}/vehiclePlate`] = plate;
-    const schedules = driverData.assignedSchedules || driverData.horariosAsignados || [];
-    updates[`users/${driverId}/assignedSchedules`] = schedules;
-
-    // 2. Registrar/actualizar vehículo en /vehicles/{plate}
+    // 1. Registrar/actualizar vehículo en /vehicles/{plate} y /schedules/
     if (plate) {
       const vSnap = await get(ref(db, `vehicles/${plate}`));
       const existingVehicle = vSnap.exists() ? vSnap.val() : {};
       const capacity = parseInt(vehicleData.capacity || vehicleData.capacidad || existingVehicle.capacity) || 13;
+      const schedules = driverData.assignedSchedules || driverData.horariosAsignados || [];
 
-      updates[`vehicles/${plate}`] = {
+      const vehicleUpdates = {};
+      vehicleUpdates[`vehicles/${plate}`] = {
         ...existingVehicle,
         id: plate,
         plate: plate,
@@ -117,22 +118,37 @@ export const driverService = {
         status: 'active'
       };
 
-      // 3. Sincronizar horarios asignados en /schedules/
       if (schedules.length > 0) {
         schedules.forEach(hId => {
-          updates[`schedules/${hId}/driverId`] = driverId;
-          updates[`schedules/${hId}/vehicleId`] = plate;
-          updates[`seatAvailability/${hId}/totalSeats`] = capacity;
-          updates[`seatAvailability/${hId}/availableSeats`] = capacity;
+          vehicleUpdates[`schedules/${hId}/driverId`] = driverId;
+          vehicleUpdates[`schedules/${hId}/vehicleId`] = plate;
+          vehicleUpdates[`seatAvailability/${hId}/totalSeats`] = capacity;
+          vehicleUpdates[`seatAvailability/${hId}/availableSeats`] = capacity;
         });
+      }
+
+      try {
+        await update(ref(db), vehicleUpdates);
+      } catch (e) {
+        console.warn("⚠️ Error vinculando vehículo:", e.message);
       }
     }
 
+    // 2. Elevar rol de usuario a 'driver' en /users/{driverId}
+    const userUpdates = {};
+    userUpdates[`users/${driverId}/role`] = 'driver';
+    userUpdates[`users/${driverId}/status`] = 'active';
+    userUpdates[`users/${driverId}/vehicleId`] = plate;
+    userUpdates[`users/${driverId}/vehiclePlate`] = plate;
+    if (driverData.assignedSchedules || driverData.horariosAsignados) {
+      userUpdates[`users/${driverId}/assignedSchedules`] = driverData.assignedSchedules || driverData.horariosAsignados;
+    }
+
     try {
-      await update(ref(db), updates);
+      await update(ref(db), userUpdates);
       return { success: true };
     } catch (error) {
-      console.error("Error en registro de conductor NoSQL v2.0:", error);
+      console.error("Error elevando rol en /users/:", error);
       throw error;
     }
   }

@@ -8,6 +8,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 *Integración dinámica de rutas, autocompletado de tarifas, desacoplamiento de asignación de flota y optimización de reactividad NoSQL v2.0.*
 
 ### 🌐 Ruta-Go Web (Portal v2.0)
+- **Refactor de Permisos y Acciones en Planilla (`ScheduleDirectory.jsx`)**:
+  - Restringidos los botones de gestión/edición en la pestaña **Planilla** exclusivamente para el **Admin Root** (`role: "admin"`).
+  - Los **Socios (`role: "owner"`)** cuentan con una vista puramente informativa de auditoría en Planilla (Hora, Conductor, Bus, Cupos, Precio y Estado) sin posibilidad de ingresar a realizar reservas de pasajeros desde dicha interfaz.
 - **Sincronización NoSQL de Conductores y Escalafón (`DriverCard.jsx`, `DriverDirectory.jsx`, `EditDriverModal.jsx` & `driverService.js`)**:
   - Corregido el mapeo de propiedades en `DriverCard.jsx` y `DriverDirectory.jsx` para soportar las llaves del esquema NoSQL v2.0 (`name`, `vehiclePlate`, `vehicleId`, `assignedSchedules`, `phone`) con soporte pasivo a campos legados.
   - Los conductores registrados que no tienen turnos aún asignados se agrupan en **"Registrados / Sin Turno"** mostrando su nombre completo ("Liye Daza"), correo, teléfono y bus vinculado ("TBO550").
