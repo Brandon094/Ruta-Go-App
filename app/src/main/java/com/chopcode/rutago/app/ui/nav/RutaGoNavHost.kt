@@ -77,10 +77,15 @@ fun RutaGoNavHost(
                 contract = ActivityResultContracts.StartIntentSenderForResult()
             ) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val token = googleLoginService.getGoogleIdTokenFromOneTapIntent(result.data)
+                    val token = googleLoginService.getGoogleIdTokenFromOneTapIntent(
+                        data = result.data,
+                        onError = { viewModel.onGoogleSignInError(it) }
+                    )
                     if (token != null) {
                         viewModel.loginWithGoogle(token)
                     }
+                } else {
+                    viewModel.onGoogleSignInCanceled()
                 }
             }
 
@@ -89,10 +94,15 @@ fun RutaGoNavHost(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val token = googleLoginService.getGoogleIdTokenFromStandardIntent(result.data)
+                    val token = googleLoginService.getGoogleIdTokenFromStandardIntent(
+                        data = result.data,
+                        onError = { viewModel.onGoogleSignInError(it) }
+                    )
                     if (token != null) {
                         viewModel.loginWithGoogle(token)
                     }
+                } else {
+                    viewModel.onGoogleSignInCanceled()
                 }
             }
 
@@ -110,6 +120,7 @@ fun RutaGoNavHost(
                 onPasswordChange = { viewModel.onPasswordChanged(it) },
                 onLoginClick = { viewModel.login() },
                 onGoogleLoginClick = {
+                    viewModel.onGoogleSignInStarted()
                     googleLoginService.startSignIn(
                         onLaunchIntentSender = { intentSenderRequest ->
                             oneTapLauncher.launch(intentSenderRequest)
@@ -118,7 +129,7 @@ fun RutaGoNavHost(
                             standardGoogleLauncher.launch(intent)
                         },
                         onError = { error ->
-                            // Manejo de errores de conexión con Google
+                            viewModel.onGoogleSignInError(error)
                         }
                     )
                 },

@@ -46,10 +46,6 @@ class LoginViewModel(
         }
     }
 
-    private fun validate(email: String, pass: String): Boolean {
-        return ValidatorUtils.isValidEmail(email) && ValidatorUtils.isValidPassword(pass)
-    }
-
     fun login() {
         val currentState = _uiState.value
         viewModelScope.launch {
@@ -63,6 +59,18 @@ class LoginViewModel(
                 _uiState.update { it.copy(isLoading = false, error = e.message ?: "Error al iniciar sesión") }
             }
         }
+    }
+
+    fun onGoogleSignInStarted() {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+    }
+
+    fun onGoogleSignInError(errorMsg: String) {
+        _uiState.update { it.copy(isLoading = false, error = errorMsg) }
+    }
+
+    fun onGoogleSignInCanceled() {
+        _uiState.update { it.copy(isLoading = false, error = "Inicio de sesión con Google cancelado") }
     }
 
     fun loginWithGoogle(idToken: String) {

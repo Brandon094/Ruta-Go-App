@@ -48,7 +48,6 @@ class GoogleLoginService(private val context: Context) {
         onError: (String) -> Unit
     ) {
         Log.d(TAG, "🚀 Iniciando flujo de inicio de sesión con Google...")
-        // 1. Intentar con Google One Tap primero
         oneTapClient.beginSignIn(signInRequest)
             .addOnSuccessListener { result ->
                 try {
@@ -57,45 +56,76 @@ class GoogleLoginService(private val context: Context) {
                     onLaunchIntentSender(intentSenderRequest)
                 } catch (e: Exception) {
                     Log.w(TAG, "⚠️ Error al crear IntentSender de One Tap, usando fallback estándar: ${e.message}")
-                    launchStandardFallback(onLaunchStandardSignIn)
+                    launchStandardFallback(onLaunchStandardSignIn, onError)
                 }
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "⚠️ One Tap no disponible o enfriado, usando fallback estándar: ${e.message}")
-                launchStandardFallback(onLaunchStandardSignIn)
+                launchStandardFallback(onLaunchStandardSignIn, onError)
             }
     }
 
-    private fun launchStandardFallback(onLaunchStandardSignIn: (Intent) -> Unit) {
+    private fun launchStandardFallback(
+        onLaunchStandardSignIn: (Intent) -> Unit,
+        onError: (String) -> Unit
+    ) {
         try {
             val signInIntent = googleSignInClient.signInIntent
             Log.d(TAG, "🚀 Lanzando Selector de Cuentas estándar de Google")
             onLaunchStandardSignIn(signInIntent)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Error al iniciar GoogleSignInClient: ${e.message}")
+            onError(e.message ?: "Error al conectar con Google Sign-In")
         }
     }
 
-    fun getGoogleIdTokenFromOneTapIntent(data: Intent?): String? {
-        if (data == null) return null
+    fun getGoogleIdTokenFromOneTapIntent(data: Intent?, onError: (String) -> Unit): String? {
+        if (data == null) {
+            onError("No se recibió respuesta del servicio de Google")
+            return null
+        }
         return try {
             val credential = oneTapClient.getSignInCredentialFromIntent(data)
-            credential.googleIdToken
+            credential.googleIdToken ?: run {
+                onError("No se obtuvo el token de autenticación de Google")
+                null
+            }
         } catch (e: ApiException) {
-            Log.w(TAG, "⚠️ Fallo al extraer token de One Tap intent: ${e.message}")
+            Log.w(TAG, "⚠️ Fallo al extraer token de One Tap intent: code=${e.statusCode}, msg=${e.message}")
+            val userMsg = mapApiExceptionToMessage(e)
+            onError(userMsg)
             null
         }
     }
 
-    fun getGoogleIdTokenFromStandardIntent(data: Intent?): String? {
-        if (data == null) return null
+    fun getGoogleIdTokenFromStandardIntent(data: Intent?, onError: (String) -> Unit): String? {
+        if (data == null) {
+            onError("No se recibió respuesta del selector de Google")
+            return null
+        }
         return try {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account = task.getResult(ApiException::class.java)
-            account?.idToken
+            account?.idToken ?: run {
+                onError("No se pudo obtener el token de Google")
+                null
+            }
         } catch (e: ApiException) {
-            Log.e(TAG, "❌ Fallo al extraer token de Standard Sign-In intent: statusCode=${e.statusCode}, msg=${e.message}")
+            Log.e(TAG, "❌ Fallo al extraer token de Standard Sign-In: statusCode=${e.statusCode}, msg=${e.message}")
+            val userMsg = mapApiExceptionToMessage(e)
+            onError(userMsg)
             null
+        }
+    }
+
+    private fun mapApiExceptionToMessage(e: ApiException): String {
+        return when (e.statusCode) {
+            12500 -> "Error de configuración Google (SHA-1). Contacta al administrador."
+            12501 -> "Inicio de sesión cancelado por el usuario"
+            12502 -> "Inicio de sesión con Google en progreso..."
+            7 -> "Sin conexión a Internet. Verifica tu red."
+            10 -> "Fallo de desarrollador en cliente Google."
+            else -> e.message ?: "Error de autenticación con Google (Código: ${e.statusCode})"
         }
     }
 }

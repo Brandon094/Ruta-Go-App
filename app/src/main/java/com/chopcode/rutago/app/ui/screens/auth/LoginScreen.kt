@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,14 +29,12 @@ import com.chopcode.rutago.app.ui.components.atoms.RutaGoTextField
 import com.chopcode.rutago.app.ui.components.molecules.AuthFooter
 import com.chopcode.rutago.app.ui.components.molecules.AuthHeader
 import com.chopcode.rutago.app.ui.components.organisms.AuthCard
-import com.chopcode.rutago.app.ui.theme.RutaGoNavyDark
-import com.chopcode.rutago.app.ui.theme.RutaGoOrange
 import com.chopcode.rutago.app.ui.theme.RutaGoTheme
 import com.chopcode.rutago.app.ui.viewmodels.auth.LoginUiState
 
 /**
  * 📱 SCREEN: LoginScreen
- * Versión Premium de la pantalla de inicio de sesión en Jetpack Compose.
+ * Versión Premium de la pantalla de inicio de sesión en Jetpack Compose con feedback mejorado.
  */
 @Composable
 fun LoginScreen(
@@ -68,7 +70,7 @@ fun LoginScreen(
                 label = stringResource(id = R.string.correo),
                 placeholder = "ejemplo@correo.com",
                 modifier = Modifier.padding(bottom = 12.dp),
-                isError = uiState.emailError != null || uiState.error != null,
+                isError = uiState.emailError != null,
                 errorMessage = uiState.emailError
             )
 
@@ -77,7 +79,7 @@ fun LoginScreen(
                 onValueChange = onPasswordChange,
                 label = stringResource(id = R.string.contraseña),
                 modifier = Modifier.padding(bottom = 4.dp),
-                isError = uiState.passwordError != null || uiState.error != null,
+                isError = uiState.passwordError != null,
                 errorMessage = uiState.passwordError,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -91,15 +93,6 @@ fun LoginScreen(
                     }
                 }
             )
-            
-            if (uiState.error != null) {
-                Text(
-                    text = uiState.error,
-                    color = MaterialTheme.colorScheme.error,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
 
             Text(
                 text = stringResource(id = R.string.forgot_password),
@@ -139,7 +132,46 @@ fun LoginScreen(
             Divider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
         }
 
-        GoogleButton(onClick = onGoogleLoginClick)
+        GoogleButton(
+            onClick = onGoogleLoginClick,
+            isLoading = uiState.isLoading
+        )
+
+        // 🚨 BANNER DE ERROR Y FEEDBACK CLEAR PARA EL USUARIO
+        if (uiState.error != null) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp, 
+                    MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ErrorOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = uiState.error,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -156,7 +188,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     RutaGoTheme {
         LoginScreen(
-            uiState = LoginUiState(),
+            uiState = LoginUiState(error = "Fallo al conectar con Google"),
             onEmailChange = {},
             onPasswordChange = {},
             onLoginClick = {},
