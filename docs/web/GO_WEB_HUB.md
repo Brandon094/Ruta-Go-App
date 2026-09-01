@@ -16,8 +16,9 @@ El sitio web ha sido elevado a un estándar de alta fidelidad con React 18, Vite
 ## 📂 2. Módulos Implementados
 
 ### 🏠 Landing Page & Selector Dinámico de Rutas
-*   **Lead Magnet & Grupos de Rutas**: Agrupamiento en tiempo real de horarios para cualquier ruta registrada en la BD (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, etc.).
-*   **Selector Dinámico Origen/Destino**: Filtros desplegables y chips de cambio rápido en el panel de pasajeros.
+*   **Lead Magnet & Rediseño Atómico por Pestañas**: Pestañas/chips atómicos interactivas para filtrado inmediato de horarios en tiempo real (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `Todas`).
+*   **Barra Flotante Sticky de Chips de Ruta**: Barra compacta de ~48px con vidrio esmerilado (`sticky top-0 z-20 backdrop-blur-md bg-white/95`) en el Centro de Reservas (`PassengerOverview.jsx`) y la Planilla (`ScheduleDirectory.jsx`), manteniendo el selector de ruta siempre accesible al hacer scroll.
+*   **Restricción por Conductor Asignado**: Sustitución del botón de reserva por un **Candado (🔒)** deshabilitado cuando un horario no cuenta con operador asignado (`!driverId`), previniendo reservas inválidas.
 *   **Diseño Atómico**: Interfaz construida sobre componentes reutilizables (Atoms, Molecules, Organisms).
 
 ### 💼 Go Business & Dashboard Pro

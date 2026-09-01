@@ -38,7 +38,7 @@ export function ScheduleCard({
   const isMe = driverId === role?.uid;
   const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
   const isExternal = role?.type === 'OWNER' && !safeDrivers.some(d => d.id === schedule.conductorId);
-  const isLockedForPassenger = !isManagement && !driverId;
+  const isWithoutDriver = !driverId;
 
   return (
     <div
@@ -54,7 +54,7 @@ export function ScheduleCard({
         </div>
       )}
 
-      <div className="flex items-center gap-8 md:gap-12">
+      <div className="flex items-center gap-4 sm:gap-6 md:gap-8 min-w-0">
         {/* 🕒 Molécula: Círculo de Tiempo */}
         <div className="relative flex-shrink-0">
            <div className={`w-24 h-24 rounded-full border-[6px] flex flex-col items-center justify-center transition-colors duration-500 shadow-inner ${
@@ -103,10 +103,10 @@ export function ScheduleCard({
             <div className="shrink-0">
                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${
                  hasPassed ? 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40' :
-                 isLockedForPassenger ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400' :
+                 isWithoutDriver ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400' :
                  isFull ? 'badge-error' : 'badge-success'
                }`}>
-                 {hasPassed ? 'Finalizado' : isLockedForPassenger ? 'Sin Conductor' : isFull ? 'Completado' : 'Disponible'}
+                 {hasPassed ? 'Finalizado' : isWithoutDriver ? 'Sin Conductor' : isFull ? 'Completado' : 'Disponible'}
                </span>
             </div>
           </div>
@@ -128,20 +128,20 @@ export function ScheduleCard({
            {!hideActions && onManage && (
              <button
                type="button"
-               disabled={hasPassed || (isFull && !isManagement) || isLockedForPassenger}
+               disabled={hasPassed || isWithoutDriver || (isFull && !isManagement)}
                onClick={() => {
-                 if (hasPassed || isLockedForPassenger) return;
+                 if (hasPassed || isWithoutDriver) return;
                  onManage(schedule);
                }}
                title={
                  hasPassed ? "Horario finalizado" :
-                 isLockedForPassenger ? "Horario sin conductor asignado" :
+                 isWithoutDriver ? "Horario sin conductor asignado" :
                  isFull ? "Horario completo" : "Seleccionar asientos"
                }
                className={`w-16 h-16 rounded-full shadow-2xl transition-all transform flex items-center justify-center group/btn ${
                  hasPassed
                   ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
-                  : isLockedForPassenger
+                  : isWithoutDriver
                     ? 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed shadow-none border border-slate-200 dark:border-white/10'
                     : (isFull && !isManagement)
                       ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
@@ -150,7 +150,7 @@ export function ScheduleCard({
              >
                {hasPassed ? (
                  <Bus size={32} />
-               ) : isLockedForPassenger ? (
+               ) : isWithoutDriver ? (
                  <Lock size={26} />
                ) : (
                  <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />

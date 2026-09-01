@@ -113,7 +113,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, onEdit, vehi
       )}
 
       {/* Info Message (Mobile Style) */}
-      <div className="mt-10 p-6 bg-blue-50/50 dark:bg-blue-500/5 rounded-[2rem] border border-blue-100 dark:border-blue-500/10 flex items-start gap-4">
+      <div className="mt-10 mb-16 p-6 scroll-mt-36 bg-blue-50/50 dark:bg-blue-500/5 rounded-[2rem] border border-blue-100 dark:border-blue-500/10 flex items-start gap-4">
          <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
          <p className="text-[11px] text-blue-800/60 dark:text-blue-400/60 font-medium leading-relaxed italic text-left">
             Los horarios finalizados se habilitarán para el día de mañana tras el reinicio de las 7:00 PM.

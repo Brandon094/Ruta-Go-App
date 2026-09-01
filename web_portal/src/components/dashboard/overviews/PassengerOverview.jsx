@@ -131,9 +131,11 @@ export function PassengerOverview({ stats, schedules = [], drivers = [], role, o
               </select>
             </div>
           </div>
+        </div>
 
-          {/* CHIPS RÁPIDOS DE RUTA */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-white/5">
+        {/* 🎛️ BARRA FIJA STICKY DE PESTAÑAS DE RUTA (Compact Floating Bar) */}
+        <div className="sticky top-0 z-20 py-2.5 bg-secondary-50/90 dark:bg-secondary-900/90 backdrop-blur-md transition-all">
+          <div className="flex flex-wrap items-center justify-center gap-2 p-2 bg-white/95 dark:bg-[#061929]/95 rounded-2xl border border-slate-200 dark:border-white/10 shadow-md">
             {routeChips.map((chip, idx) => (
               <button
                 key={idx}

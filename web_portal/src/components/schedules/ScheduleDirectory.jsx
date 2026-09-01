@@ -76,8 +76,8 @@ export function ScheduleDirectory({ schedules = [], drivers = [], role, onManage
         )}
       </div>
 
-      <div className="flex justify-center px-4">
-        <div className="flex flex-wrap justify-center gap-2 bg-white dark:bg-[#061929] p-1.5 rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm transition-colors w-full max-w-3xl">
+      <div className="sticky top-0 z-20 flex justify-center px-4 py-2 bg-secondary-50/90 dark:bg-secondary-900/90 backdrop-blur-md transition-all">
+        <div className="flex flex-wrap justify-center gap-2 bg-white/95 dark:bg-[#061929]/95 p-1.5 rounded-2xl border border-slate-200 dark:border-white/10 shadow-md transition-colors w-full max-w-3xl">
           {availableRouteTabs.map((tabLabel, idx) => (
             <Button
               key={idx}

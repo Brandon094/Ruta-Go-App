@@ -174,7 +174,7 @@ function App() {
             onToggleTheme={toggleTheme}
           />
 
-          <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-secondary-50 dark:bg-secondary-900 transition-colors duration-300">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-8 bg-secondary-50 dark:bg-secondary-900 transition-colors duration-300">
             {activeTab === 'overview' ? (
               role?.type === 'PASSENGER' ? (
                 <PassengerOverview

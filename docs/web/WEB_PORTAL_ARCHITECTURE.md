@@ -39,10 +39,11 @@ Basada en **RBAC (Role Based Access Control)**:
 El portal no solo consume datos, los procesa para la toma de decisiones:
 
 *   **Motor Analítico 360°**: Calcula la ocupación y los ingresos sumando reservas digitales y bloqueos manuales (ventas en calle).
-*   **Gestión Dinámica de Rutas y Horarios (CRUD Completo)**:
+*   **Gestión Dinámica de Rutas y Horarios (CRUD Completo & UX Fija)**:
     *   `AddRouteModal.jsx` y `AddScheduleModal.jsx` para la creación de rutas dinámicas e itinerarios.
     *   `EditScheduleModal.jsx` y `scheduleService.updateSchedule` para modificar hora, tarifa, ruta, conductor o bus en tiempo real.
-    *   `PassengerOverview.jsx`: Selector de Origen/Destino y chips de cambio rápido.
+    *   `PassengerOverview.jsx` & `ScheduleDirectory.jsx`: Selector de Origen/Destino y **Barra Flotante Sticky de Chips de Ruta (`sticky top-0 z-20`)** de ~48px con vidrio esmerilado (`backdrop-blur-md bg-white/95`).
+    *   **Restricción de Conductor Asignado**: Bloqueo automático del botón de reserva con icono Candado (🔒 / `Lock`) y estado `disabled` cuando un horario no cuenta con un operador vinculado (`!driverId`).
 *   **Gobernanza de Flota y Promoción de Socios**:
     *   `AddOwnerModal.jsx` y `ownerService.promoteUserToOwnerByEmail`: Ascenso directo de cualquier usuario al rol `owner` por correo o selección desplegable.
     *   `VehicleModal.jsx` y `vehicleService`: Selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
