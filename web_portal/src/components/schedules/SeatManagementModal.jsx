@@ -14,51 +14,46 @@ import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
  * 💺 Component: SeatManagementModal
- * UI Espejo 1:1 de la App Móvil (v1.7.3 Robust Mirror & DRY)
+ * UI Espejo 1:1 de la App Móvil NoSQL v2.0
  */
 export function SeatManagementModal({ schedule, onClose, role, user, drivers = [], vehicles = [], activeTab }) {
   const [loading, setLoading] = useState(true);
-  const [availability, setAvailability] = useState({ asientosOcupados: {}, totalAsientos: 13, asientosDisponibles: 13 });
+  const [availability, setAvailability] = useState({ occupiedSeats: {}, totalSeats: 13, availableSeats: 13 });
   const [reservations, setReservations] = useState([]);
   const [updating, setUpdating] = useState(false);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [successReservation, setSuccessReservation] = useState(false);
   const [routePrice, setRoutePrice] = useState(12000);
-  const [detailsExpanded, setDetailsExpanded] = useState(true);
 
-  // Inteligencia de Rol: Modo Pasajero si soy Pasajero O si estoy en la pestaña de reservas
   const isPassengerMode = role?.type === 'PASSENGER' || activeTab === 'passenger_view';
-
-  // ... (useEffect and other logic remains the same)
 
   useEffect(() => {
     if (!schedule?.id) return;
 
-    // 1. Escuchar Disponibilidad Técnica
-    const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
+    // 1. Escuchar Disponibilidad Técnica en /seatAvailability/
+    const dispRef = ref(db, `seatAvailability/${schedule.id}`);
     const unsubDisp = onValue(dispRef, (snap) => {
       if (snap.exists()) setAvailability(snap.val());
       setLoading(false);
     });
 
-    // 2. Escuchar Reservas (Para diferenciar App de Local)
-    const resRef = ref(db, `reservas`);
+    // 2. Escuchar Reservas Activas en /reservations/
+    const resRef = ref(db, `reservations`);
     const unsubRes = onValue(resRef, (snap) => {
       if (snap.exists()) {
         const list = Object.values(snap.val()).filter(r =>
-          (r.scheduleId === schedule.id || r.horarioId === schedule.id) &&
-          (r.reservationStatus || r.estadoReserva) !== 'Cancelada'
+          r.scheduleId === schedule.id && (r.status !== 'cancelled' && r.status !== 'Cancelada')
         );
         setReservations(list);
       }
     });
 
-    // 3. Obtener Precio de la Ruta
+    // 3. Obtener Precio de la Ruta en /prices/
     const fetchPrice = async () => {
-      const rutaNorm = FormatUtils.normalizeText(schedule.ruta || "").replace(/➔/g, '->');
+      const rutaNorm = FormatUtils.normalizeText(schedule.route || schedule.ruta || "").replace(/➔/g, '->');
       const parts = rutaNorm.split('->');
       if (parts.length === 2) {
-        const pSnap = await get(ref(db, `precios/${parts[0].trim()}/${parts[1].trim()}`));
+        const pSnap = await get(ref(db, `prices/${parts[0].trim()}/${parts[1].trim()}`));
         if (pSnap.exists()) setRoutePrice(pSnap.val());
       }
     };
@@ -67,29 +62,29 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
     return () => { unsubDisp(); unsubRes(); };
   }, [schedule.id]);
 
-  const driver = drivers.find(d => d.id === schedule.conductorId) || {};
-  const vehicle = vehicles.find(v => v.id === schedule.vehiculoId || v.placa === schedule.vehiculoId) || {};
+  const driver = drivers.find(d => d.id === (schedule.driverId || schedule.conductorId)) || {};
+  const vehicle = vehicles.find(v => v.id === (schedule.vehicleId || schedule.vehiculoId) || v.plate === (schedule.vehicleId || schedule.vehiculoId)) || {};
 
   // --- 🧠 Lógica de Clasificación de Asientos ---
   const seatStates = useMemo(() => {
     const states = {};
-    const occupiedData = availability.asientosOcupados || {};
+    const occupiedData = availability.occupiedSeats || availability.asientosOcupados || {};
     const occupiedIds = Array.isArray(occupiedData)
       ? occupiedData.map((val, idx) => val === true ? idx.toString() : null).filter(Boolean)
       : Object.keys(occupiedData).filter(k => occupiedData[k] === true);
 
     occupiedIds.forEach(id => {
-      const res = reservations.find(r => r.reservedSeat.toString() === id.toString() || r.puestoReservado?.toString() === id.toString());
+      const res = reservations.find(r => (r.reservedSeat || r.puestoReservado)?.toString() === id.toString());
       states[id] = res ? 'APP' : 'LOCAL';
     });
     return states;
-  }, [availability.asientosOcupados, reservations]);
+  }, [availability.occupiedSeats, availability.asientosOcupados, reservations]);
 
   // --- 🖱️ Orquestador de Clicks ---
   const handleSeatClick = (seatId) => {
     if (updating) return;
     if (isPassengerMode) {
-      if (seatStates[seatId]) return; // Proteccion
+      if (seatStates[seatId]) return;
       setSelectedSeat(selectedSeat === seatId ? null : seatId);
     } else {
       handlePhysicalToggle(seatId);
@@ -109,30 +104,28 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
 
     setUpdating(true);
     try {
-      const dispRef = ref(db, `disponibilidadAsientos/${schedule.id}`);
+      const dispRef = ref(db, `seatAvailability/${schedule.id}`);
       await runTransaction(dispRef, (current) => {
         if (!current) return current;
-        if (!current.asientosOcupados) current.asientosOcupados = {};
+        if (!current.occupiedSeats) current.occupiedSeats = {};
 
         const idx = parseInt(seatId);
 
-        // Aplicar el cambio de estado
-        if (Array.isArray(current.asientosOcupados)) {
-          current.asientosOcupados[idx] = (action === 'bloquear');
+        if (Array.isArray(current.occupiedSeats)) {
+          current.occupiedSeats[idx] = (action === 'bloquear');
         } else {
-          current.asientosOcupados[seatId] = (action === 'bloquear');
+          current.occupiedSeats[seatId] = (action === 'bloquear');
         }
 
-        // RECALCULAR DISPONIBLES (Auto-sanación de contador)
-        const total = current.totalAsientos || 13;
-        const occupiedCount = Object.values(current.asientosOcupados).filter(v => v === true).length;
-        current.asientosDisponibles = Math.max(0, total - occupiedCount);
+        const total = current.totalSeats || 13;
+        const occupiedCount = Object.values(current.occupiedSeats).filter(v => v === true).length;
+        current.availableSeats = Math.max(0, total - occupiedCount);
 
         return current;
       });
 
       if (action === 'bloquear' && (role.type === 'DRIVER' || role.type === 'OWNER')) {
-        const targetUid = role.type === 'DRIVER' ? role.uid : (schedule.conductorId || role.uid);
+        const targetUid = role.type === 'DRIVER' ? role.uid : (schedule.driverId || schedule.conductorId || role.uid);
         await reservationService.confirmReservation("VENTA_FISICA_" + Date.now(), targetUid, routePrice);
       }
     } catch (err) {
@@ -146,8 +139,8 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
   const handlePassengerReserve = async () => {
     if (!selectedSeat || updating) return;
 
-    // 🛡️ PROTECCIÓN v1.9.10: Evitar reservas en horarios pasados
-    if (FormatUtils.isPastSchedule(schedule.hora)) {
+    const timeText = schedule.time || schedule.hora || "";
+    if (FormatUtils.isPastSchedule(timeText)) {
       alert("Este horario ya no está disponible para reservas.");
       onClose();
       return;
@@ -155,63 +148,23 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
 
     setUpdating(true);
     try {
-      const rutaNorm = FormatUtils.normalizeText(schedule.ruta || "").replace(/➔/g, '->');
+      const rutaNorm = FormatUtils.normalizeText(schedule.route || schedule.ruta || "").replace(/➔/g, '->');
       const parts = rutaNorm.split('->');
       const reservationData = {
-        // IDs Clave (v1.9.9.6 Mirror Fix)
         userId: role.uid,
-        usuarioId: role.uid,
-        scheduleId: schedule.id,
-        horarioId: schedule.id,
-        driverId: schedule.conductorId || "",
-        conductorId: schedule.conductorId || "",
-        vehicleId: schedule.vehiculoId || "",
-
-        // Conductor & Vehículo
-        driver: driver.nombre || "Conductor",
-        conductor: driver.nombre || "Conductor",
-        phoneC: driver.telefono || "N/A",
-        telefonoC: driver.telefono || "N/A",
-        plate: vehicle.placa || schedule.vehiculoId || "",
-        model: vehicle.modelo || "Vehículo",
-        vehicleModel: vehicle.modelo || "Vehículo",
-        modeloVehiculo: vehicle.modelo || "Vehículo",
-
-        // Detalles de Viaje
-        origin: parts[0] || "Nátaga",
-        origen: parts[0] || "Nátaga",
-        destination: parts[1] || "La Plata",
-        destino: parts[1] || "La Plata",
-        departureTime: schedule.hora,
-        horaSalida: schedule.hora,
-        estimatedTime: "60 min",
-        tiempoEstimado: "60 min",
-
-        // Estado & Pago
-        reservationStatus: 'Por confirmar',
-        estadoReserva: 'Por confirmar',
-        paymentMethod: 'efectivo',
-        metodoPago: 'efectivo',
+        passengerName: role?.name || "Pasajero Web",
+        passengerPhone: role?.phone || "",
+        driverId: schedule.driverId || schedule.conductorId || "",
+        driverName: driver.name || driver.nombre || "Conductor",
+        vehiclePlate: vehicle.plate || vehicle.placa || schedule.vehicleId || schedule.vehiculoId || "",
+        vehicleModel: vehicle.model || vehicle.modelo || "Vehículo",
+        origin: parts[0]?.trim() || "Nátaga",
+        destination: parts[1]?.trim() || "La Plata",
+        departureTime: timeText,
         price: routePrice,
-        precio: routePrice,
-        reservationDate: Date.now(),
-        fechaReserva: Date.now(),
-
-        // Usuario
-        name: role?.name || "Pasajero Web",
-        nombre: role?.name || "Pasajero Web",
-        phone: role?.phone || "",
-        telefono: role?.phone || "",
-        email: user?.email || "",
-
-        // Flags de Calificación & Asiento
-        rated: false,
-        calificada: false,
-        rating: 0,
-        calificacion: 0,
-        reservedSeat: parseInt(selectedSeat),
-        puestoReservado: parseInt(selectedSeat)
+        paymentMethod: 'efectivo'
       };
+
       await reservationService.createReservation(reservationData, schedule.id, selectedSeat);
       setSuccessReservation(true);
     } catch (err) { alert(err.message); } finally { setUpdating(false); }
@@ -233,6 +186,9 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
       </Modal>
     );
   }
+
+  const totalSeats = availability.totalSeats || availability.totalAsientos || 13;
+  const availSeats = availability.availableSeats !== undefined ? availability.availableSeats : (availability.asientosDisponibles ?? 13);
 
   return (
     <Modal
@@ -269,25 +225,25 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <InfoLine icon={MapPin} title={schedule.ruta} sub="Ruta Directa - Tiempo est.: 60 min" />
-                    <InfoLine icon={Clock} title={schedule.hora} sub={`Hoy - 24 de julio del 2026`} />
-                    <InfoLine icon={Bus} title={`Placa: ${vehicle.placa || '---'} - ${vehicle.modelo || 'Vehículo'}`} sub={`Capacidad: ${availability.totalAsientos || 13} personas | Disponibles: ${availability.asientosDisponibles}`} />
-                    <InfoLine icon={UserCheck} title="Conductor" sub={driver.nombre || 'Sin asignar'} />
+                    <InfoLine icon={MapPin} title={schedule.route || schedule.ruta} sub="Ruta Directa - Tiempo est.: 60 min" />
+                    <InfoLine icon={Clock} title={schedule.time || schedule.hora} sub="Hoy" />
+                    <InfoLine icon={Bus} title={`Placa: ${vehicle.plate || vehicle.placa || '---'} - ${vehicle.model || vehicle.modelo || 'Vehículo'}`} sub={`Capacidad: ${totalSeats} personas | Disponibles: ${availSeats}`} />
+                    <InfoLine icon={UserCheck} title="Conductor" sub={driver.name || driver.nombre || 'Sin asignar'} />
                   </div>
                 </>
              ) : (
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
                      <div className="p-2 bg-primary-500/10 rounded-xl text-primary-500"><Milestone size={20} /></div>
-                     <span className="text-lg font-black text-white uppercase italic">{schedule.ruta}</span>
+                     <span className="text-lg font-black text-white uppercase italic">{schedule.route || schedule.ruta}</span>
                   </div>
                   <div className="flex items-center gap-4">
                      <div className="p-2 bg-primary-500/10 rounded-xl text-primary-500"><Clock size={20} /></div>
-                     <span className="text-sm font-bold text-slate-300">Horario: {schedule.hora}</span>
+                     <span className="text-sm font-bold text-slate-300">Horario: {schedule.time || schedule.hora}</span>
                   </div>
                   <div className="flex items-center gap-4">
                      <div className="p-2 bg-primary-500/10 rounded-xl text-primary-500"><Armchair size={20} /></div>
-                     <span className="text-sm font-bold text-slate-300 font-black">Disponibles: {availability.asientosDisponibles}</span>
+                     <span className="text-sm font-bold text-slate-300 font-black">Disponibles: {availSeats}</span>
                   </div>
                 </div>
              )}
@@ -371,7 +327,6 @@ function Seat({ seatId, state, selected, isPassenger, onClick }) {
     styles = "bg-green-500 shadow-lg shadow-green-500/20 ring-4 ring-green-500/20 scale-105";
   }
 
-  // Animación de entrada escalonada (Mirror playSeatPopAnimation)
   const delay = parseInt(seatId) * 30;
 
   return (
