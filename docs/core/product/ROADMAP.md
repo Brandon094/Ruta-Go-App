@@ -102,5 +102,8 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 3.  **📊 SaaS Contable Premium para Dueños**: Gestión completa de egresos (mantenimiento, combustible) y cálculo de utilidad neta.
 4.  **🤖 IA de Predicción de Demanda**: Optimización de frecuencias basada en datos históricos.
 
+### ☠️ 3. UI Web & Animaciones de Carga Premium (Boneyard Library)
+*   [ ] **☠️ Integración de Boneyard**: Implementación de la librería `boneyard` en el Portal Web (`web_portal`) para estilizar los esqueletos de carga (skeleton loading animations) en la Landing Page, Planilla, Directorios y Dashboards durante la hidratación de datos en tiempo real.
+
 ---
 **ChopCode Solutions - 2026**

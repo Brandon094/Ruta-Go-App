@@ -34,4 +34,11 @@ El sitio web ha sido elevado a un estándar de alta fidelidad con React 18, Vite
 *   **Flujo de Borrado**: Sistema automatizado de solicitud de eliminación de cuenta con periodo de gracia de 30 días (`deletionRequested`).
 
 ---
+
+## 🔗 3. Próximas Mejoras Web
+1.  **Animaciones de Carga con Boneyard**: Integración de la librería `boneyard` para reemplazar los estados de carga con esqueletos animados (skeleton loading) y shimmers de alta fidelidad durante la sincronización reactiva NoSQL.
+2.  **Módulo de Fidelización**: Visualización y gestión del programa "Puntos Go" en el portal.
+3.  **Ruta-Go In-Car Link**: Integración de la telemetría del portal con el futuro sistema Android Auto.
+
+---
 **ChopCode Solutions - Web Division 2026**
