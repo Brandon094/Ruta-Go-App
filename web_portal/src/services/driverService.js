@@ -23,7 +23,7 @@ export const driverService = {
       updates[`users/${driverId}/assignedSchedules`] = data.assignedSchedules || data.horariosAsignados;
     }
 
-    // 2. Gestión de Vínculo de Vehículo en /vehicles/
+    // 2. Gestión de Vínculo de en /vehicles/
     if (vehiclePlate) {
       if (oldVehicleId && oldVehicleId !== vehiclePlate) {
         updates[`vehicles/${oldVehicleId}/driverId`] = null;

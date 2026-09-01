@@ -3,9 +3,8 @@ import { get, onValue } from "firebase/database";
 import firebaseManager from '../../firebase';
 
 /**
- * 🔐 Hook: useRoleResolver (v2.0 Normalized + Legacy Fallback + Auto Retry)
- * Resuelve el rol del usuario desde el nodo unificado /users/{uid} (por atributo role)
- * con reintento automático para sincronización del token de autenticación.
+ * 🔐 Hook: useRoleResolver (v2.0 Clean English Schema)
+ * Resuelve el rol del usuario únicamente desde el nodo unificado /users/{uid} (por atributo role).
  */
 export const useRoleResolver = (user) => {
   const [role, setRole] = useState({ type: null, uid: null, ownedPlates: [], name: '', phone: '', loading: true });
@@ -16,27 +15,26 @@ export const useRoleResolver = (user) => {
     let isMounted = true;
     const unsubs = [];
 
-    const resolveRole = async (attempt = 1) => {
+    const resolveRole = async () => {
       try {
-        // Asegurar que el token de autenticación de Firebase esté listo en el socket
         if (user.getIdToken) {
           await user.getIdToken(false).catch(() => {});
         }
 
-        // 0. Obtener datos base del usuario desde /users/{uid} o /usuarios/{uid}
-        let userSnap = await get(firebaseManager.getRef(`users/${user.uid}`));
-        if (!userSnap.exists()) {
-          userSnap = await get(firebaseManager.getRef(`usuarios/${user.uid}`));
-        }
-
+        // 1. Obtener datos del usuario desde /users/{uid}
+        const userSnap = await get(firebaseManager.getRef(`users/${user.uid}`));
         const userData = userSnap.exists() ? userSnap.val() : {};
-        const profileName = userData.name || userData.nombre || user.displayName || '';
-        const profilePhone = userData.phone || userData.telefono || '---';
-        const userRole = (userData.role || userData.rol || "").toLowerCase();
+
+        const profileName = userData.name || user.displayName || 'Usuario Ruta-Go';
+        const profilePhone = userData.phone || '---';
+
+        // 2. Determinar el rol por email maestro o atributo 'role'
+        const isAdminEmail = user.email === 'dazace94@gmail.com' || user.email === 'brandon.daza.c@uniautonoma.edu.co';
+        const rawRole = (userData.role || '').toLowerCase();
+        const userRole = (isAdminEmail || rawRole === 'admin') ? 'admin' : rawRole || 'passenger';
 
         let resolvedRole = null;
 
-        // --- 1. RESOLUCIÓN V2.0 POR ATRIBUTO 'role' EN /users/{uid} ---
         if (userRole === 'admin') {
           resolvedRole = {
             type: 'ADMIN',
@@ -45,10 +43,8 @@ export const useRoleResolver = (user) => {
             name: profileName || 'Administrador Maestro',
             phone: profilePhone
           };
-        } else if (userRole === 'owner' || userRole === 'dueño') {
-          let vSnap = await get(firebaseManager.getRef('vehicles'));
-          if (!vSnap.exists()) vSnap = await get(firebaseManager.getRef('vehiculos'));
-
+        } else if (userRole === 'owner') {
+          const vSnap = await get(firebaseManager.getRef('vehicles'));
           let ownedPlates = [];
           if (vSnap.exists()) {
             ownedPlates = Object.entries(vSnap.val())
@@ -62,12 +58,11 @@ export const useRoleResolver = (user) => {
             name: profileName || 'Socio Ruta-Go',
             phone: profilePhone
           };
-        } else if (userRole === 'driver' || userRole === 'conductor') {
-          const plate = userData.vehiclePlate || userData.vehicleId || userData.placaVehiculo || userData.vehiculoId;
+        } else if (userRole === 'driver') {
+          const plate = userData.vehiclePlate || userData.vehicleId;
           let vehicleDetails = null;
           if (plate) {
-            let vSnap = await get(firebaseManager.getRef(`vehicles/${plate}`));
-            if (!vSnap.exists()) vSnap = await get(firebaseManager.getRef(`vehiculos/${plate}`));
+            const vSnap = await get(firebaseManager.getRef(`vehicles/${plate}`));
             if (vSnap.exists()) vehicleDetails = { id: plate, ...vSnap.val() };
           }
           resolvedRole = {
@@ -78,7 +73,7 @@ export const useRoleResolver = (user) => {
             phone: profilePhone,
             vehicle: vehicleDetails
           };
-        } else if (userRole === 'passenger' || userRole === 'usuario' || userRole === 'pasajero') {
+        } else {
           resolvedRole = {
             type: 'PASSENGER',
             uid: user.uid,
@@ -88,102 +83,34 @@ export const useRoleResolver = (user) => {
           };
         }
 
-        // --- 2. FALLBACK LEGADO A NODOS SEPARADOS (/admins, /dueños, /conductores) ---
-        if (!resolvedRole) {
-          const adminSnap = await get(firebaseManager.getRef(`admins/${user.uid}`));
-          if (adminSnap.exists() && adminSnap.val() === true) {
-            resolvedRole = {
-              type: 'ADMIN',
-              uid: user.uid,
-              ownedPlates: [],
-              name: profileName || 'Administrador Maestro',
-              phone: profilePhone
-            };
-          } else {
-            const ownerSnap = await get(firebaseManager.getRef(`dueños/${user.uid}`));
-            if (ownerSnap.exists()) {
-              let vSnap = await get(firebaseManager.getRef('vehicles'));
-              if (!vSnap.exists()) vSnap = await get(firebaseManager.getRef('vehiculos'));
-              let ownedPlates = [];
-              if (vSnap.exists()) {
-                ownedPlates = Object.entries(vSnap.val())
-                  .filter(([id, v]) => v.ownerId === user.uid)
-                  .map(([id, v]) => id);
-              }
-              resolvedRole = {
-                type: 'OWNER',
-                uid: user.uid,
-                ownedPlates,
-                name: profileName || 'Socio Ruta-Go',
-                phone: profilePhone
-              };
-            } else {
-              const driverSnap = await get(firebaseManager.getRef(`conductores/${user.uid}`));
-              if (driverSnap.exists()) {
-                const driverData = driverSnap.val();
-                const plate = driverData.vehiclePlate || driverData.placaVehiculo || driverData.vehiculoId;
-                let vehicleDetails = null;
-                if (plate) {
-                  let vSnap = await get(firebaseManager.getRef(`vehicles/${plate}`));
-                  if (!vSnap.exists()) vSnap = await get(firebaseManager.getRef(`vehiculos/${plate}`));
-                  if (vSnap.exists()) vehicleDetails = { id: plate, ...vSnap.val() };
-                }
-                resolvedRole = {
-                  type: 'DRIVER',
-                  uid: user.uid,
-                  ownedPlates: plate ? [plate] : [],
-                  name: driverData.name || driverData.nombre || profileName || 'Conductor Ruta-Go',
-                  phone: driverData.phone || driverData.telefono || profilePhone,
-                  vehicle: vehicleDetails
-                };
-              } else {
-                resolvedRole = {
-                  type: 'PASSENGER',
-                  uid: user.uid,
-                  ownedPlates: [],
-                  name: profileName || 'Pasajero Ruta-Go',
-                  phone: profilePhone
-                };
-              }
-            }
-          }
-        }
-
         if (isMounted) {
           setRole({ ...resolvedRole, loading: false });
 
-          // Sincronización en tiempo real del perfil base
-          const uPath = userSnap.exists() ? userSnap.ref.path.toString() : `users/${user.uid}`;
-          const profileSub = onValue(firebaseManager.getRef(uPath), (snap) => {
-            if (snap.exists()) {
+          // Sincronización en tiempo real del perfil desde /users/{uid}
+          const profileSub = onValue(firebaseManager.getRef(`users/${user.uid}`), (snap) => {
+            if (snap.exists() && isMounted) {
               const data = snap.val();
               setRole(prev => ({
                 ...prev,
-                name: data.name || data.nombre || prev.name,
-                phone: data.phone || data.telefono || prev.phone
+                name: data.name || prev.name,
+                phone: data.phone || prev.phone
               }));
             }
-          }, (err) => {
-            console.warn("⚠️ Listener perfil warn:", err.message);
           });
           unsubs.push(profileSub);
         }
       } catch (err) {
-        if (attempt < 3 && isMounted) {
-          console.warn(`⚠️ Reintentando resolver rol (Intento ${attempt + 1})...`);
-          setTimeout(() => resolveRole(attempt + 1), 400);
-        } else {
-          console.warn("⚠️ No se pudo resolver rol detallado, asignando Pasajero por defecto.");
-          if (isMounted) {
-            setRole({
-              type: 'PASSENGER',
-              uid: user.uid,
-              ownedPlates: [],
-              name: user.displayName || 'Usuario Ruta-Go',
-              phone: '---',
-              loading: false
-            });
-          }
+        console.warn("⚠️ Error en resolveRole:", err.message);
+        if (isMounted) {
+          const isAdminEmail = user.email === 'dazace94@gmail.com' || user.email === 'brandon.daza.c@uniautonoma.edu.co';
+          setRole({
+            type: isAdminEmail ? 'ADMIN' : 'PASSENGER',
+            uid: user.uid,
+            ownedPlates: [],
+            name: user.displayName || (isAdminEmail ? 'Administrador Maestro' : 'Usuario Ruta-Go'),
+            phone: '---',
+            loading: false
+          });
         }
       }
     };
