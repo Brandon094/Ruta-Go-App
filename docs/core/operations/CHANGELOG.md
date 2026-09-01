@@ -9,12 +9,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ### 📱 Ruta-Go Mobile (Kotlin/Compose)
 - **Normalización de Base de Datos NoSQL**: Refactorización de todos los modelos de datos (`Reservation`, `User`, `Driver`, `Vehicle`, `Schedule`, `Rating`) mediante **Deserialización Pasiva**. Se eliminaron los getters legados en español para garantizar que todas las escrituras a Firebase se hagan 100% en **Inglés (camelCase)** sin duplicación de llaves, manteniendo setters pasivos para leer registros antiguos.
+- **Unificación de Consultas de Perfil**: Actualizado `UserProfileViewModel.kt`, `AuthRepositoryImpl.kt` y `UserService.kt` para consultar directamente la colección unificada `/users/$uid` con discriminación de permisos según el atributo `role` (`"admin"`, `"owner"`, `"driver"`, `"passenger"`).
 - **Flujo Reserva -> Confirmación**: Reparada la navegación desde la selección de asientos (`CreateReservationScreen`) hacia la confirmación de la reserva (`ConfirmReservationScreen`), transmitiendo dinámicamente el asiento seleccionado, origen, destino, horario, tarifa y datos del vehículo/conductor.
 - **Autenticación con Google**: Implementado el servicio `GoogleLoginService` compatible con **Google One Tap** e `IntentSenderRequest` en Jetpack Compose, conectándolo con `LoginViewModel` y la autenticación de Firebase.
+- **Google Sign-In en Portal Web**: Implementado el inicio de sesión emergente de Google en `Login.jsx` con auto-creación del perfil NoSQL en `/users/` y asignación de rol por defecto.
+- **Módulo de Creación de Rutas e Itinerarios Web**: Implementados los modales `AddRouteModal.jsx` y `AddScheduleModal.jsx` en la sección "Rutas & Tarifas" del Portal Web para el Admin Root.
 - **Persistencia de Sesión & Onboarding**: Unificado el almacenamiento local entre `SessionManager` y `SettingsRepositoryImpl` sobre `"rutago_prefs"`, solucionando la reaparición no deseada del tutorial y garantizando que la sesión de Firebase persista al reiniciar la app.
 - **Navegación Robusta**: Implementada codificación `Uri.encode` en todas las rutas con parámetros dinámicos (`Destination.kt`) para evitar fallos por caracteres especiales o espacios.
 - **Depuración de Recursos Layout XML**: Eliminados más de 40 archivos de diseño XML obsoletos en `res/layouts/` y deshabilitada la función `viewBinding` en `app/build.gradle` al estar la UI migrada en un 100% a Jetpack Compose.
-- **Documentación**: Actualización de la guía de normalización (`DATABASE_NORMALIZATION.artifact.md`) y bitácora de refactorización (`REFACTOR_PROGRESS.md`).
+- **Documentación**: Actualización de la guía de normalización (`DATABASE_NORMALIZATION.artifact.md`), diccionario de datos (`DICCIONARIO_DATOS.md`), reglas de seguridad (`FIREBASE_SECURITY_RULES.md`) y bitácora de refactorización (`REFACTOR_PROGRESS.md`).
 
 ## [2.0.0-ALPHA] - 2026-08-29 (Premium Refactor Phase 1)
 *Inicio de la gran refactorización a Kotlin + Jetpack Compose para llevar la fluidez y mantenibilidad al estándar Silicon Valley.*
