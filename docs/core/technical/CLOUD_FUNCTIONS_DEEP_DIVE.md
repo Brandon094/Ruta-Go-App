@@ -9,19 +9,19 @@ Las funciones están implementadas en **Node.js 22** utilizando el SDK de **Fire
 
 ---
 
-## 🔄 2. Rotación Nocturna Automática (`automatedRotation` - Refactor Nátaga ➔ La Plata)
+## 🔄 2. Rotación Nocturna Automática (`automatedRotation` v2.2.0)
 Es el proceso más crítico del sistema. Se encarga de preparar la logística para el día siguiente.
 
 *   **Ejecución**: Todos los días a las **7:00 PM** (Hora Bogotá).
-*   **Aislamiento de la Ruta Principal (Nátaga ➔ La Plata)**:
-    *   La rotación se aplica **exclusivamente a los turnos del escalafón de 9 días** (`h001` a `h018`).
-    *   **Protección de Rutas Dinámicas**: Se evita el reseteo o borrado de `driverId` y cupos en horarios pertenecientes a rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
-*   **Lógica de Escalafón**: Implementa un ciclo de 9 días donde los conductores registrados para la ruta principal rotan sus horarios (`(rankingPosition + dayCounter) % 9`).
-*   **Reset de Inventario**:
-    *   Consulta la capacidad técnica de cada vehículo en el nodo `/vehicles/`.
-    *   Resetea `/seatAvailability/` liberando los ocupados y asignando la capacidad real del bus únicamente para los turnos rotados.
+*   **Clasificación Dinámica por Nombre de Ruta (`s.route`)**:
+    *   Filtra y agrupa las salidas pertenecientes al corredor principal **Nátaga ➔ La Plata** en la rueda de escalafón de 9 días.
+    *   **Protección de Rutas Adicionales (`Neiva`, `Gallego`, etc.)**: Mantiene intacto al Conductor (`driverId`) y Vehículo (`vehicleId`) asignados por el Admin o Socio.
+*   **Lógica de Escalafón**: Calcula el turno de mañana para los conductores de Nátaga (`(rankingPosition + dayCounter) % 9`) asignando las llaves Push reales del esquema NoSQL v2.0 (`-P0Pw0...`).
+*   **Reset Nocturno de Inventario**:
+    *   Consulta la capacidad técnica de cada vehículo en el nodo `/vehicles/` (capacidad estándar: 13 puestos).
+    *   Resetea `/seatAvailability/` liberando los asientos ocupados hoy (`occupiedSeats = null`, `availableSeats = capacity`, `totalSeats = capacity`) para todas las rutas.
 *   **Notificaciones**:
-    *   Envía notificaciones personalizadas a cada conductor informándole si trabaja o descansa.
+    *   Envía notificaciones personalizadas a cada conductor informándole si trabaja o descansas.
     *   Despacha un aviso masivo a los pasajeros (en lotes de 500) anunciando la apertura de reservas para el día siguiente.
 
 ---
@@ -61,4 +61,4 @@ Garantiza que la mensajería instantánea sea reactiva en todo el ecosistema.
 Los logs de ejecución pueden consultarse en la **Firebase Console > Functions > Logs**. Se recomienda vigilar los errores de tipo "Error notif", los cuales suelen ocurrir cuando un token FCM ha expirado o el dispositivo ha desinstalado el app.
 
 ---
-**Chop Code Solutions - Documentación de Ingeniería v1.3.0**
+**Chop Code Solutions - Documentación de Ingeniería v2.2.0**
