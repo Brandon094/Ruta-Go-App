@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Settings, Tag, MapPin } from 'lucide-react';
+import { Settings, Tag, MapPin, Plus } from 'lucide-react';
 import { DirectoryHeader } from '../common/DirectoryHeader';
 import { InfoTip } from '../dashboard/InfoTip';
 import { PricingCard } from './PricingCard';
+import { AddRouteModal } from './AddRouteModal';
+import { Button } from '../ui/Button';
 import { pricingService } from '../../services/pricingService';
 
 /**
  * 💰 Component: PricingDirectory
- * Permite al Admin Root gestionar las tarifas del holding.
+ * Permite al Admin Root gestionar tarifas y registrar nuevas rutas dinámicas.
  */
 export function PricingDirectory({ prices = {} }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editedPrices, setEditedPrices] = useState({});
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Convertir el objeto anidado en una lista plana para la UI
   const routes = [];
@@ -57,11 +60,21 @@ export function PricingDirectory({ prices = {} }) {
   return (
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
 
-      <DirectoryHeader
-        subtitle="Configuración de precios y cobros del holding"
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <DirectoryHeader
+          subtitle="Configuración de precios, tarifas y rutas dinámicas"
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+        <Button
+          variant="primary"
+          onClick={() => setIsAddModalOpen(true)}
+          className="shadow-lg shadow-[#FF7A1A]/20"
+        >
+          <Plus size={18} className="mr-2" />
+          Crear Nueva Ruta
+        </Button>
+      </div>
 
       {/* Grid de Rutas Actuales */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -90,14 +103,18 @@ export function PricingDirectory({ prices = {} }) {
           </div>
         )}
 
-        {/* ⚛️ Molecule: InfoTip (Atomic Refactor) */}
         <div className="md:col-span-2">
           <InfoTip
-            title="Nuevas Rutas en camino"
-            message="Estamos trabajando en la infraestructura para permitirte añadir cabeceras municipales y rutas dinámicas al holding muy pronto."
+            title="Gestión de Rutas Dinámicas"
+            message="Ahora puedes crear rutas personalizadas con origen, destino y tarifa directamente desde este panel sin necesidad de ingresar a la consola de Firebase."
           />
         </div>
       </div>
+
+      <AddRouteModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
     </div>
   );
 }
