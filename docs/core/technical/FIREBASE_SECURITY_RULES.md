@@ -1,6 +1,6 @@
 # 🛡️ Manual y Reglas de Seguridad: Firebase Realtime Database (v2.0 Clean English Schema)
 
-Este documento detalla la lógica de gobernanza de datos y seguridad del ecosistema **Ruta-Go**, configurado exclusivamente para el esquema NoSQL v2.0 en Inglés (`/users/`, `/schedules/`, `/vehicles/`, `/reservations/`, `/prices/`, `/seatAvailability/`, `/chats/`, `/driverRatings/`, `/stats/`).
+Este documento detalla la lógica de gobernanza de datos y seguridad del ecosistema **Ruta-Go**, configurado exclusivamente para el esquema NoSQL v2.0 en Inglés (`/users/`, `/routes/`, `/schedules/`, `/vehicles/`, `/reservations/`, `/prices/`, `/seatAvailability/`, `/chats/`, `/driverRatings/`, `/stats/`).
 
 ---
 
@@ -25,6 +25,10 @@ Copia y pega este JSON en la sección **Reglas** de tu consola de Firebase Realt
       "$uid": {
         ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
       }
+    },
+    "routes": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
     },
     "schedules": {
       ".read": true,
