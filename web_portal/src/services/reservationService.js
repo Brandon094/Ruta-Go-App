@@ -2,44 +2,62 @@ import { ref, update, get, serverTimestamp, increment, push, runTransaction } fr
 import { db } from "../firebase";
 
 /**
- * 🎫 Service: reservationService
+ * 🎫 Service: reservationService (v2.0 Clean English Schema)
  * Maneja la lógica de confirmación, cancelación y liberación de asientos.
  */
 export const reservationService = {
   /**
-   * Crea una nueva reserva oficial en la base de datos (Motor de Reservas Web v1.6.0).
+   * Crea una nueva reserva oficial en /reservations/ y actualiza /seatAvailability/
    */
   createReservation: async (reservationData, scheduleId, seatNumber) => {
     try {
-      // Generar UUID idéntico al sistema de Android (v1.9.9.6 Mirror Fix)
       const uuid = crypto.randomUUID();
-      const finalData = { ...reservationData, idReservation: uuid };
+      const finalData = {
+        id: uuid,
+        userId: reservationData.userId || "",
+        passengerName: reservationData.passengerName || reservationData.name || "",
+        passengerPhone: reservationData.passengerPhone || reservationData.phone || "",
+        driverId: reservationData.driverId || "",
+        driverName: reservationData.driverName || reservationData.driver || "",
+        scheduleId: scheduleId,
+        origin: reservationData.origin || "",
+        destination: reservationData.destination || "",
+        departureTime: reservationData.departureTime || reservationData.time || "",
+        estimatedDuration: reservationData.estimatedDuration || "60 min",
+        status: "pending",
+        reservedSeat: Number(seatNumber),
+        price: Number(reservationData.price || 12000),
+        reservationDate: Date.now(),
+        isRated: false,
+        rating: 0,
+        vehiclePlate: reservationData.vehiclePlate || "",
+        vehicleModel: reservationData.vehicleModel || "",
+        paymentMethod: reservationData.paymentMethod || "efectivo"
+      };
 
       const updates = {};
-      updates[`reservas/${uuid}`] = finalData;
+      updates[`reservations/${uuid}`] = finalData;
 
       // 1. Registro del tiquete
       await update(ref(db), updates);
 
-      // 2. Bloqueo físico del asiento con transacción auto-sanadora
-      const dispRef = ref(db, `disponibilidadAsientos/${scheduleId}`);
+      // 2. Bloqueo físico del asiento en /seatAvailability/
+      const dispRef = ref(db, `seatAvailability/${scheduleId}`);
       await runTransaction(dispRef, (current) => {
         if (!current) return current;
-        if (!current.asientosOcupados) current.asientosOcupados = {};
+        if (!current.occupiedSeats) current.occupiedSeats = {};
 
         const idx = parseInt(seatNumber);
 
-        // Marcar asiento como ocupado
-        if (Array.isArray(current.asientosOcupados)) {
-          current.asientosOcupados[idx] = true;
+        if (Array.isArray(current.occupiedSeats)) {
+          current.occupiedSeats[idx] = true;
         } else {
-          current.asientosOcupados[seatNumber] = true;
+          current.occupiedSeats[seatNumber] = true;
         }
 
-        // RECALCULAR DISPONIBLES (Auto-sanación de contador)
-        const total = current.totalAsientos || 13;
-        const occupiedCount = Object.values(current.asientosOcupados).filter(v => v === true).length;
-        current.asientosDisponibles = Math.max(0, total - occupiedCount);
+        const total = current.totalSeats || 13;
+        const occupiedCount = Object.values(current.occupiedSeats).filter(v => v === true).length;
+        current.availableSeats = Math.max(0, total - occupiedCount);
 
         return current;
       });
@@ -52,21 +70,22 @@ export const reservationService = {
   },
 
   /**
-   * Confirma una reserva y actualiza las estadísticas del conductor.
+   * Confirma una reserva y actualiza las estadísticas del conductor en /stats/
    */
   confirmReservation: async (reservationId, driverId, price) => {
     const today = new Date().toISOString().split('T')[0];
     const updates = {};
 
-    // 1. Cambiar estado de la reserva (Soporte dual de keys)
-    updates[`reservas/${reservationId}/estadoReserva`] = 'Confirmada';
-    updates[`reservas/${reservationId}/reservationStatus`] = 'Confirmada';
-    updates[`reservas/${reservationId}/ultimaActualizacion`] = Date.now();
+    // 1. Cambiar estado de la reserva
+    updates[`reservations/${reservationId}/status`] = 'confirmed';
+    updates[`reservations/${reservationId}/lastUpdate`] = Date.now();
 
-    // 2. Incrementar estadísticas diarias del conductor (Atómico)
-    updates[`estadisticas/${driverId}/${today}/ingresosDiarios`] = increment(Number(price || 0));
-    updates[`estadisticas/${driverId}/${today}/reservasConfirmadas`] = increment(1);
-    updates[`estadisticas/${driverId}/${today}/ultimaActualizacion`] = serverTimestamp();
+    // 2. Incrementar estadísticas diarias en /stats/
+    if (driverId) {
+      updates[`stats/${driverId}/${today}/dailyRevenue`] = increment(Number(price || 0));
+      updates[`stats/${driverId}/${today}/confirmedReservations`] = increment(1);
+      updates[`stats/${driverId}/${today}/lastUpdate`] = serverTimestamp();
+    }
 
     try {
       await update(ref(db), updates);
@@ -78,40 +97,35 @@ export const reservationService = {
   },
 
   /**
-   * Cancela una reserva y libera el asiento automáticamente (Fix: Sincronización Total).
+   * Cancela una reserva y libera el asiento en /seatAvailability/
    */
   cancelReservation: async (reservationId, scheduleId, seatNumber) => {
     const updates = {};
 
     // 1. Cambiar estado de la reserva
-    updates[`reservas/${reservationId}/estadoReserva`] = 'Cancelada';
-    updates[`reservas/${reservationId}/reservationStatus`] = 'Cancelada';
-    updates[`reservas/${reservationId}/ultimaActualizacion`] = Date.now();
+    updates[`reservations/${reservationId}/status`] = 'cancelled';
+    updates[`reservations/${reservationId}/lastUpdate`] = Date.now();
 
     try {
-      // 1. Marcar cancelación en el tiquete
       await update(ref(db), updates);
 
-      // 2. Liberación atómica del asiento con re-conteo
       if (scheduleId && seatNumber !== undefined) {
-        const dispRef = ref(db, `disponibilidadAsientos/${scheduleId}`);
+        const dispRef = ref(db, `seatAvailability/${scheduleId}`);
         await runTransaction(dispRef, (current) => {
           if (!current) return current;
-          if (!current.asientosOcupados) return current;
+          if (!current.occupiedSeats) return current;
 
           const idx = parseInt(seatNumber);
 
-          // Liberar el asiento
-          if (Array.isArray(current.asientosOcupados)) {
-            current.asientosOcupados[idx] = false;
+          if (Array.isArray(current.occupiedSeats)) {
+            current.occupiedSeats[idx] = false;
           } else {
-            current.asientosOcupados[seatNumber] = false;
+            current.occupiedSeats[seatNumber] = false;
           }
 
-          // RECALCULAR DISPONIBLES (Garantiza integridad del dashboard)
-          const total = current.totalAsientos || 13;
-          const occupiedCount = Object.values(current.asientosOcupados).filter(v => v === true).length;
-          current.asientosDisponibles = Math.max(0, total - occupiedCount);
+          const total = current.totalSeats || 13;
+          const occupiedCount = Object.values(current.occupiedSeats).filter(v => v === true).length;
+          current.availableSeats = Math.max(0, total - occupiedCount);
 
           return current;
         });
@@ -125,36 +139,32 @@ export const reservationService = {
   },
 
   /**
-   * Registra una nueva calificación para un viaje finalizado (Mirror RatingManager.java).
+   * Registra una nueva calificación en /driverRatings/
    */
   rateReservation: async (reservation, stars, comment) => {
     if (!reservation?.driverId) throw new Error("Datos de reserva inválidos para calificar.");
 
     const driverId = reservation.driverId;
-    const ratingRef = push(ref(db, `calificaciones_conductores/${driverId}`));
+    const ratingRef = push(ref(db, `driverRatings/${driverId}`));
 
     const ratingData = {
       id: ratingRef.key,
-      userId: reservation.userId,
-      userName: reservation.name || "Usuario Web",
+      passengerId: reservation.userId,
+      passengerName: reservation.passengerName || reservation.name || "Usuario Web",
       driverId: driverId,
-      reservationId: reservation.idReservation || reservation.id,
-      routeName: reservation.ruta || `${reservation.origin} ➔ ${reservation.destination}`,
+      reservationId: reservation.id,
+      route: reservation.route || `${reservation.origin} -> ${reservation.destination}`,
       rating: stars,
       comment: comment,
-      timestamp: serverTimestamp()
+      date: Date.now()
     };
 
     const updates = {};
-    // 1. Guardar en el nodo de reputación del conductor
-    updates[`calificaciones_conductores/${driverId}/${ratingRef.key}`] = ratingData;
+    updates[`driverRatings/${driverId}/${ratingRef.key}`] = ratingData;
 
-    // 2. Marcar reserva como calificada (Dual keys para paridad)
-    const resPath = `reservas/${reservation.idReservation || reservation.id}`;
-    updates[`${resPath}/rated`] = true;
-    updates[`${resPath}/calificada`] = true;
+    const resPath = `reservations/${reservation.id}`;
+    updates[`${resPath}/isRated`] = true;
     updates[`${resPath}/rating`] = stars;
-    updates[`${resPath}/calificacion`] = stars;
 
     try {
       await update(ref(db), updates);

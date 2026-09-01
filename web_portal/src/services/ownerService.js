@@ -1,28 +1,19 @@
-import { ref, set, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { db } from '../firebase';
 
 /**
- * 💼 Service: ownerService
- * Capa de abstracción para la gestión de Socios/Dueños.
- * Sigue el patrón Singleton.
+ * 💼 Service: ownerService (v2.0 Clean English Schema)
  */
 export const ownerService = {
   /**
-   * Cambia el estatus de aprobación de un socio.
+   * Eleva o revoca el rol de Socio/Dueño en /users/{ownerId}
    */
   async toggleOwnerStatus(ownerId, currentStatus) {
     const newStatus = !currentStatus;
-
-    // 1. Actualizar estatus en el nodo de dueños
-    const ownerRef = ref(db, `dueños/${ownerId}`);
-    await set(ownerRef, newStatus);
-
-    // 2. Sincronizar el rol en el nodo maestro de usuarios
-    const userRef = ref(db, `usuarios/${ownerId}`);
+    const userRef = ref(db, `users/${ownerId}`);
     await update(userRef, {
-      rol: newStatus ? 'dueño' : 'dueño_pendiente'
+      role: newStatus ? 'owner' : 'passenger'
     });
-
     return newStatus;
   }
 };

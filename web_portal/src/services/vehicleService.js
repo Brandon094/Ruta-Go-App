@@ -1,20 +1,29 @@
-import { ref, update, remove, get, set } from "firebase/database";
+import { ref, update, remove, set } from "firebase/database";
 import { db } from "../firebase";
 
 /**
- * 🚗 Service: vehicleService
+ * 🚗 Service: vehicleService (v2.0 Clean English Schema)
  */
 export const vehicleService = {
   /**
-   * Registra un nuevo vehículo en el sistema.
+   * Registra un nuevo vehículo en /vehicles/
    */
   registerVehicle: async (vehicleData) => {
-    const vehicleRef = ref(db, `vehiculos/${vehicleData.placa}`);
+    const plate = vehicleData.plate || vehicleData.placa || vehicleData.id;
+    const vehicleRef = ref(db, `vehicles/${plate}`);
     try {
       await set(vehicleRef, {
-        ...vehicleData,
-        estado: 'activo',
-        fechaRegistro: Date.now()
+        id: plate,
+        plate: plate,
+        model: vehicleData.model || vehicleData.modelo || "",
+        brand: vehicleData.brand || vehicleData.marca || "",
+        color: vehicleData.color || "",
+        year: vehicleData.year || vehicleData.ano || vehicleData.año || "",
+        capacity: Number(vehicleData.capacity || vehicleData.capacidad || 13),
+        driverId: vehicleData.driverId || vehicleData.conductorId || "",
+        ownerId: vehicleData.ownerId || "",
+        status: 'active',
+        registrationDate: Date.now()
       });
       return { success: true };
     } catch (error) {
@@ -24,10 +33,10 @@ export const vehicleService = {
   },
 
   /**
-   * Actualiza la información de un vehículo.
+   * Actualiza la información de un vehículo en /vehicles/
    */
-  updateVehicle: async (placa, data) => {
-    const vehicleRef = ref(db, `vehiculos/${placa}`);
+  updateVehicle: async (plate, data) => {
+    const vehicleRef = ref(db, `vehicles/${plate}`);
     try {
       await update(vehicleRef, data);
       return { success: true };
@@ -38,10 +47,10 @@ export const vehicleService = {
   },
 
   /**
-   * Elimina un vehículo.
+   * Elimina un vehículo de /vehicles/
    */
-  deleteVehicle: async (placa) => {
-    const vehicleRef = ref(db, `vehiculos/${placa}`);
+  deleteVehicle: async (plate) => {
+    const vehicleRef = ref(db, `vehicles/${plate}`);
     try {
       await remove(vehicleRef);
       return { success: true };
