@@ -158,7 +158,7 @@ function App() {
               activeTab === 'profile' ? 'Mi Perfil' :
               activeTab === 'owners' ? 'Gestión de Socios' :
               activeTab === 'vehicles' ? 'Mi Flota' :
-              activeTab === 'pricing' ? 'Configuración de Tarifas' :
+              activeTab === 'pricing' ? 'Gestión de Rutas & Tarifas' :
               activeTab === 'passenger_view' ? 'Centro de Reservas' :
               activeTab === 'itinerary' ? 'Mi Itinerario' :
               activeTab === 'drivers' ? 'Conductores' :

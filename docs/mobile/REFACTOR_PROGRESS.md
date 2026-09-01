@@ -10,12 +10,13 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - **Navegación & Flujos**: **100% integrados** (Onboarding → Auth/Google One Tap → Home → Selección de Asientos → Confirmación de Reserva → Tiquete / Chat / Historial).
 - **Persistencia de Sesión**: **Corregida & Centralizada** (Unificación en `SessionManager` + `SettingsRepositoryImpl` sobre `"rutago_prefs"`).
 - **Normalización NoSQL**: **Sincronización v2.0 Completa** (Integración de `conductores` en `users` por `role: "driver"`, llaves en inglés para `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`).
+- **Gestión Dinámica Web**: **Módulos de Creación de Rutas e Itinerarios** (`AddRouteModal.jsx`, `AddScheduleModal.jsx`, `scheduleService.js`) implementados para el Admin Root en el Portal Web.
 - **Limpieza de Recursos**: **0 Layouts XML / ViewBinding deshabilitado** (Eliminados 40+ archivos XML obsoletos de `res/layouts/`).
 - **Arquitectura**: **MVVM + Clean Architecture + Single-Activity Architecture** (`MainActivity.kt`) + Navigation Compose.
 - **Patrón UI**: **Atomic Design puro** (`ui/components/atoms`, `molecules`, `organisms`) con UIs totalmente desacopladas e impulsadas por `UiState` y `StateFlow`.
 - **Adapters**: **0 Adapters de RecyclerView**.
 - **Compilación**: ✅ **Verde (`Build finished successfully` - APK assembleDebug)**.
-- **Progreso Estimado del Refactor**: **99% Completado**.
+- **Progreso Estimado del Refactor**: **100% Completado**.
 
 ---
 

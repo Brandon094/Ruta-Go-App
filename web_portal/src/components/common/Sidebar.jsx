@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle, Briefcase, Car, Settings, Ticket } from 'lucide-react';
+import { LayoutDashboard, Users, Bus, Calendar, History, UserCircle, LogOut, X, HelpCircle, Briefcase, Car, Settings, Ticket, Route } from 'lucide-react';
 import { signOut } from "firebase/auth";
 import { auth } from '../../firebase';
 import { SidebarSection } from './SidebarSection';
@@ -32,7 +32,7 @@ export function Sidebar({ isOpen, onClose, activeTab, setActiveTab, role }) {
         { id: 'drivers', label: 'Conductores', icon: <Bus size={20} />, roles: ['ADMIN', 'OWNER'] },
         { id: 'business_history', label: 'Despachos', icon: <Ticket size={20} />, roles: ['ADMIN', 'OWNER', 'DRIVER'] },
         { id: 'users', label: 'Pasajeros', icon: <Users size={20} />, roles: ['ADMIN'] },
-        { id: 'pricing', label: 'Precios', icon: <Settings size={20} />, roles: ['ADMIN'] },
+        { id: 'pricing', label: 'Rutas & Tarifas', icon: <Route size={20} />, roles: ['ADMIN'] },
         { id: 'schedules', label: 'Planilla', icon: <Calendar size={20} />, roles: ['ADMIN', 'OWNER'] },
       ]
     },
