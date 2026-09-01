@@ -105,74 +105,55 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     });
   };
 
-  const getMinutes = (hStr) => {
-    try {
-      if (!hStr) return 0;
-      const [time, ampm] = hStr.trim().split(" ");
-      let [hrs, mins] = time.split(":").map(Number);
-      if (ampm === "PM" && hrs < 12) hrs += 12;
-      if (ampm === "AM" && hrs === 12) hrs = 0;
-      return hrs * 60 + (mins || 0);
-    } catch (e) { return 0; }
-  };
-
-  // 🧠 Lógica Dinámica de Agrupamiento de Horarios Nátaga ➔ La Plata (NoSQL v2.0 Push IDs)
+  // 🧠 Lógica Operativa Canónica Exacta de Nátaga ➔ La Plata
   const scheduleGroups = useMemo(() => {
     if (!allSchedules.length) return [];
 
-    const natagaSchedules = allSchedules.filter(s => {
-      const normRoute = norm(s.route || s.ruta || "");
-      return normRoute.includes('nataga') && normRoute.includes('la plata');
-    });
+    const findByTime = (routePrefix, timeStr) => {
+      if (!timeStr) return null;
+      const targetTime = timeStr.trim().toLowerCase();
+      return allSchedules.find(s => {
+        const normR = norm(s.route || s.ruta || "");
+        const normT = (s.time || s.hora || "").trim().toLowerCase();
+        return normR.startsWith(routePrefix) && normT === targetTime;
+      });
+    };
 
-    if (!natagaSchedules.length) return [];
-
-    const idas = natagaSchedules
-      .filter(s => norm(s.route || s.ruta || "").startsWith('nataga'))
-      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
-
-    const vueltas = natagaSchedules
-      .filter(s => norm(s.route || s.ruta || "").startsWith('la plata'))
-      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
+    // 📋 Tabla Canónica Oficial de Nátaga
+    const canonicalTable = [
+      { natagaTime: "06:15 AM", laPlataTime: "07:30 AM", label: "Turno 1", shiftIndex: 7, legacyIds: ["h001", "h011"] },
+      { natagaTime: "07:15 AM", laPlataTime: "09:15 AM", label: "Turno 2", shiftIndex: 6, legacyIds: ["h002", "h012"] },
+      { natagaTime: "08:30 AM", laPlataTime: "10:30 AM", label: "Turno 3", shiftIndex: 5, legacyIds: ["h003", "h013"] },
+      { natagaTime: "09:30 AM", laPlataTime: "11:45 AM", label: "Turno 4", shiftIndex: 4, legacyIds: ["h004", "h014"] },
+      { natagaTime: "10:00 AM", laPlataTime: "02:00 PM", label: "Turno 5 (Fijo / Dedicado)", shiftIndex: null, legacyIds: ["h005", "h015"] },
+      { natagaTime: "11:00 AM", laPlataTime: "03:30 PM", label: "Turno 6", shiftIndex: 3, legacyIds: ["h006", "h016"] },
+      { natagaTime: "01:00 PM", laPlataTime: "05:00 PM", label: "Turno 7", shiftIndex: 2, legacyIds: ["h007", "h017"] },
+      { natagaTime: "03:30 PM", laPlataTime: "06:00 PM", label: "Turno 8", shiftIndex: 1, legacyIds: ["h008", "h018"] },
+      { natagaTime: "05:00 PM", laPlataTime: null,        label: "Turno 9 (Solo Ida)", shiftIndex: 0, legacyIds: ["h009"] },
+    ];
 
     const groups = [];
-    const maxPairs = Math.max(idas.length, vueltas.length);
 
-    for (let i = 0; i < maxPairs; i++) {
-      const ida = idas[i];
-      const vuelta = vueltas[i];
-      const shiftNum = i + 1;
-      const idaMin = ida ? getMinutes(ida.time || ida.hora) : 0;
-      const isFixedTurn = (idaMin === 600); // 10:00 AM es Turno Fijo / Dedicado
+    canonicalTable.forEach(pair => {
+      const ida = findByTime('nataga', pair.natagaTime) || allSchedules.find(s => pair.legacyIds.includes(s.id));
+      const vuelta = pair.laPlataTime ? (findByTime('la plata', pair.laPlataTime) || allSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
 
-      if (ida && vuelta) {
+      const foundIds = [ida?.id, vuelta?.id].filter(Boolean);
+      if (foundIds.length > 0) {
         groups.push({
-          ids: [ida.id, vuelta.id],
-          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${shiftNum}`,
-          display: `${ida.time || ida.hora} (Nátaga) ➔ ${vuelta.time || vuelta.hora} (La Plata)`,
-          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
-        });
-      } else if (ida) {
-        groups.push({
-          ids: [ida.id],
-          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${shiftNum} (Solo Ida)`,
-          display: `${ida.time || ida.hora} (Nátaga)`,
-          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
-        });
-      } else if (vuelta) {
-        groups.push({
-          ids: [vuelta.id],
-          label: `Turno ${shiftNum} (Solo Vuelta)`,
-          display: `${vuelta.time || vuelta.hora} (La Plata)`,
-          shiftIndex: (7 - (i % 8) + 8) % 8
+          ids: foundIds,
+          label: pair.label,
+          display: pair.laPlataTime ? `${pair.natagaTime} (Nátaga) ➔ ${pair.laPlataTime} (La Plata)` : `${pair.natagaTime} (Nátaga - Trayecto Único)`,
+          shiftIndex: pair.shiftIndex
         });
       }
-    }
+    });
 
+    // Opción de Descanso en la rueda de 9 días
     groups.push({
       ids: [],
-      label: "Descanso (Día de Descanso)",
-      display: "Mañana fuera de servicio (Sin turnos asignados)",
+      label: "Descanso",
+      display: "Mañana fuera de servicio",
       shiftIndex: 8
     });
 
