@@ -257,10 +257,6 @@ exports.automatedRotation = onSchedule({
         console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
     }
 });
-        ]);
-        console.log(`✅ Ciclo NoSQL v2.0 completado.`);
-    } catch (error) { console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error); }
-});
 
 /**
  * 🧹 LIMPIEZA SEMANAL DE CUENTAS MARCADAS PARA BORRADO
