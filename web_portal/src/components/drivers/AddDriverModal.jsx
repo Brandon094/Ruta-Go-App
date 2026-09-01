@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { UserPlus, Bus, Save, Loader2, AlertCircle, CheckCircle2, Search, User, Mail, Hash, Settings, Clock, RotateCw } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { UserPlus, Bus, Save, Loader2, AlertCircle, CheckCircle2, Search, User, Mail, Hash, Settings, Clock, RotateCw, MapPin } from 'lucide-react';
 import { driverService } from '../../services/driverService';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { Badge } from '../ui/Badge';
+import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
- * 🚛 Component: AddDriverModal (Atomic Refactor v1.9.5)
- * Permite registrar un nuevo conductor con asignación de turnos por parejas.
+ * 🚛 Component: AddDriverModal (Atomic Refactor v2.0.1-BETA)
+ * Permite registrar un nuevo conductor con asignación de turnos por ruta.
  */
 export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, role }) {
   const [loading, setLoading] = useState(false);
@@ -16,6 +17,7 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
   const [useExistingVehicle, setUseExistingVehicle] = useState(true);
   const [allSchedules, setAllSchedules] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState('Nátaga ➔ La Plata');
 
   const isAdmin = role?.type === 'ADMIN';
 
@@ -29,11 +31,22 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     posicionEscalafon: 0
   });
 
-  // 1. Filtrar Socios Aprobados (ADMIN ONLY) - v1.9.9.6 Robust Fix
-  const approvedOwners = React.useMemo(() => {
+  // 1. Extraer Rutas Disponibles
+  const availableRoutes = useMemo(() => {
+    const routeSet = new Set(['Nátaga ➔ La Plata']);
+    allSchedules.forEach(s => {
+      const r = s.route || s.ruta;
+      if (r) {
+        routeSet.add(r.replace(/->/g, '➔').trim());
+      }
+    });
+    return Array.from(routeSet);
+  }, [allSchedules]);
+
+  // 2. Filtrar Socios Aprobados
+  const approvedOwners = useMemo(() => {
     return (owners || [])
       .filter(o => {
-        // Ser extremadamente permisivos para el Admin Root
         if (o.status === true || o.status === 'approved' || o.status === 'active') return true;
         if (typeof o.status === 'object' && o.status !== null) return true;
         return false;
@@ -44,8 +57,8 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
       });
   }, [owners, users]);
 
-  // 2. Filtrar Vehículos del Socio seleccionado
-  const myVehicles = React.useMemo(() => {
+  // 3. Filtrar Vehículos del Socio seleccionado
+  const myVehicles = useMemo(() => {
     if (!formData.ownerId) return [];
     return (vehicles || []).filter(v => v.ownerId === formData.ownerId);
   }, [vehicles, formData.ownerId]);
@@ -54,6 +67,24 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
     driverService.getAllSchedules().then(setAllSchedules);
   }, []);
 
+  const norm = (str) => (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+  const isNatagaEscalafon = useMemo(() => {
+    const n = norm(selectedRoute);
+    return n.includes('nataga') && n.includes('la plata');
+  }, [selectedRoute]);
+
+  // Horarios filtrados para rutas adicionales
+  const activeRouteSchedules = useMemo(() => {
+    return FormatUtils.filterSchedulesByRoute(allSchedules, selectedRoute);
+  }, [allSchedules, selectedRoute]);
+
+  const toggleDynamicSchedule = (scheduleId) => {
+    setSelectedSchedules(prev =>
+      prev.includes(scheduleId) ? prev.filter(id => id !== scheduleId) : [...prev, scheduleId]
+    );
+  };
+
   const toggleSchedulePair = (group) => {
     const ids = group.ids;
     setSelectedSchedules(prev => {
@@ -61,77 +92,86 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
       if (hasAll) {
         return prev.filter(id => !ids.includes(id));
       } else {
-        // 🧠 Lógica de Auto-Calculo de Escalafón (v1.9.9.6)
-        // Si seleccionamos un turno rotativo, calculamos su posición base para hoy
         if (group.shiftIndex !== undefined && group.shiftIndex !== null) {
           const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
           const pos = (group.shiftIndex - (dayCounter % 9) + 9) % 9;
           setFormData(prev => ({ ...prev, posicionEscalafon: pos }));
+        } else {
+          // Turno Fijo Dedicado (No Rota)
+          setFormData(prev => ({ ...prev, posicionEscalafon: -1 }));
         }
-        return [...ids]; // En modo escalafón, solo permitimos un grupo activo
+        return [...ids];
       }
     });
   };
 
-  // 🧠 Lógica de Agrupamiento de Horarios (Sincronizada con Cloud Functions v1.9.7)
-  const scheduleGroups = React.useMemo(() => {
+  const getMinutes = (hStr) => {
+    try {
+      if (!hStr) return 0;
+      const [time, ampm] = hStr.trim().split(" ");
+      let [hrs, mins] = time.split(":").map(Number);
+      if (ampm === "PM" && hrs < 12) hrs += 12;
+      if (ampm === "AM" && hrs === 12) hrs = 0;
+      return hrs * 60 + (mins || 0);
+    } catch (e) { return 0; }
+  };
+
+  // 🧠 Lógica Dinámica de Agrupamiento de Horarios Nátaga ➔ La Plata (NoSQL v2.0 Push IDs)
+  const scheduleGroups = useMemo(() => {
     if (!allSchedules.length) return [];
 
-    const find = (id) => allSchedules.find(s => s.id === id);
-    const groups = [];
-
-    // 1. Turnos Estándar (shiftIndex según index.js)
-    const standardPairs = [
-      { ids: ["h001", "h011"], label: "Turno 1", shiftIndex: 7 },
-      { ids: ["h002", "h012"], label: "Turno 2", shiftIndex: 6 },
-      { ids: ["h003", "h013"], label: "Turno 3", shiftIndex: 5 },
-      { ids: ["h004", "h014"], label: "Turno 4", shiftIndex: 4 },
-      { ids: ["h005", "h015"], label: "Turno Fijo (Dedicado)", shiftIndex: null },
-      { ids: ["h006", "h016"], label: "Turno 6", shiftIndex: 3 },
-      { ids: ["h007", "h017"], label: "Turno 7", shiftIndex: 2 },
-    ];
-
-    standardPairs.forEach(group => {
-      const items = group.ids.map(find).filter(Boolean);
-      if (items.length === group.ids.length) {
-        groups.push({
-          ids: group.ids,
-          label: group.label,
-          display: `${items[0].hora} ➔ ${items[1].hora}`,
-          shiftIndex: group.shiftIndex
-        });
-      }
+    const natagaSchedules = allSchedules.filter(s => {
+      const normRoute = norm(s.route || s.ruta || "");
+      return normRoute.includes('nataga') && normRoute.includes('la plata');
     });
 
-    // 2. El Combo Especial (Triple)
-    const tripleIds = ["h008", "h018", "h010"];
-    const tripleItems = tripleIds.map(find).filter(Boolean);
-    if (tripleItems.length === tripleIds.length) {
-      groups.push({
-        ids: tripleIds,
-        label: "Turno 8 (Triple Especial)",
-        display: `${tripleItems[0].hora} ➔ ${tripleItems[1].hora} (+ ${tripleItems[2].hora} AM)`,
-        shiftIndex: 1
-      });
+    if (!natagaSchedules.length) return [];
+
+    const idas = natagaSchedules
+      .filter(s => norm(s.route || s.ruta || "").startsWith('nataga'))
+      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
+
+    const vueltas = natagaSchedules
+      .filter(s => norm(s.route || s.ruta || "").startsWith('la plata'))
+      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
+
+    const groups = [];
+    const maxPairs = Math.max(idas.length, vueltas.length);
+
+    for (let i = 0; i < maxPairs; i++) {
+      const ida = idas[i];
+      const vuelta = vueltas[i];
+      const idaMin = ida ? getMinutes(ida.time || ida.hora) : 0;
+      const isFixedTurn = (idaMin === 600); // 10:00 AM es Turno Fijo Dedicado (No Rota)
+
+      if (ida && vuelta) {
+        groups.push({
+          ids: [ida.id, vuelta.id],
+          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${i + 1}`,
+          display: `${ida.time || ida.hora} (Nátaga) ➔ ${vuelta.time || vuelta.hora} (La Plata)`,
+          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
+        });
+      } else if (ida) {
+        groups.push({
+          ids: [ida.id],
+          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${i + 1} (Solo Ida)`,
+          display: `${ida.time || ida.hora} (Nátaga)`,
+          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
+        });
+      } else if (vuelta) {
+        groups.push({
+          ids: [vuelta.id],
+          label: `Turno ${i + 1} (Solo Vuelta)`,
+          display: `${vuelta.time || vuelta.hora} (La Plata)`,
+          shiftIndex: (7 - (i % 8) + 8) % 8
+        });
+      }
     }
 
-    // 3. El Turno Solo
-    const soloId = "h009";
-    const soloItem = find(soloId);
-    if (soloItem) {
-      groups.push({
-        ids: [soloId],
-        label: "Turno 9 (Entrada)",
-        display: `${soloItem.hora} (Trayecto Único)`,
-        shiftIndex: 0
-      });
-    }
-
-    // 4. Descanso
     groups.push({
       ids: [],
-      label: "Descanso (Día 9)",
-      display: "Mañana fuera de servicio",
+      label: "Descanso (Día de Descanso)",
+      display: "Mañana fuera de servicio (Sin turnos asignados)",
       shiftIndex: 8
     });
 
@@ -238,34 +278,107 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
                 </div>
               </div>
 
-              {/* Turnos (Inyectados en la creación) */}
-              <div className="space-y-6 pt-6 border-t border-white/5">
-                <h4 className="text-[11px] font-black text-primary-500 uppercase tracking-[0.2em] flex items-center gap-3 italic">
-                  <Clock size={16}/> 2. Asignar Turnos (Parejas)
-                </h4>
-                <div className="grid grid-cols-1 gap-3 max-h-[260px] overflow-y-auto pr-2 custom-scrollbar shadow-inner bg-black/10 rounded-[1.5rem] p-4">
-                  {scheduleGroups.map((group, idx) => {
-                    const isSelected = (group.ids.length === 0 && selectedSchedules.length === 0) ||
-                                     (group.ids.length > 0 && group.ids.every(id => selectedSchedules.includes(id)));
-                    return (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => toggleSchedulePair(group)}
-                        className={`p-4 rounded-xl border-2 text-left transition-all flex items-center justify-between group ${
-                          isSelected
-                          ? 'bg-primary-500 border-primary-600 text-[#061426] shadow-lg'
-                          : 'bg-white dark:bg-secondary-700 border-slate-100 dark:border-white/5 text-slate-400 hover:border-primary-500/40'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <RotateCw size={14} className={isSelected ? 'animate-spin-slow' : 'opacity-20'} />
-                          <span className="text-xs font-black italic">{group.display}</span>
-                        </div>
-                        <span className="text-[9px] font-bold uppercase tracking-tighter opacity-60">{group.label}</span>
-                      </button>
-                    );
-                  })}
+              {/* Turnos por Ruta (Paso 2) */}
+              <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-white/5">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[11px] font-black text-primary-500 uppercase tracking-[0.2em] flex items-center gap-2 italic">
+                    <Clock size={16}/> 2. Asignar Horarios por Ruta
+                  </h4>
+                  <Badge variant="info" className="text-[9px]">
+                    {selectedSchedules.length} Seleccionados
+                  </Badge>
+                </div>
+
+                {/* 🎛️ Pestañas de Selección de Ruta */}
+                <div className="flex flex-wrap gap-1.5 p-1.5 bg-slate-100 dark:bg-black/20 rounded-2xl border border-slate-200 dark:border-white/5">
+                  {availableRoutes.map((routeName, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setSelectedRoute(routeName)}
+                      className={`flex-1 min-w-[110px] px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        selectedRoute === routeName
+                          ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20'
+                          : 'text-slate-500 dark:text-white/40 hover:bg-slate-200 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      {routeName}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Lista de Turnos/Horarios de la Ruta Activa */}
+                <div className="grid grid-cols-1 gap-2.5 max-h-[260px] overflow-y-auto pr-1 custom-scrollbar shadow-inner bg-slate-50 dark:bg-black/20 rounded-[1.5rem] p-3 border border-slate-100 dark:border-white/5">
+                  {isNatagaEscalafon ? (
+                    /* Rueda de Escalafón Nátaga ➔ La Plata */
+                    scheduleGroups.map((group, idx) => {
+                      const isSelected = (group.ids.length === 0 && selectedSchedules.length === 0) ||
+                                       (group.ids.length > 0 && group.ids.every(id => selectedSchedules.includes(id)));
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => toggleSchedulePair(group)}
+                          className={`p-3.5 rounded-xl border-2 text-left transition-all flex items-center justify-between group ${
+                            isSelected
+                            ? 'bg-primary-500 border-primary-600 text-[#061426] shadow-lg'
+                            : 'bg-white dark:bg-[#061929] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-300 hover:border-primary-500/40'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-xs uppercase">{group.label}</span>
+                              {group.shiftIndex !== null && group.shiftIndex !== undefined && (
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md uppercase ${isSelected ? 'bg-black/20 text-[#061426]' : 'bg-primary-500/10 text-primary-500'}`}>
+                                  Pos #{group.shiftIndex}
+                                </span>
+                              )}
+                            </div>
+                            <p className={`text-[10px] font-bold mt-0.5 ${isSelected ? 'text-[#061426]/80' : 'text-slate-400 dark:text-white/40'}`}>
+                              {group.display}
+                            </p>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-[#061426] bg-[#061426] text-primary-500' : 'border-slate-300 dark:border-white/20'}`}>
+                            {isSelected && <CheckCircle2 size={14} />}
+                          </div>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    /* Horarios Dinámicos para Rutas Adicionales */
+                    activeRouteSchedules.length > 0 ? (
+                      activeRouteSchedules.map((s) => {
+                        const isChecked = selectedSchedules.includes(s.id);
+                        return (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => toggleDynamicSchedule(s.id)}
+                            className={`p-3.5 rounded-xl border-2 text-left transition-all flex items-center justify-between group ${
+                              isChecked
+                              ? 'bg-primary-500 border-primary-600 text-[#061426] shadow-lg'
+                              : 'bg-white dark:bg-[#061929] border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-300 hover:border-primary-500/40'
+                            }`}
+                          >
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <Clock size={14} className={isChecked ? 'text-[#061426]' : 'text-primary-500'} />
+                                <span className="font-black text-xs uppercase">{s.time || s.hora}</span>
+                              </div>
+                              <p className={`text-[10px] font-bold mt-0.5 ${isChecked ? 'text-[#061426]/80' : 'text-slate-400 dark:text-white/40'}`}>
+                                {s.route || s.ruta} — Tarifa: ${FormatUtils.formatPrice(s.price || s.precio || 12000)}
+                              </p>
+                            </div>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isChecked ? 'border-[#061426] bg-[#061426] text-primary-500' : 'border-slate-300 dark:border-white/20'}`}>
+                              {isChecked && <CheckCircle2 size={14} />}
+                            </div>
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center text-xs text-slate-400 py-6 italic">No hay horarios registrados para esta ruta.</p>
+                    )
+                  )}
                 </div>
               </div>
 
