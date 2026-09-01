@@ -3,9 +3,9 @@ import { get, onValue } from "firebase/database";
 import firebaseManager from '../../firebase';
 
 /**
- * 🔐 Hook: useRoleResolver (v2.0 Normalized + Legacy Fallback)
+ * 🔐 Hook: useRoleResolver (v2.0 Normalized + Legacy Fallback + Auto Retry)
  * Resuelve el rol del usuario desde el nodo unificado /users/{uid} (por atributo role)
- * con fallback pasivo a /admins, /dueños, /conductores y /usuarios.
+ * con reintento automático para sincronización del token de autenticación.
  */
 export const useRoleResolver = (user) => {
   const [role, setRole] = useState({ type: null, uid: null, ownedPlates: [], name: '', phone: '', loading: true });
@@ -16,8 +16,13 @@ export const useRoleResolver = (user) => {
     let isMounted = true;
     const unsubs = [];
 
-    const resolveRole = async () => {
+    const resolveRole = async (attempt = 1) => {
       try {
+        // Asegurar que el token de autenticación de Firebase esté listo en el socket
+        if (user.getIdToken) {
+          await user.getIdToken(false).catch(() => {});
+        }
+
         // 0. Obtener datos base del usuario desde /users/{uid} o /usuarios/{uid}
         let userSnap = await get(firebaseManager.getRef(`users/${user.uid}`));
         if (!userSnap.exists()) {
@@ -72,6 +77,14 @@ export const useRoleResolver = (user) => {
             name: profileName || 'Conductor Ruta-Go',
             phone: profilePhone,
             vehicle: vehicleDetails
+          };
+        } else if (userRole === 'passenger' || userRole === 'usuario' || userRole === 'pasajero') {
+          resolvedRole = {
+            type: 'PASSENGER',
+            uid: user.uid,
+            ownedPlates: [],
+            name: profileName || 'Pasajero Ruta-Go',
+            phone: profilePhone
           };
         }
 
@@ -139,8 +152,8 @@ export const useRoleResolver = (user) => {
         if (isMounted) {
           setRole({ ...resolvedRole, loading: false });
 
-          // Sincronización en tiempo real del perfil base desde /users o /usuarios
-          const uPath = userSnap.ref.path.toString();
+          // Sincronización en tiempo real del perfil base
+          const uPath = userSnap.exists() ? userSnap.ref.path.toString() : `users/${user.uid}`;
           const profileSub = onValue(firebaseManager.getRef(uPath), (snap) => {
             if (snap.exists()) {
               const data = snap.val();
@@ -150,12 +163,28 @@ export const useRoleResolver = (user) => {
                 phone: data.phone || data.telefono || prev.phone
               }));
             }
+          }, (err) => {
+            console.warn("⚠️ Listener perfil warn:", err.message);
           });
           unsubs.push(profileSub);
         }
       } catch (err) {
-        firebaseManager.logError(err, "useRoleResolver");
-        if (isMounted) setRole(prev => ({ ...prev, loading: false }));
+        if (attempt < 3 && isMounted) {
+          console.warn(`⚠️ Reintentando resolver rol (Intento ${attempt + 1})...`);
+          setTimeout(() => resolveRole(attempt + 1), 400);
+        } else {
+          console.warn("⚠️ No se pudo resolver rol detallado, asignando Pasajero por defecto.");
+          if (isMounted) {
+            setRole({
+              type: 'PASSENGER',
+              uid: user.uid,
+              ownedPlates: [],
+              name: user.displayName || 'Usuario Ruta-Go',
+              phone: '---',
+              loading: false
+            });
+          }
+        }
       }
     };
 
