@@ -210,6 +210,22 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
       shiftIndex: 8
     });
 
+    // 5. Salidas Adicionales (Fallback)
+    const matchedIds = new Set(groups.flatMap(g => g.ids));
+    const unassignedSchedules = allSchedules.filter(s => {
+      const normR = norm(s.route || s.ruta || "");
+      return normR.includes('nataga') && normR.includes('la plata') && !matchedIds.has(s.id);
+    });
+
+    unassignedSchedules.forEach(s => {
+      groups.push({
+        ids: [s.id],
+        label: `Salida Adicional (${s.time || s.hora})`,
+        display: `${s.time || s.hora} — ${s.route || s.ruta}`,
+        shiftIndex: null
+      });
+    });
+
     return groups;
   }, [allSchedules]);
 
