@@ -135,95 +135,64 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
     } catch (e) { return 0; }
   };
 
-  // 🧠 Lógica Maestra de Agrupamiento de Turnos Nátaga ➔ La Plata (Coincidencia por Hora Real NoSQL v2.0)
+  // 🧠 Lógica Dinámica de Agrupamiento de Horarios Nátaga ➔ La Plata (NoSQL v2.0 Push IDs)
   const scheduleGroups = useMemo(() => {
     if (!allSchedules.length) return [];
 
-    const findByTime = (routePrefix, timeStr) => {
-      const targetTime = timeStr.trim().toLowerCase();
-      return allSchedules.find(s => {
-        const normR = norm(s.route || s.ruta || "");
-        const normT = (s.time || s.hora || "").trim().toLowerCase();
-        return normR.startsWith(routePrefix) && normT === targetTime;
-      });
-    };
-
-    // Mapeo Canónico de Horarios Operativos de Nátaga
-    const canonicalPairs = [
-      { natagaTime: "06:15 AM", laPlataTime: "09:15 AM", label: "Turno 1", shiftIndex: 7, legacyIds: ["h001", "h011"] },
-      { natagaTime: "07:15 AM", laPlataTime: "10:30 AM", label: "Turno 2", shiftIndex: 6, legacyIds: ["h002", "h012"] },
-      { natagaTime: "08:30 AM", laPlataTime: "11:45 AM", label: "Turno 3", shiftIndex: 5, legacyIds: ["h003", "h013"] },
-      { natagaTime: "09:30 AM", laPlataTime: "01:00 PM", label: "Turno 4", shiftIndex: 4, legacyIds: ["h004", "h014"] },
-      { natagaTime: "10:00 AM", laPlataTime: "02:00 PM", label: "Turno 5 (Fijo / Dedicado)", shiftIndex: null, legacyIds: ["h005", "h015"] },
-      { natagaTime: "11:00 AM", laPlataTime: "03:30 PM", label: "Turno 6", shiftIndex: 3, legacyIds: ["h006", "h016"] },
-      { natagaTime: "01:00 PM", laPlataTime: "05:00 PM", label: "Turno 7", shiftIndex: 2, legacyIds: ["h007", "h017"] },
-    ];
-
-    const groups = [];
-
-    // 1. Resolver Turnos Estándar (1 al 7)
-    canonicalPairs.forEach(pair => {
-      const ida = findByTime('nataga', pair.natagaTime) || allSchedules.find(s => pair.legacyIds.includes(s.id));
-      const vuelta = findByTime('la plata', pair.laPlataTime) || allSchedules.find(s => pair.legacyIds.includes(s.id));
-
-      const foundIds = [ida?.id, vuelta?.id].filter(Boolean);
-      if (foundIds.length > 0) {
-        groups.push({
-          ids: foundIds,
-          label: pair.label,
-          display: `${pair.natagaTime} (Nátaga) ➔ ${pair.laPlataTime} (La Plata)`,
-          shiftIndex: pair.shiftIndex
-        });
-      }
+    const natagaSchedules = allSchedules.filter(s => {
+      const normRoute = norm(s.route || s.ruta || "");
+      return normRoute.includes('nataga') && normRoute.includes('la plata');
     });
 
-    // 2. Resolver Turno 8 (Triple Especial: 03:30 PM Nátaga + 06:00 PM LP + 07:30 AM LP)
-    const t8Ida = findByTime('nataga', "03:30 PM") || allSchedules.find(s => s.id === "h008");
-    const t8Vuelta1 = findByTime('la plata', "06:00 PM") || allSchedules.find(s => s.id === "h018");
-    const t8Vuelta2 = findByTime('la plata', "07:30 AM") || allSchedules.find(s => s.id === "h010");
-    const t8Ids = [t8Ida?.id, t8Vuelta1?.id, t8Vuelta2?.id].filter(Boolean);
-    if (t8Ids.length > 0) {
-      groups.push({
-        ids: t8Ids,
-        label: "Turno 8 (Triple Especial)",
-        display: "03:30 PM (Nátaga) ➔ 06:00 PM (La Plata) (+ 07:30 AM AM)",
-        shiftIndex: 1
-      });
+    if (!natagaSchedules.length) return [];
+
+    const idas = natagaSchedules
+      .filter(s => norm(s.route || s.ruta || "").startsWith('nataga'))
+      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
+
+    const vueltas = natagaSchedules
+      .filter(s => norm(s.route || s.ruta || "").startsWith('la plata'))
+      .sort((a, b) => getMinutes(a.time || a.hora) - getMinutes(b.time || b.hora));
+
+    const groups = [];
+    const maxPairs = Math.max(idas.length, vueltas.length);
+
+    for (let i = 0; i < maxPairs; i++) {
+      const ida = idas[i];
+      const vuelta = vueltas[i];
+      const shiftNum = i + 1;
+      const idaMin = ida ? getMinutes(ida.time || ida.hora) : 0;
+      const isFixedTurn = (idaMin === 600); // 10:00 AM es Turno Fijo / Dedicado
+
+      if (ida && vuelta) {
+        groups.push({
+          ids: [ida.id, vuelta.id],
+          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${shiftNum}`,
+          display: `${ida.time || ida.hora} (Nátaga) ➔ ${vuelta.time || vuelta.hora} (La Plata)`,
+          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
+        });
+      } else if (ida) {
+        groups.push({
+          ids: [ida.id],
+          label: isFixedTurn ? "Turno 5 (Fijo / Dedicado)" : `Turno ${shiftNum} (Solo Ida)`,
+          display: `${ida.time || ida.hora} (Nátaga)`,
+          shiftIndex: isFixedTurn ? null : (7 - (i % 8) + 8) % 8
+        });
+      } else if (vuelta) {
+        groups.push({
+          ids: [vuelta.id],
+          label: `Turno ${shiftNum} (Solo Vuelta)`,
+          display: `${vuelta.time || vuelta.hora} (La Plata)`,
+          shiftIndex: (7 - (i % 8) + 8) % 8
+        });
+      }
     }
 
-    // 3. Resolver Turno 9 (Entrada Única: 05:00 PM Nátaga)
-    const t9Ida = findByTime('nataga', "05:00 PM") || allSchedules.find(s => s.id === "h009");
-    if (t9Ida) {
-      groups.push({
-        ids: [t9Ida.id],
-        label: "Turno 9 (Entrada)",
-        display: "05:00 PM (Nátaga - Trayecto Único)",
-        shiftIndex: 0
-      });
-    }
-
-    // 4. Descanso
     groups.push({
       ids: [],
       label: "Descanso (Día de Descanso)",
       display: "Mañana fuera de servicio (Sin turnos asignados)",
       shiftIndex: 8
-    });
-
-    // 5. Salidas Adicionales (Fallback)
-    const matchedIds = new Set(groups.flatMap(g => g.ids));
-    const unassignedSchedules = allSchedules.filter(s => {
-      const normR = norm(s.route || s.ruta || "");
-      return normR.includes('nataga') && normR.includes('la plata') && !matchedIds.has(s.id);
-    });
-
-    unassignedSchedules.forEach(s => {
-      groups.push({
-        ids: [s.id],
-        label: `Salida Adicional (${s.time || s.hora})`,
-        display: `${s.time || s.hora} — ${s.route || s.ruta}`,
-        shiftIndex: null
-      });
     });
 
     return groups;
