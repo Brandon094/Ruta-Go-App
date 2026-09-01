@@ -11,6 +11,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Aislamiento de Escalafón Nátaga ➔ La Plata (`index.js`)**: Refactorizada la función automatizada de rotación nocturna de las 7:00 PM (`automatedRotation`) para focalizarse exclusivamente en las salidas de Nátaga ➔ La Plata. Se implementó la preservación de conductores, buses y reseteo diario de cupos (13 libres) para todas las rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
 
 ### 🌐 Ruta-Go Web (Portal v2.0)
+- **Rediseño Atómico de la Landing Page (`LandingSchedules.jsx`)**:
+  - Reemplazada la grilla vertical continua por una barra de pestañas/chips interactiva para selección de ruta (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `Todas las Rutas`).
+  - Rediseñadas las tarjetas de horario en una cuadrícula atómica de 3 columnas reutilizando los componentes `<Button/>`, `<Badge/>` y `FormatUtils.formatPrice()`, reduciendo la longitud vertical en un 70%.
 - **Refactor de Permisos y Acciones en Planilla (`ScheduleDirectory.jsx`)**:
   - Restringidos los botones de gestión/edición en la pestaña **Planilla** exclusivamente para el **Admin Root** (`role: "admin"`).
   - Los **Socios (`role: "owner"`)** cuentan con una vista puramente informativa de auditoría en Planilla (Hora, Conductor, Bus, Cupos, Precio y Estado) sin posibilidad de ingresar a realizar reservas de pasajeros desde dicha interfaz.

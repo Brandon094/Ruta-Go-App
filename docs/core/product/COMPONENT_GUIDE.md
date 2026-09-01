@@ -1,6 +1,6 @@
-# 🎨 Guía de Componentes e Identidad Visual (UI/UX) v1.9.9.5
+# 🎨 Guía de Componentes e Identidad Visual (UI/UX) v2.0.1-BETA
 
-Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en el ecosistema Ruta-Go, unificando los estándares de **Material Design 3 (Android)** y **Atomic Design (Web)**.
+Este documento detalla el catálogo de componentes de interfaz y el sistema de diseño utilizado en el ecosistema Ruta-Go, unificando los estándares de **Material Design 3 (Jetpack Compose en Android)** y **Atomic Design (React Web)**.
 
 ---
 
@@ -14,10 +14,10 @@ Este documento detalla el catálogo de componentes de interfaz y el sistema de d
 
 ---
 
-## 📱 2. Componentes Móviles (Material 3)
-*   **Contenedores**: Elevación de 4dp, esquinas redondeadas de 24dp a 32dp.
-*   **Inmersión**: Soporte Edge-to-Edge integral (Android 15 Ready).
-*   **Interactividad**: Feedback hápitico y visual (Ripple Effect) en cada acción.
+## 📱 2. Componentes Móviles (Jetpack Compose + Material 3)
+*   **Contenedores**: Composables reactivos con elevación y esquinas redondeadas de `16.dp` a `32.dp`.
+*   **Inmersión**: Soporte Edge-to-Edge nativo (Android 16 Ready / SDK 36).
+*   **Interactividad**: Animaciones `StateFlow` y feedback táctil hápitico.
 
 ---
 
@@ -32,10 +32,12 @@ El portal web se rige bajo una jerarquía de diseño atómico para garantizar la
 *   `StatsCard`: Contenedor con métrica e icono.
 *   `RouteProgressCard`: Barra de progreso animada con porcentaje de ocupación.
 *   `ContactInfo`: Bloque estandarizado de Email/WhatsApp.
+*   `ScheduleCard`: Tarjeta de itinerario individual con estado del conductor (candado 🔒 / `Plus`).
+*   `PricingCard`: Tarjeta de tarifa oficial por dirección de ruta.
 *   `SplashScreen`: Experiencia de carga brandeada.
 
-### 🧬 Organismos (Vistas)
-*   `Sidebar`, `Header` (TopBar), `ScheduleTable`, `AuthLayout`.
+### 🧬 Organismos (Vistas & Modales)
+*   `Sidebar`, `DirectoryHeader`, `MirrorHeader`, `ExecutiveHeader`, `ScheduleTable`, `PricingDirectory`, `ScheduleDirectory`, `DriverDirectory`, `VehicleDirectory`, `OwnerDirectory`, `LandingSchedules` (con pestañas de ruta atómicas), `AddRouteModal`, `AddScheduleModal`, `EditScheduleModal`, `AddOwnerModal`, `AddDriverModal`, `EditDriverModal`, `VehicleModal`, `AuthLayout`.
 *   Comportamiento: Orquestan la lógica de navegación y seguridad (RBAC).
 
 ---
