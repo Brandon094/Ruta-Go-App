@@ -13,6 +13,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Autenticación con Google**: Implementado el servicio `GoogleLoginService` compatible con **Google One Tap** e `IntentSenderRequest` en Jetpack Compose, conectándolo con `LoginViewModel` y la autenticación de Firebase.
 - **Persistencia de Sesión & Onboarding**: Unificado el almacenamiento local entre `SessionManager` y `SettingsRepositoryImpl` sobre `"rutago_prefs"`, solucionando la reaparición no deseada del tutorial y garantizando que la sesión de Firebase persista al reiniciar la app.
 - **Navegación Robusta**: Implementada codificación `Uri.encode` en todas las rutas con parámetros dinámicos (`Destination.kt`) para evitar fallos por caracteres especiales o espacios.
+- **Depuración de Recursos Layout XML**: Eliminados más de 40 archivos de diseño XML obsoletos en `res/layouts/` y deshabilitada la función `viewBinding` en `app/build.gradle` al estar la UI migrada en un 100% a Jetpack Compose.
 - **Documentación**: Actualización de la guía de normalización (`DATABASE_NORMALIZATION.artifact.md`) y bitácora de refactorización (`REFACTOR_PROGRESS.md`).
 
 ## [2.0.0-ALPHA] - 2026-08-29 (Premium Refactor Phase 1)

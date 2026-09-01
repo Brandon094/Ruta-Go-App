@@ -9,13 +9,13 @@ Este documento registra el progreso de la migración a **Kotlin + Jetpack Compos
 - **UI Framework**: **100% Jetpack Compose (Material 3)**.
 - **Navegación & Flujos**: **100% integrados** (Onboarding → Auth/Google One Tap → Home → Selección de Asientos → Confirmación de Reserva → Tiquete / Chat / Historial).
 - **Persistencia de Sesión**: **Corregida & Centralizada** (Unificación en `SessionManager` + `SettingsRepositoryImpl` sobre `"rutago_prefs"`).
-- **Normalización NoSQL**: **JSON v2.0 Cargado en Firebase** (Integración de `conductores` en `users` por `role: "driver"`, llaves en inglés para `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`).
-- **Próximo Paso (Mañana)**: Actualizar consultas de servicios y repositorios en Android, Portal Web y Cloud Functions para apuntar a los nodos unificados `/users/`, `/schedules/`, `/vehicles/`.
+- **Normalización NoSQL**: **Sincronización v2.0 Completa** (Integración de `conductores` en `users` por `role: "driver"`, llaves en inglés para `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`).
+- **Limpieza de Recursos**: **0 Layouts XML / ViewBinding deshabilitado** (Eliminados 40+ archivos XML obsoletos de `res/layouts/`).
 - **Arquitectura**: **MVVM + Clean Architecture + Single-Activity Architecture** (`MainActivity.kt`) + Navigation Compose.
 - **Patrón UI**: **Atomic Design puro** (`ui/components/atoms`, `molecules`, `organisms`) con UIs totalmente desacopladas e impulsadas por `UiState` y `StateFlow`.
-- **Adapters**: **0 Adapters de RecyclerView** (removidos en su totalidad al migrar a componentes Composable puros).
+- **Adapters**: **0 Adapters de RecyclerView**.
 - **Compilación**: ✅ **Verde (`Build finished successfully` - APK assembleDebug)**.
-- **Progreso Estimado del Refactor**: **98% Completado**.
+- **Progreso Estimado del Refactor**: **99% Completado**.
 
 ---
 
