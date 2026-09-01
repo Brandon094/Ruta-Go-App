@@ -32,11 +32,10 @@ const getBrandedPayload = (title, body, data = {}) => {
         }
     };
 };
-
 /**
- * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go v2.0
+ * 🔄 ROTACIÓN AUTOMÁTICA PROFESIONAL - Ecosistema Go v2.0 (Inteligente & Focalizada)
  * Ejecución: 7:00 PM (Hora Bogotá).
- * Soporta esquema unificado NoSQL v2.0 (/users/ con role === "driver", /schedules/, /vehicles/).
+ * Soporta esquema unificado NoSQL v2.0 (/users/, /schedules/, /seatAvailability/, /vehicles/).
  */
 exports.automatedRotation = onSchedule({
     schedule: "0 19 * * *",
@@ -49,12 +48,7 @@ exports.automatedRotation = onSchedule({
     try {
         console.log("🔄 Iniciando ciclo de rotación nocturna NoSQL v2.0...");
 
-        const ROTATING_SHIFTS = [
-            ["h009"], ["h010", "h008", "h018"], ["h007", "h017"],
-            ["h006", "h016"], ["h004", "h014"], ["h003", "h013"],
-            ["h002", "h012"], ["h001", "h011"], []
-        ];
-
+        // 1. Obtener Snapshots de la Base de Datos
         const [usersSnap, conductoresSnap, schedulesSnap, horariosSnap, vehiclesSnap, vehiculosSnap] = await Promise.all([
             db.ref('users').once('value'),
             db.ref('conductores').once('value'),
@@ -67,7 +61,7 @@ exports.automatedRotation = onSchedule({
         const driversMap = {};
         const passTokens = [];
 
-        // 1. Cargar usuarios del nodo unificado /users/
+        // Cargar usuarios del nodo /users/
         usersSnap.forEach(snap => {
             const val = snap.val();
             const uid = snap.key;
@@ -93,64 +87,102 @@ exports.automatedRotation = onSchedule({
 
         // Fallback a /conductores/ si hay conductores legados
         conductoresSnap.forEach(snap => {
-            const val = snap.val();
-            const uid = snap.key;
-            if (!driversMap[uid]) {
+            const val = snap.key;
+            if (!driversMap[val]) {
+                const cVal = snap.val();
                 const tokens = [];
-                if (val.tokenFCM) tokens.push(val.tokenFCM);
-                if (val.tokenFCM_Web) tokens.push(val.tokenFCM_Web);
+                if (cVal.tokenFCM) tokens.push(cVal.tokenFCM);
+                if (cVal.tokenFCM_Web) tokens.push(cVal.tokenFCM_Web);
 
-                driversMap[uid] = {
-                    id: uid,
-                    name: val.nombre || "Conductor",
+                driversMap[val] = {
+                    id: val,
+                    name: cVal.nombre || "Conductor",
                     tokens: [...new Set(tokens.filter(Boolean))],
-                    vehicleId: val.vehiculoId || val.placaVehiculo,
-                    rankingPosition: val.posicionEscalafon ?? 0
+                    vehicleId: cVal.vehiculoId || cVal.placaVehiculo,
+                    rankingPosition: cVal.posicionEscalafon ?? 0
                 };
             }
         });
 
-        // Map de vehículos
+        // Cargar Mapa de Vehículos
         const vehiclesMap = {};
         vehiclesSnap.forEach(vSnap => { vehiclesMap[vSnap.key] = vSnap.val(); });
         vehiculosSnap.forEach(vSnap => { if (!vehiclesMap[vSnap.key]) vehiclesMap[vSnap.key] = vSnap.val(); });
 
-        const driversToRotate = [];
-        const fixedDriverId = schedulesSnap.child('h005').child('driverId').val() || horariosSnap.child('h005').child('conductorId').val();
-        let fixedBrayanId = null;
+        // Helper para normalizar texto
+        const norm = (str) => (str || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-        Object.values(driversMap).forEach(d => {
-            if (d.id === fixedDriverId) {
-                fixedBrayanId = d.id;
+        // 2. Clasificar Horarios (/schedules/) entre Ruta Principal (Nátaga ➔ La Plata) y Rutas Adicionales
+        const natagaSchedules = [];
+        const additionalSchedules = [];
+
+        schedulesSnap.forEach(sSnap => {
+            const sVal = sSnap.val();
+            const sId = sSnap.key;
+            const routeStr = norm(sVal.route || sVal.ruta || "");
+
+            // Verificar si pertenece al corredor principal Nátaga ➔ La Plata
+            const isNatagaLP = routeStr.includes("nataga") && routeStr.includes("la plata");
+
+            const scheduleObj = {
+                id: sId,
+                route: sVal.route || sVal.ruta || "",
+                time: sVal.time || sVal.hora || "08:00 AM",
+                driverId: sVal.driverId || sVal.conductorId || "",
+                vehicleId: sVal.vehicleId || sVal.vehiculoId || ""
+            };
+
+            if (isNatagaLP) {
+                natagaSchedules.push(scheduleObj);
             } else {
-                driversToRotate.push(d);
+                additionalSchedules.push(scheduleObj);
             }
         });
 
-        const updates = {};
-        const assignedSchedulesSet = new Set();
-        const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
-        const notificationPromises = [];
-        const dispUpdates = {};
+        // 3. Agrupar Horarios de Nátaga ➔ La Plata por Hora de Salida en Grupos Rotativos (Turnos 1 al 8)
+        const getMinutes = (hStr) => {
+            try {
+                const [time, ampm] = hStr.trim().split(" ");
+                let [hrs, mins] = time.split(":").map(Number);
+                if (ampm === "PM" && hrs < 12) hrs += 12;
+                if (ampm === "AM" && hrs === 12) hrs = 0;
+                return hrs * 60 + (mins || 0);
+            } catch (e) { return 0; }
+        };
 
-        if (fixedBrayanId) {
-            const fixedShifts = ["h005", "h015"];
-            updates[`users/${fixedBrayanId}/assignedSchedules`] = fixedShifts;
-            updates[`users/${fixedBrayanId}/status`] = "active";
-            updates[`conductores/${fixedBrayanId}/horariosAsignados`] = fixedShifts;
-            updates[`conductores/${fixedBrayanId}/status`] = "active";
+        natagaSchedules.sort((a, b) => getMinutes(a.time) - getMinutes(b.time));
 
-            fixedShifts.forEach(hId => {
-                updates[`schedules/${hId}/driverId`] = fixedBrayanId;
-                updates[`horarios/${hId}/conductorId`] = fixedBrayanId;
-                assignedSchedulesSet.add(hId);
-            });
+        // Construir la Rueda de Turnos Rotativos para Nátaga
+        const rotShifts = [];
+        const natagaIds = natagaSchedules.map(s => s.id);
+
+        for (let i = 0; i < natagaIds.length; i += 2) {
+            if (i + 1 < natagaIds.length) {
+                rotShifts.push([natagaIds[i], natagaIds[i + 1]]);
+            } else {
+                rotShifts.push([natagaIds[i]]);
+            }
+        }
+        // Día de descanso (posición final del ciclo)
+        rotShifts.push([]);
+
+        // Rellenar hasta asegurar mínimo 9 posiciones de rotación
+        while (rotShifts.length < 9) {
+            rotShifts.push([]);
         }
 
-        driversToRotate.forEach(c => {
+        const updates = {};
+        const dispUpdates = {};
+        const dayCounter = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+        const notificationPromises = [];
+
+        // 4. Rotar únicamente a los Conductores de la Flota Nátaga ➔ La Plata
+        const allDrivers = Object.values(driversMap);
+
+        allDrivers.forEach(c => {
             const pos = c.rankingPosition || 0;
-            const shiftIndex = (pos + dayCounter) % ROTATING_SHIFTS.length;
-            const myShifts = ROTATING_SHIFTS[shiftIndex];
+            const shiftIndex = (pos + dayCounter) % rotShifts.length;
+            const myShifts = rotShifts[shiftIndex] || [];
             const isOff = myShifts.length === 0;
 
             updates[`users/${c.id}/assignedSchedules`] = myShifts;
@@ -166,10 +198,14 @@ exports.automatedRotation = onSchedule({
             myShifts.forEach(hId => {
                 updates[`schedules/${hId}/driverId`] = c.id;
                 updates[`horarios/${hId}/conductorId`] = c.id;
-                assignedSchedulesSet.add(hId);
-                dispUpdates[`${hId}/asientosOcupados`] = null;
-                dispUpdates[`${hId}/asientosDisponibles`] = capacity;
-                dispUpdates[`${hId}/totalAsientos`] = capacity;
+
+                dispUpdates[`seatAvailability/${hId}/availableSeats`] = capacity;
+                dispUpdates[`seatAvailability/${hId}/totalSeats`] = capacity;
+                dispUpdates[`seatAvailability/${hId}/occupiedSeats`] = null;
+
+                dispUpdates[`disponibilidadAsientos/${hId}/asientosDisponibles`] = capacity;
+                dispUpdates[`disponibilidadAsientos/${hId}/totalAsientos`] = capacity;
+                dispUpdates[`disponibilidadAsientos/${hId}/asientosOcupados`] = null;
             });
 
             if (c.tokens && c.tokens.length > 0) {
@@ -177,37 +213,50 @@ exports.automatedRotation = onSchedule({
                 const body = isOff ? `Hola ${c.name}, mañana descansas. ¡Disfrútalo!` : "Turnos listos para mañana. Revisa tus horarios en la app.";
                 const payload = getBrandedPayload(title, body, { type: "ROTACION_NOTIFICACION", target_activity: "driver_home" });
                 c.tokens.forEach(t => {
-                    notificationPromises.push(messaging.send({ token: t, ...payload }).catch(e => console.error(`Error notif ${c.name}:`, e)));
+                    notificationPromises.push(messaging.send({ token: t, ...payload }).catch(() => {}));
                 });
             }
         });
 
-        // Limpiar turnos no asignados
-        schedulesSnap.forEach(sSnap => {
-            const hId = sSnap.key;
-            if (!assignedSchedulesSet.has(hId)) {
-                updates[`schedules/${hId}/driverId`] = "";
-                updates[`horarios/${hId}/conductorId`] = "";
-                dispUpdates[`${hId}/asientosOcupados`] = null;
-                dispUpdates[`${hId}/asientosDisponibles`] = 0;
-                dispUpdates[`${hId}/totalAsientos`] = 0;
+        // 5. Preservar y Reseteo Aislado para Rutas Adicionales / Dinámicas (Neiva, Gallego, etc.)
+        additionalSchedules.forEach(s => {
+            const hId = s.id;
+            let capacity = 13;
+            if (s.vehicleId && vehiclesMap[s.vehicleId]) {
+                capacity = vehiclesMap[s.vehicleId].capacity || vehiclesMap[s.vehicleId].capacidad || 13;
             }
+
+            // MANTENER el driverId y vehicleId existente
+            dispUpdates[`seatAvailability/${hId}/availableSeats`] = capacity;
+            dispUpdates[`seatAvailability/${hId}/totalSeats`] = capacity;
+            dispUpdates[`seatAvailability/${hId}/occupiedSeats`] = null;
+
+            dispUpdates[`disponibilidadAsientos/${hId}/asientosDisponibles`] = capacity;
+            dispUpdates[`disponibilidadAsientos/${hId}/totalAsientos`] = capacity;
+            dispUpdates[`disponibilidadAsientos/${hId}/asientosOcupados`] = null;
         });
 
+        // 6. Notificaciones Masivas a Pasajeros
         if (passTokens.length > 0) {
             const basePayload = getBrandedPayload("Horarios Listos", "Ya puedes reservar tu viaje para mañana.", { type: "HORARIOS_DISPONIBLES", target_activity: "passenger_home" });
             const uniquePassTokens = [...new Set(passTokens)];
             for (let i = 0; i < uniquePassTokens.length; i += 500) {
                 const chunk = uniquePassTokens.slice(i, i + 500);
-                notificationPromises.push(messaging.sendEachForMulticast({ tokens: chunk, ...basePayload }).catch(e => console.error("Error notif masiva:", e)));
+                notificationPromises.push(messaging.sendEachForMulticast({ tokens: chunk, ...basePayload }).catch(() => {}));
             }
         }
 
         await Promise.all([
             db.ref().update(updates),
-            db.ref('disponibilidadAsientos').update(dispUpdates),
-            db.ref('seatAvailability').update(dispUpdates),
+            db.ref().update(dispUpdates),
             ...notificationPromises
+        ]);
+
+        console.log(`✅ Ciclo NoSQL v2.0 completado exitosamente para Nátaga y Rutas Adicionales.`);
+    } catch (error) {
+        console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error);
+    }
+});
         ]);
         console.log(`✅ Ciclo NoSQL v2.0 completado.`);
     } catch (error) { console.error('❌ ERROR CRÍTICO EN ROTACIÓN:', error); }

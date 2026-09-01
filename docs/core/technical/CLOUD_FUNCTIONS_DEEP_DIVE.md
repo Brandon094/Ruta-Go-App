@@ -9,15 +9,17 @@ Las funciones están implementadas en **Node.js 22** utilizando el SDK de **Fire
 
 ---
 
-## 🔄 2. Rotación Nocturna Automática (`automatedRotation`)
+## 🔄 2. Rotación Nocturna Automática (`automatedRotation` - Refactor Nátaga ➔ La Plata)
 Es el proceso más crítico del sistema. Se encarga de preparar la logística para el día siguiente.
 
 *   **Ejecución**: Todos los días a las **7:00 PM** (Hora Bogotá).
-*   **Lógica de Escalafón**: Implementa un ciclo de 9 días donde los conductores rotan sus horarios.
-*   **Integridad de Asignación**: Utiliza un `Set` de JavaScript (`horariosAsignadosSet`) para registrar cada horario procesado. Esto evita colisiones con el proceso de limpieza de horarios huérfanos, garantizando que solo se borren los turnos que realmente no recibieron un conductor.
+*   **Aislamiento de la Ruta Principal (Nátaga ➔ La Plata)**:
+    *   La rotación se aplica **exclusivamente a los turnos del escalafón de 9 días** (`h001` a `h018`).
+    *   **Protección de Rutas Dinámicas**: Se evita el reseteo o borrado de `driverId` y cupos en horarios pertenecientes a rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
+*   **Lógica de Escalafón**: Implementa un ciclo de 9 días donde los conductores registrados para la ruta principal rotan sus horarios (`(rankingPosition + dayCounter) % 9`).
 *   **Reset de Inventario**:
-    *   Consulta la capacidad técnica de cada vehículo en el nodo `/vehiculos/`.
-    *   Limpia el nodo `/disponibilidadAsientos/` reseteando los ocupados a `null` y los disponibles a la capacidad real del bus.
+    *   Consulta la capacidad técnica de cada vehículo en el nodo `/vehicles/`.
+    *   Resetea `/seatAvailability/` liberando los ocupados y asignando la capacidad real del bus únicamente para los turnos rotados.
 *   **Notificaciones**:
     *   Envía notificaciones personalizadas a cada conductor informándole si trabaja o descansa.
     *   Despacha un aviso masivo a los pasajeros (en lotes de 500) anunciando la apertura de reservas para el día siguiente.

@@ -30,7 +30,7 @@ Garantiza la exclusividad de los asientos bajo condiciones de alta concurrencia.
 
 ---
 
-## 🔄 3. Algoritmo de Rotación y Agrupamiento (Escalafón)
+## 🔄 3. Algoritmo de Rotación y Agrupamiento (Escalafón Nátaga ➔ La Plata)
 Gobernanza de la planilla operativa automatizada.
 
 ### Lógica de Agrupamiento (Speed Mode):
@@ -38,9 +38,11 @@ Gobernanza de la planilla operativa automatizada.
 *   **Special Triple**: Agrupamiento operativo de h008, h018 y h010 (Regreso al día siguiente).
 *   **Solo Entry**: h009 se trata como trayecto único de inicio de jornada.
 
-### Rotación Cloud:
-*   Ejecución diaria 19:00 COT.
-*   Cálculo de `shiftIndex` basado en `rankingPosition` sobre los conductores registrados en `/users/` con `role === "driver"`.
+### Rotación Cloud Focalizada (Aislamiento de Ruta Principal):
+*   **Ejecución diaria 19:00 COT**:
+*   **Filtrado por Ruta**: Aislamiento exclusivo para los conductores y turnos pertenecientes al **Escalafón Nátaga ➔ La Plata** (`h001` - `h018`).
+*   **Preservación de Rutas Dinámicas**: Las rutas adicionales (ej: `Nátaga ➔ Neiva`, `La Plata ➔ Gallego`) y sus respectivos horarios no son alterados ni borrados durante el ciclo de rotación nocturno.
+*   **Cálculo de Posición**: Rotación del `shiftIndex` basado en `rankingPosition` sobre los 9 grupos del escalafón principal.
 
 ---
 

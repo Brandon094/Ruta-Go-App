@@ -7,6 +7,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 ## [2.0.1-BETA] - 2026-08-31 (Dynamic Routes & Schedule Management Engine)
 *Integración dinámica de rutas, autocompletado de tarifas, desacoplamiento de asignación de flota y optimización de reactividad NoSQL v2.0.*
 
+### 🔧 Go-Core (Cloud Functions v2.2.0)
+- **Aislamiento de Escalafón Nátaga ➔ La Plata (`index.js`)**: Refactorizada la función automatizada de rotación nocturna de las 7:00 PM (`automatedRotation`) para focalizarse exclusivamente en las salidas de Nátaga ➔ La Plata. Se implementó la preservación de conductores, buses y reseteo diario de cupos (13 libres) para todas las rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
+
 ### 🌐 Ruta-Go Web (Portal v2.0)
 - **Refactor de Permisos y Acciones en Planilla (`ScheduleDirectory.jsx`)**:
   - Restringidos los botones de gestión/edición en la pestaña **Planilla** exclusivamente para el **Admin Root** (`role: "admin"`).
