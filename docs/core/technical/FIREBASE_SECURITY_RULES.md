@@ -1,55 +1,181 @@
-# 🛡️ Manual de Seguridad: Firebase Realtime Database (v1.9.9.5)
+# 🛡️ Manual y Reglas de Seguridad: Firebase Realtime Database (v2.0 NoSQL Normalizado)
 
-Este documento detalla la lógica de gobernanza de datos del ecosistema **Ruta-Go**, asegurando la privacidad del usuario, el aislamiento comercial entre socios y el cumplimiento con la Ley de Habeas Data.
+Este documento detalla la lógica de gobernanza de datos del ecosistema **Ruta-Go**, garantizando compatibilidad con el esquema NoSQL v2.0 (`/users/`, `/schedules/`, `/vehicles/`, `/reservations/`) y soporte pasivo para nodos legados.
 
 ---
 
-## 🏛️ 1. Filosofía de Seguridad (RBAC)
-El sistema utiliza un modelo de **Control de Acceso basado en Roles** y **UID-Locking**.
+## 🏛️ 1. Filosofía de Seguridad (RBAC & Single-User Collection)
+El sistema utiliza un modelo de **Control de Acceso basado en Roles** centralizado en `/users/{uid}/role`.
 
 *   **Identidad Obligatoria**: `auth != null` es el requisito base para cualquier operación.
-*   **Aislamiento de Perfiles**: Los datos personales están bloqueados por el UID del propietario.
-*   **Jerarquía de Poder**: Admin Root > Dueño de Flota (Socio) > Operador (Conductor) > Pasajero.
+*   **Aislamiento de Perfiles**: Los datos personales están protegidos por el UID del propietario.
+*   **Jerarquía de Poder**: Admin Root (`role === "admin"`) > Socio (`role === "owner"`) > Conductor (`role === "driver"`) > Pasajero (`role === "passenger"`).
 
 ---
 
-## 🔐 2. Análisis de Nodos Críticos
+## 📋 2. JSON de Reglas Oficial para Firebase Console
 
-### 👥 Perfiles y Búsqueda (/usuarios)
-*   **Lectura Administrativa**: Tanto **Admins** como **Dueños** pueden leer la lista de usuarios para facilitar la búsqueda de conductores por email.
-*   **Lectura de Perfil**: Cualquier usuario autenticado puede leer su propio perfil.
-*   **Escritura Restringida**: Solo el Admin Root o el propio Usuario pueden modificar sus datos personales.
+Copia y pega este bloque en la pestaña **Reglas** de tu consola de Firebase Realtime Database:
 
-### 💼 Gestión de Socios (/dueños)
-*   **Activación**: Solo el Admin Root puede otorgar el rango de Socio. Un usuario puede escribir su propio nodo solo si es para registro inicial (pendiente).
-*   **Auditoría**: El portal web valida la existencia del UID en este nodo antes de permitir el acceso al Business Dashboard.
-
-### 🚗 Control de Activos (/vehiculos)
-*   **Propiedad Blindada**: La escritura está permitida si el `auth.uid` coincide con el `ownerId` registrado, o si el usuario es Admin.
-*   **Integridad de Datos**: Los conductores pueden leer la información técnica de su bus asignado para la operación diaria.
-
-### 🕒 Gestión de Horarios (/horarios)
-*   **Operación Master**: Solo Admins y Dueños pueden modificar la estructura de turnos.
-*   **Asignación de Operador**: Los conductores pueden vincularse a turnos vacíos, pero no pueden sobrescribir a otros compañeros.
-
-### 💺 Motor de Disponibilidad (/disponibilidadAsientos)
-*   **Transaccionalidad**: Escritura abierta para usuarios autenticados para permitir reservas en tiempo real.
-*   **Blindaje de Capacidad**: La edición del campo `totalAsientos` (capacidad técnica) está restringida al Admin Root, al Dueño de la flota o al Conductor asignado al turno, evitando fraudes de sobrecupo.
-
-### 🎫 Reservas y Privacidad (/reservas)
-*   **Validación Cruzada**: Una reserva solo puede ser leída o escrita por los involucrados: el Pasajero, el Conductor, el Dueño del bus o el Admin Root.
-*   **Indexación**: El nodo está optimizado para búsquedas por `driverId`, `scheduleId`, `userId` y `reservationDate`.
-
-### 💬 Mensajería Instantánea (/chats)
-*   **Privacidad Punto a Punto**: Solo el pasajero y el conductor de la reserva asociada pueden leer y escribir mensajes.
-*   **Supervisión**: Admins y Dueños tienen acceso de lectura para resolución de disputas y soporte logístico.
-
-### ⭐ Reputación y Feedback (/calificaciones_conductores)
-*   **Transparencia**: Lectura pública para usuarios registrados.
-*   **Protección de Reseña**: Solo se permite la creación de una nueva reseña (`!data.exists()`). No se permiten ediciones posteriores para garantizar la autenticidad del feedback.
-
-### 📊 Protección Financiera (/estadisticas)
-*   **Acceso Filtrado**: Los conductores solo pueden acceder a sus estadísticas del día actual. Admins y Dueños tienen visibilidad completa de los ingresos de su flota.
+```json
+{
+  "rules": {
+    "admins": {
+      ".read": "auth != null",
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+    },
+    "dueños": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+      }
+    },
+    "usuarios": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && ($uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+      }
+    },
+    "schedules": {
+      ".read": true,
+      "$scheduleId": {
+        ".write": "auth != null",
+        "vehicleId": {
+          ".validate": "newData.isString()"
+        }
+      }
+    },
+    "horarios": {
+      ".read": true,
+      "$horarioId": {
+        ".write": "auth != null",
+        "vehiculoId": {
+          ".validate": "newData.isString()"
+        }
+      }
+    },
+    "seatAvailability": {
+      ".read": true,
+      "$scheduleId": {
+        ".write": "auth != null"
+      }
+    },
+    "disponibilidadAsientos": {
+      ".read": true,
+      "$horarioId": {
+        ".write": "auth != null"
+      }
+    },
+    "reservations": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "driverId",
+        "conductorId",
+        "scheduleId",
+        "userId",
+        "usuarioId",
+        "reservationDate",
+        "fechaReserva"
+      ],
+      "$reservationId": {
+        ".write": "auth != null"
+      }
+    },
+    "reservas": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "driverId",
+        "conductorId",
+        "scheduleId",
+        "userId",
+        "usuarioId",
+        "reservationDate",
+        "fechaReserva"
+      ],
+      "$reservaId": {
+        ".write": "auth != null"
+      }
+    },
+    "vehicles": {
+      ".read": "auth != null",
+      "$vehicleId": {
+        ".write": "auth != null"
+      }
+    },
+    "vehiculos": {
+      ".read": "auth != null",
+      "$v": {
+        ".write": "auth != null"
+      }
+    },
+    "prices": {
+      ".read": true,
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+    },
+    "precios": {
+      ".read": true,
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || root.child('admins').child(auth.uid).exists())"
+    },
+    "chats": {
+      "$reservaId": {
+        ".read": "auth != null",
+        "messages": {
+          ".read": "auth != null",
+          "$messageId": {
+            ".write": "auth != null"
+          }
+        },
+        "mensajes": {
+          ".read": "auth != null",
+          "$mensajeId": {
+            ".write": "auth != null"
+          }
+        }
+      }
+    },
+    "driverRatings": {
+      ".read": "auth != null",
+      "$driverId": {
+        "$ratingId": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "calificaciones_conductores": {
+      ".read": "auth != null",
+      "$driverId": {
+        "$ratingId": {
+          ".write": "auth != null"
+        }
+      }
+    },
+    "stats": {
+      "$c": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "estadisticas": {
+      "$c": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "conductores": {
+      ".read": "auth != null",
+      "$c": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}
+```
 
 ---
 **ChopCode Solutions - Ingeniería de Seguridad 2026**
