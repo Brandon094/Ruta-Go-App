@@ -139,6 +139,12 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
   const handlePassengerReserve = async () => {
     if (!selectedSeat || updating) return;
 
+    const assignedDriverId = schedule.driverId || schedule.conductorId;
+    if (!assignedDriverId) {
+      alert("⚠️ Este horario aún no tiene un conductor asignado. Por favor selecciona otro horario o intenta más tarde.");
+      return;
+    }
+
     const timeText = schedule.time || schedule.hora || "";
     if (FormatUtils.isPastSchedule(timeText)) {
       alert("Este horario ya no está disponible para reservas.");

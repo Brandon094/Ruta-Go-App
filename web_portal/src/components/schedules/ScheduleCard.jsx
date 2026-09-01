@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Bus, Tag, Plus, Pencil } from 'lucide-react';
+import { User, Bus, Tag, Plus, Pencil, Lock } from 'lucide-react';
 import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
@@ -38,6 +38,7 @@ export function ScheduleCard({
   const isMe = driverId === role?.uid;
   const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
   const isExternal = role?.type === 'OWNER' && !safeDrivers.some(d => d.id === schedule.conductorId);
+  const isLockedForPassenger = !isManagement && !driverId;
 
   return (
     <div
@@ -102,9 +103,10 @@ export function ScheduleCard({
             <div className="shrink-0">
                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${
                  hasPassed ? 'bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-white/40' :
+                 isLockedForPassenger ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400' :
                  isFull ? 'badge-error' : 'badge-success'
                }`}>
-                 {hasPassed ? 'Finalizado' : isFull ? 'Completado' : 'Disponible'}
+                 {hasPassed ? 'Finalizado' : isLockedForPassenger ? 'Sin Conductor' : isFull ? 'Completado' : 'Disponible'}
                </span>
             </div>
           </div>
@@ -126,21 +128,30 @@ export function ScheduleCard({
            {!hideActions && onManage && (
              <button
                type="button"
-               disabled={hasPassed || (isFull && !isManagement)}
+               disabled={hasPassed || (isFull && !isManagement) || isLockedForPassenger}
                onClick={() => {
-                 if (hasPassed) return;
+                 if (hasPassed || isLockedForPassenger) return;
                  onManage(schedule);
                }}
-               className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
+               title={
+                 hasPassed ? "Horario finalizado" :
+                 isLockedForPassenger ? "Horario sin conductor asignado" :
+                 isFull ? "Horario completo" : "Seleccionar asientos"
+               }
+               className={`w-16 h-16 rounded-full shadow-2xl transition-all transform flex items-center justify-center group/btn ${
                  hasPassed
                   ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
-                  : (isFull && !isManagement)
-                    ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
-                    : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
+                  : isLockedForPassenger
+                    ? 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30 cursor-not-allowed shadow-none border border-slate-200 dark:border-white/10'
+                    : (isFull && !isManagement)
+                      ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
+                      : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600 active:scale-90'
                }`}
              >
                {hasPassed ? (
                  <Bus size={32} />
+               ) : isLockedForPassenger ? (
+                 <Lock size={26} />
                ) : (
                  <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
                )}

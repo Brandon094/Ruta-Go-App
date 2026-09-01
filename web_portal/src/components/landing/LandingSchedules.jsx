@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { onValue } from 'firebase/database';
-import { Clock, Bus, ChevronRight, Info, Zap } from 'lucide-react';
+import { Clock, Bus, ChevronRight, Info, Zap, Lock } from 'lucide-react';
 import firebaseManager from '../../firebase';
 import { Button } from '../ui/Button';
 import { FormatUtils } from '../../utils/FormatUtils';
@@ -76,29 +76,50 @@ export function LandingSchedules({ onReserve }) {
           [1, 2, 3].map((i) => (
             <div key={i} className="h-24 bg-slate-100 dark:bg-white/5 animate-pulse rounded-[2rem]"></div>
           ))
-        ) : (list.length > 0 ? list : fallbackSchedules).map((s, idx) => (
-          <div
-            key={s.id || idx}
-            className="flex items-center justify-between p-4 md:p-5 bg-white dark:bg-white/5 rounded-[2rem] border border-slate-100 dark:border-white/5 hover:border-primary-500/50 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-primary-500 border border-slate-100 dark:border-white/10 group-hover:rotate-12 transition-all">
-                <Clock size={20} />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-black text-[#061426] dark:text-white tracking-tighter uppercase italic">{s.time || s.hora}</span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Disponible</span>
+        ) : (list.length > 0 ? list : fallbackSchedules).map((s, idx) => {
+          const hasDriver = !!(s.driverId || s.conductorId);
+          return (
+            <div
+              key={s.id || idx}
+              className="flex items-center justify-between p-4 md:p-5 bg-white dark:bg-white/5 rounded-[2rem] border border-slate-100 dark:border-white/5 hover:border-primary-500/50 transition-all duration-300 group shadow-sm hover:shadow-xl hover:shadow-primary-500/5"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/5 flex items-center justify-center text-primary-500 border border-slate-100 dark:border-white/10 group-hover:rotate-12 transition-all">
+                  <Clock size={20} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl font-black text-[#061426] dark:text-white tracking-tighter uppercase italic">{s.time || s.hora}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                     <div className={`w-1.5 h-1.5 rounded-full ${hasDriver ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></div>
+                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                       {hasDriver ? 'Disponible' : 'Sin Conductor'}
+                     </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Button onClick={onReserve} size="sm" variant={isReverse ? 'primary' : 'outline'} className="!rounded-xl px-6 py-3 text-[10px]">
-               Reservar <ChevronRight size={14} />
-            </Button>
-          </div>
-        ))}
+              <Button
+                onClick={() => {
+                  if (!hasDriver) {
+                    alert("⚠️ Este horario aún no tiene un conductor asignado. Por favor selecciona otro horario.");
+                    return;
+                  }
+                  onReserve();
+                }}
+                disabled={!hasDriver}
+                size="sm"
+                variant={isReverse ? 'primary' : 'outline'}
+                className="!rounded-xl px-6 py-3 text-[10px] disabled:opacity-40"
+              >
+                {hasDriver ? (
+                  <>Reservar <ChevronRight size={14} className="ml-1" /></>
+                ) : (
+                  <>Bloqueado <Lock size={12} className="ml-1" /></>
+                )}
+              </Button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
