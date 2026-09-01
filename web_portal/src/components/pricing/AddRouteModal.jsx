@@ -69,7 +69,7 @@ export function AddRouteModal({ isOpen, onClose, onSuccess }) {
               icon={<MapPin size={18} className="text-primary-500" />}
               placeholder="Selecciona o escribe origen..."
               value={form.origin}
-              onChange={(e) => setForm(f => ({ ...f, origin: e.target.value }))}
+              onChange={(val) => setForm(f => ({ ...f, origin: val }))}
               list="origin-list"
               required
             />
@@ -107,7 +107,7 @@ export function AddRouteModal({ isOpen, onClose, onSuccess }) {
               icon={<Navigation size={18} className="text-primary-500" />}
               placeholder="Selecciona o escribe destino..."
               value={form.destination}
-              onChange={(e) => setForm(f => ({ ...f, destination: e.target.value }))}
+              onChange={(val) => setForm(f => ({ ...f, destination: val }))}
               list="destination-list"
               required
             />
@@ -148,7 +148,7 @@ export function AddRouteModal({ isOpen, onClose, onSuccess }) {
               icon={<DollarSign size={18} />}
               placeholder="12000"
               value={form.price}
-              onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
+              onChange={(val) => setForm(f => ({ ...f, price: val }))}
               required
             />
           </div>
@@ -161,7 +161,7 @@ export function AddRouteModal({ isOpen, onClose, onSuccess }) {
               icon={<Clock size={18} />}
               placeholder="Ej: 60 min, 90 min, 2 hrs"
               value={form.duration}
-              onChange={(e) => setForm(f => ({ ...f, duration: e.target.value }))}
+              onChange={(val) => setForm(f => ({ ...f, duration: val }))}
             />
           </div>
         </div>
