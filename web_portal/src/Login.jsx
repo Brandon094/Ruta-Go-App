@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { ref, get, set } from "firebase/database";
 import { Lock, Mail, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Input } from './components/ui/Input';
 import { Button } from './components/ui/Button';
@@ -37,7 +38,26 @@ function Login({ onShowRegister, onBack }) {
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      const user = userCredential.user;
+
+      // 🛡️ Asegurar la existencia del perfil NoSQL v2.0 en /users/
+      const userRef = ref(db, `users/${user.uid}`);
+      const userSnap = await get(userRef);
+
+      if (!userSnap.exists()) {
+        const userData = {
+          id: user.uid,
+          name: user.displayName || 'Usuario Google',
+          email: user.email || '',
+          phone: user.phoneNumber || '',
+          photoUrl: user.photoURL || '',
+          role: user.email === 'dazace94@gmail.com' ? 'admin' : 'passenger',
+          registrationDate: Date.now(),
+          status: 'active'
+        };
+        await set(userRef, userData);
+      }
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         setError("Error al iniciar sesión con Google: " + err.message);
