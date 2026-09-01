@@ -57,9 +57,9 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
         const schedules = await driverService.getAllSchedules();
         if (isMounted) setAllSchedules(schedules);
 
-        const vehicleId = driver.vehiculoId || driver.placaVehiculo;
+        const vehicleId = driver.vehicleId || driver.vehiclePlate || driver.vehiculoId || driver.placaVehiculo;
         if (vehicleId) {
-          const vSnap = await get(ref(db, `vehiculos/${vehicleId}`));
+          const vSnap = await get(ref(db, `vehicles/${vehicleId}`));
           if (vSnap.exists() && isMounted) {
             setFormData(prev => ({ ...prev, ownerId: vSnap.val().ownerId || '' }));
           }
@@ -169,8 +169,8 @@ export function EditDriverModal({ driver, onClose, onRefresh, role, owners = [],
         posicionEscalafon: formData.posicionEscalafon
       }, driver.vehiculoId || driver.placaVehiculo);
 
-      if (isAdmin && formData.ownerId) {
-        await update(ref(db, `vehiculos/${formData.placaVehiculo}`), { ownerId: formData.ownerId });
+      if (isAdmin && formData.ownerId && formData.placaVehiculo) {
+        await update(ref(db, `vehicles/${formData.placaVehiculo}`), { ownerId: formData.ownerId });
       }
 
       if (onRefresh) onRefresh();

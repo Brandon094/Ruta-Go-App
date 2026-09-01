@@ -116,16 +116,30 @@ Calificaciones y reseñas dejadas por pasajeros.
 
 ---
 
-## 💰 7. Nodo: `/prices/`
-Matriz de tarifas por origen y destino.
+## 🗺️ 7. Nodo: `/routes/`
+Directorio maestro de rutas dinámicas creadas por el Admin Root.
 
-| Estructura | Tipo | Descripción |
+| Campo (Firebase Key) | Tipo | Descripción |
 |:---|:---|:---|
-| `/prices/{origin}/{destination}` | Double / Int | Tarifa estándar del pasaje (ej: `"Nátaga"/"La Plata": 12000`). |
+| `id` | String | Key generada automáticamente en `/routes/` (ej: `"-P0PozrymFBzG_SurvzW"`). |
+| `origin` | String | Municipio de origen de la ruta (ej: `"Nátaga"`). |
+| `destination` | String | Municipio de destino de la ruta (ej: `"La Plata"`, `"Neiva"`). |
+| `price` | Double / Int | Tarifa oficial de la ruta (ej: `12000`, `30000`). |
+| `estimatedDuration` | String | Tiempo estimado del trayecto (ej: `"60 min"`, `"120 min"`). |
+| `status` | String | Estado operativo: `"active"`, `"inactive"`. |
 
 ---
 
-## 💬 8. Nodo: `/chats/`
+## 💰 8. Nodo: `/prices/`
+Matriz bidireccional de tarifas por origen y destino.
+
+| Estructura | Tipo | Descripción |
+|:---|:---|:---|
+| `/prices/{origin}/{destination}` | Double / Int | Tarifa estándar del pasaje (ej: `prices["Nátaga"]["La Plata"]: 12000`). |
+
+---
+
+## 💬 9. Nodo: `/chats/`
 Mensajería en tiempo real entre pasajero y conductor por reserva.
 
 | Estructura | Tipo | Descripción |

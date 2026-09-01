@@ -7,7 +7,7 @@ import { VehicleCard } from './VehicleCard';
  * 🏛️ Organism: VehicleDirectory
  * Gestión centralizada de la flota para Root y Dueños.
  */
-export function VehicleDirectory({ vehicles = [], drivers = [], onAdd, onEdit, onDelete, role }) {
+export function VehicleDirectory({ vehicles = [], drivers = [], owners = [], onAdd, onEdit, onDelete, role }) {
   const [searchTerm, setSearchTerm] = useState('');
   const isAdmin = role?.type === 'ADMIN';
   const ownerId = role?.uid;
@@ -16,9 +16,10 @@ export function VehicleDirectory({ vehicles = [], drivers = [], onAdd, onEdit, o
     .filter(v => isAdmin || v.ownerId === ownerId)
     .filter(v => {
       const search = searchTerm.toLowerCase();
-      const placa = (v.placa || v.id || '').toLowerCase();
-      const modelo = (v.modelo || '').toLowerCase();
-      return placa.includes(search) || modelo.includes(search);
+      const placa = (v.plate || v.placa || v.id || '').toLowerCase();
+      const modelo = (v.model || v.modelo || '').toLowerCase();
+      const marca = (v.brand || v.marca || '').toLowerCase();
+      return placa.includes(search) || modelo.includes(search) || marca.includes(search);
     });
 
   return (
@@ -37,9 +38,10 @@ export function VehicleDirectory({ vehicles = [], drivers = [], onAdd, onEdit, o
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVehicles.map(v => (
             <VehicleCard
-              key={v.id || v.placa}
+              key={v.id || v.plate || v.placa}
               vehicle={v}
               drivers={drivers}
+              owners={owners}
               onEdit={onEdit}
               onDelete={onDelete}
               isAdmin={isAdmin}

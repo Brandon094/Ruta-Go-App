@@ -347,8 +347,8 @@ private fun SchedulesTabHeader(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                 TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[selectedTab]), color = MaterialTheme.colorScheme.primary)
             }
         ) {
-            Tab(selected = selectedTab == 0, onClick = { onTabSelected(0) }, text = { Text("NATAGÁ → LA PLATA", fontSize = 11.sp, fontWeight = if(selectedTab == 0) FontWeight.Bold else FontWeight.Normal) })
-            Tab(selected = selectedTab == 1, onClick = { onTabSelected(1) }, text = { Text("LA PLATA → NATAGÁ", fontSize = 11.sp, fontWeight = if(selectedTab == 1) FontWeight.Bold else FontWeight.Normal) })
+            Tab(selected = selectedTab == 0, onClick = { onTabSelected(0) }, text = { Text("SALIDAS NÁTAGA", fontSize = 11.sp, fontWeight = if(selectedTab == 0) FontWeight.Bold else FontWeight.Normal) })
+            Tab(selected = selectedTab == 1, onClick = { onTabSelected(1) }, text = { Text("SALIDAS LA PLATA", fontSize = 11.sp, fontWeight = if(selectedTab == 1) FontWeight.Bold else FontWeight.Normal) })
         }
     }
 }

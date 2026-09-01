@@ -12,13 +12,22 @@ export function DriverDirectory({ drivers = [], onEditDriver, onAddDriver }) {
 
   const filteredDrivers = drivers.filter(d => {
     const search = searchTerm.toLowerCase();
-    const nombre = (d.nombre || '').toLowerCase();
-    const placa = (d.placaVehiculo || '').toLowerCase();
-    return nombre.includes(search) || placa.includes(search);
+    const nombre = (d.name || d.nombre || '').toLowerCase();
+    const placa = (d.vehiclePlate || d.vehicleId || d.placaVehiculo || d.vehiculoId || '').toLowerCase();
+    const email = (d.email || '').toLowerCase();
+    const phone = (d.phone || d.telefono || '').toLowerCase();
+    return nombre.includes(search) || placa.includes(search) || email.includes(search) || phone.includes(search);
   });
 
-  const active = filteredDrivers.filter(d => d.status === 'active' && d.horariosAsignados?.length > 0);
-  const inactive = filteredDrivers.filter(d => d.status !== 'active' || !d.horariosAsignados?.length);
+  const active = filteredDrivers.filter(d => {
+    const schedulesList = d.assignedSchedules || d.horariosAsignados || [];
+    return d.status === 'active' && Array.isArray(schedulesList) && schedulesList.length > 0;
+  });
+
+  const inactive = filteredDrivers.filter(d => {
+    const schedulesList = d.assignedSchedules || d.horariosAsignados || [];
+    return d.status !== 'active' || !Array.isArray(schedulesList) || schedulesList.length === 0;
+  });
 
   return (
     <div className="space-y-10 pb-20 px-2 animate-in fade-in duration-500">
@@ -36,10 +45,16 @@ export function DriverDirectory({ drivers = [], onEditDriver, onAddDriver }) {
         <div className="space-y-6">
           <h4 className="font-black uppercase text-xs text-green-500 ml-4 tracking-widest italic">En Ruta ({active.length})</h4>
           {active.map(d => <DriverCard key={d.id} driver={d} onEdit={onEditDriver} />)}
+          {active.length === 0 && (
+            <p className="text-xs text-slate-400 dark:text-white/30 italic ml-4">No hay conductores en ruta activa</p>
+          )}
         </div>
         <div className="space-y-6">
-          <h4 className="font-black uppercase text-xs text-slate-400 dark:text-white/20 ml-4 tracking-widest italic">Fuera de Servicio ({inactive.length})</h4>
+          <h4 className="font-black uppercase text-xs text-amber-500 dark:text-amber-400 ml-4 tracking-widest italic">Registrados / Sin Turno ({inactive.length})</h4>
           {inactive.map(d => <DriverCard key={d.id} driver={d} onEdit={onEditDriver} />)}
+          {inactive.length === 0 && (
+            <p className="text-xs text-slate-400 dark:text-white/30 italic ml-4">No hay conductores fuera de servicio</p>
+          )}
         </div>
       </div>
 

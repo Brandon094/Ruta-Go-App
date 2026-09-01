@@ -89,41 +89,43 @@ export const driverService = {
   registerDriverAndVehicle: async (driverData, vehicleData) => {
     const updates = {};
     const driverId = driverData.id;
-    const plate = vehicleData.plate || vehicleData.placa;
+    const plate = (vehicleData.plate || vehicleData.placa || driverData.placaVehiculo || "").toUpperCase().trim();
 
     // 1. Elevar rol de usuario a 'driver' en /users/{driverId}
     updates[`users/${driverId}/role`] = 'driver';
     updates[`users/${driverId}/status`] = 'active';
     updates[`users/${driverId}/vehicleId`] = plate;
     updates[`users/${driverId}/vehiclePlate`] = plate;
-    if (driverData.horariosAsignados) {
-      updates[`users/${driverId}/assignedSchedules`] = driverData.horariosAsignados;
-    }
+    const schedules = driverData.assignedSchedules || driverData.horariosAsignados || [];
+    updates[`users/${driverId}/assignedSchedules`] = schedules;
 
     // 2. Registrar/actualizar vehículo en /vehicles/{plate}
-    const vSnap = await get(ref(db, `vehicles/${plate}`));
-    const existingVehicle = vSnap.exists() ? vSnap.val() : {};
+    if (plate) {
+      const vSnap = await get(ref(db, `vehicles/${plate}`));
+      const existingVehicle = vSnap.exists() ? vSnap.val() : {};
+      const capacity = parseInt(vehicleData.capacity || vehicleData.capacidad || existingVehicle.capacity) || 13;
 
-    const capacity = parseInt(vehicleData.capacity || vehicleData.capacidad) || 13;
-    updates[`vehicles/${plate}`] = {
-      ...existingVehicle,
-      id: plate,
-      plate: plate,
-      model: vehicleData.model || vehicleData.modelo || "",
-      brand: vehicleData.brand || vehicleData.marca || "",
-      capacity: capacity,
-      driverId: driverId,
-      status: 'active'
-    };
+      updates[`vehicles/${plate}`] = {
+        ...existingVehicle,
+        id: plate,
+        plate: plate,
+        model: vehicleData.model || vehicleData.modelo || existingVehicle.model || "",
+        brand: vehicleData.brand || vehicleData.marca || existingVehicle.brand || "",
+        capacity: capacity,
+        driverId: driverId,
+        ownerId: vehicleData.ownerId || existingVehicle.ownerId || "",
+        status: 'active'
+      };
 
-    // 3. Sincronizar horarios asignados en /schedules/
-    if (driverData.horariosAsignados && driverData.horariosAsignados.length > 0) {
-      driverData.horariosAsignados.forEach(hId => {
-        updates[`schedules/${hId}/driverId`] = driverId;
-        updates[`schedules/${hId}/vehicleId`] = plate;
-        updates[`seatAvailability/${hId}/totalSeats`] = capacity;
-        updates[`seatAvailability/${hId}/availableSeats`] = capacity;
-      });
+      // 3. Sincronizar horarios asignados en /schedules/
+      if (schedules.length > 0) {
+        schedules.forEach(hId => {
+          updates[`schedules/${hId}/driverId`] = driverId;
+          updates[`schedules/${hId}/vehicleId`] = plate;
+          updates[`seatAvailability/${hId}/totalSeats`] = capacity;
+          updates[`seatAvailability/${hId}/availableSeats`] = capacity;
+        });
+      }
     }
 
     try {

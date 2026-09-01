@@ -1,4 +1,4 @@
-# 📄 Ficha Técnica Oficial - Ecosistema "Go" v1.9.13 Premium
+# 📄 Ficha Técnica Oficial - Ecosistema "Go" v2.0.1-BETA Premium
 
 Este documento constituye la especificación técnica formal de la suite tecnológica de **ChopCode Solutions**, detallando las capacidades y estándares de infraestructura de alto rendimiento.
 
@@ -7,28 +7,28 @@ Este documento constituye la especificación técnica formal de la suite tecnol�
 ## 🏗️ 1. Identificación de la Suite
 *   **Nombre Comercial:** Ecosistema "Go".
 *   **Fabricante:** ChopCode Solutions.
-*   **Versión Global de la Suite:** v1.9.13 (Mirror Engine & Full Sync).
+*   **Versión Global de la Suite:** v2.0.1-BETA (Dynamic Routes & Jetpack Compose).
 
 ### 🏷️ Versiones por Componente:
-*   **Ruta-Go Android:** v1.6.0 (API 36 Ready).
-*   **Ruta-Go Web Portal:** v1.2.0 (FCM Ready).
-*   **Go-Core (Firebase):** v2.2.0 (Cloud Chat & Sync).
+*   **Ruta-Go Android:** v2.0.1 (Jetpack Compose & Target SDK 36 - Android 16).
+*   **Ruta-Go Web Portal:** v2.0.1 (React 18 SPA, Dynamic Routes & FCM Ready).
+*   **Go-Core (Firebase):** v2.2.0 (NoSQL v2.0 Clean Schema).
 
 ---
 
 ## 💻 2. Stack de Desarrollo
 
 ### 2.1 Ecosistema Móvil (Ruta-Go Android)
-*   **Lenguaje:** Java 17 (Target SDK 36 - Android 16 Ready).
-*   **Arquitectura:** MVVM Reactivo con Repositorios Desacoplados.
-*   **UI/UX:** XML Material Design 3 (Edge-to-Edge Nativo y Predictive Back).
-*   **Capacidades:** Soporte NDK v28 (16 KB pages), WindowUtils para gestión de insets.
+*   **Lenguaje:** Kotlin 1.9 / Java 17 (Target SDK 36 - Android 16 Ready).
+*   **Arquitectura:** Clean Architecture + MVVM Reactivo con StateFlow.
+*   **UI/UX:** Jetpack Compose + Material Design 3 (Edge-to-Edge Nativo).
+*   **Capacidades:** Google One Tap Auth, Credential Manager, NDK v28 support.
 
 ### 2.2 Ecosistema Web (Ruta-Go Portal)
-*   **Framework:** React 18 (Hooks & Transitions).
+*   **Framework:** React 18 (Hooks, State Transitions & Singletons).
 *   **Diseño:** Tailwind CSS 3 (Atomic Design System).
-*   **Rendimiento:** Vite + Code Splitting (React Lazy & Suspense).
-*   **Métricas:** Lighthouse Score > 90 en todas las categorías.
+*   **Rendimiento:** Vite + Code Splitting (React.lazy & Suspense).
+*   **Capacidades:** Google Sign-In con Popup para Pasajeros y Socios, Selector Dinámico de Origen/Destino, Modales de Edición/Eliminación de Horarios y Rutas.
 
 ### 2.3 Infraestructura Backend (Shared Core)
 *   **Cloud Logic:** Firebase Cloud Functions (Node.js 22).

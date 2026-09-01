@@ -25,31 +25,80 @@ export const scheduleService = {
         vehicleId: vehicleId || ""
       };
 
-      const updates = {};
-      // 1. Guardar en schedules y horarios
-      updates[`schedules/${scheduleId}`] = scheduleData;
-      updates[`horarios/${scheduleId}`] = {
-        id: scheduleId,
-        ruta: route,
-        hora: time,
-        conductorId: driverId || "",
-        vehiculoId: vehicleId || ""
-      };
-
-      // 2. Inicializar cupos de asientos
-      updates[`seatAvailability/${scheduleId}`] = {
+      // 1. Guardar en esquema v2.0 (/schedules y /seatAvailability)
+      const primaryUpdates = {};
+      primaryUpdates[`schedules/${scheduleId}`] = scheduleData;
+      primaryUpdates[`seatAvailability/${scheduleId}`] = {
         availableSeats: capacity,
         totalSeats: capacity
       };
-      updates[`disponibilidadAsientos/${scheduleId}`] = {
-        asientosDisponibles: capacity,
-        totalAsientos: capacity
-      };
 
-      await update(ref(db), updates);
+      await update(ref(db), primaryUpdates);
+
+      // 2. Intentar guardar en nodos legados (/horarios y /disponibilidadAsientos)
+      try {
+        const legacyUpdates = {};
+        legacyUpdates[`horarios/${scheduleId}`] = {
+          id: scheduleId,
+          ruta: route,
+          hora: time,
+          conductorId: driverId || "",
+          vehiculoId: vehicleId || ""
+        };
+        legacyUpdates[`disponibilidadAsientos/${scheduleId}`] = {
+          asientosDisponibles: capacity,
+          totalAsientos: capacity
+        };
+        await update(ref(db), legacyUpdates);
+      } catch (legacyErr) {
+        console.info("ℹ️ Nodos legados no modificados (restringidos por reglas):", legacyErr.message);
+      }
+
       return { success: true, scheduleId };
     } catch (error) {
       console.error("❌ Error creando horario:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Actualiza un turno u horario de despacho existente
+   */
+  updateSchedule: async (scheduleId, { route, time, price, duration, driverId, vehicleId }) => {
+    try {
+      const scheduleData = {
+        id: scheduleId,
+        route,
+        time,
+        price: String(price || 12000),
+        duration: duration || "60 min",
+        driverId: driverId || "",
+        vehicleId: vehicleId || ""
+      };
+
+      const primaryUpdates = {};
+      primaryUpdates[`schedules/${scheduleId}`] = scheduleData;
+
+      await update(ref(db), primaryUpdates);
+
+      // Intentar actualizar nodos legados
+      try {
+        const legacyUpdates = {};
+        legacyUpdates[`horarios/${scheduleId}`] = {
+          id: scheduleId,
+          ruta: route,
+          hora: time,
+          conductorId: driverId || "",
+          vehiculoId: vehicleId || ""
+        };
+        await update(ref(db), legacyUpdates);
+      } catch (legacyErr) {
+        console.info("ℹ️ Nodos legados no modificados:", legacyErr.message);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("❌ Error actualizando horario:", error);
       throw error;
     }
   },
@@ -59,13 +108,21 @@ export const scheduleService = {
    */
   deleteSchedule: async (scheduleId) => {
     try {
-      const updates = {};
-      updates[`schedules/${scheduleId}`] = null;
-      updates[`horarios/${scheduleId}`] = null;
-      updates[`seatAvailability/${scheduleId}`] = null;
-      updates[`disponibilidadAsientos/${scheduleId}`] = null;
+      const primaryUpdates = {};
+      primaryUpdates[`schedules/${scheduleId}`] = null;
+      primaryUpdates[`seatAvailability/${scheduleId}`] = null;
 
-      await update(ref(db), updates);
+      await update(ref(db), primaryUpdates);
+
+      try {
+        const legacyUpdates = {};
+        legacyUpdates[`horarios/${scheduleId}`] = null;
+        legacyUpdates[`disponibilidadAsientos/${scheduleId}`] = null;
+        await update(ref(db), legacyUpdates);
+      } catch (e) {
+        // Ignorar restricción en nodos legados
+      }
+
       return { success: true };
     } catch (error) {
       console.error("❌ Error eliminando horario:", error);

@@ -10,16 +10,18 @@ import { FormatUtils } from '../../utils/FormatUtils';
  * Implementa lógica de 'Next Trip' y '7 PM Reset'.
  * Sigue Atomic Design & DRY.
  */
-export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [], hideActions = false }) {
+export function ScheduleTable({ schedules, drivers, role, onManage, onEdit, vehicles = [], hideActions = false }) {
   const nextTripRef = useRef(null);
 
   const getTripMinutes = (horaStr) => {
     try {
-      const [time, ampm] = horaStr.split(' ');
+      if (!horaStr) return 0;
+      const str = typeof horaStr === 'string' ? horaStr : (horaStr.time || horaStr.hora || '');
+      const [time, ampm] = str.trim().split(' ');
       let [hours, minutes] = time.split(':').map(Number);
       if (ampm === 'PM' && hours < 12) hours += 12;
       if (ampm === 'AM' && hours === 12) hours = 0;
-      return hours * 60 + minutes;
+      return hours * 60 + (minutes || 0);
     } catch (e) {
       return 0;
     }
@@ -34,11 +36,10 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     const isAfterReset = hAct >= 19;
 
     if (isAfterReset) {
-      // Regla de Oro: Después de las 7 PM, el próximo viaje es el primero de mañana
       let firstTrip = schedules[0];
-      let earliest = getTripMinutes(schedules[0].hora);
+      let earliest = getTripMinutes(schedules[0].time || schedules[0].hora);
       schedules.forEach(s => {
-        const m = getTripMinutes(s.hora);
+        const m = getTripMinutes(s.time || s.hora);
         if (m < earliest) {
           earliest = m;
           firstTrip = s;
@@ -50,9 +51,8 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     let closestTripId = null;
     let minDiff = Infinity;
     schedules.forEach(s => {
-      const tripMinutes = getTripMinutes(s.hora);
+      const tripMinutes = getTripMinutes(s.time || s.hora);
       const diff = tripMinutes - currentMinutes;
-      // Solo consideramos viajes que no han pasado
       if (diff > 0 && diff < minDiff) {
         minDiff = diff;
         closestTripId = s.id;
@@ -63,8 +63,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
 
   const nextTripId = getNextTripId();
 
-  // 🛡️ REFACTOR v1.9.10: Lógica de Jornada Completada (Mirror Android)
-  const allPassed = schedules.length > 0 && schedules.every(s => FormatUtils.isPastSchedule(s.hora));
+  const allPassed = schedules.length > 0 && schedules.every(s => FormatUtils.isPastSchedule(s.time || s.hora));
 
   // Auto-scroll al viaje siguiente
   useEffect(() => {
@@ -87,7 +86,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
     <div className="space-y-4 max-w-5xl mx-auto">
       {schedules.length > 0 ? (
         schedules.map((schedule) => {
-          const hasPassed = FormatUtils.isPastSchedule(schedule.hora);
+          const hasPassed = FormatUtils.isPastSchedule(schedule.time || schedule.hora);
           const isNext = schedule.id === nextTripId;
 
           return (
@@ -98,6 +97,7 @@ export function ScheduleTable({ schedules, drivers, role, onManage, vehicles = [
               drivers={drivers}
               role={role}
               onManage={onManage}
+              onEdit={onEdit}
               isNext={isNext}
               hasPassed={hasPassed}
               vehicles={vehicles}

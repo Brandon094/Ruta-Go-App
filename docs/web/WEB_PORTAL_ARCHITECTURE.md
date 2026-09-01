@@ -1,6 +1,6 @@
-# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go v1.1.6
+# 🖥️ Arquitectura y Ecosistema Web - Ruta-Go v2.0.1-BETA
 
-Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal**, la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga y La Plata.
+Este documento detalla la estructura, flujo de datos y gobernanza del **Ruta-Go Web Portal**, la plataforma centralizada para la gestión del Holding Tecnológico que conecta Nátaga, La Plata, Neiva y municipios intermunicipales del Huila.
 
 ---
 
@@ -12,11 +12,12 @@ La plataforma utiliza una arquitectura de **Single Page Application** de alto re
 *   **Infraestructura**: Patrón **Singleton** mediante `FirebaseManager`.
 *   **Estructura Atómica**:
     *   **Atoms**: `Button`, `Badge`, `Input`, `Modal`, `BrandLogo`.
-    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `ContactInfo`, `StatsCard`, `RouteProgressCard`, `SplashScreen`.
-    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `ScheduleTable`, `Sidebar`, `DirectoryHeader`, `AuthLayout`.
+    *   **Molecules**: `SummaryMetric`, `IconRow`, `ScheduleCard`, `ContactInfo`, `StatsCard`, `RouteProgressCard`, `PricingCard`, `SplashScreen`.
+    *   **Organisms**: `ExecutiveHeader`, `MirrorHeader`, `ScheduleTable`, `PricingDirectory`, `ScheduleDirectory`, `VehicleDirectory`, `DriverDirectory`, `OwnerDirectory`, `AddRouteModal`, `AddScheduleModal`, `EditScheduleModal`, `AddOwnerModal`, `AddDriverModal`, `EditDriverModal`, `VehicleModal`, `Sidebar`, `DirectoryHeader`, `AuthLayout`.
 *   **Optimización**: 
     *   **Code Splitting**: Uso de `React.lazy` y `Suspense` para carga modular.
     *   **Fluid UI**: Uso de `useTransition` para eliminar parpadeos en cambios de estado pesados.
+    *   **Subscripciones Desacopladas**: Subscripciones reactivas de nivel superior sin anidamiento para evitar fuga de listeners.
 *   **Utilidades**: `FormatUtils.js` y `AnimationUtils.js` sincronizados 1:1 con la lógica de Android.
 
 ---
@@ -38,9 +39,14 @@ Basada en **RBAC (Role Based Access Control)**:
 El portal no solo consume datos, los procesa para la toma de decisiones:
 
 *   **Motor Analítico 360°**: Calcula la ocupación y los ingresos sumando reservas digitales y bloqueos manuales (ventas en calle).
-*   **Detección de Trayecto**: Algoritmo que clasifica la información basándose en el destino final (`-> Destino`).
-*   **Gestión de Flota**: Vínculo dinámico entre `ownerId`, `driverId` y `vehicleId` con reglas de seguridad que garantizan el aislamiento comercial.
-*   **Asignación Inteligente**: Soporte para grupos de horarios (Turno 8 Triple) y reseteo automático de capacidad.
+*   **Gestión Dinámica de Rutas y Horarios (CRUD Completo)**:
+    *   `AddRouteModal.jsx` y `AddScheduleModal.jsx` para la creación de rutas dinámicas e itinerarios.
+    *   `EditScheduleModal.jsx` y `scheduleService.updateSchedule` para modificar hora, tarifa, ruta, conductor o bus en tiempo real.
+    *   `PassengerOverview.jsx`: Selector de Origen/Destino y chips de cambio rápido.
+*   **Gobernanza de Flota y Promoción de Socios**:
+    *   `AddOwnerModal.jsx` y `ownerService.promoteUserToOwnerByEmail`: Ascenso directo de cualquier usuario al rol `owner` por correo o selección desplegable.
+    *   `VehicleModal.jsx` y `vehicleService`: Selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
+*   **Asignación Inteligente**: Soporte para grupos de horarios y reseteo automático de capacidad a 13/13 puestos.
 
 ---
 

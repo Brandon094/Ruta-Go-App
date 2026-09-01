@@ -100,19 +100,26 @@ export const FormatUtils = {
   },
 
   /**
-   * Filtra horarios por dirección de ruta (Natagá -> La Plata o viceversa).
+   * Filtra horarios por dirección o nombre de ruta.
    */
   filterSchedulesByRoute: (schedules, direction = 'toLaPlata') => {
     const list = Array.isArray(schedules) ? schedules : [];
+    if (!direction || direction === 'all' || direction === 'todas') return list;
+
     return list.filter(s => {
-      const ruta = FormatUtils.normalizeText(s.ruta || "");
-      const nIdx = ruta.indexOf('nataga');
-      const lpIdx = ruta.indexOf('la plata');
+      const ruta = FormatUtils.normalizeText(s.ruta || s.route || "").replace(/➔/g, '->');
 
       if (direction === 'toLaPlata') {
+        const nIdx = ruta.indexOf('nataga');
+        const lpIdx = ruta.indexOf('la plata');
         return (nIdx !== -1 && lpIdx !== -1 && nIdx < lpIdx);
-      } else {
+      } else if (direction === 'toNataga') {
+        const nIdx = ruta.indexOf('nataga');
+        const lpIdx = ruta.indexOf('la plata');
         return (nIdx !== -1 && lpIdx !== -1 && lpIdx < nIdx);
+      } else {
+        const targetNorm = FormatUtils.normalizeText(direction).replace(/➔/g, '->');
+        return ruta === targetNorm || ruta.includes(targetNorm) || targetNorm.includes(ruta);
       }
     });
   }

@@ -9,22 +9,34 @@ export const vehicleService = {
    * Registra un nuevo vehículo en /vehicles/
    */
   registerVehicle: async (vehicleData) => {
-    const plate = vehicleData.plate || vehicleData.placa || vehicleData.id;
-    const vehicleRef = ref(db, `vehicles/${plate}`);
+    const plate = (vehicleData.plate || vehicleData.placa || vehicleData.id || "").toUpperCase().trim();
+    if (!plate) throw new Error("La placa del vehículo es obligatoria.");
+
+    const vehicleObj = {
+      id: plate,
+      plate: plate,
+      model: vehicleData.model || vehicleData.modelo || "",
+      brand: vehicleData.brand || vehicleData.marca || "",
+      color: vehicleData.color || "",
+      year: String(vehicleData.year || vehicleData.ano || vehicleData.año || ""),
+      capacity: Number(vehicleData.capacity || vehicleData.capacidad || 13),
+      driverId: vehicleData.driverId || vehicleData.conductorId || "",
+      ownerId: vehicleData.ownerId || "",
+      status: 'active',
+      registrationDate: Date.now()
+    };
+
+    const updates = {};
+    updates[`vehicles/${plate}`] = vehicleObj;
+
+    // Sincronizar asignación de vehículo en el perfil del conductor si aplica
+    if (vehicleObj.driverId) {
+      updates[`users/${vehicleObj.driverId}/vehicleId`] = plate;
+      updates[`users/${vehicleObj.driverId}/vehiclePlate`] = plate;
+    }
+
     try {
-      await set(vehicleRef, {
-        id: plate,
-        plate: plate,
-        model: vehicleData.model || vehicleData.modelo || "",
-        brand: vehicleData.brand || vehicleData.marca || "",
-        color: vehicleData.color || "",
-        year: vehicleData.year || vehicleData.ano || vehicleData.año || "",
-        capacity: Number(vehicleData.capacity || vehicleData.capacidad || 13),
-        driverId: vehicleData.driverId || vehicleData.conductorId || "",
-        ownerId: vehicleData.ownerId || "",
-        status: 'active',
-        registrationDate: Date.now()
-      });
+      await update(ref(db), updates);
       return { success: true };
     } catch (error) {
       console.error("Error registrando vehículo:", error);
@@ -35,10 +47,32 @@ export const vehicleService = {
   /**
    * Actualiza la información de un vehículo en /vehicles/
    */
-  updateVehicle: async (plate, data) => {
-    const vehicleRef = ref(db, `vehicles/${plate}`);
+  updateVehicle: async (plate, vehicleData) => {
+    const p = plate.toUpperCase().trim();
+    const cleanData = {
+      id: p,
+      plate: p,
+      model: vehicleData.model || vehicleData.modelo || "",
+      brand: vehicleData.brand || vehicleData.marca || "",
+      color: vehicleData.color || "",
+      year: String(vehicleData.year || vehicleData.ano || vehicleData.año || ""),
+      capacity: Number(vehicleData.capacity || vehicleData.capacidad || 13),
+      driverId: vehicleData.driverId || vehicleData.conductorId || "",
+      ownerId: vehicleData.ownerId || "",
+      status: vehicleData.status || vehicleData.estado || 'active'
+    };
+
+    const updates = {};
+    updates[`vehicles/${p}`] = cleanData;
+
+    // Sincronizar asignación de vehículo en el perfil del conductor
+    if (cleanData.driverId) {
+      updates[`users/${cleanData.driverId}/vehicleId`] = p;
+      updates[`users/${cleanData.driverId}/vehiclePlate`] = p;
+    }
+
     try {
-      await update(vehicleRef, data);
+      await update(ref(db), updates);
       return { success: true };
     } catch (error) {
       console.error("Error actualizando vehículo:", error);

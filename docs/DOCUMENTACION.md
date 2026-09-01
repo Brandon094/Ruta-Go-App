@@ -1,6 +1,6 @@
-# 📖 Enciclopedia Técnica Integral - Ecosistema "Go" v1.9.9.5 Ecosystem
+# 📖 Enciclopedia Técnica Integral - Ecosistema "Go" v2.0.1-BETA Ecosystem
 
-Bienvenido al centro de conocimiento oficial de **ChopCode Solutions**. Este documento sirve como punto de entrada de alto nivel para comprender el **Ecosistema "Go"**, una suite tecnológica unificada diseñada para revolucionar la movilidad y la productividad rural en la región de **Nátaga** y **La Plata**.
+Bienvenido al centro de conocimiento oficial de **ChopCode Solutions**. Este documento sirve como punto de entrada de alto nivel para comprender el **Ecosistema "Go"**, una suite tecnológica unificada diseñada para revolucionar la movilidad y la productividad rural en la región del Huila (Nátaga, La Plata, Neiva y municipios intermunicipales).
 
 ---
 

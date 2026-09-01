@@ -1,17 +1,18 @@
-# 🚍 Ruta-Go (Transporte Nátaga - La Plata) | v1.9.9.5 High Fidelity 🚀
+# 🚍 Ruta-Go (Transporte Nátaga - La Plata - Huila) | v2.0.1-BETA 🚀
 
-**Ruta-Go** es una plataforma integral de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **v1.9.9.5 "High Fidelity"** representa la cúspide de la paridad visual y funcional entre la App nativa (Android) y el Portal Web, operando bajo una arquitectura atómica y preparándose para la expansión a Android Auto. ✨
+**Ruta-Go** es una plataforma integral de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **v2.0.1-BETA** consolida la migración completa a **Jetpack Compose en Android** y un **Motor de Rutas e Itinerarios Dinámicos en React**, operando bajo el esquema NoSQL v2.0 Clean Schema con paridad total en tiempo real entre móvil y web. ✨
 
 ---
 
-## 🏆 Hitos de la Suite Integral (v1.9.9.5)
-*   🌐 **Portal Web "Mirror Edition"**: Paridad 1:1 con la App móvil para pasajeros y conductores. Incluye **Lead Magnet** de horarios en la Landing Page para captación reactiva.
-*   ⚡ **Motor de Transiciones React 18**: Navegación fluida y sin parpadeos mediante `useTransition` y Code Splitting.
-*   🎨 **Arquitectura Atómica**: Sistema de diseño modular (Atoms, Molecules, Organisms) que garantiza consistencia y escalabilidad.
-*   📊 **Inteligencia Analítica 360°**: Cálculo de ingresos en tiempo real sumando reservas digitales y ventas físicas en calle.
-*   🚀 **Android 15 (SDK 35) Ready**: Optimización total para la última versión de Android, incluyendo soporte Edge-to-Edge.
-*   🔔 **Ecosistema de Notificaciones**: Motor unificado basado en **FCM v1** para alertas críticas de viaje.
-*   ⚖️ **Cumplimiento Legal & Habeas Data**: Protocolos estrictos de tratamiento de datos y flujo automatizado de derecho al olvido.
+## 🏆 Hitos de la Suite Integral (v2.0.1-BETA)
+*   📱 **UI 100% Jetpack Compose**: Interfaz móvil Android declarativa construida bajo **Atomic Design System** y Material 3.
+*   🗺️ **Motor de Rutas e Itinerarios Dinámicos**: Gestión interactiva de rutas y tarifas desde el Portal Web (`AddRouteModal.jsx`, `AddScheduleModal.jsx`, `EditScheduleModal.jsx`) con autocompletado de precios, tiempos y edición/eliminación en tiempo real.
+*   🧭 **Navegación Dinámica en Planilla & Home**: Selector dinámico de Origen y Destino (`PassengerOverview.jsx`) y pestañas reactivas por trayecto (`ScheduleDirectory.jsx`, `LandingSchedules.jsx`).
+*   🚗 **Vinculación de Flota, Socios y Conductores**: Módulo de activos (`VehicleModal.jsx`) con selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
+*   👑 **Ascenso Directo de Socios**: Herramienta de super-poderes para el Admin Root (`AddOwnerModal.jsx`) para promover cualquier usuario a Socio de Flota por correo o selección desplegable.
+*   ⚡ **Desacoplamiento de Flota**: Creación flexible de horarios para el Admin Root sin requerir vehículos o conductores asignados previamente.
+*   🌐 **Portal Web "Mirror Edition"**: Paridad 1:1 con la App móvil para pasajeros, conductores, dueños y administradores con Google Sign-In para Pasajeros y Socios.
+*   🚀 **Android 16 (SDK 36) Ready**: Optimización total para la última versión de Android, incluyendo soporte Edge-to-Edge nativo.
 
 ---
 
@@ -45,7 +46,7 @@
 | 🤖 **Ingeniería** | [**Guías de Desarrollo**](./docs/core/technical/DEVELOPER_GUIDELINES.md) | Estándares de código, Git semántico y reglas de oro. |
 | 📖 **Manual** | [**Manual de Usuario**](./docs/core/product/USER_MANUAL.md) | Guía práctica para pasajeros, conductores y socios. |
 | 🛡️ **Legal** | [**Gestión de Datos**](./docs/core/legal/DATA_MANAGEMENT_MANUAL.md) | Protocolos de privacidad y Habeas Data (Ley 1581). |
-| 📜 **Historial** | [**Changelog Oficial**](./docs/core/operations/CHANGELOG.md) | Registro detallado de la evolución hacia la v1.9.9.5. |
+| 📜 **Historial** | [**Changelog Oficial**](./docs/core/operations/CHANGELOG.md) | Registro detallado de la evolución hacia la v2.0.1-BETA. |
 
 ---
 

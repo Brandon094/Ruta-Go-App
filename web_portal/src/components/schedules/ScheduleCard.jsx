@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Bus, Tag, Plus } from 'lucide-react';
+import { User, Bus, Tag, Plus, Pencil } from 'lucide-react';
 import { FormatUtils } from '../../utils/FormatUtils';
 
 /**
@@ -12,27 +12,30 @@ export function ScheduleCard({
   drivers = [],
   role,
   onManage,
+  onEdit,
   isNext,
   hasPassed,
   vehicles = [],
   innerRef,
   hideActions = false
 }) {
-  const [timeStr, ampm] = schedule.hora.split(' ');
+  const timeText = schedule.time || schedule.hora || '08:00 AM';
+  const [timeStr, ampm] = timeText.split(' ');
   const safeDrivers = Array.isArray(drivers) ? drivers : [];
-  const driver = safeDrivers.find(d => d.id === schedule.conductorId);
+  const driverId = schedule.driverId || schedule.conductorId;
+  const driver = safeDrivers.find(d => d.id === driverId);
 
-  const vehicleId = schedule.vehiculoId || driver?.vehiculoId || driver?.placaVehiculo;
-  const vehicle = vehicles.find(v => v.id === vehicleId || v.placa === vehicleId);
-  const totalSeats = vehicle?.capacidad || 13;
+  const vehicleId = schedule.vehicleId || schedule.vehiculoId || driver?.vehicleId || driver?.vehiculoId || driver?.placaVehiculo;
+  const vehicle = vehicles.find(v => v.id === vehicleId || v.plate === vehicleId || v.placa === vehicleId);
+  const totalSeats = vehicle?.capacity || vehicle?.capacidad || 13;
 
-  const dbTotal = schedule.totalAsientos || 0;
-  const dbAvailable = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles : schedule.asientosLibres;
+  const dbTotal = schedule.totalAsientos || schedule.totalSeats || 0;
+  const dbAvailable = schedule.asientosDisponibles !== undefined ? schedule.asientosDisponibles : (schedule.availableSeats !== undefined ? schedule.availableSeats : schedule.asientosLibres);
 
   const available = (dbTotal > 0) ? dbAvailable : totalSeats;
   const isFull = (dbTotal > 0) && dbAvailable === 0;
 
-  const isMe = schedule.conductorId === role?.uid;
+  const isMe = driverId === role?.uid;
   const isManagement = role?.type === 'ADMIN' || role?.type === 'OWNER';
   const isExternal = role?.type === 'OWNER' && !safeDrivers.some(d => d.id === schedule.conductorId);
 
@@ -69,13 +72,13 @@ export function ScheduleCard({
         <div className="flex-1 min-w-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-1">
             <h4 className="text-sm md:text-lg font-black text-[#061426] dark:text-white tracking-tight truncate uppercase italic">
-              {schedule.ruta}
+              {schedule.route || schedule.ruta}
             </h4>
-            {!(role?.type === 'OWNER' && isExternal) && driver && (
+            {!(role?.type === 'OWNER' && isExternal) && (
               <div className="flex items-center gap-2 text-slate-400 dark:text-white/30 italic">
                  <User size={12} />
                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[150px]">
-                   {isMe ? 'Tú manejas' : driver.nombre}
+                   {driver ? (isMe ? 'Tú manejas' : (driver.name || driver.nombre)) : 'Sin Conductor Asignado'}
                  </span>
               </div>
             )}
@@ -92,7 +95,7 @@ export function ScheduleCard({
 
               <div className={`flex items-center gap-2 font-black ${hasPassed ? 'text-slate-300' : 'text-primary-500'}`}>
                  <Tag size={16} />
-                 <span className="text-sm tracking-tighter">{FormatUtils.formatPrice(12000)}</span>
+                 <span className="text-sm tracking-tighter">{FormatUtils.formatPrice(schedule.price || schedule.precio || 12000)}</span>
               </div>
             </div>
 
@@ -107,35 +110,43 @@ export function ScheduleCard({
           </div>
         </div>
 
-        {/* 🔘 Botón de Acción (Android Style) */}
-        {!hideActions && (
-          <div className="shrink-0 overflow-hidden">
-             {onManage ? (
-               <button
-                 disabled={hasPassed || (isFull && !isManagement)}
-                 onClick={() => {
-                   if (hasPassed) return;
-                   onManage(schedule);
-                 }}
-                 className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
-                   hasPassed
-                    ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
-                    : (isFull && !isManagement)
-                      ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
-                      : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
-                 }`}
-               >
-                 {hasPassed ? (
-                   <Bus size={32} />
-                 ) : (
-                   <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
-                 )}
-               </button>
-             ) : (
-               <div className="w-16 h-16" />
-             )}
-          </div>
-        )}
+        {/* 🔘 Botones de Acción (Admin Edit & Managing) */}
+        <div className="shrink-0 flex items-center gap-2">
+           {role?.type === 'ADMIN' && onEdit && (
+             <button
+               type="button"
+               onClick={() => onEdit(schedule)}
+               title="Editar Horario"
+               className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 hover:bg-primary-500 text-slate-600 dark:text-white hover:text-white transition-all duration-200 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm"
+             >
+               <Pencil size={18} />
+             </button>
+           )}
+
+           {!hideActions && onManage && (
+             <button
+               type="button"
+               disabled={hasPassed || (isFull && !isManagement)}
+               onClick={() => {
+                 if (hasPassed) return;
+                 onManage(schedule);
+               }}
+               className={`w-16 h-16 rounded-full shadow-2xl transition-all transform active:scale-90 flex items-center justify-center group/btn ${
+                 hasPassed
+                  ? 'bg-primary-500/20 text-primary-500/40 cursor-not-allowed animate-bus-departure'
+                  : (isFull && !isManagement)
+                    ? 'bg-slate-200 dark:bg-white/5 text-slate-400 dark:text-white/10 cursor-not-allowed'
+                    : 'bg-primary-500 text-white shadow-primary-500/40 hover:bg-primary-600'
+               }`}
+             >
+               {hasPassed ? (
+                 <Bus size={32} />
+               ) : (
+                 <Plus size={32} className="group-hover/btn:rotate-90 transition-transform" />
+               )}
+             </button>
+           )}
+        </div>
       </div>
     </div>
   );

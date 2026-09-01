@@ -61,38 +61,40 @@ Este documento describe la visión a futuro de la plataforma Ruta-Go, detallando
 
 ---
 
-## 📱 Fase 4: Modernización Android & Normalización NoSQL (En Desarrollo)
-*Objetivo: Migrar la App Android a Compose, unificar la base de datos NoSQL y preparar la integración in-vehicle.*
+## 📱 Fase 4: Modernización Android, Normalización NoSQL & Rutas Dinámicas (Completado)
+*Objetivo: Migración a Compose, unificación NoSQL v2.0, gestor de rutas dinámicas y soporte multi-municipio.*
 
-### 🏗️ 1. Modernización Nativa & UI Declarativa (98% Completado)
+### 🏗️ 1. Modernización Nativa & UI Declarativa (Completado)
 *   [x] **🎨 Transición 100% a Jetpack Compose**: UI declarativa en Single-Activity (`MainActivity.kt`) siguiendo Atomic Design y MVVM.
 *   [x] **🔑 Autenticación Social Google One Tap**: Integración con `GoogleLoginService` e `IntentSenderRequest`.
 *   [x] **💾 Persistencia de Sesión & Onboarding**: Almacenamiento local centralizado en `SessionManager` (`rutago_prefs`).
 *   [x] **🗺️ Navegación Robusta de Reservas**: Flujo completo de Selección de Asientos ➔ Confirmación con `Uri.encode`.
 
-### 📊 2. Unificación NoSQL v2.0 (En Progreso)
-*   [x] **🌐 Esquema Unificado en Inglés**: Normalización de llaves NoSQL (`users`, `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`, `driverRatings`).
+### 📊 2. Unificación NoSQL v2.0 & Sincronización Web/Móvil (Completado)
+*   [x] **🌐 Esquema Unificado en Inglés**: Normalización de llaves NoSQL (`users`, `schedules`, `vehicles`, `reservations`, `prices`, `seatAvailability`, `driverRatings`, `routes`).
 *   [x] **👨‍✈️ Consolidación de Conductores**: Eliminación del nodo `/conductores/` integrando perfiles operativos en `/users/` bajo el atributo `role: "driver"`.
-*   [x] **📄 Carga de JSON Semilla Normalizado en Firebase**: Base de datos de producción actualizada al esquema v2.0.
-*   [ ] **⚙️ Actualización de Consultas Nativas, Web & Cloud Functions (TAREA PROGRAMADA - MAÑANA)**:
-    *   Ajustar `AuthRepositoryImpl`, `UserService`, `ScheduleService`, `NotificationManager` en Android para consumir `/users/` y `/schedules/`.
-    *   Ajustar hooks del Portal Web (`useRealtimeData`, `useRoleResolver`) para consumir `/users/`.
-    *   Ajustar Cloud Functions (`index.js`) para la rotación de turnos sobre `/users/` y `/schedules/`.
+*   [x] **⚙️ Sincronización de Consultas Nativas & Web**:
+    *   Ajustados `AuthRepositoryImpl`, `UserService`, `ScheduleService`, `PriceService` en Android para consumir `/users/`, `/prices/` y `/schedules/`.
+    *   Ajustados hooks del Portal Web (`useRealtimeData`, `useRoleResolver`) para consumir `/users/`, `/schedules/`, `/prices/` y `/routes/` con subscripciones de nivel superior.
 
-### 🚗 3. Ruta-Go In-Car (Android Auto)
-*   [ ] **🎮 Interfaz Android Auto**: Panel de control simplificado para la pantalla del vehículo de la flota.
-*   [ ] **✅ Gestión Manos Libres**: Permitir que el conductor acepte o cancele reservas con un solo toque desde el tablero.
-*   [ ] **📢 Avisos por Voz**: Notificaciones de voz para nuevos pasajeros en tiempo real.
+### 🗺️ 3. Rutas Dinámicas, Multi-Municipio & Registro con Google (Completado)
+*   [x] **📍 Creador y Editor de Rutas e Itinerarios (CRUD)**:
+    *   `AddRouteModal.jsx` y `AddScheduleModal.jsx` para la creación de rutas dinámicas y horarios sin requerir flota asignada previa.
+    *   `EditScheduleModal.jsx` y `scheduleService.updateSchedule` para modificar o eliminar cualquier parámetro de horarios en tiempo real.
+*   [x] **🔍 Buscador Universal de Viajes por Origen/Destino**:
+    *   `PassengerOverview.jsx`: Selector desplegable de Origen/Destino y chips de cambio rápido.
+    *   `LandingSchedules.jsx`: Agrupamiento en tiempo real de horarios para cualquier trayecto registrado.
+*   [x] **🔑 Google Sign-In para Registro de Socios**: Botón de registro con Google en `Register.jsx` con asignación automática de `role: "owner"`.
 
 ---
 
-## 📉 Fase 5: Diversificación y Expansión Regional (Largo Plazo)
-*Objetivo: Solución integral de movilidad departamental y control definitivo del flujo de paquetería local.*
+## 📉 Fase 5: Diversificación y Expansión Regional (Próxima Fase)
+*Objetivo: Solución integral de movilidad departamental, Android Auto y control definitivo del flujo de paquetería local.*
 
-### 🗺️ 1. Rutas Dinámicas & Multi-Municipio
-*   [ ] **📍 Gestión de Localidades**: Módulo para que el Admin Root añada nuevos municipios al ecosistema (Paicol, Tesalia, Neiva, etc.).
-*   [ ] **⚙️ Creador de Itinerarios CRUD**: Interfaz administrativa para generar nuevos turnos y rutas sin intervención técnica.
-*   [ ] **🔍 Buscador Universal de Viajes**: Motor de búsqueda inteligente por origen y destino.
+### 🚗 1. Ruta-Go In-Car (Android Auto)
+*   [ ] **🎮 Interfaz Android Auto**: Panel de control simplificado para la pantalla del vehículo de la flota.
+*   [ ] **✅ Gestión Manos Libres**: Permitir que el conductor acepte o cancele reservas con un solo toque desde el tablero.
+*   [ ] **📢 Avisos por Voz**: Notificaciones de voz para nuevos pasajeros en tiempo real.
 
 ### 🚚 2. Logística & Servicios Extra
 1.  **📦 Módulo de Encomiendas "Ruta-Go Cargo"**: Registro rápido de paquetes físicos y sistema de rastreo para el cliente.

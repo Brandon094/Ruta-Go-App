@@ -80,7 +80,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routeStats, vehicles } = useRealtimeStats(user);
+  const { role, stats, drivers, allDrivers, users: usersList, owners, schedules, reservations, personalReservations, prices, routes, routeStats, vehicles } = useRealtimeStats(user);
 
   // 🔔 Inicializar Motor de Notificaciones (FCM Web)
   useNotifications(user, role);
@@ -215,6 +215,7 @@ function App() {
               <VehicleDirectory
                 vehicles={vehicles}
                 drivers={allDrivers}
+                owners={owners}
                 onAdd={() => setIsAddingVehicle(true)}
                 onEdit={(v) => setEditingVehicle(v)}
                 onDelete={(placa) => {
@@ -225,7 +226,7 @@ function App() {
                 role={role}
               />
             ) : activeTab === 'pricing' ? (
-              <PricingDirectory prices={prices || {}} />
+              <PricingDirectory prices={prices || {}} routesList={routes || []} />
             ) : activeTab === 'passenger_view' ? (
               <PassengerOverview
                 stats={stats}
@@ -282,8 +283,27 @@ function App() {
 
         {editingDriver && <EditDriverModal driver={editingDriver} onClose={() => setEditingDriver(null)} onRefresh={() => {}} role={role} owners={owners} users={usersList} vehicles={vehicles} />}
         {isAddingDriver && <AddDriverModal onClose={() => setIsAddingDriver(false)} users={usersList} owners={owners} vehicles={vehicles} currentUser={user} role={role} />}
-        {isAddingVehicle && <VehicleModal isOpen={true} onClose={() => setIsAddingVehicle(false)} role={role} />}
-        {editingVehicle && <VehicleModal isOpen={true} onClose={() => setEditingVehicle(null)} vehicle={editingVehicle} role={role} />}
+        {isAddingVehicle && (
+          <VehicleModal
+            isOpen={true}
+            onClose={() => setIsAddingVehicle(false)}
+            role={role}
+            drivers={allDrivers}
+            owners={owners}
+            users={usersList}
+          />
+        )}
+        {editingVehicle && (
+          <VehicleModal
+            isOpen={true}
+            onClose={() => setEditingVehicle(null)}
+            vehicle={editingVehicle}
+            role={role}
+            drivers={allDrivers}
+            owners={owners}
+            users={usersList}
+          />
+        )}
         {managingSchedule && (
           <SeatManagementModal
             schedule={managingSchedule}

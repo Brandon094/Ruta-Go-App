@@ -5,7 +5,7 @@ import React from 'react';
  * Unifica el estilo de todos los inputs del portal (Login, Perfil, Registro, etc.)
  * Soporta tanto elementos de icono como componentes de icono.
  */
-export function Input({ label, icon: Icon, placeholder, value, onChange = () => {}, type = "text", disabled = false, required = false }) {
+export function Input({ label, icon: Icon, placeholder, value, onChange = () => {}, type = "text", disabled = false, required = false, list, ...props }) {
 
   // Renderizado seguro del icono (Atomic Style)
   const renderIcon = () => {
@@ -37,6 +37,8 @@ export function Input({ label, icon: Icon, placeholder, value, onChange = () => 
           required={required}
           disabled={disabled}
           placeholder={placeholder}
+          list={list}
+          {...props}
           className={`
             block w-full pr-6 py-5 rounded-2xl font-bold border transition-all shadow-inner outline-none
             bg-slate-50 dark:bg-[#0A1F30] text-slate-800 dark:text-white border-slate-100 dark:border-white/5

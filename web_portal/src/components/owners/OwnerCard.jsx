@@ -11,9 +11,10 @@ import { ownerService } from '../../services/ownerService';
  * Diseño expansible para optimizar espacio.
  */
 export function OwnerCard({ owner, userProfile }) {
+  const profile = userProfile || owner;
   const [loading, setLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const isApproved = owner.status === true;
+  const isApproved = profile.status === 'active' || profile.role === 'owner' || owner.status === true;
 
   const handleToggleStatus = async (e) => {
     e.stopPropagation(); // Evitar que el click en el botón active el toggle del card
@@ -44,7 +45,7 @@ export function OwnerCard({ owner, userProfile }) {
           </div>
           <div className="min-w-0 text-left">
             <h4 className="font-black text-slate-800 dark:text-white text-base truncate uppercase italic leading-tight">
-              {userProfile?.nombre || 'Socio sin nombre'}
+              {profile.name || profile.nombre || 'Socio sin nombre'}
             </h4>
             <div className="flex items-center gap-2 mt-1">
               <p className="text-[10px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest">
@@ -64,8 +65,8 @@ export function OwnerCard({ owner, userProfile }) {
         <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
           {/* Información de Contacto (DRY) */}
           <ContactInfo
-            email={userProfile?.email}
-            phone={userProfile?.telefono}
+            email={profile.email}
+            phone={profile.phone || profile.telefono}
             className="text-left border-t border-slate-50 dark:border-white/5 pt-6"
           />
 

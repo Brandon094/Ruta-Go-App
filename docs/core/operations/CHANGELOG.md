@@ -4,6 +4,40 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
+## [2.0.1-BETA] - 2026-08-31 (Dynamic Routes & Schedule Management Engine)
+*Integración dinámica de rutas, autocompletado de tarifas, desacoplamiento de asignación de flota y optimización de reactividad NoSQL v2.0.*
+
+### 🌐 Ruta-Go Web (Portal v2.0)
+- **Sincronización NoSQL de Conductores y Escalafón (`DriverCard.jsx`, `DriverDirectory.jsx`, `EditDriverModal.jsx` & `driverService.js`)**:
+  - Corregido el mapeo de propiedades en `DriverCard.jsx` y `DriverDirectory.jsx` para soportar las llaves del esquema NoSQL v2.0 (`name`, `vehiclePlate`, `vehicleId`, `assignedSchedules`, `phone`) con soporte pasivo a campos legados.
+  - Los conductores registrados que no tienen turnos aún asignados se agrupan en **"Registrados / Sin Turno"** mostrando su nombre completo ("Liye Daza"), correo, teléfono y bus vinculado ("TBO550").
+  - Actualizado `driverService.js` para sincronizar atómicamente la asignación de turnos e itinerarios en `/users/${driverId}`, `/vehicles/${plate}` y `/schedules/${scheduleId}`.
+- **Vinculación de Flota, Socios y Conductores (`VehicleModal.jsx`, `VehicleCard.jsx` & `vehicleService.js`)**:
+  - Actualizado el modal de vehículos para permitir la selección interactiva de **Socio / Dueño de Flota** (`ownerId`) y **Conductor Asignado** (`driverId`).
+  - Implementada sincronización bidireccional en `vehicleService.js`: al asignar un vehículo a un conductor, actualiza automáticamente los atributos `vehicleId` y `vehiclePlate` en `/users/${driverId}`.
+  - Actualizada la tarjeta de vehículo (`VehicleCard.jsx`) para desplegar la información del Socio y Conductor vinculados.
+- **Ascenso Directo de Socios por Correo y Selección (`AddOwnerModal.jsx`, `Input.jsx` & `ownerService.js`)**:
+  - Creado el modal de promoción de socios con super-poderes de Admin Root, permitiendo ascender a cualquier usuario registrado al rol de Socio (`role: "owner"`) ingresando su correo electrónico o seleccionándolo directamente desde un menú desplegable de usuarios registrados.
+  - Actualizado el átomo `<Input />` para propagar el atributo `list` (`<datalist>`) y propiedades adicionales hacia el elemento `<input>` nativo.
+- **Edición y Eliminación de Horarios (`EditScheduleModal.jsx` & `scheduleService.js`)**: Creado el modal de edición e integrados botones de gestión rápida (`Pencil`) en las tarjetas de horario de la Planilla para permitir al Admin Root modificar la hora de salida, tarifa, duración, ruta, asignación de conductor o vehículo, o eliminar el horario.
+- **Selector Dinámico de Origen y Destino en Home (`PassengerOverview.jsx`)**: Agregado un selector dinámico con desplegables de Origen y Destino y chips de cambio rápido (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `La Plata ➔ Nátaga`, `Neiva ➔ Nátaga`, "Todas las Rutas") para filtrar cualquier itinerario disponible en la base de datos.
+- **Visualización Dinámica de Rutas en Landing (`LandingSchedules.jsx`)**: Agrupamiento en tiempo real de todas las rutas de la base de datos, desplegando los horarios disponibles para cualquier trayecto.
+- **Registro de Socios con Google (`Register.jsx`)**: Agregado el botón de autenticación social con Google en la pantalla de registro de flota, permitiendo crear cuentas de socio (`role: "owner"`) de forma instantánea mediante Google Popup.
+- **Motor de Rutas Dinámicas (`PricingDirectory.jsx`)**: Eliminada la deduplicación alfabética de pares origen/destino que invertía los nombres de las ciudades. Ahora el portal muestra todas las rutas registradas en su orientación explícita (ej: `Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `La Plata ➔ Nátaga`, `Neiva ➔ Nátaga`).
+- **Navegación Dinámica en Planilla (`ScheduleDirectory.jsx`)**: Reemplazadas las pestañas estáticas de 2 direcciones por un orquestador dinámico que detecta automáticamente todas las rutas presentes en los horarios registrados y genera botones de filtro para cada trayecto, incluyendo una vista global ("Todas").
+- **Creación Flexible de Horarios (`AddScheduleModal.jsx` & `scheduleService.js`)**:
+  - Habilitada la programación de turnos de salida sin requerir asignación previa de conductor ni vehículo.
+  - Corregido error `PERMISSION_DENIED` al separar las escrituras atómicas del esquema principal v2.0 (`/schedules/` y `/seatAvailability/`) de las escrituras en nodos legados (`/horarios/` y `/disponibilidadAsientos/`).
+- **Optimización de Subscripciones Reactivas (`useRealtimeData.js`)**: Eliminado el anidamiento de listeners `onValue`, convirtiendo las suscripciones de `/users/`, `/vehicles/`, `/reservations/`, `/schedules/`, `/seatAvailability/`, `/prices/` y `/routes/` en suscriptores independientes de nivel superior para evitar fugas de memoria y bloqueos de callback.
+
+### 📱 Ruta-Go Mobile (Kotlin/Compose)
+- **Sincronización de Servicios de Tarifas (`PriceService.kt`)**: Actualizado `PriceService` para consultar directamente el nodo v2.0 `/prices/` con fallback pasivo a `/precios/`, implementando búsquedas normalizadas sin distinción de mayúsculas, minúsculas o tildes.
+- **Visualización de Horarios e Itinerarios (`ScheduleService.kt` & `ScheduleCard.jsx`)**:
+  - Actualizado `ScheduleService.kt` para integrar la búsqueda insensible a mayúsculas/tildes en el mapa de precios.
+  - Actualizada `ScheduleCard.jsx` para soportar adecuadamente los campos en camelCase (`time`, `route`, `driverId`, `vehicleId`, `price`) y mostrar el estado "Sin Conductor Asignado" cuando el Admin crea turnos preliminares.
+
+---
+
 ## [2.0.0-BETA] - 2026-08-31 (Full Navigation, Auth & Database Normalization)
 *Corrección de los flujos principales de reserva, autenticación social, persistencia de sesión y normalización NoSQL en Jetpack Compose.*
 

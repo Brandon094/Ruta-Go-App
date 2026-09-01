@@ -11,27 +11,52 @@ import { pricingService } from '../../services/pricingService';
  * 💰 Component: PricingDirectory
  * Permite al Admin Root gestionar tarifas y registrar nuevas rutas dinámicas.
  */
-export function PricingDirectory({ prices = {} }) {
+export function PricingDirectory({ prices = {}, routesList = [] }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editedPrices, setEditedPrices] = useState({});
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Convertir el objeto anidado en una lista plana para la UI
+  // Unificar las rutas registradas en /routes/ y la matriz en /prices/
   const routes = [];
-  const processed = new Set();
+  const addedKeys = new Set();
 
-  Object.entries(prices).forEach(([origin, destinations]) => {
-    Object.entries(destinations).forEach(([dest, price]) => {
-      const pair = [origin, dest].sort().join('-');
-      if (!processed.has(pair)) {
-        const match = searchTerm.toLowerCase();
-        if (!searchTerm || origin.toLowerCase().includes(match) || dest.toLowerCase().includes(match)) {
-          routes.push({ origin, dest, price });
+  // 1. Cargar rutas explícitas desde /routes/
+  if (Array.isArray(routesList)) {
+    routesList.forEach(r => {
+      if (r.origin && r.destination) {
+        const key = `${r.origin}->${r.destination}`;
+        if (!addedKeys.has(key)) {
+          addedKeys.add(key);
+          routes.push({
+            origin: r.origin,
+            dest: r.destination,
+            price: r.price || 12000
+          });
         }
-        processed.add(pair);
       }
     });
+  }
+
+  // 2. Unir con la matriz /prices/ para cubrir todas las direcciones
+  Object.entries(prices).forEach(([origin, destinations]) => {
+    Object.entries(destinations).forEach(([dest, price]) => {
+      const key = `${origin}->${dest}`;
+      if (!addedKeys.has(key)) {
+        addedKeys.add(key);
+        routes.push({
+          origin,
+          dest,
+          price
+        });
+      }
+    });
+  });
+
+  const filteredRoutes = routes.filter(r => {
+    if (!searchTerm) return true;
+    const match = searchTerm.toLowerCase();
+    return r.origin.toLowerCase().includes(match) || r.dest.toLowerCase().includes(match);
   });
 
   const handleChange = (origin, dest, val) => {
@@ -78,7 +103,7 @@ export function PricingDirectory({ prices = {} }) {
 
       {/* Grid de Rutas Actuales */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {routes.length > 0 ? routes.map((route, idx) => {
+        {filteredRoutes.length > 0 ? filteredRoutes.map((route, idx) => {
           const key = `${route.origin}-${route.dest}`;
           const currentVal = editedPrices[key] !== undefined ? editedPrices[key] : route.price;
           const isChanged = editedPrices[key] !== undefined && Number(editedPrices[key]) !== route.price;

@@ -17,6 +17,7 @@ export const useRealtimeData = (user, role) => {
     schedules: [],
     availability: {},
     prices: {},
+    routes: [],
     driverStats: {},
     reservations: [],
     allDrivers: [],
@@ -30,44 +31,33 @@ export const useRealtimeData = (user, role) => {
     const unsubs = [];
     const today = new Date().toISOString().split('T')[0];
 
-    // --- 👥 USUARIOS (Carga v2.0 de /users y /usuarios) ---
+    // --- 👥 USUARIOS (/users) ---
     const usersSub = onValue(firebaseManager.getRef('users'), (usersSnap) => {
-      onValue(firebaseManager.getRef('usuarios'), (legacySnap) => {
-        if (!isMounted) return;
-        const usersMap = {};
+      if (!isMounted) return;
+      const usersMap = {};
+      if (usersSnap.exists()) {
+        Object.entries(usersSnap.val()).forEach(([id, val]) => { usersMap[id] = { id, ...val }; });
+      }
 
-        if (legacySnap.exists()) {
-          Object.entries(legacySnap.val()).forEach(([id, val]) => { usersMap[id] = { id, ...val }; });
-        }
-        if (usersSnap.exists()) {
-          Object.entries(usersSnap.val()).forEach(([id, val]) => { usersMap[id] = { ...usersMap[id], id, ...val }; });
-        }
-
-        const allUsersList = Object.values(usersMap);
-        const driversList = allUsersList.filter(u => {
-          const r = (u.role || u.rol || "").toLowerCase();
-          return r === "driver" || r === "conductor";
-        });
-
-        setRaw(prev => ({
-          ...prev,
-          users: allUsersList,
-          drivers: driversList.length > 0 ? driversList : prev.drivers
-        }));
+      const allUsersList = Object.values(usersMap);
+      const driversList = allUsersList.filter(u => {
+        const r = (u.role || u.rol || "").toLowerCase();
+        return r === "driver" || r === "conductor";
       });
+
+      const ownersList = allUsersList.filter(u => {
+        const r = (u.role || u.rol || "").toLowerCase();
+        return r === "owner" || r === "dueño" || r === "socio";
+      });
+
+      setRaw(prev => ({
+        ...prev,
+        users: allUsersList,
+        drivers: driversList.length > 0 ? driversList : prev.drivers,
+        owners: ownersList
+      }));
     });
     unsubs.push(usersSub);
-
-    // --- 👨‍✈️ FALLBACK CONDUCTORES LEGADO ---
-    const driversSub = onValue(firebaseManager.getRef('conductores'), (snap) => {
-      if (snap.exists() && isMounted) {
-        setRaw(prev => {
-          if (prev.drivers.length > 0) return prev; // Priorizar /users/
-          return { ...prev, drivers: Object.entries(snap.val()).map(([id, val]) => ({ id, ...val })) };
-        });
-      }
-    });
-    unsubs.push(driversSub);
 
     // --- 📊 ESTADÍSTICAS OPERATIVAS (Driver Money) ---
     if (role.type === 'DRIVER') {
@@ -79,79 +69,62 @@ export const useRealtimeData = (user, role) => {
       unsubs.push(statsSub);
     }
 
-    // --- 🚗 VEHÍCULOS (/vehicles y /vehiculos) ---
+    // --- 🚗 VEHÍCULOS (/vehicles) ---
     const vSub = onValue(firebaseManager.getRef('vehicles'), (vSnap) => {
-      onValue(firebaseManager.getRef('vehiculos'), (legacyVSnap) => {
-        if (!isMounted) return;
-        const vMap = {};
-        if (legacyVSnap.exists()) {
-          Object.entries(legacyVSnap.val()).forEach(([id, val]) => { vMap[id] = { id, ...val }; });
-        }
-        if (vSnap.exists()) {
-          Object.entries(vSnap.val()).forEach(([id, val]) => { vMap[id] = { ...vMap[id], id, ...val }; });
-        }
-        setRaw(prev => ({ ...prev, vehicles: Object.values(vMap) }));
-      });
+      if (!isMounted) return;
+      const vMap = {};
+      if (vSnap.exists()) {
+        Object.entries(vSnap.val()).forEach(([id, val]) => { vMap[id] = { id, ...val }; });
+      }
+      setRaw(prev => ({ ...prev, vehicles: Object.values(vMap) }));
     });
     unsubs.push(vSub);
 
-    // --- 🎫 RESERVAS (/reservations y /reservas) ---
+    // --- 🎫 RESERVAS (/reservations) ---
     const rSub = onValue(firebaseManager.getRef('reservations'), (rSnap) => {
-      onValue(firebaseManager.getRef('reservas'), (legacyRSnap) => {
-        if (!isMounted) return;
-        const rMap = {};
-        if (legacyRSnap.exists()) {
-          Object.entries(legacyRSnap.val()).forEach(([id, val]) => { rMap[id] = { id, ...val }; });
-        }
-        if (rSnap.exists()) {
-          Object.entries(rSnap.val()).forEach(([id, val]) => { rMap[id] = { ...rMap[id], id, ...val }; });
-        }
-        setRaw(prev => ({ ...prev, reservations: Object.values(rMap), loading: false }));
-      });
+      if (!isMounted) return;
+      const rMap = {};
+      if (rSnap.exists()) {
+        Object.entries(rSnap.val()).forEach(([id, val]) => { rMap[id] = { id, ...val }; });
+      }
+      setRaw(prev => ({ ...prev, reservations: Object.values(rMap), loading: false }));
     });
     unsubs.push(rSub);
 
-    // --- 🕒 HORARIOS (/schedules y /horarios) ---
+    // --- 🕒 HORARIOS (/schedules) ---
     const hSub = onValue(firebaseManager.getRef('schedules'), (sSnap) => {
-      onValue(firebaseManager.getRef('horarios'), (legacyHSnap) => {
-        if (!isMounted) return;
-        const hMap = {};
-        if (legacyHSnap.exists()) {
-          Object.entries(legacyHSnap.val()).forEach(([id, val]) => { hMap[id] = { id, ...val }; });
-        }
-        if (sSnap.exists()) {
-          Object.entries(sSnap.val()).forEach(([id, val]) => { hMap[id] = { ...hMap[id], id, ...val }; });
-        }
-        setRaw(prev => ({ ...prev, schedules: Object.values(hMap) }));
-      });
+      if (!isMounted) return;
+      const hMap = {};
+      if (sSnap.exists()) {
+        Object.entries(sSnap.val()).forEach(([id, val]) => { hMap[id] = { id, ...val }; });
+      }
+      setRaw(prev => ({ ...prev, schedules: Object.values(hMap), loading: false }));
     });
     unsubs.push(hSub);
 
-    // --- 💺 DISPONIBILIDAD (/seatAvailability y /disponibilidadAsientos) ---
+    // --- 💺 DISPONIBILIDAD (/seatAvailability) ---
     const dispSub = onValue(firebaseManager.getRef('seatAvailability'), (sSnap) => {
-      onValue(firebaseManager.getRef('disponibilidadAsientos'), (legacySnap) => {
-        if (!isMounted) return;
-        const dispData = {
-          ...(legacySnap.exists() ? legacySnap.val() : {}),
-          ...(sSnap.exists() ? sSnap.val() : {})
-        };
-        setRaw(prev => ({ ...prev, availability: dispData }));
-      });
+      if (!isMounted) return;
+      const dispData = sSnap.exists() ? sSnap.val() : {};
+      setRaw(prev => ({ ...prev, availability: dispData }));
     });
     unsubs.push(dispSub);
 
-    // --- 💰 PRECIOS (/prices y /precios) ---
+    // --- 💰 PRECIOS (/prices) ---
     const pSub = onValue(firebaseManager.getRef('prices'), (pSnap) => {
-      onValue(firebaseManager.getRef('precios'), (legacySnap) => {
-        if (!isMounted) return;
-        const pData = {
-          ...(legacySnap.exists() ? legacySnap.val() : {}),
-          ...(pSnap.exists() ? pSnap.val() : {})
-        };
-        setRaw(prev => ({ ...prev, prices: pData }));
-      });
+      if (!isMounted) return;
+      const pData = pSnap.exists() ? pSnap.val() : {};
+      setRaw(prev => ({ ...prev, prices: pData }));
     });
     unsubs.push(pSub);
+
+    // --- 🗺️ RUTAS MAESTRAS (/routes) ---
+    const routesSub = onValue(firebaseManager.getRef('routes'), (rSnap) => {
+      if (!isMounted) return;
+      const routesList = rSnap.exists() ? Object.values(rSnap.val()) : [];
+      setRaw(prev => ({ ...prev, routes: routesList }));
+    });
+    unsubs.push(routesSub);
 
     return () => { isMounted = false; unsubs.forEach(unsub => unsub()); };
   }, [user, role.loading]);

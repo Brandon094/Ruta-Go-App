@@ -191,16 +191,34 @@ class ScheduleService {
             val origin = parts[0].trim()
             val destination = parts[1].trim()
             
-            val nO = FormatUtils.normalizarTexto(origin)
-            val nD = FormatUtils.normalizarTexto(destination)
-            
-            val price = allPrices[nO]?.get(nD) ?: 12000.0
-            s.price = price.toString()
+            val price = findPriceInMap(allPrices, origin, destination)
+            s.price = price.toInt().toString()
 
+            val nO = FormatUtils.normalizarTexto(origin)
             if (nO.contains("nataga")) nL.add(s) else pL.add(s)
         } else {
             s.price = "12000"
             nL.add(s)
         }
+    }
+
+    private fun findPriceInMap(
+        allPrices: Map<String, Map<String, Double>>,
+        origin: String,
+        destination: String
+    ): Double {
+        val nO = FormatUtils.normalizarTexto(origin)
+        val nD = FormatUtils.normalizarTexto(destination)
+
+        for ((oKey, destMap) in allPrices) {
+            if (FormatUtils.normalizarTexto(oKey) == nO) {
+                for ((dKey, pVal) in destMap) {
+                    if (FormatUtils.normalizarTexto(dKey) == nD) {
+                        return pVal
+                    }
+                }
+            }
+        }
+        return 12000.0
     }
 }
