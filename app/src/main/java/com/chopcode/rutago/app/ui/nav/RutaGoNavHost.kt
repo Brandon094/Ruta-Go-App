@@ -71,11 +71,25 @@ fun RutaGoNavHost(
             val context = LocalContext.current
             
             val googleLoginService = remember(context) { GoogleLoginService(context) }
-            val googleLauncher = rememberLauncherForActivityResult(
+            
+            // Launcher 1: Google One Tap
+            val oneTapLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult()
             ) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val token = googleLoginService.getGoogleIdTokenFromIntent(result.data)
+                    val token = googleLoginService.getGoogleIdTokenFromOneTapIntent(result.data)
+                    if (token != null) {
+                        viewModel.loginWithGoogle(token)
+                    }
+                }
+            }
+
+            // Launcher 2: Standard Google Sign-In Fallback
+            val standardGoogleLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val token = googleLoginService.getGoogleIdTokenFromStandardIntent(result.data)
                     if (token != null) {
                         viewModel.loginWithGoogle(token)
                     }
@@ -98,10 +112,13 @@ fun RutaGoNavHost(
                 onGoogleLoginClick = {
                     googleLoginService.startSignIn(
                         onLaunchIntentSender = { intentSenderRequest ->
-                            googleLauncher.launch(intentSenderRequest)
+                            oneTapLauncher.launch(intentSenderRequest)
+                        },
+                        onLaunchStandardSignIn = { intent ->
+                            standardGoogleLauncher.launch(intent)
                         },
                         onError = { error ->
-                            // En caso de error de conexión con One Tap
+                            // Manejo de errores de conexión con Google
                         }
                     )
                 },
