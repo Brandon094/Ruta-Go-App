@@ -4,14 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chopcode.rutago.app.config.MyApp
-import com.chopcode.rutago.app.managers.core.auth.AuthManager
 import com.chopcode.rutago.app.data.models.Driver
 import com.chopcode.rutago.app.data.models.User
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
+import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
+import com.chopcode.rutago.app.managers.core.auth.AuthManager
 import com.chopcode.rutago.app.services.reservations.passenger.PassengerReservationService
 import com.chopcode.rutago.app.services.storage.StorageService
 import com.chopcode.rutago.app.services.user.UserService
-import com.chopcode.rutago.app.data.repositories.settings.SettingsRepository
-import com.chopcode.rutago.app.data.repositories.settings.SettingsRepositoryImpl
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
- * 🧠 VIEWMODEL: UserProfileViewModel (Unified)
- * Gestor reactivo para la identidad y métricas personales basado en roles.
+ * 🧠 VIEWMODEL: UserProfileViewModel (Kotlin)
+ * ViewModel orquestador del perfil de usuario y estadísticas asociadas NoSQL v2.0.
  */
 class UserProfileViewModel : ViewModel() {
 
@@ -30,12 +30,12 @@ class UserProfileViewModel : ViewModel() {
     val uiState: StateFlow<UserProfileUiState> = _uiState.asStateFlow()
 
     private val userService = UserService()
-    private val storageService = StorageService()
     private val reservationService = PassengerReservationService()
+    private val storageService = StorageService()
     private val authManager = AuthManager.getInstance()
     private val settingsRepository: SettingsRepository = SettingsRepositoryImpl(MyApp.getAppContext())
+
     private var userListener: ValueEventListener? = null
-    private var driverListener: ValueEventListener? = null
 
     init {
         loadProfile()
@@ -64,15 +64,23 @@ class UserProfileViewModel : ViewModel() {
                 user?.let { u ->
                     u.id = userId
                     
-                    // 🛡️ Resolución de Rol Híbrida
+                    // 🛡️ Resolución de Rol NoSQL v2.0 (/users)
                     viewModelScope.launch {
-                        val isDriver = MyApp.getDatabaseReference("conductores").child(userId).get().await().exists()
-                        val isOwner = MyApp.getDatabaseReference("dueños").child(userId).get().await().exists()
-                        
+                        val userRole = (if (u.role.isNotEmpty()) u.role else u.rol).lowercase()
+                        val isDriverByRole = (userRole == "driver" || userRole == "conductor")
+                        val isOwnerByRole = (userRole == "owner" || userRole == "dueño")
+
+                        val isDriverInDb = isDriverByRole || 
+                            MyApp.getDatabaseReference("users/$userId/assignedSchedules").get().await().exists() ||
+                            MyApp.getDatabaseReference("conductores").child(userId).get().await().exists()
+
+                        val isOwnerInDb = isOwnerByRole || 
+                            MyApp.getDatabaseReference("dueños").child(userId).get().await().exists()
+
                         val resolvedRole = when {
-                            isOwner -> "dueño"
-                            isDriver -> "conductor"
-                            else -> u.rol ?: "usuario"
+                            isOwnerInDb -> "dueño"
+                            isDriverInDb -> "conductor"
+                            else -> "usuario"
                         }
 
                         _uiState.update { 
@@ -83,7 +91,6 @@ class UserProfileViewModel : ViewModel() {
                             )
                         }
 
-                        // Cargar data específica según rol
                         if (resolvedRole == "conductor" || resolvedRole == "dueño") {
                             loadDriverData(userId)
                         } else {
@@ -145,11 +152,9 @@ class UserProfileViewModel : ViewModel() {
         val userId = authManager.userId ?: return
         _uiState.update { it.copy(uploadStatus = "Uploading...") }
         
-        val node = if (_uiState.value.role == "usuario") "usuarios" else "conductores"
-        
         storageService.uploadProfilePicture(userId, uri, object : StorageService.UploadCallback {
             override fun onSuccess(downloadUrl: String?) {
-                updateProfilePictureUrl(userId, downloadUrl, node)
+                updateProfilePictureUrl(userId, downloadUrl, "users")
             }
 
             override fun onError(errorMsg: String?) {
@@ -160,23 +165,24 @@ class UserProfileViewModel : ViewModel() {
         })
     }
 
-    private fun updateProfilePictureUrl(userId: String, downloadUrl: String?, node: String) {
-        userService.updateProfilePicture(userId, downloadUrl, node, object : UserService.UserUpdateCallback {
+    private fun updateProfilePictureUrl(userId: String, photoUrl: String?, node: String) {
+        userService.updateProfilePicture(userId, photoUrl, node, object : UserService.UserUpdateCallback {
             override fun onSuccess() {
-                _uiState.update { it.copy(uploadStatus = "Updated") }
+                _uiState.update { 
+                    val updatedUser = it.user?.apply { this.photoUrl = photoUrl }
+                    it.copy(user = updatedUser, uploadStatus = null)
+                }
             }
 
             override fun onError(errorMsg: String?) {
-                _uiState.update { it.copy(error = "DB error: $errorMsg", uploadStatus = null) }
+                _uiState.update { it.copy(error = errorMsg, uploadStatus = null) }
             }
         })
     }
 
     fun toggleUserStatus() {
-        val currentUser = _uiState.value.user ?: return
-        if (currentUser.status == "blocked") return
-        
-        val newStatus = if (currentUser.status == "active") "inactive" else "active"
+        val currentStatus = _uiState.value.user?.status ?: "active"
+        val newStatus = if (currentStatus == "active") "inactive" else "active"
         val userId = authManager.userId ?: return
         
         _uiState.update { it.copy(isLoading = true) }
@@ -193,8 +199,7 @@ class UserProfileViewModel : ViewModel() {
 
     fun requestAccountDeletion() {
         val userId = authManager.userId ?: return
-        val node = if (_uiState.value.role == "usuario") "usuarios" else "conductores"
-        userService.requestAccountDeletion(userId, node, object : UserService.UserUpdateCallback {
+        userService.requestAccountDeletion(userId, "users", object : UserService.UserUpdateCallback {
             override fun onSuccess() {
                 _uiState.update { it.copy(accountDeletionSuccess = true) }
             }
@@ -207,10 +212,9 @@ class UserProfileViewModel : ViewModel() {
 
     fun cancelAccountDeletion() {
         val userId = authManager.userId ?: return
-        val node = if (_uiState.value.role == "usuario") "usuario" else "conductor" // UserService expects "usuario" or "conductor"
         
         _uiState.update { it.copy(isLoading = true) }
-        userService.cancelAccountDeletion(userId, node, object : UserService.UserUpdateCallback {
+        userService.cancelAccountDeletion(userId, "users", object : UserService.UserUpdateCallback {
             override fun onSuccess() {
                 _uiState.update { it.copy(isLoading = false) }
             }
@@ -241,7 +245,6 @@ class UserProfileViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         val uid = authManager.userId ?: return
-        userListener?.let { MyApp.getDatabaseReference("usuarios/$uid").removeEventListener(it) }
-        driverListener?.let { MyApp.getDatabaseReference("conductores/$uid").removeEventListener(it) }
+        userListener?.let { MyApp.getDatabaseReference("users/$uid").removeEventListener(it) }
     }
 }
