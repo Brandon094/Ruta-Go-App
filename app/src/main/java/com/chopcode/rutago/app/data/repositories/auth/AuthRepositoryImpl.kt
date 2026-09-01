@@ -9,7 +9,7 @@ import java.util.HashMap
 
 /**
  * ⚙️ IMPLEMENTATION: AuthRepositoryImpl
- * Motor real de autenticación usando Firebase SDK con soporte NoSQL v2.0 (/users y /usuarios).
+ * Motor real de autenticación usando Firebase SDK con soporte NoSQL v2.0 (/users).
  */
 class AuthRepositoryImpl : AuthRepository {
     private val auth = FirebaseAuth.getInstance()
@@ -34,18 +34,13 @@ class AuthRepositoryImpl : AuthRepository {
             val userData = HashMap<String, Any>()
             userData["id"] = userId
             userData["name"] = name
-            userData["nombre"] = name
             userData["email"] = email
             userData["phone"] = phone
-            userData["telefono"] = phone
             userData["registrationDate"] = System.currentTimeMillis()
-            userData["fechaRegistro"] = System.currentTimeMillis()
             userData["role"] = "passenger"
-            userData["rol"] = "usuario"
             userData["status"] = "active"
             
             db.child("users").child(userId).setValue(userData).await()
-            db.child("usuarios").child(userId).setValue(userData).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -65,7 +60,25 @@ class AuthRepositoryImpl : AuthRepository {
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val result = auth.signInWithCredential(credential).await()
-            val userId = result.user?.uid ?: throw Exception("Google login failed")
+            val user = result.user ?: throw Exception("Google login failed")
+            val userId = user.uid
+
+            // Si es un usuario nuevo registrándose con Google, crear perfil base en /users/
+            val userSnap = db.child("users").child(userId).get().await()
+            if (!userSnap.exists()) {
+                val userData = HashMap<String, Any>()
+                userData["id"] = userId
+                userData["name"] = user.displayName ?: "Usuario Google"
+                userData["email"] = user.email ?: ""
+                userData["phone"] = user.phoneNumber ?: ""
+                userData["photoUrl"] = user.photoUrl?.toString() ?: ""
+                userData["registrationDate"] = System.currentTimeMillis()
+                userData["role"] = if (user.email == "dazace94@gmail.com") "admin" else "passenger"
+                userData["status"] = "active"
+
+                db.child("users").child(userId).setValue(userData).await()
+            }
+
             val userType = resolveUserType(userId)
             Result.success(userType)
         } catch (e: Exception) {
@@ -83,13 +96,13 @@ class AuthRepositoryImpl : AuthRepository {
         val userSnap = db.child("users").child(uid).get().await()
         if (userSnap.exists()) {
             val role = (userSnap.child("role").getValue(String::class.java) 
-                ?: userSnap.child("rol").getValue(String::class.java) ?: "").toLowerCase()
+                ?: userSnap.child("rol").getValue(String::class.java) ?: "").lowercase()
             if (role == "driver" || role == "conductor") return "conductor"
             return "usuario"
         }
         val legacyUserSnap = db.child("usuarios").child(uid).get().await()
         if (legacyUserSnap.exists()) {
-            val role = (legacyUserSnap.child("rol").getValue(String::class.java) ?: "").toLowerCase()
+            val role = (legacyUserSnap.child("rol").getValue(String::class.java) ?: "").lowercase()
             if (role == "driver" || role == "conductor") return "conductor"
         }
         val conductorSnap = db.child("conductores").child(uid).get().await()

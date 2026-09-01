@@ -10,7 +10,7 @@ import { RoleBenefit } from './components/auth/RoleBenefit';
 import { RegisterSuccess } from './components/auth/RegisterSuccess';
 
 /**
- * 📝 Register Component - Registro Universal (Pasajeros & Socios)
+ * 📝 Register Component - Registro Universal NoSQL v2.0 (Pasajeros & Socios)
  */
 export default function Register({ onBack, initialMode = 'owner' }) {
   const [mode, setMode] = useState(initialMode); // 'passenger' | 'owner'
@@ -33,23 +33,18 @@ export default function Register({ onBack, initialMode = 'owner' }) {
 
       await updateProfile(user, { displayName: name });
 
-      const userRef = ref(db, `usuarios/${user.uid}`);
+      const userRef = ref(db, `users/${user.uid}`);
       const userData = {
         id: user.uid,
-        nombre: name,
+        name: name,
         email: email,
-        telefono: phone,
-        rol: mode === 'owner' ? 'dueño' : 'pasajero',
-        fechaRegistro: Date.now(),
+        phone: phone,
+        role: mode === 'owner' ? 'owner' : 'passenger',
+        registrationDate: Date.now(),
         status: 'active'
       };
 
       await set(userRef, userData);
-
-      if (mode === 'owner') {
-        const ownerRef = ref(db, `dueños/${user.uid}`);
-        await set(ownerRef, true);
-      }
 
       setSuccess(true);
     } catch (err) {
