@@ -114,24 +114,34 @@ export default function UserManual({ role, onBack, isTab = false }) {
       color: "green",
       steps: [
         {
-          title: "1. Supervisar el Sistema",
+          title: "1. Panel Maestro & Analítica",
           icon: TrendingUp,
-          description: "Desde el 'Panel Maestro' tienes el control total. Puedes ver cuántos usuarios hay registrados, cuántos buses están operando y el total de dinero que mueve la plataforma."
+          description: "Desde el 'Panel Maestro' ves las métricas globales en tiempo real: total de usuarios, flota activa, reservas confirmadas y consolidado de ingresos (App + Ventas de Calle)."
         },
         {
-          title: "2. Gestión de Socios",
+          title: "2. Motor de Rutas y Tarifas",
+          icon: MapPin,
+          description: "En 'Rutas & Tarifas', crea nuevas rutas regionales (ej: Nátaga ➔ Neiva, La Plata ➔ Gallego) con origen, destino, tarifa y tiempo estimado. Las tarifas se actualizan al instante en todo el ecosistema."
+        },
+        {
+          title: "3. Programación de Despachos (Planilla)",
+          icon: Calendar,
+          description: "En 'Planilla', usa 'Programar Horario' para habilitar salidas de cualquier ruta. Puedes crear turnos incluso sin asignar conductor previo. Usa el botón Lápiz (✏️) para modificar hora, tarifa o bus en tiempo real."
+        },
+        {
+          title: "4. Promoción y Gestión de Socios",
           icon: Briefcase,
-          description: "Cuando alguien nuevo quiera ser Socio de flota, te aparecerá en la pestaña 'Socios'. Tú eres el único que puede 'Aprobar' su cuenta para que él pueda empezar a subir sus buses."
+          description: "En 'Socios', aprueba cuentas de dueños o usa 'Ascender Socio por Correo' para promover directamente a cualquier usuario registrado al rol de Socio de flota."
         },
         {
-          title: "3. Moderar Pasajeros",
+          title: "5. Asignación de Conductores por Ruta",
+          icon: UserPlus,
+          description: "En 'Conductores', selecciona el operador y elige la ruta. Para Nátaga ➔ La Plata, asigna su turno del escalafón de 9 días (se calcula su posición automáticamente). Para otras rutas, elige los horarios específicos dedicados."
+        },
+        {
+          title: "6. Moderación y Cumplimiento",
           icon: Users,
-          description: "Si un pasajero se porta mal o no paga, puedes buscarlo en 'Pasajeros' y usar el botón 'BAN' para quitarle el acceso. También puedes borrar cuentas si el usuario lo solicita por ley de datos."
-        },
-        {
-          title: "4. Cambiar Precios",
-          icon: CreditCard,
-          description: "Si la empresa decide subir o bajar el pasaje, ve a 'Precios'. Cambia el valor, dale a 'Guardar' y al segundo todos los pasajeros verán el nuevo precio en sus celulares."
+          description: "En 'Pasajeros', gestiona estados de cuentas (activas, bloqueadas). El sistema cumple con la Ley de Habeas Data con proceso de borrado seguro a los 30 días."
         }
       ]
     }

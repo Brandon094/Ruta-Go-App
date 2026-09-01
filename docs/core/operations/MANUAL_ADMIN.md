@@ -35,7 +35,12 @@ El portal permite escalar la operación mediante la figura de socios independien
 *   **Selección de Ruta Creada**: Al programar un horario en la pestaña "Planilla", el modal ofrece un menú desplegable dinámico con todas las rutas creadas en el sistema y autodiligencia la tarifa correspondiente.
 *   **Desacoplamiento de Asignación**: El Admin Root puede programar horarios de salida **sin necesidad de asignar un Conductor o Vehículo previo**. El horario quedará activo en la plataforma con estado "Sin Conductor Asignado" hasta que se vincule un operador.
 *   **Edición y Eliminación de Horarios**: Cada tarjeta en la Planilla cuenta con un botón de edición (✏️) para cambiar en tiempo real la hora de salida, tarifa, recorrido, conductor o vehículo asignado, o eliminar el horario de la plataforma.
-*   **Gestión de Conductores y Escalafón (`EditDriverModal.jsx`)**: En la pestaña **Conductores**, el Admin o Socio puede hacer clic en **"Gestionar Operador"** para asignar el vehículo (`vehiclePlate`), seleccionar sus grupos de turnos del escalafón rotativo o cambiar su estado entre "En Ruta", "Sin Turno" o "Bloqueado".
+*   **Gestión de Conductores y Configuración por Ruta (`AddDriverModal.jsx` & `EditDriverModal.jsx`)**:
+    *   En la pestaña **Conductores**, al vincular o editar un operador, la asignación de horarios se organiza en **2 pasos**:
+        1. **Selección de Ruta**: El Admin o Socio elige la ruta de trabajo (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `La Plata ➔ Gallego`).
+        2. **Asignación de Horarios**:
+           * **Ruta Nátaga ➔ La Plata**: Muestra la rueda de escalafón de 9 días con resolución automática por horas de salida reales (`06:15 AM ➔ 09:15 AM`, `07:15 AM ➔ 10:30 AM`, etc.). Incluye el **Turno 5 (Fijo / Dedicado)** de `10:00 AM ➔ 02:00 PM` que no entra en la rotación nocturna.
+           * **Rutas Adicionales (`Neiva`, `Gallego`, etc.)**: Muestra las salidas registradas bajo esa ruta en formato de tarjetas seleccionables para asignaciones dedicadas.
 *   **Pestañas Dinámicas en Planilla**: Planilla genera botones de navegación automáticamente para cada ruta registrada (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, etc.), facilitando la supervisión por trayecto o global.
 
 ---
