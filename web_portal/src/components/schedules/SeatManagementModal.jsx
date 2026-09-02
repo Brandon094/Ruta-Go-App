@@ -255,25 +255,86 @@ export function SeatManagementModal({ schedule, onClose, role, user, drivers = [
              )}
           </div>
 
-          {/* Mapa del Vehículo */}
-          <div className="bg-[#0A1F30] rounded-[2.5rem] p-8 border border-white/5 relative overflow-hidden">
-             <p className="text-center text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mb-10">Cabina</p>
-             <div className="space-y-12 relative z-10">
-               <div className="grid grid-cols-3 gap-6 max-w-xs mx-auto">
-                  <div className="w-16 h-16 bg-[#061426] border-2 border-white/10 rounded-2xl flex items-center justify-center text-primary-500 shadow-lg"><User size={32} /></div>
-                  {[1, 2, 3, 4, 5].map(id => <Seat key={id} seatId={id.toString()} state={seatStates[id.toString()]} selected={selectedSeat === id.toString()} isPassenger={isPassengerMode} onClick={() => handleSeatClick(id.toString())} />)}
-               </div>
-               <div className="w-24 h-px bg-white/5 mx-auto" />
-               <p className="text-center text-[9px] font-black text-slate-500 uppercase tracking-[0.4em]">Zona Trasera</p>
-               <div className="grid grid-cols-5 gap-4 max-w-sm mx-auto">
-                  {[6, 7].map(id => <Seat key={id} seatId={id.toString()} state={seatStates[id.toString()]} selected={selectedSeat === id.toString()} isPassenger={isPassengerMode} onClick={() => handleSeatClick(id.toString())} />)}
-                  <div className="col-span-1" />
-                  {[10, 11].map(id => <Seat key={id} seatId={id.toString()} state={seatStates[id.toString()]} selected={selectedSeat === id.toString()} isPassenger={isPassengerMode} onClick={() => handleSeatClick(id.toString())} />)}
-                  {[8, 9].map(id => <Seat key={id} seatId={id.toString()} state={seatStates[id.toString()]} selected={selectedSeat === id.toString()} isPassenger={isPassengerMode} onClick={() => handleSeatClick(id.toString())} />)}
-                  <div className="col-span-1" />
-                  {[12, 13].map(id => <Seat key={id} seatId={id.toString()} state={seatStates[id.toString()]} selected={selectedSeat === id.toString()} isPassenger={isPassengerMode} onClick={() => handleSeatClick(id.toString())} />)}
-               </div>
-             </div>
+          {/* 🚍 MAPA DE SILUETA DE LA CAMIONETA / MINIBUS */}
+          <div className="relative py-10 px-6 bg-[#040D1A] rounded-[3.5rem] border-4 border-slate-800/80 shadow-2xl overflow-visible max-w-sm mx-auto my-4">
+
+            {/* 🛞 Ruedas/Llantas Delanteras */}
+            <div className="absolute -left-4 top-16 w-4 h-14 bg-slate-900 border-2 border-slate-700 rounded-l-xl shadow-2xl"></div>
+            <div className="absolute -right-4 top-16 w-4 h-14 bg-slate-900 border-2 border-slate-700 rounded-r-xl shadow-2xl"></div>
+
+            {/* 🛞 Ruedas/Llantas Traseras */}
+            <div className="absolute -left-4 bottom-20 w-4 h-16 bg-slate-900 border-2 border-slate-700 rounded-l-xl shadow-2xl"></div>
+            <div className="absolute -right-4 bottom-20 w-4 h-16 bg-slate-900 border-2 border-slate-700 rounded-r-xl shadow-2xl"></div>
+
+            {/* 🪞 Espejos Retrovisores */}
+            <div className="absolute -left-3 top-6 w-3 h-8 bg-slate-700 rounded-l-md shadow-md"></div>
+            <div className="absolute -right-3 top-6 w-3 h-8 bg-slate-700 rounded-r-md shadow-md"></div>
+
+            {/* 🪟 Parabrisas Delantero y Luces */}
+            <div className="w-full bg-gradient-to-b from-sky-500/20 via-sky-500/10 to-transparent border-b-2 border-sky-400/30 rounded-t-[3rem] p-3 text-center mb-6 relative">
+              <div className="flex items-center justify-between px-4 mb-1">
+                <div className="w-3 h-3 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50 animate-pulse"></div>
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-sky-400 italic">Parabrisas Frontal</span>
+                <div className="w-3 h-3 bg-amber-400 rounded-full shadow-lg shadow-amber-400/50 animate-pulse"></div>
+              </div>
+            </div>
+
+            <div className="space-y-8 relative z-10 px-1">
+
+              {/* 👨‍✈️ CABINA FRONTAL (Filas 1 y 2) */}
+              <div className="space-y-4 pb-6 border-b border-white/10">
+                <p className="text-center text-[8px] font-black text-slate-500 uppercase tracking-[0.4em] italic mb-2">Cabina</p>
+
+                {/* Fila 1: Timón + Puesto 1 + Puesto 2 */}
+                <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto place-items-center">
+                  <div className="w-14 h-14 bg-slate-800/80 border-2 border-slate-600 rounded-2xl flex flex-col items-center justify-center text-primary-500 shadow-md">
+                    <User size={24} />
+                    <span className="text-[7px] font-black uppercase text-slate-400 mt-0.5">Timón</span>
+                  </div>
+                  <Seat seatId="1" state={seatStates["1"]} selected={selectedSeat === "1"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("1")} />
+                  <Seat seatId="2" state={seatStates["2"]} selected={selectedSeat === "2"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("2")} />
+                </div>
+
+                {/* Fila 2: Puesto 3 + Puesto 4 + Puesto 5 */}
+                <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto place-items-center">
+                  <Seat seatId="3" state={seatStates["3"]} selected={selectedSeat === "3"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("3")} />
+                  <Seat seatId="4" state={seatStates["4"]} selected={selectedSeat === "4"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("4")} />
+                  <Seat seatId="5" state={seatStates["5"]} selected={selectedSeat === "5"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("5")} />
+                </div>
+              </div>
+
+              {/* 🚍 ZONA TRASERA (Filas 3 y 4 con Pasillo) */}
+              <div className="space-y-4">
+                <p className="text-center text-[8px] font-black text-slate-500 uppercase tracking-[0.4em] italic mb-2">Zona Trasera</p>
+
+                {/* Fila 3: Puestos 6, 7 | Pasillo | Puestos 10, 11 */}
+                <div className="flex items-center justify-between gap-3 max-w-xs mx-auto">
+                  <div className="flex items-center gap-2">
+                    <Seat seatId="6" state={seatStates["6"]} selected={selectedSeat === "6"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("6")} />
+                    <Seat seatId="7" state={seatStates["7"]} selected={selectedSeat === "7"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("7")} />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Seat seatId="10" state={seatStates["10"]} selected={selectedSeat === "10"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("10")} />
+                    <Seat seatId="11" state={seatStates["11"]} selected={selectedSeat === "11"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("11")} />
+                  </div>
+                </div>
+
+                {/* Fila 4: Puestos 8, 9 | Pasillo | Puestos 12, 13 */}
+                <div className="flex items-center justify-between gap-3 max-w-xs mx-auto">
+                  <div className="flex items-center gap-2">
+                    <Seat seatId="8" state={seatStates["8"]} selected={selectedSeat === "8"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("8")} />
+                    <Seat seatId="9" state={seatStates["9"]} selected={selectedSeat === "9"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("9")} />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Seat seatId="12" state={seatStates["12"]} selected={selectedSeat === "12"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("12")} />
+                    <Seat seatId="13" state={seatStates["13"]} selected={selectedSeat === "13"} isPassenger={isPassengerMode} onClick={() => handleSeatClick("13")} />
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
 
           <div className="space-y-6">
