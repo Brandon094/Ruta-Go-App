@@ -44,6 +44,10 @@ El portal no solo consume datos, los procesa para la toma de decisiones:
     *   `EditScheduleModal.jsx` y `scheduleService.updateSchedule` para modificar hora, tarifa, ruta, conductor o bus en tiempo real.
     *   `PassengerOverview.jsx` & `ScheduleDirectory.jsx`: Selector de Origen/Destino y **Barra Flotante Sticky de Chips de Ruta (`sticky top-0 z-20`)** de ~48px con vidrio esmerilado (`backdrop-blur-md bg-white/95`).
     *   **Restricción de Conductor Asignado**: Bloqueo automático del botón de reserva con icono Candado (🔒 / `Lock`) y estado `disabled` cuando un horario no cuenta con un operador vinculado (`!driverId`).
+*   **Panel de Conductor & Gestión de Solicitudes (`DriverOverview.jsx` & `PendingReservationCard.jsx`)**:
+    *   Consumo en tiempo real de `driverId` y reservas con estado `status: "pending"` para aprobación instantánea o rechazo con liberación de inventario.
+    *   `ReservationHistoryCard.jsx`: Clasificación NoSQL v2.0 de reservas confirmadas mostrando datos completos del pasajero, teléfono, ruta y asiento.
+    *   `SeatManagementModal.jsx`: Mapa interactivo en forma de chasis de camioneta con 4 ruedas laterales, parabrisas frontal y distribución de 13 asientos.
 *   **Gobernanza de Flota, Asignación Canónica y Promoción de Socios**:
     *   `AddOwnerModal.jsx` y `ownerService.promoteUserToOwnerByEmail`: Ascenso directo de cualquier usuario al rol `owner` por correo o selección desplegable.
     *   `VehicleModal.jsx` y `vehicleService`: Selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.

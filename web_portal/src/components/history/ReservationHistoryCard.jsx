@@ -11,28 +11,31 @@ import { FormatUtils } from '../../utils/FormatUtils';
  */
 export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, onRate, onChat }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
+  const status = (res.status || res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
-  const isRated = res.rated || res.calificada;
+  const isRated = res.rated || res.calificada || res.isRated;
 
-  const seat = res.puestoReservado !== undefined ? res.puestoReservado : (res.reservedSeat !== undefined ? res.reservedSeat : res.asientoReservado);
-  const date = res.fechaReserva || res.reservationDate || res.travelDate;
+  const seat = res.reservedSeat !== undefined ? res.reservedSeat : (res.puestoReservado !== undefined ? res.puestoReservado : res.asientoReservado);
+  const date = res.reservationDate || res.fechaReserva || res.travelDate;
 
   // Mapeo robusto de ruta
-  const origin = res.origen || res.origin || res.ruta?.split('➔')[0]?.trim() || res.ruta?.split('->')[0]?.trim() || '---';
-  const destination = res.destino || res.destination || res.ruta?.split('➔')[1]?.trim() || res.ruta?.split('->')[1]?.trim() || '---';
+  const origin = res.origin || res.origen || res.ruta?.split('➔')[0]?.trim() || res.ruta?.split('->')[0]?.trim() || '---';
+  const destination = res.destination || res.destino || res.ruta?.split('➔')[1]?.trim() || res.ruta?.split('->')[1]?.trim() || '---';
 
   const isPassenger = role?.type === 'PASSENGER';
 
   // --- 🧠 Resolución Dinámica de Identidad ---
-  const driverData = drivers.find(d => d.id === res.driverId || d.id === res.conductorId);
-  const resolvedDriverName = driverData?.nombre || res.driver || "Conductor";
-  const resolvedPassengerName = res.name || res.nombre || res.nombreUsuario || "Pasajero";
+  const driverData = drivers.find(d => d.id === (res.driverId || res.conductorId));
+  const resolvedDriverName = res.driverName || driverData?.name || driverData?.nombre || res.driver || "Conductor";
+  const resolvedPassengerName = res.passengerName || res.name || res.nombre || res.nombreUsuario || "Pasajero";
 
   const personName = isPassenger ? resolvedDriverName : resolvedPassengerName;
-  const personPhone = isPassenger ? (driverData?.telefono || res.phoneC || "---") : (res.phone || res.telefono || "---");
+  const personPhone = isPassenger
+    ? (driverData?.phone || driverData?.telefono || res.phoneC || "---")
+    : (res.passengerPhone || res.phone || res.telefono || "---");
   const price = res.price || res.precio || 12000;
+  const statusLabel = isConfirmed ? 'Confirmada' : isCanceled ? 'Cancelada' : 'Pendiente';
 
   return (
     <div
@@ -58,7 +61,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
          </div>
          <div className="flex items-center gap-2">
            <Badge variant={isConfirmed ? 'success' : isCanceled ? 'error' : 'warning'} className="!rounded-xl px-4 py-1.5 lowercase first-letter:uppercase">
-             {res.estadoReserva || res.reservationStatus || 'Pendiente'}
+             {statusLabel}
            </Badge>
          </div>
       </div>

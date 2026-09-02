@@ -19,13 +19,13 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
 
   const filteredList = (reservations || [])
     .filter(res => {
-      const status = (res.estadoReserva || res.reservationStatus || "").toLowerCase();
+      const status = (res.status || res.estadoReserva || res.reservationStatus || "").toLowerCase();
       const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
       if (filter === 'Confirmados' && !isConfirmed) return false;
       if (filter === 'Cancelados' && status !== 'cancelada' && status !== 'canceled') return false;
 
       if (filter === 'Este Mes') {
-        const date = res.fechaReserva || res.reservationDate || res.travelDate;
+        const date = res.reservationDate || res.fechaReserva || res.travelDate;
         if (!date) return false;
         const resDate = new Date(date);
         const now = new Date();
@@ -34,9 +34,9 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
 
       if (searchTerm) {
         const search = searchTerm.toLowerCase();
-        const name = (res.name || res.nombre || res.nombreUsuario || "").toLowerCase();
-        const route = (res.origen || res.origin || res.ruta || "").toLowerCase() + (res.destino || res.destination || "").toLowerCase();
-        const plate = (res.vehicleId || res.vehiculoId || res.plate || "").toLowerCase();
+        const name = (res.passengerName || res.name || res.nombre || res.nombreUsuario || "").toLowerCase();
+        const route = (res.origin || res.origen || res.ruta || "").toLowerCase() + (res.destination || res.destino || "").toLowerCase();
+        const plate = (res.vehiclePlate || res.vehicleId || res.vehiculoId || res.plate || "").toLowerCase();
         return name.includes(search) || route.includes(search) || plate.includes(search);
       }
       return true;
@@ -45,11 +45,11 @@ export function HistoryDirectory({ type = 'personal', reservations, role, driver
 
   const stats = {
     confirmed: (reservations || []).filter(r => {
-      const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
+      const s = (r.status || r.estadoReserva || r.reservationStatus || "").toLowerCase();
       return s === 'confirmada' || s === 'confirmado' || s === 'completada' || s === 'confirmed';
     }).length,
     canceled: (reservations || []).filter(r => {
-      const s = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
+      const s = (r.status || r.estadoReserva || r.reservationStatus || "").toLowerCase();
       return s === 'cancelada' || s === 'canceled';
     }).length,
     total: (reservations || []).length

@@ -21,6 +21,11 @@ El sitio web ha sido elevado a un estándar de alta fidelidad con React 18, Vite
 *   **Restricción por Conductor Asignado**: Sustitución del botón de reserva por un **Candado (🔒)** deshabilitado cuando un horario no cuenta con operador asignado (`!driverId`), previniendo reservas inválidas.
 *   **Diseño Atómico**: Interfaz construida sobre componentes reutilizables (Atoms, Molecules, Organisms).
 
+### 👨‍✈️ Dashboard Conductor & Historial de Despachos
+*   **Solicitudes Entrantes en Tiempo Real**: Panel de aprobación/rechazo instantáneo de reservas con estado `status: "pending"`, datos completos del pasajero (`passengerName`, `passengerPhone`, `seat`) y origen/destino.
+*   **Historial Operativo y Tiquete Digital**: Clasificación NoSQL v2.0 de despachos confirmados con insignia verde de confirmación, acceso a chat y generación de tiquete.
+*   **Asignación de Horarios por Ruta**: Asignador en 2 pasos en `AddDriverModal.jsx` y `EditDriverModal.jsx` mapeando las parejas canónicas de Nátaga ➔ La Plata y turnos dedicados.
+
 ### 💼 Go Business & Dashboard Pro
 *   **Gestión de Rutas e Itinerarios (CRUD Completo)**:
     *   `AddRouteModal.jsx` y `AddScheduleModal.jsx` para la creación dinámica de rutas y horarios sin requerir flota asignada.

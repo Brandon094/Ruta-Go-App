@@ -11,6 +11,10 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Aislamiento de Escalafón Nátaga ➔ La Plata (`index.js`)**: Refactorizada la función automatizada de rotación nocturna de las 7:00 PM (`automatedRotation`) para focalizarse exclusivamente en las salidas de Nátaga ➔ La Plata. Se implementó la preservación de conductores, buses y reseteo diario de cupos (13 libres) para todas las rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
 
 ### 🌐 Ruta-Go Web (Portal v2.0)
+- **Refactorización Integral del Panel y Funciones del Conductor (`DriverOverview.jsx`, `PendingReservationCard.jsx` & `ReservationHistoryCard.jsx`)**:
+  - Corregida la filtración en el Dashboard del Conductor para consumir el atributo `driverId` y el estado `status: "pending"` del esquema NoSQL v2.0, desplegando inmediatamente las solicitudes de reserva entrantes con datos de pasajero (`passengerName`, `passengerPhone`, `origin ➔ destination`, `departureTime`, `seat`).
+  - Corregido el mapeo de historial operativo (`HistoryDirectory.jsx` & `ReservationHistoryCard.jsx`) para clasificar correctamente el estado `status: "confirmed"` mostrando la etiqueta verde **"Confirmada"**, precio formateado, ruta y número de asiento.
+  - Diseñada la silueta física interactiva de la camioneta/minibus (`SeatManagementModal.jsx`) con chasis metálico, parabrisas azul con luces frontales, retrovisores, 4 llantas laterales y distribución real de 13 asientos (Cabina 1-2 + 3-5, Filas intermedias con pasillo y Banca Trasera 10-13).
 - **Configuración Canónica de Conductores por Ruta (`AddDriverModal.jsx` & `EditDriverModal.jsx`)**:
   - Implementada la selección de horarios en 2 pasos: filtrado previo por Ruta (`Nátaga ➔ La Plata`, `Neiva`, `Gallego`) e indexación dinámica por horas reales NoSQL v2.0 (`-P0Pw0...`).
   - Mapeo canónico exacto para los 9 turnos de Nátaga incluyendo la pernocta del **Turno 8 (Triple Especial: `03:30 PM ➔ 06:00 PM + 07:30 AM`)**, el **Turno 5 (Fijo/Dedicado: `10:00 AM ➔ 02:00 PM`)** que no rota, y la opción de **Descanso**.
