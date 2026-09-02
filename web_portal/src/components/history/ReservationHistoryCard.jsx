@@ -23,6 +23,10 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
   const origin = res.origin || res.origen || res.ruta?.split('➔')[0]?.trim() || res.ruta?.split('->')[0]?.trim() || '---';
   const destination = res.destination || res.destino || res.ruta?.split('➔')[1]?.trim() || res.ruta?.split('->')[1]?.trim() || '---';
 
+  const isPassengerUser = role?.uid === (res.userId || res.usuarioId);
+  const isDriverUser = role?.uid === (res.driverId || res.conductorId);
+  const canChat = isConfirmed && (isPassengerUser || isDriverUser);
+
   const isPassenger = role?.type === 'PASSENGER';
 
   // --- 🧠 Resolución Dinámica de Identidad ---
@@ -108,7 +112,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
           </IconRow>
 
           {/* Botones de Acción */}
-          <div className={`grid ${isConfirmed ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
+          <div className={`grid ${canChat ? 'grid-cols-2' : 'grid-cols-1'} gap-4 pt-2`}>
              <Button
                variant="ghost"
                size="full"
@@ -119,7 +123,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
                 Tiquete
              </Button>
 
-             {isConfirmed && (
+             {canChat && (
                <Button
                  variant="primary"
                  size="full"

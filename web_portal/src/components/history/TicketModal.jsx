@@ -26,6 +26,10 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
   const isCanceled = status === 'cancelada' || status === 'canceled';
   const statusLabel = isConfirmed ? 'Confirmada' : isCanceled ? 'Cancelada' : 'Pendiente';
 
+  const isPassengerUser = role?.uid === (reservation.userId || reservation.usuarioId);
+  const isDriverUser = role?.uid === (reservation.driverId || reservation.conductorId);
+  const canChat = isConfirmed && (isPassengerUser || isDriverUser);
+
   const seat = reservation.reservedSeat !== undefined ? reservation.reservedSeat : (reservation.puestoReservado !== undefined ? reservation.puestoReservado : reservation.asientoReservado);
   const date = reservation.reservationDate || reservation.fechaReserva || reservation.travelDate;
 
@@ -176,7 +180,7 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
 
         {/* ACTIONS FOOTER (Mirror Nativo) */}
         <div className="grid grid-cols-5 gap-4">
-           {isConfirmed && (
+           {canChat && (
              <Button
                 variant="primary"
                 size="md"
@@ -190,7 +194,7 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
            <Button
               variant="outline"
               size="md"
-              className={`${isConfirmed ? 'col-span-3' : 'col-span-5'} !rounded-[1.2rem] !border-primary-500 !text-primary-500 hover:!bg-primary-500/5`}
+              className={`${canChat ? 'col-span-3' : 'col-span-5'} !rounded-[1.2rem] !border-primary-500 !text-primary-500 hover:!bg-primary-500/5`}
               icon={sharing ? Loader2 : Share2}
               isLoading={sharing}
               onClick={handleShareTicket}
