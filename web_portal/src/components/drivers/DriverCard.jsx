@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bus, TrendingUp, Edit3, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bus, TrendingUp, Edit3, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 
@@ -35,8 +35,12 @@ export function DriverCard({ driver, onEdit }) {
             <h4 className="font-black text-slate-800 dark:text-white text-base truncate uppercase italic leading-tight">
               {driverName}
             </h4>
-            <div className="flex items-center gap-2 mt-1">
-              <TrendingUp size={12} className="text-primary-500" />
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className="flex items-center gap-1 text-[11px] font-black text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-md">
+                <Star size={11} className="fill-amber-400" />
+                {driver.avgRating || '5.0'} ★ ({driver.totalRatings || 0})
+              </span>
+              <TrendingUp size={12} className="text-primary-500 ml-1" />
               <p className="text-[11px] font-bold text-slate-400 dark:text-white/30 uppercase tracking-widest truncate">
                 Placa: {vehiclePlate}
               </p>

@@ -126,6 +126,14 @@ export const useRealtimeData = (user, role) => {
     });
     unsubs.push(routesSub);
 
+    // --- ⭐ CALIFICACIONES (/driverRatings) ---
+    const ratingsSub = onValue(firebaseManager.getRef('driverRatings'), (rSnap) => {
+      if (!isMounted) return;
+      const rData = rSnap.exists() ? rSnap.val() : {};
+      setRaw(prev => ({ ...prev, driverRatings: rData }));
+    });
+    unsubs.push(ratingsSub);
+
     return () => { isMounted = false; unsubs.forEach(unsub => unsub()); };
   }, [user, role.loading]);
 
@@ -157,10 +165,26 @@ export const useRealtimeData = (user, role) => {
     const ownedPlates = role.ownedPlates || [];
     const myScheduleIds = raw.schedules.filter(s => (s.driverId || s.conductorId) === user.uid).map(s => s.id);
 
-    // 1. Filtrar Conductores
-    const filteredDrivers = userType === 'ADMIN' ? raw.drivers :
-                           userType === 'DRIVER' ? raw.drivers.filter(d => d.id === user.uid) :
-                           raw.drivers.filter(d => ownedPlates.includes(d.vehiclePlate || d.placaVehiculo || d.vehiculoId));
+    // 1. Enriquecer y Filtrar Conductores con Calificaciones NoSQL v2.0
+    const enrichedDriversList = (raw.drivers || []).map(d => {
+      const myRatingsMap = raw.driverRatings?.[d.id] || {};
+      const ratingsList = Object.values(myRatingsMap);
+      const totalCount = ratingsList.length;
+      const avg = totalCount > 0
+        ? (ratingsList.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / totalCount).toFixed(1)
+        : '5.0';
+
+      return {
+        ...d,
+        avgRating: avg,
+        totalRatings: totalCount,
+        ratingsList
+      };
+    });
+
+    const filteredDrivers = userType === 'ADMIN' ? enrichedDriversList :
+                           userType === 'DRIVER' ? enrichedDriversList.filter(d => d.id === user.uid) :
+                           enrichedDriversList.filter(d => ownedPlates.includes(d.vehiclePlate || d.placaVehiculo || d.vehiculoId));
 
     // 2. Filtrar Vehículos
     const filteredVehicles = userType === 'ADMIN' ? raw.vehicles :

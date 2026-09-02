@@ -14,7 +14,6 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
   const status = (res.status || res.estadoReserva || res.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
-  const isRated = res.rated || res.calificada || res.isRated;
 
   const seat = res.reservedSeat !== undefined ? res.reservedSeat : (res.puestoReservado !== undefined ? res.puestoReservado : res.asientoReservado);
   const date = res.reservationDate || res.fechaReserva || res.travelDate;
@@ -27,7 +26,10 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
   const isDriverUser = role?.uid === (res.driverId || res.conductorId);
   const canChat = isConfirmed && (isPassengerUser || isDriverUser);
 
-  const isPassenger = role?.type === 'PASSENGER';
+  const isRated = res.isRated === true || res.rated === true || res.calificada === true || (res.rating !== undefined && res.rating > 0);
+  const canRate = isConfirmed && isPassengerUser && !isRated;
+
+  const isPassenger = isPassengerUser || role?.type === 'PASSENGER';
 
   // --- 🧠 Resolución Dinámica de Identidad ---
   const driverData = drivers.find(d => d.id === (res.driverId || res.conductorId));
@@ -136,7 +138,7 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
              )}
           </div>
 
-          {isConfirmed && isPassenger && !isRated && (
+          {canRate && (
             <Button
               variant="primary"
               size="full"
@@ -147,10 +149,12 @@ export function ReservationHistoryCard({ res, role, drivers = [], onViewTicket, 
             </Button>
           )}
 
-          {isRated && (
+          {isRated && isPassengerUser && (
             <div className="flex items-center justify-center gap-2 py-3 bg-white/5 rounded-2xl border border-white/5">
                <Star className="text-amber-400 fill-amber-400" size={14} />
-               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Viaje Calificado</span>
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                 Viaje Calificado ({res.rating || 5} ★)
+               </span>
             </div>
           )}
         </div>
