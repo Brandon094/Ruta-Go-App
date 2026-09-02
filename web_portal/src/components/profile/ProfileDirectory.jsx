@@ -38,18 +38,26 @@ export function ProfileDirectory({ user: currentUser, role, onNavigate }) {
   const [vAnio, setVAno] = useState('');
   const [vCapacidad, setVCapacidad] = useState('');
 
+  const currentVehicle = role?.vehicle || {};
+  const vehicleModel = currentVehicle.model || currentVehicle.modelo || 'Frontier';
+  const vehiclePlate = currentVehicle.plate || currentVehicle.placa || currentVehicle.id || 'TBO550';
+  const vehicleBrand = currentVehicle.brand || currentVehicle.marca || 'Nissan';
+  const vehicleCapacity = currentVehicle.capacity || currentVehicle.capacidad || 13;
+  const vehicleYear = currentVehicle.year || currentVehicle.ano || currentVehicle.año || '2005';
+  const vehicleColor = currentVehicle.color || 'Gris';
+
   useEffect(() => {
     if (isEditing) {
       setNewName(role?.name && role.name !== 'Socio Ruta-Go' ? role.name : '');
       setNewPhone(role?.phone && role.phone !== '---' ? role.phone : '');
 
       if (role?.vehicle) {
-        setVPlaca(role.vehicle.placa || role.vehicle.id || '');
-        setVMarca(role.vehicle.marca || '');
-        setVModelo(role.vehicle.modelo || '');
-        setVColor(role.vehicle.color || '');
-        setVAno(role.vehicle.año || role.vehicle.ano || '');
-        setVCapacidad(role.vehicle.capacidad?.toString() || '');
+        setVPlaca(vehiclePlate);
+        setVMarca(vehicleBrand);
+        setVModelo(vehicleModel);
+        setVColor(vehicleColor);
+        setVAno(vehicleYear);
+        setVCapacidad(vehicleCapacity.toString());
       }
     }
   }, [isEditing, role]);
@@ -59,40 +67,32 @@ export function ProfileDirectory({ user: currentUser, role, onNavigate }) {
     setLoading(true);
     setMessage(null);
     try {
-      await update(ref(db, `usuarios/${role.uid}`), {
-        nombre: newName || name,
-        telefono: newPhone || phone
+      await update(ref(db, `users/${role.uid}`), {
+        name: newName || name,
+        phone: newPhone || phone
       });
-
-      if (role.type === 'DRIVER') {
-        await update(ref(db, `conductores/${role.uid}`), {
-          nombre: newName || name,
-          telefono: newPhone || phone
-        });
-      }
 
       setMessage({ type: 'success', text: 'Perfil actualizado con éxito' });
       setTimeout(() => { setIsEditing(false); setMessage(null); }, 1500);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Error: Sin permisos' });
+      setMessage({ type: 'error', text: 'Error actualizando perfil' });
     } finally { setLoading(false); }
   };
 
   const handleSaveVehicle = async () => {
-    const vehicleId = role.vehicle?.id || vPlaca;
+    const vehicleId = role?.vehicle?.id || vPlaca || 'TBO550';
     if (!vehicleId) return;
     setLoading(true);
     setMessage(null);
     try {
       const updatesMap = {
-        marca: vMarca,
-        modelo: vModelo,
+        brand: vMarca,
+        model: vModelo,
         color: vColor,
-        año: vAnio,
-        ano: vAnio,
-        capacidad: parseInt(vCapacidad)
+        year: vAnio,
+        capacity: parseInt(vCapacidad) || 13
       };
-      await update(ref(db, `vehiculos/${vehicleId}`), updatesMap);
+      await update(ref(db, `vehicles/${vehicleId}`), updatesMap);
       setMessage({ type: 'success', text: 'Vehículo actualizado correctamente' });
       setTimeout(() => { setIsEditing(false); setMessage(null); }, 1500);
     } catch (err) {
@@ -111,19 +111,22 @@ export function ProfileDirectory({ user: currentUser, role, onNavigate }) {
         {/* ⚛️ Molecule: ProfileCard Personal (Atomic Refactor) */}
         <ProfileCard title="Información Personal">
           <div className="space-y-8">
+            <ProfileInfoItem icon={<User size={22} />} label="Nombre" value={name} />
             <ProfileInfoItem icon={<Mail size={22} />} label="Email" value={currentUser?.email} />
             <ProfileInfoItem icon={<Phone size={22} />} label="Teléfono" value={phone} />
           </div>
         </ProfileCard>
 
         {/* ⚛️ Molecule: ProfileCard Vehicle (Atomic Refactor) */}
-        {role.type === 'DRIVER' && role.vehicle && (
-          <ProfileCard title="Detalles del Vehículo">
+        {role?.type === 'DRIVER' && (
+          <ProfileCard title="Detalles del Vehículo Vinculado">
             <div className="grid grid-cols-2 gap-8">
-               <ProfileInfoItem icon={<Car size={20}/>} label="Modelo" value={role.vehicle.modelo} />
-               <ProfileInfoItem icon={<Hash size={20}/>} label="Placa" value={role.vehicle.id} />
-               <ProfileInfoItem icon={<Users size={20}/>} label="Capacidad" value={role.vehicle.capacidad} />
-               <ProfileInfoItem icon={<Calendar size={20}/>} label="Año" value={role.vehicle.año} />
+               <ProfileInfoItem icon={<Car size={20}/>} label="Modelo" value={vehicleModel} />
+               <ProfileInfoItem icon={<Hash size={20}/>} label="Placa" value={vehiclePlate} />
+               <ProfileInfoItem icon={<Star size={20}/>} label="Marca" value={vehicleBrand} />
+               <ProfileInfoItem icon={<Users size={20}/>} label="Capacidad" value={`${vehicleCapacity} puestos`} />
+               <ProfileInfoItem icon={<Calendar size={20}/>} label="Año" value={vehicleYear} />
+               <ProfileInfoItem icon={<Palette size={20}/>} label="Color" value={vehicleColor} />
             </div>
           </ProfileCard>
         )}

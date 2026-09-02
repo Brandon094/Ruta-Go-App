@@ -87,13 +87,20 @@ export const useRoleResolver = (user) => {
           setRole({ ...resolvedRole, loading: false });
 
           // Sincronización en tiempo real del perfil desde /users/{uid}
-          const profileSub = onValue(firebaseManager.getRef(`users/${user.uid}`), (snap) => {
+          const profileSub = onValue(firebaseManager.getRef(`users/${user.uid}`), async (snap) => {
             if (snap.exists() && isMounted) {
               const data = snap.val();
+              const plate = data.vehiclePlate || data.vehicleId;
+              let vehicleDetails = null;
+              if (plate) {
+                const vSnap = await get(firebaseManager.getRef(`vehicles/${plate}`));
+                if (vSnap.exists()) vehicleDetails = { id: plate, ...vSnap.val() };
+              }
               setRole(prev => ({
                 ...prev,
                 name: data.name || prev.name,
-                phone: data.phone || prev.phone
+                phone: data.phone || prev.phone,
+                vehicle: vehicleDetails || prev.vehicle
               }));
             }
           });
