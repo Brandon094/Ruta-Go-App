@@ -119,31 +119,36 @@ export function AddDriverModal({ onClose, users, owners, vehicles, currentUser, 
       });
     };
 
-    // 📋 Tabla Canónica Oficial de Nátaga
+    // 📋 Tabla Canónica Oficial de Nátaga (Con Pernocta en La Plata)
     const canonicalTable = [
-      { natagaTime: "06:15 AM", laPlataTime: "07:30 AM", label: "Turno 1", shiftIndex: 7, legacyIds: ["h001", "h011"] },
-      { natagaTime: "07:15 AM", laPlataTime: "09:15 AM", label: "Turno 2", shiftIndex: 6, legacyIds: ["h002", "h012"] },
-      { natagaTime: "08:30 AM", laPlataTime: "10:30 AM", label: "Turno 3", shiftIndex: 5, legacyIds: ["h003", "h013"] },
-      { natagaTime: "09:30 AM", laPlataTime: "11:45 AM", label: "Turno 4", shiftIndex: 4, legacyIds: ["h004", "h014"] },
-      { natagaTime: "10:00 AM", laPlataTime: "02:00 PM", label: "Turno 5 (Fijo / Dedicado)", shiftIndex: null, legacyIds: ["h005", "h015"] },
-      { natagaTime: "11:00 AM", laPlataTime: "03:30 PM", label: "Turno 6", shiftIndex: 3, legacyIds: ["h006", "h016"] },
-      { natagaTime: "01:00 PM", laPlataTime: "05:00 PM", label: "Turno 7", shiftIndex: 2, legacyIds: ["h007", "h017"] },
-      { natagaTime: "03:30 PM", laPlataTime: "06:00 PM", label: "Turno 8", shiftIndex: 1, legacyIds: ["h008", "h018"] },
-      { natagaTime: "05:00 PM", laPlataTime: null,        label: "Turno 9 (Solo Ida)", shiftIndex: 0, legacyIds: ["h009"] },
+      { natagaTime: "06:15 AM", laPlataTime: "09:15 AM", laPlataTime2: null,       label: "Turno 1", shiftIndex: 7, legacyIds: ["h001", "h011"] },
+      { natagaTime: "07:15 AM", laPlataTime: "10:30 AM", laPlataTime2: null,       label: "Turno 2", shiftIndex: 6, legacyIds: ["h002", "h012"] },
+      { natagaTime: "08:30 AM", laPlataTime: "11:45 AM", laPlataTime2: null,       label: "Turno 3", shiftIndex: 5, legacyIds: ["h003", "h013"] },
+      { natagaTime: "09:30 AM", laPlataTime: "01:00 PM", laPlataTime2: null,       label: "Turno 4", shiftIndex: 4, legacyIds: ["h004", "h014"] },
+      { natagaTime: "10:00 AM", laPlataTime: "02:00 PM", laPlataTime2: null,       label: "Turno 5 (Fijo / Dedicado)", shiftIndex: null, legacyIds: ["h005", "h015"] },
+      { natagaTime: "11:00 AM", laPlataTime: "03:30 PM", laPlataTime2: null,       label: "Turno 6", shiftIndex: 3, legacyIds: ["h006", "h016"] },
+      { natagaTime: "01:00 PM", laPlataTime: "05:00 PM", laPlataTime2: null,       label: "Turno 7", shiftIndex: 2, legacyIds: ["h007", "h017"] },
+      { natagaTime: "03:30 PM", laPlataTime: "06:00 PM", laPlataTime2: "07:30 AM", label: "Turno 8 (Triple Especial)", shiftIndex: 1, legacyIds: ["h008", "h018", "h010"] },
+      { natagaTime: "05:00 PM", laPlataTime: null,        laPlataTime2: null,       label: "Turno 9 (Entrada)", shiftIndex: 0, legacyIds: ["h009"] },
     ];
 
     const groups = [];
 
     canonicalTable.forEach(pair => {
       const ida = findByTime('nataga', pair.natagaTime) || allSchedules.find(s => pair.legacyIds.includes(s.id));
-      const vuelta = pair.laPlataTime ? (findByTime('la plata', pair.laPlataTime) || allSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
+      const vuelta1 = pair.laPlataTime ? (findByTime('la plata', pair.laPlataTime) || allSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
+      const vuelta2 = pair.laPlataTime2 ? (findByTime('la plata', pair.laPlataTime2) || allSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
 
-      const foundIds = [ida?.id, vuelta?.id].filter(Boolean);
+      const foundIds = [ida?.id, vuelta1?.id, vuelta2?.id].filter(Boolean);
       if (foundIds.length > 0) {
+        let displayStr = `${pair.natagaTime} (Nátaga)`;
+        if (pair.laPlataTime) displayStr += ` ➔ ${pair.laPlataTime} (La Plata)`;
+        if (pair.laPlataTime2) displayStr += ` (+ ${pair.laPlataTime2} AM)`;
+
         groups.push({
           ids: foundIds,
           label: pair.label,
-          display: pair.laPlataTime ? `${pair.natagaTime} (Nátaga) ➔ ${pair.laPlataTime} (La Plata)` : `${pair.natagaTime} (Nátaga - Trayecto Único)`,
+          display: displayStr,
           shiftIndex: pair.shiftIndex
         });
       }
