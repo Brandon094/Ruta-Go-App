@@ -30,23 +30,40 @@ Garantiza la exclusividad de los asientos bajo condiciones de alta concurrencia.
 
 ---
 
-## 🔄 3. Algoritmo de Rotación y Agrupamiento (Escalafón Nátaga ➔ La Plata)
-Gobernanza de la planilla operativa automatizada.
+## 💬 3. Flujo de Mensajería y Chat en Tiempo Real
+Permite la comunicación instantánea entre el pasajero y el conductor asignado al viaje.
 
-### Lógica de Agrupamiento (Speed Mode):
-*   **Standard Pairs**: Mapeo lógico de trayectos de ida y vuelta (ej: h001 + h011).
-*   **Special Triple**: Agrupamiento operativo de h008, h018 y h010 (Regreso al día siguiente).
-*   **Solo Entry**: h009 se trata como trayecto único de inicio de jornada.
-
-### Rotación Cloud Focalizada (Aislamiento de Ruta Principal):
-*   **Ejecución diaria 19:00 COT**:
-*   **Filtrado por Ruta**: Aislamiento exclusivo para los conductores y turnos pertenecientes al **Escalafón Nátaga ➔ La Plata** (`h001` - `h018`).
-*   **Preservación de Rutas Dinámicas**: Las rutas adicionales (ej: `Nátaga ➔ Neiva`, `La Plata ➔ Gallego`) y sus respectivos horarios no son alterados ni borrados durante el ciclo de rotación nocturno.
-*   **Cálculo de Posición**: Rotación del `shiftIndex` basado en `rankingPosition` sobre los 9 grupos del escalafón principal.
+1. **Apertura de Canal (`ChatModal.jsx`)**: Se identifica el ID de reserva (`reservationId = reservation.id || reservation.idReservation`) y el UID de la sesión activa (`role.uid`).
+2. **Escritura Atómica (`chatService.sendMessage`)**: Escribe el mensaje en `/chats/${reservationId}/messages/${messageId}` con atributos `id`, `senderId`, `text` y `timestamp`.
+3. **Escucha Reactiva (`chatService.listenMessages`)**: Listener `onValue` en tiempo real que renderiza los mensajes ordenados cronológicamente.
+4. **Trigger de Notificación (Cloud Function `onChatMessageCreated`)**: Al crearse un mensaje en `/chats/{reservationId}/messages/{messageId}`, la Cloud Function dispara una notificación Push (FCM v1) al dispositivo móvil de la contraparte.
 
 ---
 
-## 💰 4. Inteligencia Analítica 360° (Contabilidad)
+## 🔄 4. Algoritmo de Rotación y Agrupamiento (Escalafón Nátaga ➔ La Plata)
+Gobernanza de la planilla operativa automatizada.
+
+### Tabla Canónica Oficial de Nátaga (Con Pernocta en La Plata):
+* **Turno 1**: `06:15 AM (Nátaga) ➔ 07:30 AM (La Plata)` *(Pos #7)*
+* **Turno 2**: `07:15 AM (Nátaga) ➔ 09:15 AM (La Plata)` *(Pos #6)*
+* **Turno 3**: `08:30 AM (Nátaga) ➔ 10:30 AM (La Plata)` *(Pos #5)*
+* **Turno 4**: `09:30 AM (Nátaga) ➔ 11:45 AM (La Plata)` *(Pos #4)*
+* **Turno 5 (Fijo / Dedicado)**: `10:00 AM (Nátaga) ➔ 02:00 PM (La Plata)` *(Inmune a rotación - No Rota)*
+* **Turno 6**: `11:00 AM (Nátaga) ➔ 03:30 PM (La Plata)` *(Pos #3)*
+* **Turno 7**: `01:00 PM (Nátaga) ➔ 05:00 PM (La Plata)` *(Pos #2)*
+* **Turno 8 (Triple Especial)**: `03:30 PM (Nátaga) ➔ 06:00 PM (La Plata) (+ 07:30 AM AM)` *(Pernocta en La Plata)*
+* **Turno 9 (Entrada)**: `05:00 PM (Nátaga - Trayecto Único)` *(Pos #0)*
+* **Descanso**: `Mañana fuera de servicio` *(Pos #8)*
+
+### Rotación Cloud Focalizada (Aislamiento de Ruta Principal):
+* **Ejecución diaria 19:00 COT (`automatedRotation`)**:
+* **Filtrado por Ruta**: Aislamiento exclusivo para los conductores y turnos pertenecientes al **Escalafón Nátaga ➔ La Plata**.
+* **Preservación de Rutas Dinámicas**: Las rutas adicionales (ej: `Nátaga ➔ Neiva`, `La Plata ➔ Gallego`) y sus respectivos horarios no son alterados ni borrados durante el ciclo de rotación nocturno.
+* **Cálculo de Posición**: Rotación del `shiftIndex` basado en `rankingPosition` sobre los 9 grupos del escalafón principal.
+
+---
+
+## 💰 5. Inteligencia Analítica 360° (Contabilidad)
 Motor de cálculo de ingresos para dueños y administradores.
 
 1.  **Lookups en Tiempo Real**: El sistema cruza los datos de `/seatAvailability` con la tabla de `/prices`.
@@ -56,7 +73,7 @@ Motor de cálculo de ingresos para dueños y administradores.
 
 ---
 
-## 🧹 5. Protocolo de Borrado en Cascada (Compliance)
+## 🧹 6. Protocolo de Borrado en Cascada (Compliance)
 Cumplimiento técnico del "Derecho al Olvido" y políticas de Google Play.
 
 1.  **Solicitud**: El usuario activa el flag `deletionRequested = true` en su perfil.
