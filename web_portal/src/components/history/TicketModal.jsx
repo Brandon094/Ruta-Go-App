@@ -17,20 +17,25 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
   if (!reservation) return null;
 
   // ... (Resolución de Nombres logic remains the same)
-  const driverData = drivers.find(d => d.id === reservation.driverId || d.id === reservation.conductorId);
-  const resolvedDriverName = driverData?.nombre || reservation.driver || 'Conductor';
-  const resolvedPassengerName = reservation.name || reservation.nombre || 'Pasajero';
+  const driverData = drivers.find(d => d.id === (reservation.driverId || reservation.conductorId));
+  const resolvedDriverName = reservation.driverName || driverData?.name || driverData?.nombre || reservation.driver || 'Conductor';
+  const resolvedPassengerName = reservation.passengerName || reservation.name || reservation.nombre || 'Pasajero';
 
-  const status = (reservation.estadoReserva || reservation.reservationStatus || "").toLowerCase();
+  const status = (reservation.status || reservation.estadoReserva || reservation.reservationStatus || "").toLowerCase();
   const isConfirmed = status === 'confirmada' || status === 'confirmado' || status === 'completada' || status === 'confirmed';
   const isCanceled = status === 'cancelada' || status === 'canceled';
+  const statusLabel = isConfirmed ? 'Confirmada' : isCanceled ? 'Cancelada' : 'Pendiente';
 
-  const seat = reservation.puestoReservado !== undefined ? reservation.puestoReservado : (reservation.reservedSeat !== undefined ? reservation.reservedSeat : reservation.asientoReservado);
-  const date = reservation.fechaReserva || reservation.reservationDate || reservation.travelDate;
+  const seat = reservation.reservedSeat !== undefined ? reservation.reservedSeat : (reservation.puestoReservado !== undefined ? reservation.puestoReservado : reservation.asientoReservado);
+  const date = reservation.reservationDate || reservation.fechaReserva || reservation.travelDate;
 
   // Mapeo robusto de ruta
-  const origin = reservation.origen || reservation.origin || reservation.ruta?.split('➔')[0]?.trim() || reservation.ruta?.split('->')[0]?.trim() || '---';
-  const destination = reservation.destino || reservation.destination || reservation.ruta?.split('➔')[1]?.trim() || reservation.ruta?.split('->')[1]?.trim() || '---';
+  const origin = (reservation.origin || reservation.origen || reservation.ruta?.split('➔')[0]?.trim() || reservation.ruta?.split('->')[0]?.trim() || '---').toUpperCase();
+  const destination = (reservation.destination || reservation.destino || reservation.ruta?.split('➔')[1]?.trim() || reservation.ruta?.split('->')[1]?.trim() || '---').toUpperCase();
+
+  const plate = reservation.vehiclePlate || reservation.plate || reservation.vehicleId || reservation.vehiculoId || driverData?.vehiclePlate || '---';
+  const model = reservation.vehicleModel || reservation.model || reservation.modelo || 'Vehículo';
+  const ticketId = reservation.id || reservation.idReservation || reservation.idReserva || '---';
 
   const formatDate = (d) => {
     if (!d) return '-- --- ----';
@@ -155,7 +160,7 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
                    <div className="space-y-3">
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Pasajero:</span> {resolvedPassengerName}</p>
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Conductor:</span> {resolvedDriverName}</p>
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Vehículo:</span> {`${reservation.plate || reservation.vehicleId || '---'} (${reservation.model || reservation.vehicleModel || 'N/A'})`}</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200"><span className="font-bold text-slate-400 dark:text-slate-500 mr-2 uppercase text-[10px] tracking-widest">Vehículo:</span> {`${reservation.vehiclePlate || reservation.plate || reservation.vehicleId || reservation.vehiculoId || driverData?.vehiclePlate || '---'} (${reservation.vehicleModel || reservation.model || reservation.modelo || 'Vehículo'})`}</p>
                    </div>
                 </div>
            </div>
@@ -164,7 +169,7 @@ export function TicketModal({ reservation, role, drivers = [], onClose, onChat }
            <div className="bg-slate-50 dark:bg-[#040D1A] p-8 flex flex-col items-center gap-2 border-t border-slate-100 dark:border-white/5">
               <span className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em]">ID de Reserva:</span>
               <span className="text-[10px] font-bold font-mono text-slate-500 dark:text-slate-400 uppercase opacity-80 break-all text-center">
-                {reservation.idReservation || '---'}
+                {reservation.id || reservation.idReservation || reservation.idReserva || '---'}
               </span>
            </div>
         </div>
