@@ -9,9 +9,11 @@ import { Badge } from '../ui/Badge';
 export function PendingReservationCard({ res, onConfirm, onCancel, loading }) {
   const seat = res.reservedSeat !== undefined ? res.reservedSeat :
               (res.puestoReservado !== undefined ? res.puestoReservado : res.asientoReservado);
-  const name = res.name || res.nombre || res.nombreUsuario || 'Usuario Ruta-Go';
-  const phone = res.phone || res.telefono || '---';
-  const route = res.ruta || `${res.origin || 'Nátaga'} ➔ ${res.destination || 'La Plata'}`;
+  const name = res.passengerName || res.name || res.nombre || res.nombreUsuario || 'Usuario Ruta-Go';
+  const phone = res.passengerPhone || res.phone || res.telefono || '---';
+  const route = (res.origin && res.destination)
+    ? `${res.origin.toUpperCase()} ➔ ${res.destination.toUpperCase()}`
+    : (res.route || res.ruta || 'Nátaga ➔ La Plata');
   const date = res.departureTime || res.hora || '00:00';
 
   return (

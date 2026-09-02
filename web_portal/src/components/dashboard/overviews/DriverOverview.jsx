@@ -26,14 +26,16 @@ export function DriverOverview({ stats, schedules = [], drivers = [], reservatio
   const safeReservations = Array.isArray(reservations) ? reservations : [];
 
   const currentDriverData = safeDrivers.find(d => d.id === role?.uid) || {};
-  const myName = currentDriverData.nombre || role?.name || 'Conductor';
-  const myPlate = currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
+  const myName = currentDriverData.name || currentDriverData.nombre || role?.name || 'Conductor';
+  const myPlate = currentDriverData.vehiclePlate || currentDriverData.vehicleId || currentDriverData.placaVehiculo || currentDriverData.vehiculoId || '---';
 
-  const mySchedules = safeSchedules.filter(s => s.conductorId === role?.uid);
+  const mySchedules = safeSchedules.filter(s => (s.driverId || s.conductorId) === role?.uid);
 
   const pendingReservations = safeReservations.filter(r => {
-    const status = (r.estadoReserva || r.reservationStatus || "").toLowerCase();
-    return status === 'pendiente' || status === 'por confirmar';
+    const status = (r.status || r.reservationStatus || r.estadoReserva || "").toLowerCase();
+    const resDriverId = r.driverId || r.conductorId;
+    const matchesDriver = !resDriverId || resDriverId === role?.uid;
+    return matchesDriver && (status === 'pending' || status === 'pendiente' || status === 'por confirmar');
   });
 
   const handleConfirm = async (res) => {
@@ -146,10 +148,10 @@ export function DriverOverview({ stats, schedules = [], drivers = [], reservatio
                 {mySchedules.map(schedule => (
                   <RouteProgressCard
                     key={schedule.id}
-                    name={schedule.ruta}
-                    time={schedule.hora}
+                    name={schedule.route || schedule.ruta || "Ruta Directa"}
+                    time={schedule.time || schedule.hora || "08:00 AM"}
                     reservations={schedule.reservasCount || 0}
-                    available={schedule.asientosDisponibles || 0}
+                    available={schedule.asientosDisponibles ?? schedule.availableSeats ?? 13}
                     icon={<MapPin className="text-primary-500" size={20} />}
                     color="bg-primary-500"
                     onClick={() => onManage(schedule)}
