@@ -16,12 +16,13 @@ Bienvenido al Centro de Ayuda de **Ruta-Go**. Esta guía te ayudará a navegar p
 ---
 
 ## 👨‍✈️ 2. Guía para Conductores
-*   **Perfil Operativo**: Al ser vinculado a un vehículo (`vehiclePlate`), tu perfil pasa a rol conductor con estatus operativo (**En Ruta** cuando tienes turnos asignados o **Sin Turno** en periodo de descanso).
-*   **Dashboard Analítico**: Visualiza la ocupación de tus rutas en tiempo real mediante barras de progreso dinámicas.
-*   **Gestión de Asientos**:
-    *   **Venta en Calle**: Usa el botón **(+)** para marcar asientos ocupados físicamente.
-    *   **Confirmación**: Valida las reservas digitales de los pasajeros al momento del abordaje.
-*   **Contabilidad Automática**: Tus ingresos diarios se calculan sumando tanto las reservas de la App como las ventas directas.
+*   **Aceptar o Rechazar Reservas Entrantes**: En la sección **'Confirmar Reservas'** de la pantalla de **Inicio**, aprueba las solicitudes con el botón **CONFIRMAR** (o cancela con **RECHAZAR** para liberar el asiento).
+*   **Ver Ocupación de tus Rutas**: En la sección **'Estado por ruta'** dentro de **Inicio**, consulta la ocupación en tiempo real de tus salidas asignadas del día.
+*   **Venta en Calle y Bloqueo de Puestos**:
+    *   Toca la tarjeta de tu ruta o el botón flotante **(+)** para abrir el **Mapa Interactivo de la Camioneta**.
+    *   Toca un puesto libre para marcarlo como **'Ocupado Local'** y actualizar el inventario en tiempo real.
+*   **Historial Operativo y Chat**: En **Historial**, revisa todas las reservas confirmadas, genera tiquetes digitales y abre el chat directo con los pasajeros.
+*   **Perfil e Información de tu Vehículo**: En **Perfil**, revisa tus datos personales de contacto y la ficha técnica completa de tu bus vinculado (`vehiclePlate`, modelo, marca, capacidad, año y color).
 
 ---
 

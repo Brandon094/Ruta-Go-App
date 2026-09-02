@@ -60,24 +60,29 @@ export default function UserManual({ role, onBack, isTab = false }) {
       color: "amber",
       steps: [
         {
-          title: "1. Ver tus Turnos",
-          icon: Calendar,
-          description: "Entra a 'Mi Itinerario'. Allí aparecerán los horarios que tienes asignados para hoy. El sistema te avisará cuál es tu próximo despacho para que estés pendiente de la salida."
-        },
-        {
-          title: "2. Confirmar Pasajeros",
+          title: "1. Aceptar o Rechazar Reservas Entrantes",
           icon: ClipboardCheck,
-          description: "Cuando un pasajero suba al bus, búscalo en la lista de 'Check-in' o en el detalle de la ruta. Toca el botón verde 'CONFIRMAR'. Esto es muy importante para que el sistema sepa que el asiento ya está ocupado físicamente."
+          description: "En tu pantalla de 'Inicio', la sección 'Confirmar Reservas' te muestra las solicitudes de pasajes con nombre del pasajero, teléfono y puesto. Toca 'CONFIRMAR' para aprobar el pasaje o 'RECHAZAR' para liberar el cupo."
         },
         {
-          title: "3. Vender a Pasajeros de Calle",
+          title: "2. Ver Ocupación de tus Rutas",
+          icon: Calendar,
+          description: "En 'Estado por ruta' dentro de 'Inicio', consulta la ocupación de tus salidas asignadas del día en tiempo real, viendo cuántos cupos están confirmados y cuántos están libres."
+        },
+        {
+          title: "3. Ventas en Calle (Mapa de Asientos)",
           icon: Key,
-          description: "Si alguien te pide puesto en el camino, toca el botón naranja (+) para abrir el mapa del bus. Toca el asiento vacío y dale a 'BLOQUEAR'. Esto evita que alguien lo reserve por la App y te ayuda a llevar tus cuentas de dinero claras."
+          description: "Si aborda un pasajero de camino, toca la tarjeta de tu ruta o el botón flotante (+) para abrir el mapa interactivo en forma de camioneta y bloquear el puesto como ocupado."
         },
         {
-          title: "4. Revisar tus Ganancias",
-          icon: TrendingUp,
-          description: "En tu panel principal verás un cuadro que dice 'Ingresos'. Allí el sistema te suma automáticamente lo de las reservas de la App y lo que bloqueaste manualmente. ¡Tus cuentas siempre claras!"
+          title: "4. Historial Operativo de Reservas",
+          icon: Zap,
+          description: "En la pestaña 'Historial', consulta todos los despachos confirmados, genera tiquetes digitales y abre el chat directo con los pasajeros."
+        },
+        {
+          title: "5. Perfil e Información de tu Vehículo",
+          icon: Smartphone,
+          description: "En la pestaña 'Perfil', revisa tus datos personales y la ficha técnica completa de tu vehículo vinculado (Placa, Modelo, Marca, Capacidad, Año y Color)."
         }
       ]
     },
