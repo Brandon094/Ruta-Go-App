@@ -52,6 +52,9 @@ El portal no solo consume datos, los procesa para la toma de decisiones:
     *   `AddOwnerModal.jsx` y `ownerService.promoteUserToOwnerByEmail`: Ascenso directo de cualquier usuario al rol `owner` por correo o selección desplegable.
     *   `VehicleModal.jsx` y `vehicleService`: Selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
     *   `AddDriverModal.jsx` y `EditDriverModal.jsx`: Asignación de horarios en 2 pasos por ruta con mapeo canónico de 9 turnos de Nátaga (Pernocta del Turno 8 `03:30 PM ➔ 06:00 PM + 07:30 AM` e inmunidad de rotación para Turno 5 Fijo).
+*   **Mensajería y Chat en Tiempo Real (`ChatModal.jsx` & `chatService.js`)**:
+    *   `chatService.js`: Escritura atómica NoSQL v2.0 en `/chats/${reservationId}/messages/${messageId}` con soporte pasivo a `/mensajes/`.
+    *   `ChatModal.jsx`: Resolución dinámica de identidades bidireccional basada en el UID de la sesión activa (`role.uid`), desplegando la cabecera *"Chat con [Nombre del Conductor]"* para el pasajero o *"Chat con [Nombre del Pasajero]"* para el conductor.
 *   **Asignación Inteligente**: Soporte para grupos de horarios NoSQL v2.0 y reseteo automático de capacidad a 13/13 puestos.
 
 ---
@@ -62,12 +65,12 @@ web_portal/
 ├── public/             # Activos estáticos y Logos
 ├── src/
 │   ├── components/     # Componentes Atómicos (Atoms, Molecules, Organisms)
-│   ├── hooks/          # Reactividad y Lógica de Negocio (useRealtimeData)
-│   ├── services/       # Servicios de Datos (Singleton)
-│   ├── utils/          # Formateadores y Animaciones
+│   ├── hooks/          # Reactividad y Lógica de Negocio (useRealtimeData, useRoleResolver)
+│   ├── services/       # Servicios de Datos Singleton (driverService, vehicleService, ownerService, chatService, reservationService, scheduleService)
+│   ├── utils/          # Formateadores y Animaciones (FormatUtils.js)
 │   ├── firebase.js     # Configuración y Manager
-│   ├── App.jsx         # Orquestador Principal v1.9.9.5
-│   └── ...             # Vistas principales (Landing, Login, Register)
+│   ├── App.jsx         # Orquestador Principal v2.0.1-BETA
+│   └── ...             # Vistas principales (LandingPage, Login, Register)
 └── index.html          # Punto de entrada
 ```
 

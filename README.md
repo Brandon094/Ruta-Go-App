@@ -1,16 +1,17 @@
 # 🚍 Ruta-Go (Transporte Nátaga - La Plata - Huila) | v2.0.1-BETA 🚀
 
-**Ruta-Go** es una plataforma integral de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **v2.0.1-BETA** consolida la migración completa a **Jetpack Compose en Android** y un **Motor de Rutas e Itinerarios Dinámicos en React**, operando bajo el esquema NoSQL v2.0 Clean Schema con paridad total en tiempo real entre móvil y web. ✨
+**Ruta-Go** es una plataforma integral de vanguardia diseñada para profesionalizar y optimizar el transporte intermunicipal en la región del Huila (Colombia). Esta versión **v2.0.1-BETA** consolida la migración completa a **100% Kotlin + Jetpack Compose en Android** y un **Motor de Rutas e Itinerarios Dinámicos en React Web**, operando bajo el esquema NoSQL v2.0 Clean Schema con paridad total en tiempo real entre móvil y web. ✨
 
 ---
 
 ## 🏆 Hitos de la Suite Integral (v2.0.1-BETA)
-*   📱 **UI 100% Jetpack Compose**: Interfaz móvil Android declarativa construida bajo **Atomic Design System** y Material 3.
+*   📱 **UI 100% Jetpack Compose (100% Kotlin)**: Interfaz móvil Android declarativa construida bajo **Atomic Design System** y Material 3 (0 archivos Java en producción).
 *   🗺️ **Motor de Rutas e Itinerarios Dinámicos**: Gestión interactiva de rutas y tarifas desde el Portal Web (`AddRouteModal.jsx`, `AddScheduleModal.jsx`, `EditScheduleModal.jsx`) con autocompletado de precios, tiempos y edición/eliminación en tiempo real.
-*   🧭 **Navegación Dinámica en Planilla & Home**: Selector dinámico de Origen y Destino (`PassengerOverview.jsx`) y pestañas reactivas por trayecto (`ScheduleDirectory.jsx`, `LandingSchedules.jsx`).
-*   🚗 **Vinculación de Flota, Socios y Conductores**: Módulo de activos (`VehicleModal.jsx`) con selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
+*   👨‍✈️ **Asignación Canónica de Conductores por Ruta**: Modal en 2 pasos (`AddDriverModal.jsx`, `EditDriverModal.jsx`) con parejas de horarios canónicas oficiales (`06:15 AM ➔ 07:30 AM`, `07:15 AM ➔ 09:15 AM`, etc.), pernocta del **Turno 8 Triple Especial** e inmunidad de rotación para **Turno 5 Fijo**.
+*   💬 **Mensajería Instantánea NoSQL v2.0 (`/chats`)**: Servicio de chat en tiempo real (`chatService.js` & `ChatModal.jsx`) con resolución dinámica de identidades y disparo de notificaciones Push en Cloud Functions.
+*   🚍 **Silueta Física Interactiva de Camioneta (`SeatManagementModal.jsx`)**: Mapa de selección de asientos con chasis de minibus, parabrisas frontal, retrovisores, 4 ruedas/llantas laterales y distribución real de 13 puestos.
+*   🔒 **Restricción de Seguridad sin Conductor**: Bloqueo inteligente con ícono de candado (🔒) y estado `disabled` cuando un horario no cuenta con operador asignado.
 *   👑 **Ascenso Directo de Socios**: Herramienta de super-poderes para el Admin Root (`AddOwnerModal.jsx`) para promover cualquier usuario a Socio de Flota por correo o selección desplegable.
-*   ⚡ **Desacoplamiento de Flota**: Creación flexible de horarios para el Admin Root sin requerir vehículos o conductores asignados previamente.
 *   🌐 **Portal Web "Mirror Edition"**: Paridad 1:1 con la App móvil para pasajeros, conductores, dueños y administradores con Google Sign-In para Pasajeros y Socios.
 *   🚀 **Android 16 (SDK 36) Ready**: Optimización total para la última versión de Android, incluyendo soporte Edge-to-Edge nativo.
 
@@ -19,18 +20,19 @@
 ## 🏗️ Stack Tecnológico e Ingeniería
 
 ### **Ecosistema Móvil (Android)**
-*   **Lenguajes**: Java 17 / Kotlin (Transición a Jetpack Compose iniciada).
-*   **Patrón**: MVVM desacoplado con Clean Architecture.
-*   **UI**: Material Design 3 con soporte dinámico para insets de sistema.
+*   **Lenguaje**: **100% Kotlin** (0 archivos Java en código de producción).
+*   **UI Framework**: **100% Jetpack Compose** (Material Design 3).
+*   **Arquitectura**: Single-Activity (`MainActivity.kt`) + Navigation Compose + MVVM desacoplado con Clean Architecture.
+*   **Persistencia**: `SessionManager` sobre `SharedPreferences` (`"rutago_prefs"`).
 
 ### **Ecosistema Web (React/Vite)**
 *   **Core**: React 18 + Vite (Atomic Design Architecture).
-*   **Performance**: Carga diferida (Lazy loading) y optimización masiva de activos (WebP).
-*   **Sincronización**: Custom Hooks especializados para monitoreo de flota en tiempo real.
+*   **Styling**: Tailwind CSS 3 con componentes atómicos reutilizables (Atoms, Molecules, Organisms).
+*   **Performance**: Code Splitting (`React.lazy` & `Suspense`), React Transitions y subscripciones desacopladas NoSQL v2.0.
 
 ### **Infraestructura Backend (Firebase Cloud)**
-*   **Database**: Realtime Database (RTDB) con latencia ultra-baja.
-*   **Serverless**: Cloud Functions para orquestación logística y rotación nocturna (Node.js 22).
+*   **Database**: Realtime Database (RTDB) con latencia ultra-baja y llaves Clean English (`users`, `schedules`, `vehicles`, `reservations`, `seatAvailability`, `prices`, `routes`, `chats`).
+*   **Serverless**: Cloud Functions v2.2.0 para orquestación logística y rotación nocturna de las 7:00 PM COT (Node.js 22).
 *   **Security**: Reglas ABAC/RBAC de alta granularidad para aislamiento comercial.
 
 ---

@@ -15,8 +15,12 @@ export function ChatModal({ reservation, role, onClose }) {
   const scrollRef = useRef(null);
 
   const reservationId = reservation.id || reservation.idReservation || reservation.idReserva;
-  const isPassenger = role?.type === 'PASSENGER';
-  const otherPartyName = isPassenger
+
+  // Determinar la otra parte del chat según quién inició sesión (Pasajero vs Conductor)
+  const isPassengerUser = (role?.uid === (reservation.userId || reservation.usuarioId)) ||
+                          (role?.type === 'PASSENGER' && role?.uid !== (reservation.driverId || reservation.conductorId));
+
+  const otherPartyName = isPassengerUser
     ? (reservation.driverName || reservation.driver || "Conductor")
     : (reservation.passengerName || reservation.name || "Pasajero");
 
