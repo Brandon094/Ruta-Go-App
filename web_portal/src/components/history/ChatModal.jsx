@@ -14,9 +14,11 @@ export function ChatModal({ reservation, role, onClose }) {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
-  const reservationId = reservation.idReservation || reservation.id;
-  const isPassenger = role.type === 'PASSENGER';
-  const otherPartyName = isPassenger ? (reservation.driver || "Conductor") : (reservation.name || "Pasajero");
+  const reservationId = reservation.id || reservation.idReservation || reservation.idReserva;
+  const isPassenger = role?.type === 'PASSENGER';
+  const otherPartyName = isPassenger
+    ? (reservation.driverName || reservation.driver || "Conductor")
+    : (reservation.passengerName || reservation.name || "Pasajero");
 
   useEffect(() => {
     if (!reservationId) return;
