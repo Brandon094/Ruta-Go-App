@@ -24,6 +24,7 @@ export function ScheduleCard({
   const safeDrivers = Array.isArray(drivers) ? drivers : [];
   const driverId = schedule.driverId || schedule.conductorId;
   const driver = safeDrivers.find(d => d.id === driverId);
+  const driverName = driver?.name || driver?.nombre || schedule.driverName || schedule.conductorNombre || schedule.driver || schedule.conductor || "";
 
   const vehicleId = schedule.vehicleId || schedule.vehiculoId || driver?.vehicleId || driver?.vehiculoId || driver?.placaVehiculo;
   const vehicle = vehicles.find(v => v.id === vehicleId || v.plate === vehicleId || v.placa === vehicleId);
@@ -79,7 +80,7 @@ export function ScheduleCard({
               <div className="flex items-center gap-2 text-slate-400 dark:text-white/30 italic">
                  <User size={12} />
                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate max-w-[150px]">
-                   {driver ? (isMe ? 'Tú manejas' : (driver.name || driver.nombre)) : 'Sin Conductor Asignado'}
+                   {driverName ? (isMe ? 'Tú manejas' : driverName) : 'Sin Conductor Asignado'}
                  </span>
               </div>
             )}

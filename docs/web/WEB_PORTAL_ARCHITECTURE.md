@@ -44,10 +44,11 @@ El portal no solo consume datos, los procesa para la toma de decisiones:
     *   `EditScheduleModal.jsx` y `scheduleService.updateSchedule` para modificar hora, tarifa, ruta, conductor o bus en tiempo real.
     *   `PassengerOverview.jsx` & `ScheduleDirectory.jsx`: Selector de Origen/Destino y **Barra Flotante Sticky de Chips de Ruta (`sticky top-0 z-20`)** de ~48px con vidrio esmerilado (`backdrop-blur-md bg-white/95`).
     *   **Restricción de Conductor Asignado**: Bloqueo automático del botón de reserva con icono Candado (🔒 / `Lock`) y estado `disabled` cuando un horario no cuenta con un operador vinculado (`!driverId`).
-*   **Gobernanza de Flota y Promoción de Socios**:
+*   **Gobernanza de Flota, Asignación Canónica y Promoción de Socios**:
     *   `AddOwnerModal.jsx` y `ownerService.promoteUserToOwnerByEmail`: Ascenso directo de cualquier usuario al rol `owner` por correo o selección desplegable.
     *   `VehicleModal.jsx` y `vehicleService`: Selección interactiva de Socio (`ownerId`) y Conductor (`driverId`) con actualización bidireccional en `/users/` y `/vehicles/`.
-*   **Asignación Inteligente**: Soporte para grupos de horarios y reseteo automático de capacidad a 13/13 puestos.
+    *   `AddDriverModal.jsx` y `EditDriverModal.jsx`: Asignación de horarios en 2 pasos por ruta con mapeo canónico de 9 turnos de Nátaga (Pernocta del Turno 8 `03:30 PM ➔ 06:00 PM + 07:30 AM` e inmunidad de rotación para Turno 5 Fijo).
+*   **Asignación Inteligente**: Soporte para grupos de horarios NoSQL v2.0 y reseteo automático de capacidad a 13/13 puestos.
 
 ---
 

@@ -11,6 +11,9 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 - **Aislamiento de Escalafón Nátaga ➔ La Plata (`index.js`)**: Refactorizada la función automatizada de rotación nocturna de las 7:00 PM (`automatedRotation`) para focalizarse exclusivamente en las salidas de Nátaga ➔ La Plata. Se implementó la preservación de conductores, buses y reseteo diario de cupos (13 libres) para todas las rutas dinámicas adicionales (`Neiva`, `Gallego`, etc.).
 
 ### 🌐 Ruta-Go Web (Portal v2.0)
+- **Configuración Canónica de Conductores por Ruta (`AddDriverModal.jsx` & `EditDriverModal.jsx`)**:
+  - Implementada la selección de horarios en 2 pasos: filtrado previo por Ruta (`Nátaga ➔ La Plata`, `Neiva`, `Gallego`) e indexación dinámica por horas reales NoSQL v2.0 (`-P0Pw0...`).
+  - Mapeo canónico exacto para los 9 turnos de Nátaga incluyendo la pernocta del **Turno 8 (Triple Especial: `03:30 PM ➔ 06:00 PM + 07:30 AM`)**, el **Turno 5 (Fijo/Dedicado: `10:00 AM ➔ 02:00 PM`)** que no rota, y la opción de **Descanso**.
 - **Rediseño Atómico de la Landing Page (`LandingSchedules.jsx`)**:
   - Reemplazada la grilla vertical continua por una barra de pestañas/chips interactiva para selección de ruta (`Nátaga ➔ La Plata`, `Nátaga ➔ Neiva`, `Todas las Rutas`).
   - Rediseñadas las tarjetas de horario en una cuadrícula atómica de 3 columnas reutilizando los componentes `<Button/>`, `<Badge/>` y `FormatUtils.formatPrice()`, reduciendo la longitud vertical en un 70%.
