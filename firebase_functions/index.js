@@ -139,34 +139,47 @@ exports.automatedRotation = onSchedule({
             }
         });
 
-        // 3. Agrupar Horarios de Nátaga ➔ La Plata por Hora de Salida en Grupos Rotativos (Turnos 1 al 8)
-        const getMinutes = (hStr) => {
-            try {
-                const [time, ampm] = hStr.trim().split(" ");
-                let [hrs, mins] = time.split(":").map(Number);
-                if (ampm === "PM" && hrs < 12) hrs += 12;
-                if (ampm === "AM" && hrs === 12) hrs = 0;
-                return hrs * 60 + (mins || 0);
-            } catch (e) { return 0; }
+        // 3. Agrupar Horarios de Nátaga ➔ La Plata según la Tabla Canónica Oficial
+        const findByTime = (routePrefix, timeStr) => {
+            if (!timeStr) return null;
+            const targetTime = timeStr.trim().toLowerCase();
+            return natagaSchedules.find(s => {
+                const normR = norm(s.route || s.ruta || "");
+                const normT = (s.time || s.hora || "").trim().toLowerCase();
+                return normR.startsWith(routePrefix) && normT === targetTime;
+            });
         };
 
-        natagaSchedules.sort((a, b) => getMinutes(a.time) - getMinutes(b.time));
+        // 📋 Tabla Canónica Oficial de Nátaga (Con Pernocta)
+        const canonicalTable = [
+            { natagaTime: "06:15 AM", laPlataTime: "07:30 AM", laPlataTime2: null,       label: "Turno 1", shiftIndex: 7, legacyIds: ["h001", "h011"] },
+            { natagaTime: "07:15 AM", laPlataTime: "09:15 AM", laPlataTime2: null,       label: "Turno 2", shiftIndex: 6, legacyIds: ["h002", "h012"] },
+            { natagaTime: "08:30 AM", laPlataTime: "10:30 AM", laPlataTime2: null,       label: "Turno 3", shiftIndex: 5, legacyIds: ["h003", "h013"] },
+            { natagaTime: "09:30 AM", laPlataTime: "11:45 AM", laPlataTime2: null,       label: "Turno 4", shiftIndex: 4, legacyIds: ["h004", "h014"] },
+            { natagaTime: "10:00 AM", laPlataTime: "02:00 PM", laPlataTime2: null,       label: "Turno 5 (Fijo)",     shiftIndex: null, legacyIds: ["h005", "h015"] },
+            { natagaTime: "11:00 AM", laPlataTime: "03:30 PM", laPlataTime2: null,       label: "Turno 6", shiftIndex: 3, legacyIds: ["h006", "h016"] },
+            { natagaTime: "01:00 PM", laPlataTime: "05:00 PM", laPlataTime2: null,       label: "Turno 7", shiftIndex: 2, legacyIds: ["h007", "h017"] },
+            { natagaTime: "03:30 PM", laPlataTime: "06:00 PM", laPlataTime2: "07:30 AM", label: "Turno 8 (Triple)", shiftIndex: 1, legacyIds: ["h008", "h018", "h010"] },
+            { natagaTime: "05:00 PM", laPlataTime: null,        laPlataTime2: null,       label: "Turno 9 (Entrada)", shiftIndex: 0, legacyIds: ["h009"] },
+        ];
 
-        // Construir la Rueda de Turnos Rotativos para Nátaga
         const rotShifts = [];
-        const natagaIds = natagaSchedules.map(s => s.id);
 
-        for (let i = 0; i < natagaIds.length; i += 2) {
-            if (i + 1 < natagaIds.length) {
-                rotShifts.push([natagaIds[i], natagaIds[i + 1]]);
-            } else {
-                rotShifts.push([natagaIds[i]]);
+        canonicalTable.forEach(pair => {
+            if (pair.shiftIndex === null) return; // Turno 5 Fijo no rota
+            const ida = findByTime('nataga', pair.natagaTime) || natagaSchedules.find(s => pair.legacyIds.includes(s.id));
+            const vuelta1 = pair.laPlataTime ? (findByTime('la plata', pair.laPlataTime) || natagaSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
+            const vuelta2 = pair.laPlataTime2 ? (findByTime('la plata', pair.laPlataTime2) || natagaSchedules.find(s => pair.legacyIds.includes(s.id))) : null;
+
+            const foundIds = [ida?.id, vuelta1?.id, vuelta2?.id].filter(Boolean);
+            if (foundIds.length > 0) {
+                rotShifts.push(foundIds);
             }
-        }
-        // Día de descanso (posición final del ciclo)
+        });
+
+        // Día de descanso
         rotShifts.push([]);
 
-        // Rellenar hasta asegurar mínimo 9 posiciones de rotación
         while (rotShifts.length < 9) {
             rotShifts.push([]);
         }
